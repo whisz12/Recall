@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261031184641";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261031193733";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -883,6 +883,65 @@ body.desktop .sidesres .sidelabel{padding-top:2px}
 
 .dock.dock-show{flex-direction:row;align-items:center;gap:12px;padding:12px 14px 12px 18px}
 
+/* leeches */
+.leechtag{display:inline-block;font-family:var(--chrome);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--again);border:1px solid color-mix(in srgb, var(--again) 45%, transparent);border-radius:999px;padding:1px 8px;margin-left:8px;vertical-align:1px}
+.leechrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--border)}
+.leechrow:first-of-type{border-top:0}
+.leechrow .lname{text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.leechrow .lq{color:var(--fg-3);margin-left:8px}
+.leechrow .leechtag{margin:0}
+/* exams */
+.exampill{display:inline-block;font-family:var(--chrome);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border:1px solid color-mix(in srgb, var(--accent) 45%, transparent);border-radius:999px;padding:1px 8px;margin-left:10px;vertical-align:3px;white-space:nowrap;font-weight:500}
+.exams{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin:0 0 18px}
+.examcard{display:flex;align-items:center;gap:12px;border:1px solid var(--border-2);border-radius:12px;padding:10px 12px;background:var(--surface)}
+.examcard.soon{border-color:color-mix(in srgb, var(--accent) 55%, var(--border-2))}
+.exd{display:flex;flex-direction:column;align-items:center;min-width:46px}
+.exd b{font-family:var(--title);font-size:26px;line-height:1;color:var(--accent)}
+.exd span{font-family:var(--chrome);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3)}
+.exi{flex:1;min-width:0}
+.exn{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exm{font-family:var(--chrome);font-size:11px;color:var(--fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* timer */
+.tpill.on{color:var(--fg)}
+.tpill.over{color:var(--again);border-color:color-mix(in srgb, var(--again) 55%, transparent)}
+.studytop .tpill{margin-left:4px}
+/* hide & reveal */
+.occwrap{position:relative;display:inline-block;max-width:100%;margin:10px 0;line-height:0;user-select:none;-webkit-user-select:none}
+.occwrap img{display:block;max-width:100%;height:auto;border-radius:8px;margin:0 !important;cursor:default}
+.occ{position:absolute;border:0;padding:0;border-radius:4px;background:var(--accent);box-shadow:0 0 0 1px rgba(0,0,0,.25);display:grid;place-items:center;cursor:pointer;transition:background .15s, box-shadow .15s}
+.occ span{font-family:var(--chrome);font-size:13px;font-weight:700;color:rgba(0,0,0,.55);line-height:1}
+.occ.open, .qa.revealed .occ{background:transparent;box-shadow:0 0 0 2px var(--accent)}
+.occ.open span, .qa.revealed .occ span{display:none}
+.occmodal{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:24px}
+.occpanel{background:var(--surface);border:1px solid var(--border-2);border-radius:14px;max-width:min(1100px,96vw);max-height:94vh;display:flex;flex-direction:column;overflow:hidden}
+.occpanel header,.occpanel footer{display:flex;align-items:center;gap:10px;padding:12px 16px;flex-wrap:wrap}
+.occpanel header h2{margin:0;font-size:17px}
+.occstage{overflow:auto;padding:0 16px;display:flex;justify-content:center}
+.occimg{position:relative;line-height:0;touch-action:none;user-select:none;-webkit-user-select:none}
+.occimg img{max-width:min(1060px,92vw);max-height:72vh;display:block;background:#fff;border-radius:6px}
+.occlayer{position:absolute;inset:0;cursor:crosshair}
+.obox{position:absolute;background:color-mix(in srgb, var(--accent) 80%, transparent);border:2px solid var(--accent);border-radius:4px;cursor:move;display:grid;place-items:center}
+.obox span{font-family:var(--chrome);font-size:12px;font-weight:700;color:rgba(0,0,0,.6);line-height:1}
+.obox.sel{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
+.odel{position:absolute;top:-11px;right:-11px;width:22px;height:22px;border-radius:50%;border:0;background:var(--again);color:#fff;font-size:15px;line-height:1;padding:0;cursor:pointer}
+.tclean.on{border-color:var(--accent);color:var(--accent)}
+/* scratchpad */
+.padwrap{margin:22px auto 0;max-width:780px;border:1px solid var(--border-2);border-radius:14px;background:var(--surface);overflow:hidden}
+.reviewer .padwrap{max-width:1040px}
+.padbar{display:flex;align-items:center;gap:4px;padding:7px 10px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.padb{border:0;background:none;color:var(--fg-2);border-radius:7px;padding:4px 8px;font-size:13px;font-family:var(--chrome);line-height:1.2}
+.padb:hover{background:var(--hover);color:var(--fg)} .padb.on{background:color-mix(in srgb, var(--accent) 22%, transparent);color:var(--fg)}
+.padc{width:20px;height:20px;border-radius:50%;border:2px solid transparent;background:var(--c);padding:0;margin:0 1px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)}
+.padc.on{border-color:var(--fg)}
+.pads{width:26px;height:26px;border:0;background:none;border-radius:7px;display:grid;place-items:center;padding:0}
+.pads i{display:block;border-radius:50%;background:var(--fg-2)} .pads.on{background:var(--hover)} .pads.on i{background:var(--fg)}
+.padsep{width:1px;height:18px;background:var(--border-2);margin:0 5px}
+#pad{display:block;width:100%;height:380px;touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;background-image:radial-gradient(circle, color-mix(in srgb, var(--fg) 16%, transparent) 1px, transparent 1.4px);background-size:22px 22px}
+#pad.tall{height:min(72vh,760px)}
+
+.sname .exampill{width:max-content;margin:3px 0 2px;align-self:flex-start}
+.exams{grid-template-columns:repeat(auto-fill,minmax(380px,1fr))}
+
 /* iPad / browser tweaks */
 html.hosted body.desktop .toolbar{padding-top:max(22px, env(safe-area-inset-top))}
 html.hosted body.desktop::after{display:none}
@@ -1244,7 +1303,7 @@ function renderDecks(){
     return `<section class="subj ${open ? '' : 'is-collapsed'}" style="--sc:${scol(sub.id)}" data-drop="${sub.id}" data-win="${sub.id}">
       <div class="shd" title="Drag to move ${esc(sub.name)} anywhere">
         <button class="mono ${sub.emoji ? 'has-emoji' : ''}" data-act="open" data-id="${sub.id}" aria-label="Open ${esc(sub.name)}">${glyph(sub)}</button>
-        <div class="sname"><button class="h2" data-act="toggle" data-id="${sub.id}" aria-expanded="${open}">${esc(sub.name)}</button><span class="meta">${n} card${n===1?'':'s'} · <button class="mlink" data-act="browse-status" data-id="${sub.id}" data-st="done">${seen} done</button> · <button class="mlink" data-act="browse-status" data-id="${sub.id}" data-st="todo">${n - seen} not done</button></span></div>
+        <div class="sname"><button class="h2" data-act="toggle" data-id="${sub.id}" aria-expanded="${open}">${esc(sub.name)}</button>${examPill(sub.id)}<span class="meta">${n} card${n===1?'':'s'} · <button class="mlink" data-act="browse-status" data-id="${sub.id}" data-st="done">${seen} done</button> · <button class="mlink" data-act="browse-status" data-id="${sub.id}" data-st="todo">${n - seen} not done</button></span></div>
         <span class="grow"></span>
         ${n ? `<button class="btn sm tint" data-act="${ts ? 'study' : 'practise'}" data-id="${sub.id}">Study</button>` : ''}
         <button class="icon soft" aria-label="Options for ${esc(sub.name)}" data-act="gear" data-id="${sub.id}">${I.gear}</button>
@@ -1263,6 +1322,7 @@ function renderDecks(){
       <div><div class="date">${esc(dateStr)}</div><p class="sum"><b>${rt}</b> review${rt===1?'':'s'} today<span class="sep">·</span><b>${rw}</b> this week</p></div>
       <div class="hact">${hasLayout() ? '<button class="link" data-act="layout-reset" title="Put the subjects back into neat columns">Tidy up</button>' : ''}${subjects.length ? `<button class="link" data-act="${anyOpen ? 'collapse-all' : 'expand-all'}">${anyOpen ? 'Collapse all' : 'Expand all'}</button>` : ''}${all.total ? `<button class="btn primary" data-act="${total ? 'study' : 'practise'}" data-id="">Study all</button>` : ''}</div>
     </div>
+    ${examsBanner()}
     ${subjects.length ? `<div class="subjgrid">${cardsHtml}</div>` : `<div class="empty"><p>No subjects yet.</p></div>`}
     <div class="hfoot">
       <button class="link" data-act="new-deck">+ New subject or topic</button>
@@ -1286,7 +1346,7 @@ function renderOverview(){
   $('#root').innerHTML = `<div class="narrow" style="--sc:${scol(n.id)}">
     ${crumbs(n.id)}
     <div class="ovcard">
-      <h1>${esc(n.name)}</h1>
+      <h1>${esc(n.name)}</h1>${n.virtual ? '' : (examPill(n.id) ? `<div style="margin:-4px 0 6px">${examPill(n.id)}</div>` : '')}
       ${(() => { const cs = cardsIn(n.id), dn = cs.filter(isDone).length; return `<div class="ovtiles"><div><b>${cs.length}</b><span>Cards</span></div><button data-act="browse-status" data-id="${n.id}" data-st="done"><b>${dn}</b><span>Done</span></button><button data-act="browse-status" data-id="${n.id}" data-st="todo"><b>${cs.length - dn}</b><span>Not done</span></button></div>
       <div class="rbreak">${[1,2,3,4].map(r => { const k = cs.filter(x => lastRate(x) === r).length; return `<button class="fchip r${r}" data-act="browse-rate" data-id="${n.id}" data-r="${r}" ${k ? '' : 'disabled'}>${RATES[r][0]}<span>${k}</span></button>`; }).join('')}</div>`; })()}
       <div class="ovactions">
@@ -1320,7 +1380,7 @@ function startStudy(node, practise=false, only=null, list=null){
   nextCard(); view = { name:'study', node }; closeMenu(); render(); window.scrollTo(0,0);
 }
 function nextCard(){
-  const now = Date.now(); study.shown = false; study.pred = { conf: 50, think: '', set: false }; const inScope = study.node ? new Set(cardsIn(study.node).map(c => c.id)) : null;
+  const now = Date.now(); study.shown = false; study.pred = { conf: 50, think: '', set: false }; study.t0 = Date.now(); study.tShown = 0; study.timeUpToast = false; const inScope = study.node ? new Set(cardsIn(study.node).map(c => c.id)) : null;
   study.queue = study.queue.filter(id => S.cards[id]);
   if (!study.practise){
     const lrn = Object.values(S.cards).filter(c => study.queue.indexOf(c.id) < 0 && kind(c) === 'learn' && (!inScope || inScope.has(c.id)) && c.srs.due <= now);
@@ -1353,15 +1413,206 @@ function renderStudy(){
   if (isLH()) return renderStudyLH(c, ps, left, pct);
   $('#lhmap')?.remove();
   root.innerHTML = `<div style="--sc:${scol(c.nodeId)}">
-    <div class="studytop"><span class="path">${ps.slice(0,-1).map(n => esc(n.name)).join(' › ')}${ps.length > 1 ? ' › ' : ''}<b>${esc(ps.slice(-1)[0]?.name || '')}</b></span>${study.hist?.length || study.shown ? `<button class="link shuflink sm-only" data-act="back-card">${I.undo}Back</button>` : ''}${study.queue.length > 1 ? `<button class="link shuflink" data-act="reshuffle" title="Shuffle the cards left">${I.shuffle}Shuffle</button>` : ''}<button class="link" data-act="edit" data-id="${c.id}">Edit</button></div>
+    <div class="studytop"><span class="path">${ps.slice(0,-1).map(n => esc(n.name)).join(' › ')}${ps.length > 1 ? ' › ' : ''}<b>${esc(ps.slice(-1)[0]?.name || '')}</b></span>${study.hist?.length || study.shown ? `<button class="link shuflink sm-only" data-act="back-card">${I.undo}Back</button>` : ''}${study.queue.length > 1 ? `<button class="link shuflink" data-act="reshuffle" title="Shuffle the cards left">${I.shuffle}Shuffle</button>` : ''}<button class="link" data-act="pad-toggle">✎ Scratchpad</button>${timerPill()}<button class="link" data-act="edit" data-id="${c.id}">Edit</button></div>
     <div class="sbar" aria-hidden="true"><span style="width:${pct}%"></span></div>
     <article class="qa fadein" id="qa">
-      <div class="label"><span class="dot"></span>${c.label ? esc(c.label) : 'Question'}</div>
+      <div class="label"><span class="dot"></span>${c.label ? esc(c.label) : 'Question'}${isLeech(c) ? `<span class="leechtag">Leech</span>` : ''}</div>
       ${front(c)}
       ${study.shown ? '<hr id="answer">' + back(c) : ''}
-    </article></div>`;
-  bar(c);
+    </article>${padHtml()}</div>`;
+  bar(c); padMount(); if (study.shown) $('#qa')?.classList.add('revealed');
 }
+/* ---------- leeches: cards you keep failing ---------- */
+const LEECH_N = 4;
+const failCount = c => Math.max(c?.srs?.lapses || 0, c?.srs?.again || 0);
+const isLeech = c => !!c && failCount(c) >= LEECH_N && !c.leechOk;
+function leechesHtml(){
+  const ls_ = Object.values(S.cards).filter(isLeech).sort((a, b) => failCount(b) - failCount(a));
+  if (!ls_.length) return `<div class="panel"><h2>Leeches</h2><p class="sub" style="margin:0">Cards you get wrong ${LEECH_N} or more times show up here, so you can rewrite them or go back to the idea behind them.</p></div>`;
+  return `<div class="panel"><h2>Leeches · ${ls_.length}</h2><p class="sub" style="margin:-6px 0 10px">You've missed these ${LEECH_N}+ times. Drilling them again rarely helps: rewrite the card, split it into smaller cards, or revisit the topic.</p>
+    ${ls_.slice(0, 30).map(c => `<div class="leechrow"><button class="link lname" data-act="preview" data-id="${c.id}"><span class="sdot" style="background:${scol(c.nodeId)}"></span>${esc(pathOf(c.nodeId).slice(-1)[0]?.name || '')}${c.label ? ' · ' + esc(c.label) : ''}<span class="lq">${esc(plainMd(c.qText || '').slice(0, 70))}</span></button><span class="leechtag">Missed ${failCount(c)}×</span><button class="btn sm" data-act="edit" data-id="${c.id}">Rewrite</button><button class="btn sm" data-act="leech-ok" data-id="${c.id}" title="Stop flagging this card">Keep</button></div>`).join('')}</div>`;
+}
+
+/* ---------- exam countdown ---------- */
+const examTs = d => new Date(d + 'T09:00:00').getTime();
+const daysTo = ts => Math.max(0, Math.ceil((ts - Date.now()) / DAY));
+function examFor(id){
+  const ps = pathOf(id).filter(n => !n.virtual).reverse();
+  for (const n of ps){ const ex = S.nodes[n.id]?.exam; if (ex?.date && examTs(ex.date) > Date.now() - DAY / 2) return { node: S.nodes[n.id], ts: examTs(ex.date), name: ex.name || 'Exam' }; }
+  return null;
+}
+function upcomingExams(){
+  return Object.values(S.nodes).filter(n => n.exam?.date && examTs(n.exam.date) > Date.now() - DAY / 2).map(n => ({ node: n, ts: examTs(n.exam.date), name: n.exam.name || 'Exam' })).sort((a, b) => a.ts - b.ts);
+}
+const examLabel = ts => { const d = daysTo(ts); return d === 0 ? 'today' : d === 1 ? 'tomorrow' : `in ${d} days`; };
+function examPill(id){ const ex = S.nodes[id]?.exam; if (!ex?.date || examTs(ex.date) < Date.now() - DAY / 2) return ''; return `<span class="exampill" title="${esc(ex.name || 'Exam')} on ${new Date(examTs(ex.date)).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}">${esc(ex.name || 'Exam')} ${examLabel(examTs(ex.date))}</span>`; }
+function examsBanner(){
+  const ex = upcomingExams(); if (!ex.length) return '';
+  return `<div class="exams">${ex.slice(0, 4).map(e => { const cs = cardsIn(e.node.id), notDone = cs.filter(c => !isDone(c)).length, d = daysTo(e.ts);
+    return `<div class="examcard ${d <= 7 ? 'soon' : ''}"><div class="exd"><b>${d}</b><span>${d === 1 ? 'day' : 'days'}</span></div><div class="exi"><div class="exn">${esc(e.name)} · ${esc(pathName(e.node.id))}</div><div class="exm">${new Date(e.ts).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })} · ${notDone ? `${notDone} card${notDone === 1 ? '' : 's'} not done yet` : 'every card reviewed'}</div></div><button class="btn sm primary" data-act="exam-prep" data-id="${e.node.id}" ${cs.length ? '' : 'disabled'}>Prep</button><button class="icon soft" data-act="exam-set" data-id="${e.node.id}" aria-label="Change exam date">${I.gear}</button></div>`; }).join('')}</div>`;
+}
+function examDialog(id){
+  const n = S.nodes[id]; if (!n) return; const ex = n.exam || {};
+  openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="exh2" style="max-width:420px"><header><h2 id="exh2">Exam date · ${esc(n.name)}</h2></header>
+    <div class="body"><div class="field"><label for="exname">Name</label><input class="in" id="exname" value="${esc(ex.name || '')}" placeholder="e.g. Yearly exam, Trial HSC" data-enter="#exsave"></div>
+      <div class="field"><label for="exdate">Date</label><input class="in" type="date" id="exdate" value="${esc(ex.date || '')}" min="${new Date(Date.now() - new Date().getTimezoneOffset() * 60e3).toISOString().slice(0, 10)}"></div>
+      <p class="sub" style="margin:0">Cards in here won't be scheduled past the exam, and the home page counts down to it.</p></div>
+    <footer>${ex.date ? '<button class="btn sm danger" data-act="exam-clear" data-id="' + id + '">Remove</button>' : ''}<span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" id="exsave" data-act="exam-save" data-id="${id}">Save</button></footer></div>`, () => $('#exdate').focus());
+}
+function examPrepList(id){
+  const score = c => (isDone(c) ? 0 : 3) + Math.min(failCount(c), 6) + ({ 1: 3, 2: 1.5 }[lastRate(c)] || 0) + (c.srs?.due && c.srs.due < Date.now() ? 1 : 0);
+  return cardsIn(id).sort((a, b) => score(b) - score(a)).map(c => c.id);
+}
+/* never schedule a card past its exam */
+function capForExam(c, srs){
+  const ex = examFor(c.nodeId); if (!ex || srs.state !== 'review') return srs;
+  const target = ex.ts - DAY * 0.6, now = Date.now();
+  if (srs.due > target && target > now + HOUR * 3){ const s = { ...srs, due: target }; s.ivl = Math.max(1, Math.round((target - now) / DAY)); return s; }
+  return srs;
+}
+
+/* ---------- timed mode ---------- */
+const TIMER_STEPS = [0, -1, 60, 120, 180, 300];
+let timerSetting = ls.get('md-timer', 0);
+const fmtSec = ms => { const s = Math.max(0, Math.round(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+function timerPill(){
+  const lbl = timerSetting === 0 ? 'Timer off' : timerSetting === -1 ? 'Stopwatch' : fmtSec(timerSetting * 1000) + ' limit';
+  return `<button class="lhpill tpill ${timerSetting ? 'on' : ''}" data-act="timer-cycle" title="Timed mode: click to change (off · stopwatch · 1, 2, 3 or 5 minute limit)"><svg viewBox="0 0 16 16"><circle cx="8" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 9V6.2M6.3 1.8h3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="stimer">${timerSetting ? (study?.tShown ? fmtSec(study.tShown - study.t0) : '0:00') : lbl}</span></button>`;
+}
+setInterval(() => {
+  const el = $('#stimer'); if (!el || !study?.cur || !timerSetting || view.name !== 'study') return;
+  const ms = (study.tShown || Date.now()) - (study.t0 || Date.now());
+  const lim = timerSetting > 0 ? timerSetting * 1000 : 0;
+  el.textContent = lim && !study.tShown ? fmtSec(Math.max(0, lim - ms)) + ' left' : fmtSec(ms);
+  const over = lim && ms >= lim;
+  el.closest('.tpill')?.classList.toggle('over', !!over);
+  if (over && !study.timeUpToast && !study.tShown){ study.timeUpToast = true; toast("Time's up. Show the answer when you're ready."); }
+}, 250);
+function slowestHtml(){
+  const rows = Object.values(S.cards).map(c => { const t = (c.revs || []).filter(r => r.ms).slice(-5); return t.length ? { c, avg: t.reduce((a, r) => a + r.ms, 0) / t.length } : null; }).filter(Boolean).sort((a, b) => b.avg - a.avg).slice(0, 10);
+  if (!rows.length) return '';
+  return `<div class="panel"><h2>Slowest cards</h2><p class="sub" style="margin:-6px 0 10px">Average time before you showed the answer (last 5 tries). Slow cards are worth practising under exam conditions.</p>${rows.map(({ c, avg }) => `<div class="hrow" style="grid-template-columns:minmax(0,1fr) auto"><button class="link" style="text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" data-act="preview" data-id="${c.id}"><span class="sdot" style="background:${scol(c.nodeId)}"></span>${esc(pathOf(c.nodeId).slice(-1)[0]?.name || '')} · ${esc(c.label || plainMd(c.qText || '').slice(0, 40))}</button><span class="pill">${fmtSec(avg)}</span></div>`).join('')}</div>`;
+}
+
+/* ---------- image hide-and-reveal ---------- */
+const imgKey = im => im ? String(im.file || im.id || im.url || (im.data ? im.data.length + ':' + im.data.slice(-24) : '')) : '';
+const occOf = c => c?.occl && c.qImg && c.occl.k === imgKey(c.qImg) && c.occl.boxes?.length ? c.occl.boxes : null;
+let occ = null;
+function occEditor(){
+  if (!ed?.card.qImg) return;
+  const boxes = occOf(ed.card) ? ed.card.occl.boxes.map(b => ({ ...b })) : [];
+  occ = { boxes, sel: -1 };
+  const m = document.createElement('div'); m.className = 'occmodal'; m.id = 'occmodal';
+  m.innerHTML = `<div class="occpanel"><header><h2>Hide parts of the image</h2><span class="grow"></span><span class="hint">Drag to cover a part · click a box to select · Delete removes it</span></header>
+    <div class="occstage"><div class="occimg"><img src="${esc(imgSrc(ed.card.qImg))}" alt="" draggable="false"><div class="occlayer" id="occlayer"></div></div></div>
+    <footer><span class="hint" id="occcount"></span><span class="grow"></span><button class="btn" data-occ="clear">Clear all</button><button class="btn" data-occ="cancel">Cancel</button><button class="btn primary" data-occ="done">Done</button></footer></div>`;
+  document.body.appendChild(m); occDraw();
+  const layer = $('#occlayer');
+  let dr = null;
+  layer.addEventListener('pointerdown', e => {
+    const bx = e.target.closest('.obox'); const r = layer.getBoundingClientRect();
+    if (e.target.closest('.odel')){ occ.boxes.splice(+e.target.closest('.obox').dataset.i, 1); occ.sel = -1; return occDraw(); }
+    if (bx){ occ.sel = +bx.dataset.i; occDraw(); const b = occ.boxes[occ.sel]; dr = { mode: 'move', sx: e.clientX, sy: e.clientY, b0: { ...b }, r }; layer.setPointerCapture(e.pointerId); return; }
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    occ.boxes.push({ x, y, w: 0, h: 0 }); occ.sel = occ.boxes.length - 1; dr = { mode: 'new', x0: x, y0: y, r }; layer.setPointerCapture(e.pointerId); occDraw();
+  });
+  layer.addEventListener('pointermove', e => {
+    if (!dr) return; const b = occ.boxes[occ.sel]; const r = dr.r;
+    const cl = v => Math.max(0, Math.min(1, v));
+    if (dr.mode === 'new'){ const x = cl((e.clientX - r.left) / r.width), y = cl((e.clientY - r.top) / r.height); b.x = Math.min(dr.x0, x); b.y = Math.min(dr.y0, y); b.w = Math.abs(x - dr.x0); b.h = Math.abs(y - dr.y0); }
+    else { b.x = cl(dr.b0.x + (e.clientX - dr.sx) / r.width); b.y = cl(dr.b0.y + (e.clientY - dr.sy) / r.height); b.x = Math.min(b.x, 1 - b.w); b.y = Math.min(b.y, 1 - b.h); }
+    occDraw();
+  });
+  layer.addEventListener('pointerup', () => { if (dr?.mode === 'new'){ const b = occ.boxes[occ.sel]; if (b.w < 0.012 || b.h < 0.012){ occ.boxes.splice(occ.sel, 1); occ.sel = -1; } } dr = null; occDraw(); });
+  m.addEventListener('click', e => { const a = e.target.closest('[data-occ]')?.dataset.occ; if (!a) return; if (a === 'clear'){ occ.boxes = []; occ.sel = -1; occDraw(); } if (a === 'cancel') occClose(); if (a === 'done'){ if (occ.boxes.length) ed.card.occl = { k: imgKey(ed.card.qImg), boxes: occ.boxes.map(b => ({ x: +b.x.toFixed(4), y: +b.y.toFixed(4), w: +b.w.toFixed(4), h: +b.h.toFixed(4) })) }; else delete ed.card.occl; occClose(); drawThumbs(); } });
+}
+function occDraw(){
+  const l = $('#occlayer'); if (!l) return;
+  l.innerHTML = occ.boxes.map((b, i) => `<div class="obox ${i === occ.sel ? 'sel' : ''}" data-i="${i}" style="left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%"><span>${i + 1}</span>${i === occ.sel ? '<button class="odel" aria-label="Remove box">×</button>' : ''}</div>`).join('');
+  const c = $('#occcount'); if (c) c.textContent = occ.boxes.length ? `${occ.boxes.length} part${occ.boxes.length === 1 ? '' : 's'} hidden` : 'Nothing hidden yet';
+}
+function occClose(){ $('#occmodal')?.remove(); occ = null; }
+document.addEventListener('keydown', e => {
+  if (!occ) return;
+  if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); occClose(); }
+  else if ((e.key === 'Backspace' || e.key === 'Delete') && occ.sel >= 0){ e.preventDefault(); e.stopPropagation(); occ.boxes.splice(occ.sel, 1); occ.sel = -1; occDraw(); }
+  else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z'){ e.preventDefault(); e.stopPropagation(); occ.boxes.pop(); occ.sel = -1; occDraw(); }
+}, true);
+function occFront(c){
+  const boxes = occOf(c); if (!boxes) return '';
+  return `<div class="occwrap"><img src="${esc(imgSrc(c.qImg))}" alt="Question" draggable="false">${boxes.map((b, i) => `<button class="occ" data-occi="${i}" style="left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%" title="Tap to reveal" aria-label="Hidden part ${i + 1}, tap to reveal"><span>?</span></button>`).join('')}</div>`;
+}
+
+/* ---------- scratchpad (Apple Pencil, finger, mouse or trackpad) ---------- */
+let padOpen = ls.get('md-pad', false), padTall = ls.get('md-pad-tall', false);
+const pad = { tool: 'pen', color: 0, size: 1, penSeen: false, strokes: [], cur: null };
+const PAD_COLORS = () => { const cs = getComputedStyle(document.documentElement); return [cs.getPropertyValue('--fg').trim() || '#e6e6e6', cs.getPropertyValue('--accent').trim() || '#e2b23c', cs.getPropertyValue('--again').trim() || '#ee8484', cs.getPropertyValue('--easy').trim() || '#86b3ea']; };
+function padHtml(){
+  if (!padOpen) return '';
+  const cols = PAD_COLORS();
+  return `<div class="padwrap" id="padwrap"><div class="padbar">
+      <span class="dlabel">Scratchpad</span><span class="grow"></span>
+      <button class="padb ${pad.tool === 'pen' ? 'on' : ''}" data-pad="pen" title="Pen">✎</button><button class="padb ${pad.tool === 'eraser' ? 'on' : ''}" data-pad="eraser" title="Eraser">⌫</button>
+      <span class="padsep"></span>${cols.map((c, i) => `<button class="padc ${pad.color === i && pad.tool === 'pen' ? 'on' : ''}" data-pad="c${i}" style="--c:${c}" aria-label="Ink colour ${i + 1}"></button>`).join('')}
+      <span class="padsep"></span>${[0, 1, 2].map(s => `<button class="pads ${pad.size === s ? 'on' : ''}" data-pad="s${s}" title="${['Fine', 'Medium', 'Thick'][s]}"><i style="width:${3 + s * 3}px;height:${3 + s * 3}px"></i></button>`).join('')}
+      <span class="padsep"></span><button class="padb" data-pad="undo" title="Undo stroke">↶</button><button class="padb" data-pad="clear" title="Clear">Clear</button><button class="padb" data-pad="tall" title="${padTall ? 'Smaller' : 'Bigger'}">${padTall ? '▴' : '▾'}</button><button class="padb" data-pad="save" title="Add this working to the card's solution images">Save to card</button><button class="padb" data-pad="close" title="Close scratchpad (P)">✕</button>
+    </div><canvas id="pad" class="${padTall ? 'tall' : ''}"></canvas></div>`;
+}
+function padMount(){
+  const cv = $('#pad'); if (!cv) return;
+  study.padBy = study.padBy || {}; pad.strokes = study.padBy[study.cur] = study.padBy[study.cur] || [];
+  const fit = () => { const r = cv.getBoundingClientRect(), d = devicePixelRatio || 1; cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); padRedraw(); };
+  fit(); new ResizeObserver(fit).observe(cv);
+  const pt = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height, e.pointerType === 'pen' ? (e.pressure || 0.5) : 0.5]; };
+  cv.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'pen') pad.penSeen = true;
+    if (e.pointerType === 'touch' && pad.penSeen) return;   // palm rejection once a pencil has been used
+    e.preventDefault(); cv.setPointerCapture(e.pointerId);
+    pad.cur = { tool: pad.tool, color: pad.color, size: pad.size, pts: [pt(e)], id: e.pointerId }; pad.strokes.push(pad.cur); padRedraw(true);
+  });
+  cv.addEventListener('pointermove', e => {
+    if (!pad.cur || e.pointerId !== pad.cur.id) return; e.preventDefault();
+    const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e]; (evs.length ? evs : [e]).forEach(ev => pad.cur.pts.push(pt(ev))); padRedraw(true);
+  });
+  const end = e => { if (pad.cur && e.pointerId === pad.cur.id){ if (pad.cur.pts.length === 1) pad.cur.pts.push([...pad.cur.pts[0]]); pad.cur = null; padRedraw(); } };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+}
+function padRedraw(lastOnly){
+  const cv = $('#pad'); if (!cv) return; const g = cv.getContext('2d'), W = cv.width, H = cv.height, cols = PAD_COLORS(), base = Math.max(W, 600) / 600;
+  const list = lastOnly && pad.cur ? [pad.cur] : pad.strokes;
+  if (!(lastOnly && pad.cur)) g.clearRect(0, 0, W, H);
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  for (const s of list){
+    const w0 = [1.6, 3, 5.5][s.size] * base * (devicePixelRatio || 1) * (s.tool === 'eraser' ? 5 : 1);
+    g.globalCompositeOperation = s.tool === 'eraser' ? 'destination-out' : 'source-over'; g.strokeStyle = cols[s.color] || cols[0];
+    const P = s.pts, from = lastOnly && pad.cur ? Math.max(1, P.length - 8) : 1;
+    for (let i = from; i < P.length; i++){ const a = P[i - 1], b = P[i]; g.lineWidth = w0 * (0.45 + b[2] * 1.1); g.beginPath(); g.moveTo(a[0] * W, a[1] * H); g.lineTo(b[0] * W, b[1] * H); g.stroke(); }
+  }
+  g.globalCompositeOperation = 'source-over';
+}
+function padRefresh(){ const w = $('#padwrap'); if (!w) return; const h = document.createElement('div'); h.innerHTML = padHtml(); w.replaceWith(h.firstElementChild); padMount(); }
+async function padAction(k){
+  if (k === 'pen' || k === 'eraser'){ pad.tool = k; return padRefresh(); }
+  if (/^c\d$/.test(k)){ pad.color = +k[1]; pad.tool = 'pen'; return padRefresh(); }
+  if (/^s\d$/.test(k)){ pad.size = +k[1]; return padRefresh(); }
+  if (k === 'undo'){ pad.strokes.pop(); return padRedraw(); }
+  if (k === 'clear'){ pad.strokes.length = 0; return padRedraw(); }
+  if (k === 'tall'){ padTall = !padTall; ls.set('md-pad-tall', padTall); return padRefresh(); }
+  if (k === 'close'){ return padToggle(false); }
+  if (k === 'save'){
+    const cv = $('#pad'), c = S.cards[study?.cur]; if (!cv || !c || !pad.strokes.length) return toast('Draw something first.');
+    const out = document.createElement('canvas'); out.width = cv.width; out.height = cv.height; const g = out.getContext('2d');
+    g.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--surface').trim() || '#1c1c1c'; g.fillRect(0, 0, out.width, out.height); g.drawImage(cv, 0, 0);
+    const blob = await new Promise(r => out.toBlob(r, 'image/png')); const im = await storeImage(new File([blob], 'cleaned-scratch.png', { type: 'image/png' }));
+    undoTx = null; undoLabel = 'save scratchpad'; await put('cards', { ...c, solImgs: [...(c.solImgs || []), im] });
+    return toast('Saved to the card’s solution images · ⌘Z to undo');
+  }
+}
+function padToggle(on){
+  padOpen = on ?? !padOpen; ls.set('md-pad', padOpen);
+  if (view.name === 'study' && study?.cur){ renderStudy(); typeset($('#root')); if (padOpen) $('#padwrap')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+}
+
 /* ---------- Harness study layout: the card reads like a page, and you commit to a confidence before you look ---------- */
 const isLH = () => document.documentElement.classList.contains('lh');
 function renderStudyLH(c, ps, left, pct){
@@ -1371,17 +1622,18 @@ function renderStudyLH(c, ps, left, pct){
     <div class="lhhead">
       <div class="lhcrumb">${ps.slice(0, -1).map(n => esc(n.name)).join(' › ') || 'All cards'}</div>
       <div class="lhrow"><h1 class="lhtitle">${esc(deck)}</h1>
-        <div class="lhpills">${study.queue.length > 1 ? `<button class="lhpill" data-act="reshuffle" title="Shuffle the cards left">${I.shuffle}Shuffle</button>` : ''}<span class="lhpill on">${study.practise ? 'Practice' : 'Review'}</span><span class="lhpill" id="qcounts">${countsHtml()}</span></div></div>
+        <div class="lhpills">${timerPill()}<button class="lhpill ${padOpen ? 'on' : ''}" data-act="pad-toggle" title="Scratchpad for working out (P)">✎ Scratchpad</button>${study.queue.length > 1 ? `<button class="lhpill" data-act="reshuffle" title="Shuffle the cards left">${I.shuffle}Shuffle</button>` : ''}<span class="lhpill on">${study.practise ? 'Practice' : 'Review'}</span><span class="lhpill" id="qcounts">${countsHtml()}</span></div></div>
       <div class="sbar" aria-hidden="true"><span style="width:${pct}%"></span></div>
     </div>
     <article class="qa fadein" id="qa">
-      <div class="label">${c.label ? `<span class="lhtag">${esc(c.label)}</span>` : ''}<span>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</span>${c.qtype && host ? '' : ''}</div>
+      <div class="label">${c.label ? `<span class="lhtag">${esc(c.label)}</span>` : ''}<span>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</span>${isLeech(c) ? `<span class="leechtag" title="You've missed this card ${failCount(c)} times. Consider rewriting it (E).">Leech</span>` : ''}${occOf(c) && !study.shown ? '<span class="hint">tap the boxes to peek</span>' : ''}${c.qtype && host ? '' : ''}</div>
       ${front(c)}
       ${study.shown ? '<hr id="answer">' + predHtml() + back(c) : ''}
     </article>
+    ${padHtml()}
     <div id="lhdock">${dockHtml(c)}</div>
   </div>`;
-  $('#lhmap')?.remove(); bar(c);
+  $('#lhmap')?.remove(); bar(c); padMount(); if (study.shown) $('#qa')?.classList.add('revealed');
   if (!study.shown) setTimeout(() => { const t = $('#dthink'); if (t) autoGrow(t); }, 0);
 }
 function predHtml(){
@@ -1430,7 +1682,7 @@ function lhMap(c){
   document.body.appendChild(el);
 }
 function front(c){
-  return `<div class="front">${c.qText ? `<div class="qtext rich">${rich(c.qText)}</div>` : ''}${c.qImg ? `<img src="${esc(imgSrc(c.qImg))}" alt="Question" data-zoom>` : ''}${!c.qText && !c.qImg ? '<p class="muted">No question added.</p>' : ''}</div>`;
+  return `<div class="front">${c.qText ? `<div class="qtext rich">${rich(c.qText)}</div>` : ''}${c.qImg ? (occOf(c) ? occFront(c) : `<img src="${esc(imgSrc(c.qImg))}" alt="Question" data-zoom>`) : ''}${!c.qText && !c.qImg ? '<p class="muted">No question added.</p>' : ''}</div>`;
 }
 function back(c){
   const imgs = c.solImgs || [];
@@ -1468,7 +1720,7 @@ function bar(c){
 }
 function showAnswer(){
   if (!study?.cur || study.shown) return;
-  study.shown = true;
+  study.shown = true; study.tShown = Date.now(); $('#qa')?.classList.add('revealed');
   const c = S.cards[study.cur];
   const qa = $('#qa'); qa.classList.remove('fadein');
   qa.insertAdjacentHTML('beforeend', '<hr id="answer">' + (isLH() ? predHtml() : '') + back(c));
@@ -1481,20 +1733,23 @@ async function rate(r){
   const c = S.cards[study.cur]; if (!c || !study.shown) return;
   study.hist.push({ id: c.id, srs: c.srs ? JSON.parse(JSON.stringify(c.srs)) : null, revs: c.revs ? [...c.revs] : null, queue: [...study.queue], done: study.done, day: dayKey() });
   if (study.hist.length > 300) study.hist.shift();
-  const srs = schedule(c.srs, r); study.done++; logReview();
+  const srs = capForExam(c, schedule(c.srs, r)); study.done++; logReview();
   if (study.practise && r === 1) study.queue.push(c.id);
   const p = study.pred || {}, rev = { t: Date.now(), r };
   if (p.set){ rev.cf = p.conf; (study.confs = study.confs || []).push(p.conf); }
   if (p.think && p.think.trim()) rev.th = p.think.trim().slice(0, 600);
+  if (study.t0) rev.ms = Math.min(30 * 60e3, (study.tShown || Date.now()) - study.t0);
+  const wasLeech = isLeech(c), willLeech = !wasLeech && !c.leechOk && Math.max(srs.lapses || 0, srs.again || 0) >= LEECH_N;
   const revs = [...(c.revs || []), rev].slice(-40);
   undoMute = true; put('cards', { ...c, srs, revs }); undoMute = false;
+  if (willLeech) toast(`Leech: you've missed this card ${LEECH_N} times. Try rewriting it or splitting it up (Stats › Leeches).`, 5500);
   nextCard(); renderStudy(); typeset($('#root')); window.scrollTo(0,0);
 }
 
 /* step back: hide the answer first, then go to the previous card (undoing its rating) */
 async function goBack(){
   if (!study) return;
-  if (study.cur && study.shown){ study.shown = false; renderStudy(); typeset($('#root')); window.scrollTo(0,0); return; }
+  if (study.cur && study.shown){ study.shown = false; study.tShown = 0; study.t0 = Date.now(); renderStudy(); typeset($('#root')); window.scrollTo(0,0); return; }
   let h = study.hist.pop();
   while (h && !S.cards[h.id]) h = study.hist.pop();
   if (!h) return toast(study.done ? 'Can\'t go back any further' : 'This is the first card');
@@ -2046,12 +2301,12 @@ function renderBrowse(){
   let cs = sortCards(cardsIn(browse.node));
   if (q) cs = cs.filter(c => [c.label, c.qText, c.mistake, c.solText, pathName(c.nodeId)].join(' ').toLowerCase().includes(q));
   const scope = cs;
-  if (browse.status === 'done') cs = cs.filter(isDone); else if (browse.status === 'todo') cs = cs.filter(c => !isDone(c));
+  if (browse.status === 'done') cs = cs.filter(isDone); else if (browse.status === 'todo') cs = cs.filter(c => !isDone(c)); else if (browse.status === 'leech') cs = cs.filter(isLeech);
   if (browse.rate) cs = cs.filter(c => lastRate(c) === browse.rate);
   browse.ids = cs.map(c => c.id);
-  const fcount = (st, r) => scope.filter(c => (st === 'done' ? isDone(c) : st === 'todo' ? !isDone(c) : true) && (!r || lastRate(c) === r)).length;
+  const fcount = (st, r) => scope.filter(c => (st === 'done' ? isDone(c) : st === 'todo' ? !isDone(c) : st === 'leech' ? isLeech(c) : true) && (!r || lastRate(c) === r)).length;
   const fchip = (label, st, r, cls='') => `<button class="fchip ${cls}" data-act="bfilter" data-st="${st}" data-r="${r}" aria-pressed="${browse.status === st && browse.rate === r}">${label}<span>${fcount(st, r)}</span></button>`;
-  const filters = `<div class="filters">${fchip('All', 'all', 0)}${fchip('Not done', 'todo', 0)}${fchip('Done', 'done', 0)}<span class="fsep"></span>${[1,2,3,4].map(r => fchip('Last: ' + RATES[r][0], 'all', r, 'r' + r)).join('')}</div>`;
+  const filters = `<div class="filters">${fchip('All', 'all', 0)}${fchip('Not done', 'todo', 0)}${fchip('Done', 'done', 0)}${fchip('Leeches', 'leech', 0)}<span class="fsep"></span>${[1,2,3,4].map(r => fchip('Last: ' + RATES[r][0], 'all', r, 'r' + r)).join('')}</div>`;
   const now = Date.now();
   const flat = flatTree();
   if (browse.node && browse.opened !== browse.node){ pathOf(browse.node).slice(0, -1).forEach(n => bexp.add(n.id)); browse.opened = browse.node; }
@@ -2108,6 +2363,8 @@ function renderStats(){
     <div class="panel"><h2>Reviewed by subject</h2>${subj.length ? subj.map(x => `<div class="hrow"><span>${esc(x.n.name)}</span><div class="hbar"><span style="width:${x.total ? x.done/x.total*100 : 0}%;background:${scol(x.n.id)}"></span></div><b>${x.done}/${x.total}</b></div>`).join('') : '<p class="sub">No cards yet.</p>'}</div>
     <div class="panel"><h2>How you rated your cards</h2><p class="sub" style="margin:-6px 0 12px">Each card counts under the button you pressed most recently. Click one to see those cards.</p>
       ${kids(null).length ? kids(null).map(sb => { const sc = cardsIn(sb.id); return `<div class="rrow"><span class="rname"><span class="sdot" style="background:${scol(sb.id)}"></span>${esc(sb.name)}</span><div class="rbreak">${[1,2,3,4].map(r => { const k = sc.filter(x => lastRate(x) === r).length; return `<button class="fchip r${r}" data-act="browse-rate" data-id="${sb.id}" data-r="${r}" ${k ? '' : 'disabled'}>${RATES[r][0]}<span>${k}</span></button>`; }).join('')}<button class="fchip" data-act="browse-status" data-id="${sb.id}" data-st="todo">Not done<span>${sc.filter(c => !isDone(c)).length}</span></button></div></div>`; }).join('') : '<p class="sub">No cards yet.</p>'}</div>
+    ${leechesHtml()}
+    ${slowestHtml()}
     <div class="panel"><h2>Cards you keep forgetting</h2>${forgot.length ? forgot.map(({c,n}) => `<div class="hrow" style="grid-template-columns:minmax(0,1fr) auto"><button class="link" style="text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" data-act="preview" data-id="${c.id}"><span class="sdot" style="background:${scol(c.nodeId)}"></span>${esc(pathOf(c.nodeId).slice(-1)[0]?.name || '')} · ${esc(c.label||'')}</button><span class="pill" style="color:var(--again)">Again ×${n}</span></div>`).join('') : '<p class="sub" style="margin:0">Cards you press Again on will show up here.</p>'}</div>
   </div>`;
 }
@@ -3102,7 +3359,7 @@ function gearMenu(id, anchor){
   const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
   const kidWord = n.parentId ? 'subtopics' : 'topics';
   if (n.virtual) m.innerHTML = `<button data-act="customise" data-id="${id}">Rename or customise…</button><button data-act="move" data-id="${id}">Move to…</button><button data-act="link-deck" data-id="${id}">Also show its cards in…</button><button data-act="add-here" data-id="${id}">Add card here</button><button data-act="practise" data-id="${id}">Practise all cards</button><button data-act="browse-here" data-id="${id}">Browse cards</button><button data-act="reset-deck" data-id="${id}">Reset progress…</button><button data-act="export-deck" data-id="${id}">Export / share…</button><hr><button class="danger" data-act="del-type" data-id="${id}">Remove bubble…</button>`;
-  else m.innerHTML = `<button data-act="add-child" data-id="${id}">Add ${n.parentId ? 'subtopic' : 'topic'} inside…</button>${n.parentId ? `<button data-act="add-bubble" data-id="${id}">Add big bubble…</button><button data-act="manage" data-id="${id}">Edit subtopics &amp; bubbles…</button>` : kids(id).length ? `<button data-act="manage" data-id="${id}">Rename or delete topics…</button>` : ''}<button data-act="customise" data-id="${id}">Rename or customise…</button><button data-act="move" data-id="${id}">Move to…</button><button data-act="link-deck" data-id="${id}">Also show its cards in…</button><button data-act="add-here" data-id="${id}">Add card here</button><button data-act="practise" data-id="${id}">Practise all cards</button><button data-act="browse-here" data-id="${id}">Browse cards</button><button data-act="reset-deck" data-id="${id}">Reset progress…</button><button data-act="export-deck" data-id="${id}">Export / share…</button><button data-act="import-here" data-id="${id}">Import cards here…</button><hr><button class="danger" data-act="del-deck" data-id="${id}">Delete</button>`;
+  else m.innerHTML = `<button data-act="add-child" data-id="${id}">Add ${n.parentId ? 'subtopic' : 'topic'} inside…</button>${n.parentId ? `<button data-act="add-bubble" data-id="${id}">Add big bubble…</button><button data-act="manage" data-id="${id}">Edit subtopics &amp; bubbles…</button>` : kids(id).length ? `<button data-act="manage" data-id="${id}">Rename or delete topics…</button>` : ''}<button data-act="customise" data-id="${id}">Rename or customise…</button><button data-act="move" data-id="${id}">Move to…</button><button data-act="link-deck" data-id="${id}">Also show its cards in…</button><button data-act="add-here" data-id="${id}">Add card here</button><button data-act="practise" data-id="${id}">Practise all cards</button><button data-act="browse-here" data-id="${id}">Browse cards</button><button data-act="reset-deck" data-id="${id}">Reset progress…</button><button data-act="exam-set" data-id="${id}">${S.nodes[id]?.exam ? 'Change exam date…' : 'Set exam date…'}</button><button data-act="export-deck" data-id="${id}">Export / share…</button><button data-act="import-here" data-id="${id}">Import cards here…</button><hr><button class="danger" data-act="del-deck" data-id="${id}">Delete</button>`;
   document.body.appendChild(m);
   const r = anchor.getBoundingClientRect ? anchor.getBoundingClientRect() : { left: anchor.x, right: anchor.x + m.offsetWidth, top: anchor.y, bottom: anchor.y }; const w = m.offsetWidth, h = m.offsetHeight;
   m.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px';
@@ -3376,7 +3633,7 @@ function editor(cardId, presetNode, pasted){
 function zone(z){ if (!ed) return; ed.zone = z; ['q','s'].forEach(k => $('#z'+k)?.classList.toggle('active', k === z)); }
 function drawThumbs(){
   if (!ed) return;
-  const t = (im, z, i) => `<div class="thumb"><img src="${esc(imgSrc(im))}" alt="${z === 'q' ? 'Question image' : 'Solution image ' + (i+1)}" data-zoom><button type="button" aria-label="Remove image" data-act="rm-img" data-zone="${z}" data-i="${i}">${I.x}</button><span class="tacts"><button type="button" class="tclean" data-act="clean-img" data-mode="crop" data-zone="${z}" data-i="${i}" title="Crop, rotate or straighten this image">Crop</button><button type="button" class="tclean" data-act="clean-img" data-zone="${z}" data-i="${i}" title="Turn this photo into a clean, high-res image with a white background">Clean</button></span></div>`;
+  const t = (im, z, i) => `<div class="thumb"><img src="${esc(imgSrc(im))}" alt="${z === 'q' ? 'Question image' : 'Solution image ' + (i+1)}" data-zoom><button type="button" aria-label="Remove image" data-act="rm-img" data-zone="${z}" data-i="${i}">${I.x}</button><span class="tacts"><button type="button" class="tclean" data-act="clean-img" data-mode="crop" data-zone="${z}" data-i="${i}" title="Crop, rotate or straighten this image">Crop</button><button type="button" class="tclean" data-act="clean-img" data-zone="${z}" data-i="${i}" title="Turn this photo into a clean, high-res image with a white background">Clean</button>${z === 'q' ? `<button type="button" class="tclean ${occOf(ed.card) ? 'on' : ''}" data-act="occ-edit" title="Cover parts of the image to test yourself on them">${occOf(ed.card) ? `Hiding ${ed.card.occl.boxes.length}` : 'Hide parts'}</button>` : ''}</span></div>`;
   const l = n => '<div class="thumb loading">Adding…</div>'.repeat(n);
   $('#tq').innerHTML = (ed.card.qImg ? t(ed.card.qImg, 'q', 0) : '') + l(ed.pend.q);
   $('#ts').innerHTML = (ed.card.solImgs||[]).map((im,i) => t(im, 's', i)).join('') + l(ed.pend.s);
@@ -3472,6 +3729,8 @@ document.addEventListener('click', async e => {
   if (e.target.closest('.lightbox')){ const lb = e.target.closest('.lightbox'); const nav = e.target.closest('[data-step]'); if (nav) return stepGallery(+nav.dataset.step); gallery = null; lb.remove(); return; }
   const g = e.target.closest('[data-gallery]');
   if (g){ e.stopPropagation(); const c = S.cards[g.dataset.gallery]; if (c) openGallery(cardImages(c), +g.dataset.i || 0); return; }
+  const oc = e.target.closest('.occ'); if (oc){ oc.classList.toggle('open'); return; }
+  const pb = e.target.closest('[data-pad]'); if (pb){ return padAction(pb.dataset.pad); }
   const z = e.target.closest('[data-zoom]');
   if (z){ openGallery([{ src: z.getAttribute('src'), label: z.alt || '' }], 0); return; }
   if (!e.target.closest('#menu') && !e.target.closest('[data-act="gear"]')) closeMenu();
@@ -3497,6 +3756,14 @@ document.addEventListener('click', async e => {
     case 'scrim': if (e.target === a && !ed) closeDialog(); return;
     case 'close': return closeDialog();
     case 'cloud': return cloudDialog();
+    case 'timer-cycle': { const i = TIMER_STEPS.indexOf(timerSetting); timerSetting = TIMER_STEPS[(i + 1) % TIMER_STEPS.length]; ls.set('md-timer', timerSetting); if (study){ study.t0 = Date.now(); study.timeUpToast = false; } const el = a.closest('.tpill, .lhpill') || a; const h = document.createElement('div'); h.innerHTML = timerPill(); el.replaceWith(h.firstElementChild); return toast(timerSetting === 0 ? 'Timer off' : timerSetting === -1 ? 'Stopwatch on: your time on each card is recorded' : `Exam timer: ${timerSetting / 60} minute${timerSetting === 60 ? '' : 's'} per card`); }
+    case 'pad-toggle': return padToggle();
+    case 'leech-ok': { const c = S.cards[id]; if (!c) return; await put('cards', { ...c, leechOk: true }); render(); return toast('This card won’t be flagged as a leech any more'); }
+    case 'exam-set': closeMenu(); return examDialog(id);
+    case 'exam-save': { const d = $('#exdate').value; if (!d) return toast('Pick a date.'); const n = S.nodes[id]; await put('nodes', { ...n, exam: { date: d, name: $('#exname').value.trim() || 'Exam' } }); closeDialog(); render(); return toast(`Counting down: ${examLabel(examTs(d))}`); }
+    case 'exam-clear': { const n = { ...S.nodes[id] }; delete n.exam; await put('nodes', n); closeDialog(); render(); return toast('Exam date removed'); }
+    case 'exam-prep': return startStudy(id, true, null, examPrepList(id));
+    case 'occ-edit': e.stopPropagation(); return occEditor();
     case 'idk': { if (!study?.cur) return; study.pred.conf = 0; study.pred.set = true; return showAnswer(); }
     case 'side-go': { const q = $('#sidesq'); q.value = ''; sideSearch(''); study = null; return go('overview', id); }
     case 'side-card': { const q = $('#sidesq'); q.value = ''; sideSearch(''); const c = S.cards[id]; if (!c) return; return startStudy(c.nodeId, true, id); }
@@ -3678,6 +3945,7 @@ document.addEventListener('keydown', e => {
     if (study.shown && ['1','2','3','4'].includes(e.key)){ e.preventDefault(); return rate(+e.key); }
     if (study.shown && (e.key === ' ' || e.key === 'Enter')){ e.preventDefault(); return rate(3); }
     if (e.key === 'e'){ e.preventDefault(); return editor(study.cur); }
+    if (e.key === 'p' || e.key === 'P'){ e.preventDefault(); return padToggle(); }
   }
   if (view.name !== 'study'){
     if (e.key === 'a') { e.preventDefault(); return editor(null, view.node || browse.node); }
