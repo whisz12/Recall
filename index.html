@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261025225414";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261031184641";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -738,6 +738,151 @@ body.desktop .cloudpill + .sideadd{margin-top:8px}
 .cloudhero{display:flex}
 @media (max-width:760px){ .cloudpill span{display:none} .cloudpill{padding:6px} }
 
+/* Windows app */
+html.win.desktop, html.win body.desktop{background:var(--bg) !important}
+html.win body.desktop .toolbar{padding-top:22px;background:color-mix(in srgb, var(--bg) 82%, var(--surface))}
+html.win body.desktop .toolbar::before{content:"";position:absolute;top:0;left:0;right:0;height:14px;-webkit-app-region:drag}
+html.win body.desktop .sidetoggle{top:6px;right:8px}
+html.win body.desktop::after{height:36px;right:140px}
+html.win body.desktop .page{padding-top:44px}
+html.win body.desktop.hasbg .page{background:transparent}
+html.win.hasbg body.desktop{background:transparent !important}
+
+/* ===================== Harness layout (html.lh) ===================== */
+:root{--chrome:"JetBrains Mono", ui-monospace, Menlo, monospace;--title:"CMU Serif", Charter, Georgia, serif}
+.sidesearch,.sidesres{display:none}
+body.desktop .sidesearch{display:flex;align-items:center;gap:7px;margin:14px 0 0;padding:6px 9px;border:1px solid var(--border-2);border-radius:8px;color:var(--fg-3);background:rgba(var(--ovr),.02)}
+body.desktop .sidesearch svg{width:13px;height:13px;flex:none}
+body.desktop .sidesearch input{border:0;background:none;outline:none;color:var(--fg);font-size:13px;width:100%;min-width:0;padding:0;-webkit-appearance:none}
+body.desktop .sidesearch input::placeholder{color:var(--fg-3)}
+body.desktop .sidesres:not([hidden]){display:flex;flex-direction:column;gap:2px;margin-top:10px}
+.siderec{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;border:0;background:none;text-align:left;padding:7px 11px;border-radius:9px;color:var(--fg);-webkit-app-region:no-drag;min-width:0}
+.siderec .nm{font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.siderec .meta{font-family:var(--chrome);font-size:10.5px;color:var(--fg-3);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.01em}
+.siderec .meta b{color:var(--accent);font-weight:500}
+.siderec:hover{background:rgba(var(--ovr),.05)}
+.siderec[aria-current="true"]{background:rgba(var(--ovr),.08)}
+
+html.lh .page, html.lh body.desktop .page{background-image:none}
+html.lh body{background-image:none}
+html.lh .brand .wordmark{font-family:var(--title);font-weight:700;letter-spacing:-.005em;font-size:22px}
+html.lh .toolbar nav button{font-family:var(--chrome);text-transform:uppercase;letter-spacing:.09em;font-weight:500;font-size:12px}
+html.lh body.desktop .toolbar nav button{font-size:12px;padding:7px 11px}
+html.lh body.desktop .toolbar nav button .ni{width:15px;height:15px}
+html.lh body.desktop .toolbar nav button[aria-current="true"]{background:rgba(var(--ovr),.07);box-shadow:inset 0 0 0 1px var(--border-2)}
+html.lh body.desktop .toolbar nav button[aria-current="true"] .ni{color:var(--fg)}
+html.lh .sidelabel, html.lh body.desktop .sidelabel{font-family:var(--chrome);font-weight:500;font-size:10.5px;letter-spacing:.16em}
+html.lh body.desktop .sidesub{font-weight:500;font-size:14px}
+html.lh body.desktop .sidesub .ct{font-family:var(--chrome);font-weight:500;font-size:10.5px}
+html.lh body.desktop .sideadd{background:transparent;color:var(--fg-2);border:1px solid var(--border-2);box-shadow:none;font-family:var(--chrome);text-transform:uppercase;font-size:11.5px;letter-spacing:.1em;font-weight:500}
+html.lh body.desktop .sideadd:hover{color:var(--fg);background:rgba(var(--ovr),.05)}
+html.lh .cloudpill{font-family:var(--chrome);text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;font-weight:500}
+html.lh .btn{font-family:var(--chrome);font-size:12.5px;letter-spacing:.01em;font-weight:500}
+html.lh .btn.primary{box-shadow:none}
+html.lh .link{font-family:var(--chrome);font-size:12.5px}
+html.lh .lbl, html.lh .field>label, html.lh .panel h2, html.lh .children h2, html.lh .qa .label, html.lh .date, html.lh .sect h3, html.lh .ovtiles span, html.lh .tile span, html.lh .sidehead span, html.lh .btable th{font-family:var(--chrome);text-transform:uppercase;letter-spacing:.12em;font-weight:500;font-size:11px}
+html.lh .panel h2{color:var(--fg-3)}
+html.lh .ovcard h1, html.lh .lhtitle, html.lh .done h1{font-family:var(--title);font-weight:700;letter-spacing:0}
+html.lh .ovcard h1{font-size:34px}
+html.lh .sum, html.lh body.desktop .sum{font-family:var(--title);font-size:24px}
+html.lh .sum b{font-weight:700}
+html.lh .subj .sname .h2{font-family:var(--title);font-weight:700;font-size:20px;letter-spacing:0}
+html.lh .subj{background:var(--surface);border-color:var(--border-2)}
+html.lh .subj .meta, html.lh .trow .n, html.lh .chip .n, html.lh .tbig small, html.lh .tile b small{font-family:var(--chrome)}
+html.lh .dialog header h2{font-family:var(--title);font-weight:700;font-size:21px}
+html.lh .toast{font-family:var(--chrome);font-size:12px;letter-spacing:.01em}
+html.lh .panel, html.lh .tile, html.lh .ovcard{border-color:var(--border-2)}
+html.lh .tile b{font-family:var(--title)}
+
+/* study */
+.lhstudy{max-width:780px;margin:0 auto;padding-bottom:40px}
+
+.lhhead{margin-bottom:22px}
+.lhcrumb{font-family:var(--chrome);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-3);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lhrow{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.lhtitle{font-size:38px;line-height:1.1;margin:0;flex:1;min-width:0}
+.lhpills{display:flex;gap:6px;align-items:center;padding-bottom:6px}
+.lhpill{display:inline-flex;align-items:center;gap:6px;font-family:var(--chrome);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-2);border:1px solid var(--border-2);border-radius:999px;padding:4px 10px;background:none;line-height:1.2}
+.lhpill svg{width:12px;height:12px}
+button.lhpill:hover{color:var(--fg);border-color:var(--fg-3)}
+.lhpill.on{color:var(--fg)}
+.lhpill .left{font:inherit}
+.lhhead .sbar{max-width:none;margin:14px 0 0;height:2px;background:var(--border)}
+.lhhead .sbar span{background:var(--accent)}
+html.lh .qa{max-width:none;background:transparent;border:0;box-shadow:none;padding:0;font-size:17px;line-height:1.6}
+html.lh .qa .label{margin-bottom:14px;gap:10px;color:var(--fg-3)}
+.lhtag{font-family:var(--chrome);border:1px solid var(--border-2);border-radius:5px;padding:1px 7px;color:var(--fg);letter-spacing:.04em;text-transform:none}
+html.lh .qa hr{border-top:1px solid var(--border);margin:26px 0 20px}
+html.lh .sect{border-radius:10px;padding:16px 18px}
+html.lh .sect h3{margin-bottom:8px}
+html.lh .sect.mistake .stext{font-family:var(--card);font-weight:500}
+.dlabel{font-family:var(--chrome);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-3)}
+.dock{margin:28px auto 0;max-width:760px;border:1px solid var(--border-2);border-radius:14px;background:var(--surface);padding:16px 18px 14px;display:flex;flex-direction:column;gap:12px}
+.dock .dq{margin:-4px 0 0;font-size:15.5px;color:var(--fg)}
+.dock .conf{display:grid;grid-template-columns:auto 1fr 44px;align-items:center;gap:14px;border-top:1px solid var(--border);padding-top:12px}
+.dock .conf b{font-family:var(--chrome);font-weight:500;font-size:12.5px;text-align:right;color:var(--fg)}
+#dconf{-webkit-appearance:none;appearance:none;height:4px;border-radius:4px;background:linear-gradient(90deg, var(--accent) var(--v,50%), var(--border-2) var(--v,50%));outline:none;cursor:pointer}
+#dconf::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid var(--surface);box-shadow:0 0 0 1px var(--accent)}
+#dconf::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:0}
+.dock .think{display:flex;flex-direction:column;gap:6px;border:1px solid var(--border-2);border-radius:10px;padding:10px 12px;background:var(--inset)}
+.dock textarea{border:0;background:none;color:var(--fg);font:inherit;font-size:15px;resize:none;outline:none;min-height:44px;padding:0;line-height:1.5}
+.dock textarea::placeholder{color:var(--fg-3)}
+.dfoot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hintm{font-family:var(--chrome);font-size:10.5px;color:var(--fg-3);letter-spacing:.02em}
+.btn.idk{border-style:dashed;background:none;color:var(--fg-2)}
+.lhrates{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.lhrate{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;border-radius:10px;border:1px solid color-mix(in srgb, var(--rc) 40%, var(--border-2));background:color-mix(in srgb, var(--rc) 9%, transparent);color:var(--rc);font-family:var(--chrome);font-size:13px;font-weight:600}
+.lhrate small{font-size:10.5px;color:var(--fg-3);font-weight:500}
+.lhrate:hover{background:color-mix(in srgb, var(--rc) 18%, transparent)}
+.lhrate.r1{--rc:var(--again)} .lhrate.r2{--rc:var(--hard)} .lhrate.r3{--rc:var(--good)} .lhrate.r4{--rc:var(--easy)}
+blockquote.callout, .rtein blockquote{margin:.5em 0;border:1px solid var(--border-2);border-radius:9px;padding:11px 15px;background:rgba(var(--ovr),.025)}
+blockquote.callout:first-child{margin-top:0}
+.predbox{margin:0 0 16px !important;font-size:15px;font-family:var(--ui)}
+.predbox .dlabel{margin-bottom:4px}
+.predbox b{color:var(--accent)}
+.answerbar.lhbar{padding-top:6px;padding-bottom:calc(7px + env(safe-area-inset-bottom,0px));background:var(--bar)}
+.answerbar.lhbar .inner{align-items:center;max-width:1100px}
+.lhb{border:0;background:none;color:var(--fg-3);font-family:var(--chrome);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:6px}
+.lhb:hover:not(:disabled){color:var(--fg);background:rgba(var(--ovr),.06)}
+.lhb:disabled{opacity:.4}
+.lhstat{font-family:var(--chrome);font-size:11.5px;color:var(--fg-3);letter-spacing:.02em;flex-direction:row !important;gap:0 !important;white-space:nowrap}
+html.lh body.desktop .reviewer{padding-bottom:70px}
+.lhmap{display:none}
+@media (min-width:1400px){ html.lh body.desktop .lhmap{display:block;position:fixed;right:22px;top:110px;max-width:300px;max-height:calc(100vh - 190px);overflow:auto;z-index:4;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:color-mix(in srgb, var(--bg) 85%, transparent)} }
+.lhmap .dlabel{margin-bottom:8px;font-size:10px}
+.lhmap svg{display:block}
+.lhmap path{fill:none;stroke:var(--border-2);stroke-width:.8}
+.lhmap path.on{stroke:var(--fg-3);stroke-width:1.1}
+.lhmap rect{fill:var(--surface);stroke:var(--border-2);stroke-width:.7}
+.lhmap text{font-family:var(--chrome);font-size:6.4px;fill:var(--fg-3)}
+.lhmap g.on rect{stroke:var(--fg-3)} .lhmap g.on text{fill:var(--fg-2)}
+.lhmap g.cur rect{stroke:var(--accent);stroke-width:1.2;fill:color-mix(in srgb, var(--accent) 16%, var(--surface))} .lhmap g.cur text{fill:var(--fg)}
+/* calibration */
+.calib{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:end}
+.cb{display:flex;flex-direction:column;align-items:center;gap:4px}
+.cbar{position:relative;width:100%;height:120px;border-bottom:1px solid var(--border-2);display:flex;align-items:flex-end;justify-content:center}
+.cbar span{width:58%;background:color-mix(in srgb, var(--accent) 70%, transparent);border-radius:4px 4px 0 0;min-height:2px}
+.cbar b{position:absolute;top:-2px;font-family:var(--chrome);font-size:11px;font-weight:500;color:var(--fg)}
+.cbar .target{position:absolute;left:8%;right:8%;border-top:1px dashed var(--fg-3);height:0}
+.cb small{font-family:var(--chrome);font-size:10.5px;color:var(--fg-2)}
+.cb em{font-style:normal;font-family:var(--chrome);font-size:10px;color:var(--fg-3)}
+
+body.desktop .toolbar{overflow-x:hidden}
+body.desktop .toolbar .tin{min-width:0;width:100%}
+.siderec{max-width:100%;overflow:hidden}
+body.desktop .sidesubs,body.desktop .sidesres:not([hidden]){min-width:0;max-width:100%}
+
+/* no glow behind the logo */
+.brand .logo, body.desktop .brand .logo{box-shadow:none !important;filter:none !important}
+
+.sideempty{font-size:12.5px;color:var(--fg-3);padding:4px 11px;margin:0;line-height:1.45}
+body.desktop .sidesres .sidelabel{padding-top:2px}
+
+/* the sidebar is a window-drag area on the Mac; the search box has to opt out or it can't be clicked */
+.sidesearch, .sidesearch input, .sidesres, .sidesres *, .cloudpill, .sidelabel{-webkit-app-region:no-drag}
+
+.dock.dock-show{flex-direction:row;align-items:center;gap:12px;padding:12px 14px 12px 18px}
+
 /* iPad / browser tweaks */
 html.hosted body.desktop .toolbar{padding-top:max(22px, env(safe-area-inset-top))}
 html.hosted body.desktop::after{display:none}
@@ -749,7 +894,7 @@ html.hosted body{-webkit-tap-highlight-color:transparent}
 
 <script>if (document.documentElement.classList.contains("desktop")) document.body.classList.add("desktop", "hosted");</script>
 <header class="toolbar"><button class="sidetoggle" data-act="toggle-sidebar" aria-label="Hide sidebar" title="Hide sidebar (⌘S)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="3.5" width="15" height="13" rx="3"/><path d="M7.5 3.5v13"/></svg></button><div class="tin">
-  <button class="brand" data-nav="decks" aria-label="Recall home"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lgbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1c2030"/><stop offset="1" stop-color="#0a0b10"/></linearGradient><linearGradient id="lgr" gradientUnits="userSpaceOnUse" x1="9" y1="9" x2="24" y2="25"><stop offset="0" style="stop-color:color-mix(in srgb, var(--accent) 45%, #7ee8ff)"/><stop offset="1" style="stop-color:var(--accent)"/></linearGradient></defs><rect width="32" height="32" rx="7.5" fill="url(#lgbg)"/><rect x=".5" y=".5" width="31" height="31" rx="7" fill="none" stroke="var(--accent)" stroke-opacity=".5"/><path d="M9 24.2V9h6.5a4 4 0 0 1 0 8H9" fill="none" stroke="url(#lgr)" stroke-width="2.4"/><path d="M13.8 16.9L20.6 24.2" fill="none" stroke="url(#lgr)" stroke-width="2.4"/><rect class="cur" x="21.6" y="20.7" width="4" height="2.3" style="fill:color-mix(in srgb, var(--accent) 45%, #7ee8ff)"/></svg><span class="wordmark">Recall</span></button>
+  <button class="brand" data-nav="decks" aria-label="Recall home"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lgbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#222"/><stop offset="1" stop-color="#0f0f0f"/></linearGradient></defs><rect width="32" height="32" rx="7.5" fill="url(#lgbg)"/><rect x=".5" y=".5" width="31" height="31" rx="7" fill="none" stroke="#434343"/><text x="14.6" y="23.4" text-anchor="middle" style="font-family:var(--title);font-weight:700;font-size:20px" fill="#e6e6e6">R</text><rect class="cur" x="21.4" y="20.2" width="5.2" height="2" rx=".4" style="fill:var(--accent)"/></svg><span class="wordmark">Recall</span></button>
   <nav aria-label="Main">
     <button data-nav="decks"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5.5" width="11" height="11" rx="2.5"/><path d="M6.5 3.5h8a2.5 2.5 0 0 1 2.5 2.5v8"/></svg><span>Decks</span></button>
     <button data-nav="add" class="navadd">Add</button>
@@ -757,6 +902,8 @@ html.hosted body{-webkit-tap-highlight-color:transparent}
     <button data-nav="stats"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 16V10M8.7 16V5M13.3 16v-4M18 16V7.5M2.5 16.5h16"/></svg><span>Stats</span></button>
     <button data-nav="themes"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.8a7.2 7.2 0 1 0 0 14.4c1.1 0 1.6-.8 1.3-1.7-.4-1.2.3-2.3 1.6-2.3h1.6a2.7 2.7 0 0 0 2.7-2.7C17.2 6.2 14 2.8 10 2.8Z"/><circle cx="6.3" cy="9.3" r="1" fill="currentColor"/><circle cx="8.6" cy="6" r="1" fill="currentColor"/><circle cx="12.4" cy="6.1" r="1" fill="currentColor"/></svg><span>Themes</span></button>
   </nav>
+  <div class="sidesearch"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input id="sidesq" type="search" placeholder="Search decks & cards  ⌘K" autocomplete="off" spellcheck="false" aria-label="Search decks and cards"></div>
+  <div class="sidesres" id="sidesres" hidden></div>
   <div class="sidesubs" id="sidesubs"></div>
   <span id="cloudpill" hidden></span>
   <button class="btn primary sideadd" data-nav="add">+ Add card</button>
@@ -906,7 +1053,7 @@ async function appRedo(){
   if (view.node && !nodeOf(view.node)) view = { name: 'decks', node: null };
   render(); renderSideSubjects(); toast('Redid ' + tx.label);
 }
-const UNDO_LABELS = { 'th-pick': 'theme change', 'th-reset1': 'colour reset', 'th-resetall': 'colour reset', 'th-bg': 'background image', 'th-bgclear': 'background removal', 'font-pick': 'font change', 'font-reset': 'font reset', 'subj-auto': 'subject colour', 'layout-reset': 'tidy up', 'toggle': 'collapse', 'collapse-all': 'collapse all', 'expand-all': 'expand all', 'bexp': 'expand', 'bcollapse': 'collapse all', 'bexpand': 'expand all', 'shuffle-toggle': 'shuffle', 'toggle-sidebar': 'sidebar', 'do-del-deck': 'delete', 'do-del-keep': 'delete', 'del-card': 'delete card', 'do-del-card': 'delete card', 'save-card': 'card change', 'do-move': 'move', 'do-cmove': 'move', 'do-link': 'add to decks', 'do-calso': 'deck ticks', 'save-custom': 'rename', 'msub-del': 'delete', 'msub-done': 'rename', 'msub-add': 'add subtopic', 'mtype-del': 'remove bubble', 'mtype-add': 'add bubble', 'mtype-quick': 'add bubble', 'do-del-type': 'remove bubble', 'save-bubble': 'add bubble', 'save-deck': 'new deck', 'unlink-here': 'remove from deck', 'cm-unlink': 'remove from deck', 'do-reset': 'reset', 'reset-srs': 'reset' };
+const UNDO_LABELS = { 'th-layout': 'layout change', 'th-pick': 'theme change', 'th-reset1': 'colour reset', 'th-resetall': 'colour reset', 'th-bg': 'background image', 'th-bgclear': 'background removal', 'font-pick': 'font change', 'font-reset': 'font reset', 'subj-auto': 'subject colour', 'layout-reset': 'tidy up', 'toggle': 'collapse', 'collapse-all': 'collapse all', 'expand-all': 'expand all', 'bexp': 'expand', 'bcollapse': 'collapse all', 'bexpand': 'expand all', 'shuffle-toggle': 'shuffle', 'toggle-sidebar': 'sidebar', 'do-del-deck': 'delete', 'do-del-keep': 'delete', 'del-card': 'delete card', 'do-del-card': 'delete card', 'save-card': 'card change', 'do-move': 'move', 'do-cmove': 'move', 'do-link': 'add to decks', 'do-calso': 'deck ticks', 'save-custom': 'rename', 'msub-del': 'delete', 'msub-done': 'rename', 'msub-add': 'add subtopic', 'mtype-del': 'remove bubble', 'mtype-add': 'add bubble', 'mtype-quick': 'add bubble', 'do-del-type': 'remove bubble', 'save-bubble': 'add bubble', 'save-deck': 'new deck', 'unlink-here': 'remove from deck', 'cm-unlink': 'remove from deck', 'do-reset': 'reset', 'reset-srs': 'reset' };
 const isTyping = el => !!el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) && !/^(checkbox|radio|range|button|file)$/i.test(el.type || '') || el.isContentEditable);
 ['pointerdown', 'click', 'drop', 'change'].forEach(t => document.addEventListener(t, e => {
   undoTx = null; undoBaseSettings = clone(S.settings);
@@ -980,12 +1127,38 @@ let bexp = new Set(ls.get('md-bexp', []));
 const dialogOpen = () => !!$('#layer .scrim');
 
 function go(name, node){ view = { name, node: node ?? null }; closeMenu(); render(); window.scrollTo(0,0); }
+const relTime = t => { const d = Date.now() - t; return d < 60e3 ? 'just now' : d < HOUR ? Math.round(d / 60e3) + 'm ago' : d < DAY ? Math.round(d / HOUR) + 'h ago' : Math.round(d / DAY) + 'd ago'; };
+function noteRecent(id){ if (!id || !nodeOf(id)) return; const r = ls.get('md-recent', []).filter(x => x.id !== id); r.unshift({ id, t: Date.now() }); ls.set('md-recent', r.slice(0, 12)); }
 function renderSideSubjects(){
   const el = $('#sidesubs'); if (!el || !document.body.classList.contains('desktop') || !S.ready) return;
   const cur = view.node ? pathOf(view.node)[0]?.id : (view.name === 'study' && study?.node ? pathOf(study.node)[0]?.id : null);
   const subs = kids(null);
-  el.innerHTML = subs.length ? `<div class="sidelabel">Subjects</div>` + subs.map(n => { return `<button class="sidesub" style="--sc:${scol(n.id)}" data-act="open" data-id="${n.id}" aria-current="${cur === n.id}">${n.emoji ? `<span class="semoji">${esc(n.emoji)}</span>` : '<span class="dot"></span>'}<span class="nm">${esc(n.name)}</span><span class="ct">${cardsIn(n.id).length}</span></button>`; }).join('') : '';
+  const recent = ls.get('md-recent', []).filter(x => nodeOf(x.id)).slice(0, 6);
+  el.innerHTML = (subs.length ? `<div class="sidelabel">Subjects</div>` + subs.map(n => { return `<button class="sidesub" style="--sc:${scol(n.id)}" data-act="open" data-id="${n.id}" aria-current="${cur === n.id}">${n.emoji ? `<span class="semoji">${esc(n.emoji)}</span>` : '<span class="dot"></span>'}<span class="nm">${esc(n.name)}</span><span class="ct">${cardsIn(n.id).length}</span></button>`; }).join('') : '')
+    + (recent.length ? `<div class="sidelabel" style="margin-top:16px">Recent</div>` + recent.map(x => { const n = nodeOf(x.id), ps = pathOf(x.id), d = toStudy(counts(x.id)); return `<button class="siderec" data-act="open" data-id="${esc(x.id)}" aria-current="${(view.node || study?.node) === x.id}" title="${esc(ps.map(p => p.name).join(' › '))}"><span class="nm">${esc(n.name)}</span><span class="meta">${d ? `<b>${d} due</b> · ` : ''}${esc(ps.length > 1 ? ps[ps.length - 2].name + ' · ' : '')}${relTime(x.t)}</span></button>`; }).join('') : '');
 }
+function sideSearch(q){
+  const box = $('#sidesres'), subs = $('#sidesubs'); q = q.trim().toLowerCase();
+  if (!q){ box.hidden = true; subs.hidden = false; return; }
+  const words = q.split(/\s+/).filter(Boolean), hit = t => { t = t.toLowerCase(); return words.every(w => t.includes(w)); };
+  const decks = Object.values(S.nodes).filter(n => hit(pathName(n.id) + ' ' + n.name)).sort((a, b) => (b.name.toLowerCase().startsWith(q)) - (a.name.toLowerCase().startsWith(q))).slice(0, 6).map(n => n.id);
+  const types = []; Object.values(S.nodes).forEach(n => typesOf(n.id).forEach(t => { if (hit(t.name) && types.length < 3) types.push(n.id + '::' + t.k); }));
+  const cards = Object.values(S.cards).filter(c => hit([c.label, c.qText, c.mistake, c.solText, c.source].join(' ')));
+  const snip = c => { const t = plainMd([c.label, c.qText].filter(Boolean).join(' · ') || c.solText || (c.qImg ? 'Image question' : 'Card')).replace(/\s+/g, ' '); return t.length > 60 ? t.slice(0, 59) + '…' : t; };
+  const row = (act, id, nm, meta) => `<button class="siderec" data-act="${act}" data-id="${esc(id)}"><span class="nm">${esc(nm)}</span><span class="meta">${esc(meta)}</span></button>`;
+  let html = '';
+  if (decks.length || types.length) html += `<div class="sidelabel">Decks</div>` + [...decks, ...types].map(id => row('side-go', id, nodeOf(id)?.name || '', pathOf(id).slice(0, -1).map(p => p.name).join(' › ') || 'Subject')).join('');
+  if (cards.length) html += `<div class="sidelabel" style="margin-top:12px">Cards · ${cards.length}</div>` + cards.slice(0, 6).map(c => row('side-card', c.id, snip(c), pathOf(c.nodeId).map(p => p.name).slice(-2).join(' › '))).join('')
+    + (cards.length > 6 ? `<button class="siderec" data-act="side-cards"><span class="nm">See all ${cards.length} cards</span><span class="meta">open in Browse</span></button>` : '');
+  if (!html) html = `<p class="sideempty">Nothing matches “${esc(q)}”. Search looks at deck names and the text on your cards (not text inside images).</p>`;
+  box.innerHTML = html; box.hidden = false; subs.hidden = true;
+}
+document.addEventListener('input', e => { if (e.target.id === 'sidesq') sideSearch(e.target.value); });
+document.addEventListener('keydown', e => {
+  if (e.target.id !== 'sidesq') return;
+  if (e.key === 'Escape'){ e.target.value = ''; sideSearch(''); e.target.blur(); }
+  if (e.key === 'Enter'){ e.preventDefault(); $('#sidesres .siderec')?.click(); }
+}, true);
 function render(){
   renderSideSubjects();
   document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'decks' && (view.name === 'overview' || view.name === 'study')))));
@@ -999,7 +1172,7 @@ function render(){
   else if (view.name === 'browse') renderBrowse();
   else if (view.name === 'stats') renderStats();
   else if (view.name === 'themes') renderThemes();
-  if (view.name !== 'study') $('#answerbar')?.remove();
+  if (view.name !== 'study'){ $('#answerbar')?.remove(); $('#lhmap')?.remove(); }
   typeset(root);
 }
 
@@ -1107,6 +1280,7 @@ function renderDecks(){
 function crumbs(id){ return `<div class="crumbs">${pathOf(id).map((n,i) => `${i ? '<span>›</span>' : ''}<button data-act="open" data-id="${n.id}">${esc(n.name)}</button>`).join('')}</div>`; }
 function renderOverview(){
   const n = nodeOf(view.node); if (!n){ go('decks'); return; }
+  noteRecent(n.id);
   const c = counts(n.id), tiles = n.virtual ? '' : tilesFor(n.id);
   const any = c.new + c.learn + c.due;
   $('#root').innerHTML = `<div class="narrow" style="--sc:${scol(n.id)}">
@@ -1140,12 +1314,13 @@ function buildQueue(){
   const q = [...learn, ...rev, ...nw]; return (shuffleOn ? shuffled(q) : q).map(c => c.id);
 }
 function startStudy(node, practise=false, only=null, list=null){
+  if (node) noteRecent(node);
   study = { node, practise: practise || !!only || !!list, only, queue:[], cur:null, shown:false, done:0, hist:[] };
   study.queue = list ? (shuffleOn ? shuffled(list) : [...list]) : only ? [only] : buildQueue();
   nextCard(); view = { name:'study', node }; closeMenu(); render(); window.scrollTo(0,0);
 }
 function nextCard(){
-  const now = Date.now(); study.shown = false; const inScope = study.node ? new Set(cardsIn(study.node).map(c => c.id)) : null;
+  const now = Date.now(); study.shown = false; study.pred = { conf: 50, think: '', set: false }; const inScope = study.node ? new Set(cardsIn(study.node).map(c => c.id)) : null;
   study.queue = study.queue.filter(id => S.cards[id]);
   if (!study.practise){
     const lrn = Object.values(S.cards).filter(c => study.queue.indexOf(c.id) < 0 && kind(c) === 'learn' && (!inScope || inScope.has(c.id)) && c.srs.due <= now);
@@ -1167,7 +1342,7 @@ function renderStudy(){
   const c = study.cur ? S.cards[study.cur] : null;
   const root = $('#root');
   if (!c){
-    $('#answerbar')?.remove();
+    $('#answerbar')?.remove(); $('#lhmap')?.remove();
     root.innerHTML = `<div class="narrow done fadein"><h1>${study.done ? 'Done for now' : 'Nothing to study here right now'}</h1>
       <p>${study.done ? `You reviewed ${study.done} card${study.done===1?'':'s'}.` : 'Use Practise all to go through every card here.'}</p>
       <div class="ovactions" style="margin-top:8px">${study.hist?.length ? `<button class="btn" data-act="back-card" title="Shortcut: Z or Backspace">${I.undo}Previous card</button>` : ''}<button class="btn" data-act="${study.node ? 'open' : 'nav-decks'}" data-id="${study.node||''}">Back to deck</button>${!study.only && cardsIn(study.node).length ? `<button class="btn" data-act="practise" data-id="${study.node||''}">Practise all ${cardsIn(study.node).length}</button>` : ''}</div></div>`;
@@ -1175,6 +1350,8 @@ function renderStudy(){
   }
   const ps = pathOf(c.nodeId);
   const left = study.queue.length + 1, pct = study.done / (study.done + left) * 100;
+  if (isLH()) return renderStudyLH(c, ps, left, pct);
+  $('#lhmap')?.remove();
   root.innerHTML = `<div style="--sc:${scol(c.nodeId)}">
     <div class="studytop"><span class="path">${ps.slice(0,-1).map(n => esc(n.name)).join(' › ')}${ps.length > 1 ? ' › ' : ''}<b>${esc(ps.slice(-1)[0]?.name || '')}</b></span>${study.hist?.length || study.shown ? `<button class="link shuflink sm-only" data-act="back-card">${I.undo}Back</button>` : ''}${study.queue.length > 1 ? `<button class="link shuflink" data-act="reshuffle" title="Shuffle the cards left">${I.shuffle}Shuffle</button>` : ''}<button class="link" data-act="edit" data-id="${c.id}">Edit</button></div>
     <div class="sbar" aria-hidden="true"><span style="width:${pct}%"></span></div>
@@ -1184,6 +1361,73 @@ function renderStudy(){
       ${study.shown ? '<hr id="answer">' + back(c) : ''}
     </article></div>`;
   bar(c);
+}
+/* ---------- Harness study layout: the card reads like a page, and you commit to a confidence before you look ---------- */
+const isLH = () => document.documentElement.classList.contains('lh');
+function renderStudyLH(c, ps, left, pct){
+  const deck = ps.slice(-1)[0]?.name || 'Study', host = study.node ? nodeOf(study.node) : null;
+  const sessionConf = (study.confs || []).length ? Math.round(study.confs.reduce((a, b) => a + b, 0) / study.confs.length) : null;
+  $('#root').innerHTML = `<div class="lhstudy" style="--sc:${scol(c.nodeId)}">
+    <div class="lhhead">
+      <div class="lhcrumb">${ps.slice(0, -1).map(n => esc(n.name)).join(' › ') || 'All cards'}</div>
+      <div class="lhrow"><h1 class="lhtitle">${esc(deck)}</h1>
+        <div class="lhpills">${study.queue.length > 1 ? `<button class="lhpill" data-act="reshuffle" title="Shuffle the cards left">${I.shuffle}Shuffle</button>` : ''}<span class="lhpill on">${study.practise ? 'Practice' : 'Review'}</span><span class="lhpill" id="qcounts">${countsHtml()}</span></div></div>
+      <div class="sbar" aria-hidden="true"><span style="width:${pct}%"></span></div>
+    </div>
+    <article class="qa fadein" id="qa">
+      <div class="label">${c.label ? `<span class="lhtag">${esc(c.label)}</span>` : ''}<span>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</span>${c.qtype && host ? '' : ''}</div>
+      ${front(c)}
+      ${study.shown ? '<hr id="answer">' + predHtml() + back(c) : ''}
+    </article>
+    <div id="lhdock">${dockHtml(c)}</div>
+  </div>`;
+  $('#lhmap')?.remove(); bar(c);
+  if (!study.shown) setTimeout(() => { const t = $('#dthink'); if (t) autoGrow(t); }, 0);
+}
+function predHtml(){
+  return '';
+  const p = study?.pred; if (!p || (!p.set && !p.think.trim())) return '';
+  return `<blockquote class="callout predbox"><div class="dlabel">Your prediction</div>${p.set ? `<b>${p.conf}% sure</b>${p.think.trim() ? ' · ' : ''}` : ''}${p.think.trim() ? `<span class="rich">${rich(p.think.trim())}</span>` : ''}</blockquote>`;
+}
+function dockHtml(c){
+  const now = Date.now(), s = c.srs || freshSrs(), p = study.pred || { conf: 50, think: '', set: false };
+  if (study.shown) return `<div class="dock">
+      <div class="dlabel">How did it go?</div>
+      <p class="dq">How well did you know it?</p>
+      <div class="lhrates">${[['Again','again'],['Hard','hard'],['Good','good'],['Easy','easy']].map(([l],i) => `<button class="lhrate r${i+1}" data-act="rate" data-r="${i+1}" title="Shortcut: ${i+1}"><span>${l}</span><small>${fmtIvl(schedule(s, i+1, now).due - now)}</small></button>`).join('')}</div>
+      <div class="dfoot"><span class="hintm">1–4 rates · space = good · z goes back</span></div></div>`;
+  return `<div class="dock dock-show">
+      <span class="hintm">${c.kind === 'learn' ? 'Explain it to yourself first' : 'Work it out first'} · space reveals</span><span class="grow"></span>
+      <button class="btn primary big" data-act="show" title="Shortcut: Space">${c.kind === 'learn' ? 'Show explanation' : 'Show answer'}</button></div>`;
+}
+document.addEventListener('input', e => {
+  if (!study) return;
+  if (e.target.id === 'dconf'){ study.pred.conf = +e.target.value; study.pred.set = true; e.target.style.setProperty('--v', e.target.value + '%'); const v = $('#dconfv'); if (v) v.textContent = e.target.value + '%'; }
+  if (e.target.id === 'dthink') study.pred.think = e.target.value;
+});
+function nudgeConf(d){ if (!study?.pred || study.shown) return; const p = study.pred; p.conf = Math.max(0, Math.min(100, p.conf + d)); p.set = true; const r = $('#dconf'); if (r){ r.value = p.conf; r.style.setProperty('--v', p.conf + '%'); } const v = $('#dconfv'); if (v) v.textContent = p.conf + '%'; }
+/* a small map of the subject, with the deck this card lives in lit up */
+function lhMap(c){
+  $('#lhmap')?.remove();
+  const ps = pathOf(c.nodeId).filter(n => !n.virtual), root = ps[0]; if (!root || !document.body.classList.contains('desktop')) return;
+  const on = new Set(ps.map(n => n.id)), curId = c.qtype && typesOf(c.nodeId).some(t => t.k === c.qtype) ? c.nodeId + '::' + c.qtype : c.nodeId; on.add(curId);
+  const COLW = 74, ROWH = 17, BW = 66, BH = 13; let y = 0; const boxes = [], edges = [];
+  const lay = (n, depth) => {
+    let ch = depth < 3 ? kids(n.id) : [];
+    if (n.id === c.nodeId && curId !== c.nodeId) ch = [...ch, nodeOf(curId)];
+    const ys = ch.map(k => lay(k, depth + 1));
+    const my = ys.length ? (ys[0] + ys[ys.length - 1]) / 2 : (y += ROWH) - ROWH / 2;
+    boxes.push({ id: n.id, name: n.name, x: 4 + depth * COLW, y: my, on: on.has(n.id), cur: n.id === curId });
+    ch.forEach((k, i) => edges.push({ x1: 4 + depth * COLW + BW, y1: my, x2: 4 + (depth + 1) * COLW, y2: ys[i], on: on.has(k.id) && on.has(n.id) }));
+    return my;
+  };
+  lay(root, 0);
+  const W = 4 + (Math.max(...boxes.map(b => b.x)) + BW) + 4, H = y + 8;
+  const trunc = (t, n) => t.length > n ? t.slice(0, n - 1) + '…' : t;
+  const svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${edges.map(e => `<path d="M${e.x1} ${e.y1 + 4}C${e.x1 + 6} ${e.y1 + 4} ${e.x2 - 6} ${e.y2 + 4} ${e.x2} ${e.y2 + 4}" class="${e.on ? 'on' : ''}"/>`).join('')}
+    ${boxes.map(b => `<g class="${b.cur ? 'cur' : b.on ? 'on' : ''}"><title>${esc(b.name)}</title><rect x="${b.x}" y="${b.y - 2.5}" width="${BW}" height="${BH}" rx="2"/><text x="${b.x + 4}" y="${b.y + 6.8}">${esc(trunc(b.name, 15))}</text></g>`).join('')}</svg>`;
+  const el = document.createElement('div'); el.id = 'lhmap'; el.className = 'lhmap'; el.innerHTML = `<div class="dlabel">Map · ${esc(root.name)}</div>${svg}`;
+  document.body.appendChild(el);
 }
 function front(c){
   return `<div class="front">${c.qText ? `<div class="qtext rich">${rich(c.qText)}</div>` : ''}${c.qImg ? `<img src="${esc(imgSrc(c.qImg))}" alt="Question" data-zoom>` : ''}${!c.qText && !c.qImg ? '<p class="muted">No question added.</p>' : ''}</div>`;
@@ -1208,6 +1452,14 @@ function back(c){
 }
 function bar(c){
   let el = $('#answerbar'); if (!el){ el = document.createElement('div'); el.id = 'answerbar'; el.className = 'answerbar'; document.body.appendChild(el); }
+  el.classList.toggle('lhbar', isLH());
+  if (isLH()){
+    const q = queueCounts(), total = study.done + q.nw + q.lr + q.rv, confs = study.confs || [];
+    el.innerHTML = `<div class="inner"><div class="side"><button class="lhb" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back (Z)">‹ Back</button><button class="lhb" data-act="edit" data-id="${c.id}" title="Edit (E)">Edit</button></div>
+      <div class="mid lhstat">card ${Math.min(study.done + 1, total)} / ${total} · ${study.done} done${confs.length ? ` · avg confidence ${Math.round(confs.reduce((a, b) => a + b, 0) / confs.length)}%` : ''}</div>
+      <div class="side r"><button class="lhb" data-act="${study.node ? 'open' : 'nav-decks'}" data-id="${study.node || ''}" title="Exit (Esc)">Exit</button></div></div>`;
+    return;
+  }
   const now = Date.now(), s = c.srs || freshSrs();
   const mid = study.shown
     ? `<div class="ease">${[['Again','again'],['Hard','hard'],['Good','good'],['Easy','easy']].map(([l,k],i) => `<div class="col"><small>${fmtIvl(schedule(s, i+1, now).due - now)}</small><button class="btn r${i+1}" data-act="rate" data-r="${i+1}" title="Shortcut: ${i+1}">${l}</button></div>`).join('')}</div>`
@@ -1219,18 +1471,23 @@ function showAnswer(){
   study.shown = true;
   const c = S.cards[study.cur];
   const qa = $('#qa'); qa.classList.remove('fadein');
-  qa.insertAdjacentHTML('beforeend', '<hr id="answer">' + back(c));
+  qa.insertAdjacentHTML('beforeend', '<hr id="answer">' + (isLH() ? predHtml() : '') + back(c));
+  if (isLH()){ const d = $('#lhdock'); if (d) d.innerHTML = dockHtml(c); }
   bar(c); typeset(qa);
   const hr = $('#answer'); const r = hr.getBoundingClientRect();
   if (r.top > innerHeight * 0.55) hr.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start' });
 }
 async function rate(r){
   const c = S.cards[study.cur]; if (!c || !study.shown) return;
-  study.hist.push({ id: c.id, srs: c.srs ? JSON.parse(JSON.stringify(c.srs)) : null, queue: [...study.queue], done: study.done, day: dayKey() });
+  study.hist.push({ id: c.id, srs: c.srs ? JSON.parse(JSON.stringify(c.srs)) : null, revs: c.revs ? [...c.revs] : null, queue: [...study.queue], done: study.done, day: dayKey() });
   if (study.hist.length > 300) study.hist.shift();
   const srs = schedule(c.srs, r); study.done++; logReview();
   if (study.practise && r === 1) study.queue.push(c.id);
-  undoMute = true; put('cards', { ...c, srs }); undoMute = false;
+  const p = study.pred || {}, rev = { t: Date.now(), r };
+  if (p.set){ rev.cf = p.conf; (study.confs = study.confs || []).push(p.conf); }
+  if (p.think && p.think.trim()) rev.th = p.think.trim().slice(0, 600);
+  const revs = [...(c.revs || []), rev].slice(-40);
+  undoMute = true; put('cards', { ...c, srs, revs }); undoMute = false;
   nextCard(); renderStudy(); typeset($('#root')); window.scrollTo(0,0);
 }
 
@@ -1243,7 +1500,7 @@ async function goBack(){
   if (!h) return toast(study.done ? 'Can\'t go back any further' : 'This is the first card');
   const c = S.cards[h.id], log = reviewLog();
   if (log[h.day] > 0){ log[h.day]--; clearTimeout(logTimer); logTimer = setTimeout(saveSettings, 800); }
-  const back = { ...c }; if (h.srs) back.srs = h.srs; else delete back.srs;
+  const back = { ...c }; if (h.srs) back.srs = h.srs; else delete back.srs; if (h.revs) back.revs = h.revs; else delete back.revs;
   undoMute = true; put('cards', back); undoMute = false;
   study.queue = h.queue; study.cur = h.id; study.done = h.done; study.shown = true;
   renderStudy(); typeset($('#root')); window.scrollTo(0,0);
@@ -1822,6 +2079,14 @@ function renderBrowse(){
 }
 
 /* ---------- stats ---------- */
+function calibrationHtml(){
+  const revs = Object.values(S.cards).flatMap(c => (c.revs || []).filter(r => r.cf != null));
+  if (!revs.length) return `<div class="panel"><h2>Confidence vs. reality</h2><p class="sub" style="margin:0">Set your confidence before revealing answers (Harness layout) and this shows whether your gut feeling matches how well you really know things.</p></div>`;
+  const B = [[0, 20], [20, 40], [40, 60], [60, 80], [80, 101]].map(([a, b]) => { const rs = revs.filter(r => r.cf >= a && r.cf < b); return { l: b > 100 ? '80–100%' : `${a}–${b}%`, n: rs.length, ok: rs.length ? Math.round(rs.filter(r => r.r >= 3).length / rs.length * 100) : null, mid: Math.min(90, a + 10) }; });
+  const hi = B[4], over = hi.n >= 3 && hi.ok < 70;
+  return `<div class="panel"><h2>Confidence vs. reality</h2><p class="sub" style="margin:-6px 0 12px">For each confidence level you chose, how often you then rated the card Good or Easy. Close to the dotted line means your confidence is well calibrated. ${hi.n >= 3 ? (over ? `<b>When you feel 80%+ sure you only know it ${hi.ok}% of the time</b>, so slow down on those.` : `When you feel 80%+ sure you're right ${hi.ok}% of the time.`) : ''}</p>
+    <div class="calib">${B.map(b => `<div class="cb" title="${b.n} review${b.n === 1 ? '' : 's'}"><div class="cbar"><i class="target" style="bottom:${b.mid}%"></i>${b.ok != null ? `<span style="height:${b.ok}%"></span><b>${b.ok}%</b>` : ''}</div><small>${b.l}</small><em>${b.n}×</em></div>`).join('')}</div></div>`;
+}
 function renderStats(){
   const cs = Object.values(S.cards), log = reviewLog(), t0 = today0(), ws = weekStart();
   const reviewed = cs.filter(c => (c.srs?.reps||0) > 0);
@@ -1849,6 +2114,8 @@ function renderStats(){
 
 /* ---------- themes: preset colour schemes, per-colour overrides and an optional background image ---------- */
 const THEMES = {
+  harness:  { name:'Harness', bg:'#141414', surface:'#1c1c1c', fg:'#e6e6e6', accent:'#e2b23c', btn:'#d6d6d6', qa:'#141414', qaF:'#e6e6e6', mk:'#241a1b', mkT:'#ee8f8f', mkF:'#ecdcdc', so:'#18221c', soT:'#8fd3a8', soF:'#dcebe1', ex:'#191f29', exT:'#8fb6ea', exF:'#dde6f3', again:'#ee8484', hard:'#e2a65c', good:'#7fcf9a', easy:'#86b3ea',
+              x:{ surface2:'#222222', hover:'#2a2a2a', inset:'#171717', border:'#2e2e2e', border2:'#434343', fg2:'#b4b4b4', fg3:'#8d8d8d', zero:'#4a4a4a', mkB:'#4a3032', soB:'#2d4535', exB:'#2e3b52', newc:'#86b3ea', learn:'#ee8484', review:'#7fcf9a', focus:'#8d8d8d' } },
   slate:    { name:'Slate', bg:'#14161b', surface:'#1c1f26', fg:'#e7e9ef', accent:'#9aa6ff', btn:'#6b6bf5', qa:'#1c1f26', qaF:'#e7e9ef', mk:'#3a2754', mkT:'#ff7d8c', mkF:'#ffffff', so:'#12514f', soT:'#6ff0a8', soF:'#f2fbf7', ex:'#17375a', exT:'#8ecbff', exF:'#eef6ff', again:'#ff6f7d', hard:'#ffa257', good:'#4fdc8f', easy:'#62b4ff',
               x:{ surface2:'#232731', hover:'#2a2f3a', inset:'#171a20', border:'#2a2f39', border2:'#363c48', fg2:'#aab0bf', fg3:'#767d8d', zero:'#454b57', mkB:'#6d4a8c', soB:'#23877c', exB:'#2d6aa6', newc:'#62a8ff', learn:'#ff7a85', review:'#3ddc84', focus:'#8e9cf0' } },
   midnight: { name:'Midnight', bg:'#07080c', surface:'#10121a', fg:'#eceef5', accent:'#8fa2ff', btn:'#5b63f0', qa:'#10121a', qaF:'#eceef5', mk:'#2c1533', mkT:'#ff6b8b', mkF:'#ffffff', so:'#0b3530', soT:'#5ef0b0', soF:'#effcf6', ex:'#0e2442', exT:'#7fc0ff', exF:'#eef6ff', again:'#ff6f7d', hard:'#ffa257', good:'#4fdc8f', easy:'#62b4ff' },
@@ -1862,6 +2129,8 @@ const THEMES = {
   sakura:   { name:'Sakura', bg:'#fbeff3', surface:'#fff8fa', fg:'#3a2430', accent:'#d6457f', btn:'#d94c86', qa:'#ffffff', qaF:'#3a2430', mk:'#fde1e9', mkT:'#c2244f', mkF:'#3f1322', so:'#e3f4ea', soT:'#2a8755', soF:'#15291e', ex:'#ebe5fa', exT:'#6a4fc4', exF:'#221a3d', again:'#d63a5a', hard:'#d0761f', good:'#2a9a5c', easy:'#5a7fe0' }
 };
 const FONTS = [
+  { id:'sans3', name:'Source Sans 3', css:'"Source Sans 3"', g:'Source+Sans+3:wght@400;500;600;700', kind:'Harness prose' },
+  { id:'cmu', name:'Computer Modern', css:'"CMU Serif"', href:'https://cdn.jsdelivr.net/npm/computer-modern@0.1.3/cmu-serif.css', kind:'LaTeX serif', serif:true },
   { id:'inter', name:'Inter', css:'"Inter"', g:'Inter:wght@400;500;600;700;800', kind:'Clean' },
   { id:'system', name:'San Francisco', css:'-apple-system, BlinkMacSystemFont, "Segoe UI"', kind:'Mac system' },
   { id:'jakarta', name:'Plus Jakarta Sans', css:'"Plus Jakarta Sans"', g:'Plus+Jakarta+Sans:wght@400;500;600;700;800', kind:'Modern' },
@@ -1883,15 +2152,18 @@ const FONTS = [
   { id:'georgia', name:'Georgia', css:'Georgia', kind:'Classic serif', serif:true },
   { id:'mono', name:'JetBrains Mono', css:'"JetBrains Mono"', g:'JetBrains+Mono:wght@400;500;600;700;800', kind:'Code', mono:true }
 ];
-const FONT_DEF = { ui:'inter', side:'jakarta', card:'serif' };
+const FONT_DEF = { ui:'sans3', side:'sans3', card:'sans3', chrome:'mono', title:'cmu' };
+const FONT_KEY = { ui:'fontUi', side:'fontSide', card:'fontCard', chrome:'fontChrome', title:'fontTitle' };
 const fontOf = id => FONTS.find(f => f.id === id) || FONTS[0];
 const fontStack = (id, slot) => { const f = fontOf(id); return f.css + ', ' + (f.serif ? 'Charter, "Iowan Old Style", Georgia, serif' : f.mono ? 'ui-monospace, Menlo, monospace' : '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif'); };
 const fontsLoaded = new Set();
 function loadFonts(ids){
   if (window.desktop) return;
-  const need = [...new Set(ids)].map(fontOf).filter(f => f.g && !fontsLoaded.has(f.id)); if (!need.length) return;
+  const need = [...new Set(ids)].map(fontOf).filter(f => (f.g || f.href) && !fontsLoaded.has(f.id)); if (!need.length) return;
   need.forEach(f => fontsLoaded.add(f.id));
-  const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?' + need.map(f => 'family=' + f.g).join('&') + '&display=swap'; document.head.appendChild(l);
+  const add = href => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href; document.head.appendChild(l); };
+  const g = need.filter(f => f.g); if (g.length) add('https://fonts.googleapis.com/css2?' + g.map(f => 'family=' + f.g).join('&') + '&display=swap');
+  need.filter(f => f.href).forEach(f => add(f.href));
 }
 const THEME_FIELDS = [
   ['App', [['bg','Background'], ['surface','Panels & cards'], ['fg','Text'], ['accent','Accent & links'], ['btn','Main buttons']]],
@@ -1936,15 +2208,16 @@ function applyTheme(ts){
     '--ex-bg': t.ex, '--ex-b': D('exB', ['ex', 'exT'], () => mixc(t.ex, t.exT, .32)), '--ex-t': t.exT, '--ex-fg': t.exF,
     '--bgdim': String(ts.dim ?? .45)
   };
-  const fu = ts.fontUi || FONT_DEF.ui, fs = ts.fontSide || FONT_DEF.side, fc = ts.fontCard || FONT_DEF.card;
-  loadFonts([fu, fs, fc]);
-  v['--ui'] = fontStack(fu, 'ui'); v['--side-font'] = fontStack(fs, 'side'); v['--card'] = fontStack(fc, 'card');
+  const fnt = k => ts[FONT_KEY[k]] || FONT_DEF[k];
+  loadFonts(Object.keys(FONT_DEF).map(fnt));
+  v['--ui'] = fontStack(fnt('ui'), 'ui'); v['--side-font'] = fontStack(fnt('side'), 'side'); v['--card'] = fontStack(fnt('card'), 'card'); v['--chrome'] = fontStack(fnt('chrome'), 'ui'); v['--title'] = fontStack(fnt('title'), 'card');
+  document.documentElement.classList.toggle('lh', (ts.layout || 'harness') === 'harness');
   const r = document.documentElement.style; for (const [k, x] of Object.entries(v)) r.setProperty(k, x);
   r.colorScheme = dark ? 'dark' : 'light';
   document.body.classList.toggle('hasbg', !!img); document.documentElement.classList.toggle('hasbg', !!img);
   const bi = $('#bgimg'); if (bi){ bi.style.backgroundImage = img ? `url("${img.replace(/"/g, '%22')}")` : ''; bi.style.filter = img && ts.blur ? `blur(${ts.blur}px)` : ''; }
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t.bg);
-  window.desktop?.setAppearance?.(dark ? 'dark' : 'light');
+  window.desktop?.setAppearance?.(dark ? 'dark' : 'light', t.bg, t.fg);
 }
 function saveTheme(ts){ themeLive = null; S.settings = { ...S.settings, theme: ts }; ls.set('md-theme', ts); applyTheme(ts); saveSettings(); }
 function previewTheme(ts){ themeLive = ts; applyTheme(ts); }
@@ -1959,11 +2232,12 @@ function renderThemes(){
   const img = ts.img ? imgSrc(ts.img) : '';
   const demoQ = { qText: 'What is gross world product (GWP)?' };
   $('#root').innerHTML = `<div class="narrow" style="max-width:1180px"><div class="thlayout"><div>
+    <div class="panel"><h2>Layout</h2><p class="sub" style="margin:-6px 0 12px">Harness is the cleaner, LaTeX-flavoured layout. Classic is the original look.</p><div class="seg">${[['harness', 'Harness'], ['classic', 'Classic']].map(([k, l]) => `<button type="button" data-act="th-layout" data-layout="${k}" aria-pressed="${(ts.layout || 'harness') === k}">${l}</button>`).join('')}</div></div>
     <div class="panel"><h2>Theme</h2><p class="sub" style="margin:-6px 0 12px">Pick a starting colour scheme. You can change any colour underneath it.</p><div class="thgrid">${Object.entries(THEMES).map(([id, th]) => themeSwatch(id, th)).join('')}</div></div>
-    <div class="panel"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0;flex:1">Fonts</h2>${ts.fontUi || ts.fontSide || ts.fontCard ? '<button class="btn" data-act="font-reset">Reset fonts</button>' : ''}</div>
+    <div class="panel"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0;flex:1">Fonts</h2>${Object.values(FONT_KEY).some(k => ts[k]) ? '<button class="btn" data-act="font-reset">Reset fonts</button>' : ''}</div>
       <p class="sub" style="margin:6px 0 10px">Choose what to change, then click a font.</p>
-      <div class="seg" id="fontslot" style="margin-bottom:12px">${[['all', 'Everything'], ['ui', 'App text'], ['side', 'Sidebar'], ['card', 'Flashcards']].map(([k, l]) => `<button type="button" data-act="font-slot" data-slot="${k}" aria-pressed="${fontSlot === k}">${l}</button>`).join('')}</div>
-      <div class="fgrid">${FONTS.map(f => { const cur = fontSlot === 'all' ? [ts.fontUi || FONT_DEF.ui, ts.fontSide || FONT_DEF.side, ts.fontCard || FONT_DEF.card].every(x => x === f.id) : (ts['font' + {ui:'Ui', side:'Side', card:'Card'}[fontSlot]] || FONT_DEF[fontSlot]) === f.id; return `<button class="fcard" data-act="font-pick" data-font="${f.id}" aria-pressed="${cur}" style="font-family:${esc(fontStack(f.id))}"><span class="fa">Aa</span><span class="fn">${esc(f.name)}</span><span class="fk">${esc(f.kind)}</span></button>`; }).join('')}</div>
+      <div class="seg" id="fontslot" style="margin-bottom:12px">${[['all', 'Everything'], ['ui', 'App text'], ['side', 'Sidebar'], ['card', 'Flashcards'], ['chrome', 'Labels & buttons'], ['title', 'Titles']].map(([k, l]) => `<button type="button" data-act="font-slot" data-slot="${k}" aria-pressed="${fontSlot === k}">${l}</button>`).join('')}</div>
+      <div class="fgrid">${FONTS.map(f => { const cur = fontSlot === 'all' ? Object.keys(FONT_DEF).every(k => (ts[FONT_KEY[k]] || FONT_DEF[k]) === f.id) : (ts[FONT_KEY[fontSlot]] || FONT_DEF[fontSlot]) === f.id; return `<button class="fcard" data-act="font-pick" data-font="${f.id}" aria-pressed="${cur}" style="font-family:${esc(fontStack(f.id))}"><span class="fa">Aa</span><span class="fn">${esc(f.name)}</span><span class="fk">${esc(f.kind)}</span></button>`; }).join('')}</div>
     </div>
     <div class="panel"><div style="display:flex;align-items:center;gap:10px"><h2 style="margin:0;flex:1">Colours</h2>${nOver ? `<button class="btn" data-act="th-resetall">Reset ${nOver} change${nOver === 1 ? '' : 's'}</button>` : ''}</div>
       <p class="sub" style="margin:6px 0 4px">Click a colour to open the colour wheel, or type a hex code. Changed colours are highlighted.</p>
@@ -2075,6 +2349,23 @@ document.addEventListener('pointerup', () => {
 document.addEventListener('click', e => { if (winJustDragged){ e.stopPropagation(); e.preventDefault(); winJustDragged = false; } }, true);
 document.addEventListener('dblclick', e => { const rz = e.target.closest('[data-wresize]'); if (!rz) return; const L = { ...winLayout() }, id = rz.dataset.wresize; if (L[id]){ const r = { ...L[id] }; delete r.h; L[id] = r; saveLayout(L); layoutWindows(); } });
 let winRT; window.addEventListener('resize', () => { clearTimeout(winRT); winRT = setTimeout(() => { if (view.name === 'decks') layoutWindows(); }, 120); });
+
+/* ---------- Windows: Ctrl instead of ⌘ in every hint, and a title bar that matches the theme ---------- */
+function winKeys(root){
+  const fix = t => t.replace(/⇧⌘/g, 'Ctrl+Shift+').replace(/⌘/g, 'Ctrl+').replace(/⇧/g, 'Shift+').replace(/⌥/g, 'Alt+').replace(/Ctrl\/Ctrl\+/g, 'Ctrl+').replace(/Ctrl\+\s/g, 'Ctrl+');
+  const walk = n => {
+    if (n.nodeType === 3){ if (/[⌘⇧⌥]/.test(n.nodeValue) && !n.parentElement?.closest('[contenteditable],textarea,input')) n.nodeValue = fix(n.nodeValue); return; }
+    if (n.nodeType !== 1 || n.isContentEditable) return;
+    for (const a of ['title', 'aria-label', 'placeholder']){ const v = n.getAttribute?.(a); if (v && /[⌘⇧⌥]/.test(v)) n.setAttribute(a, fix(v)); }
+    n.childNodes.forEach(walk);
+  };
+  walk(root);
+}
+function winSetup(){
+  document.documentElement.classList.add('win'); document.body.classList.add('win');
+  winKeys(document.body);
+  new MutationObserver(ms => ms.forEach(m => { m.addedNodes.forEach(winKeys); if (m.type === 'characterData' && /[⌘⇧⌥]/.test(m.target.nodeValue || '')) winKeys(m.target); })).observe(document.body, { childList: true, subtree: true, characterData: true });
+}
 
 /* ---------- cloud sync (Supabase): one library shared by the Mac app and the iPad / web app ---------- */
 const CLOUD_URL = 'https://gdpgwwzuyqqphjxbtrql.supabase.co', CLOUD_KEY = 'sb_publishable_b9nui3NsH6hHIyp1F0n6Hw_1XGDCSbr';
@@ -2304,9 +2595,13 @@ function mdInline(s){
     .replace(/(^|[^*\w])\*(?=[^\s*])([^*\n]*?[^\s*])\*(?!\*)/g, '$1<i>$2</i>')).join('');
 }
 function rich(src){
-  const lines = String(src || '').replace(/\r/g, '').split('\n'); let out = ''; const stack = [];
+  const lines = String(src || '').replace(/\r/g, '').split('\n'); let out = ''; const stack = []; let inQ = false;
   const closeTo = d => { while (stack.length > d) out += `</li></${stack.pop()}>`; };
-  for (const raw of lines){
+  const closeQ = () => { if (inQ){ out = out.replace(/(<br>)+$/, '') + '</blockquote>'; inQ = false; } };
+  for (const raw0 of lines){
+    const qm = raw0.match(/^>\s?(.*)$/);
+    if (qm){ if (!inQ){ closeTo(0); out += '<blockquote class="callout">'; inQ = true; } } else closeQ();
+    const raw = qm ? qm[1] : raw0;
     const m = raw.match(/^([ \t]*)([-*•]|\d+[.)])\s+(.*)$/);
     if (m){
       const depth = Math.min(4, Math.floor(m[1].replace(/\t/g, '  ').length / 2) + 1), tag = /\d/.test(m[2]) ? 'ol' : 'ul';
@@ -2321,7 +2616,7 @@ function rich(src){
     if (h){ out += `<h4 class="rh">${mdInline(h[1])}</h4>`; continue; }
     out += (raw.trim() === '' ? '' : mdInline(raw)) + '<br>';
   }
-  closeTo(0);
+  closeTo(0); closeQ();
   return out.replace(/(<br>)+$/, '');
 }
 const plainMd = s => String(s || '').replace(/\*\*|__|==/g, '').replace(/(^|\s)\*(\S)/g, '$1$2').replace(/(\S)\*(\s|$)/g, '$1$2').replace(/^\s*(#{1,3}|[-•]|\d+[.)])\s+/gm, '');
@@ -2364,6 +2659,7 @@ function html2md(root){
       if (!isBlock(c)){ buf.push(c); return; }
       flush();
       if (c.tagName === 'UL' || c.tagName === 'OL') listOut(c, 0);
+      else if (c.tagName === 'BLOCKQUOTE'){ const sub = html2md(c); sub.split('\n').forEach(l => lines.push('> ' + l)); }
       else if (/^H[1-6]$/.test(c.tagName)) lines.push('## ' + inline(c).replace(/\n/g, ' ').trim());
       else if ([...c.childNodes].some(isBlock)) walk(c);
       else inline(c).replace(/\n$/, '').split('\n').forEach(l => lines.push(l));
@@ -2375,7 +2671,7 @@ function html2md(root){
 }
 const RTE_BAR = `<div class="rtebar" role="toolbar" aria-label="Formatting">
   <button type="button" data-rte="bold" title="Bold (⌘B)"><b>B</b></button><button type="button" data-rte="italic" title="Italic (⌘I)"><i>I</i></button><button type="button" data-rte="underline" title="Underline (⌘U)"><u>U</u></button><button type="button" data-rte="mark" title="Highlight (⇧⌘H)"><span class="hlic">H</span></button>
-  <span class="rtesep"></span><button type="button" data-rte="insertUnorderedList" title="Bullet points (⇧⌘8, or type - then space)"><svg viewBox="0 0 16 16"><circle cx="3" cy="4" r="1.3"/><circle cx="3" cy="8" r="1.3"/><circle cx="3" cy="12" r="1.3"/><path d="M6.5 4h7M6.5 8h7M6.5 12h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button><button type="button" data-rte="insertOrderedList" title="Numbered list (⇧⌘7, or type 1. then space)"><svg viewBox="0 0 16 16"><text x="0.5" y="6" font-size="5.5" font-weight="700">1</text><text x="0.5" y="13.5" font-size="5.5" font-weight="700">2</text><path d="M6.5 4.5h7M6.5 11.5h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button><button type="button" data-rte="heading" title="Heading">H<small>1</small></button>
+  <span class="rtesep"></span><button type="button" data-rte="insertUnorderedList" title="Bullet points (⇧⌘8, or type - then space)"><svg viewBox="0 0 16 16"><circle cx="3" cy="4" r="1.3"/><circle cx="3" cy="8" r="1.3"/><circle cx="3" cy="12" r="1.3"/><path d="M6.5 4h7M6.5 8h7M6.5 12h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button><button type="button" data-rte="insertOrderedList" title="Numbered list (⇧⌘7, or type 1. then space)"><svg viewBox="0 0 16 16"><text x="0.5" y="6" font-size="5.5" font-weight="700">1</text><text x="0.5" y="13.5" font-size="5.5" font-weight="700">2</text><path d="M6.5 4.5h7M6.5 11.5h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button><button type="button" data-rte="heading" title="Heading">H<small>1</small></button><button type="button" data-rte="callout" title="Callout box, for definitions and key rules (or type &gt; then space)"><svg viewBox="0 0 16 16"><rect x="1.5" y="3" width="13" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4.5 6.5h7M4.5 9.5h4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
   <span class="rtesep"></span><button type="button" data-rte="clear" title="Clear formatting">⌫<small>A</small></button></div>`;
 function rteBox(id, md, ph){ return `<div class="rte">${RTE_BAR}<div class="rtein in" id="${id}" contenteditable="true" role="textbox" aria-multiline="true" spellcheck="true" data-ph="${esc(ph)}">${rich(md)}</div></div>`; }
 function makeRte(el){
@@ -2408,7 +2704,7 @@ function makeRte(el){
       const sel = getSelection(), n = sel.anchorNode;
       if (n && n.nodeType === 3 && !(n.parentElement.closest('li'))){
         const before = n.textContent.slice(0, sel.anchorOffset), first = !n.previousSibling;
-        const cmd = /^\s*[-*•]\s$/.test(before) ? 'insertUnorderedList' : /^\s*1[.)]\s$/.test(before) ? 'insertOrderedList' : /^\s*#{1,3}\s$/.test(before) ? 'heading' : null;
+        const cmd = /^\s*[-*•]\s$/.test(before) ? 'insertUnorderedList' : /^\s*1[.)]\s$/.test(before) ? 'insertOrderedList' : /^\s*#{1,3}\s$/.test(before) ? 'heading' : /^\s*>\s$/.test(before) ? 'callout' : null;
         if (cmd && first){ const r = document.createRange(); r.setStart(n, 0); r.setEnd(n, sel.anchorOffset); sel.removeAllRanges(); sel.addRange(r); document.execCommand('delete'); rteCmd(el, cmd); }
       }
     }
@@ -2434,6 +2730,7 @@ function rteCmd(el, cmd){
     el.dispatchEvent(new Event('input')); return;
   }
   if (cmd === 'heading'){ const h = at?.closest('h4,h3'); document.execCommand('formatBlock', false, h && el.contains(h) ? 'div' : 'h4'); return; }
+  if (cmd === 'callout'){ const q = at?.closest('blockquote'); document.execCommand('formatBlock', false, q && el.contains(q) ? 'div' : 'blockquote'); return; }
   if (cmd === 'clear'){ document.execCommand('removeFormat'); el.querySelectorAll('mark').forEach(mk => { if (sel.containsNode(mk, true)){ const p = mk.parentNode; while (mk.firstChild) p.insertBefore(mk.firstChild, mk); mk.remove(); } }); return; }
   document.execCommand(cmd);
 }
@@ -3187,10 +3484,11 @@ document.addEventListener('click', async e => {
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
     case 'th-pick': { const ts = themeSettings(); saveTheme({ ...ts, base: a.dataset.th, over: {} }); return renderThemes(); }
     case 'font-slot': fontSlot = a.dataset.slot; return renderThemes();
-    case 'font-pick': { const ts = { ...themeSettings() }, f = a.dataset.font; const set = (k, slot) => { if (f === FONT_DEF[slot]) delete ts[k]; else ts[k] = f; };
-      if (fontSlot === 'all' || fontSlot === 'ui') set('fontUi', 'ui'); if (fontSlot === 'all' || fontSlot === 'side') set('fontSide', 'side'); if (fontSlot === 'all' || fontSlot === 'card') set('fontCard', 'card');
+    case 'font-pick': { const ts = { ...themeSettings() }, f = a.dataset.font;
+      (fontSlot === 'all' ? Object.keys(FONT_DEF) : [fontSlot]).forEach(slot => { if (f === FONT_DEF[slot]) delete ts[FONT_KEY[slot]]; else ts[FONT_KEY[slot]] = f; });
       saveTheme(ts); return renderThemes(); }
-    case 'font-reset': { const ts = { ...themeSettings() }; delete ts.fontUi; delete ts.fontSide; delete ts.fontCard; saveTheme(ts); return renderThemes(); }
+    case 'font-reset': { const ts = { ...themeSettings() }; Object.values(FONT_KEY).forEach(k => delete ts[k]); saveTheme(ts); return renderThemes(); }
+    case 'th-layout': { saveTheme({ ...themeSettings(), layout: a.dataset.layout }); return renderThemes(); }
     case 'th-reset1': { saveTheme(themeWith(a.dataset.k, '')); return renderThemes(); }
     case 'th-resetall': { saveTheme({ ...themeSettings(), over: {} }); renderThemes(); return toast('Colours reset to the theme'); }
     case 'th-bg': return $('#thbgfile').click();
@@ -3199,6 +3497,10 @@ document.addEventListener('click', async e => {
     case 'scrim': if (e.target === a && !ed) closeDialog(); return;
     case 'close': return closeDialog();
     case 'cloud': return cloudDialog();
+    case 'idk': { if (!study?.cur) return; study.pred.conf = 0; study.pred.set = true; return showAnswer(); }
+    case 'side-go': { const q = $('#sidesq'); q.value = ''; sideSearch(''); study = null; return go('overview', id); }
+    case 'side-card': { const q = $('#sidesq'); q.value = ''; sideSearch(''); const c = S.cards[id]; if (!c) return; return startStudy(c.nodeId, true, id); }
+    case 'side-cards': { const q = $('#sidesq'), v = q.value.trim(); q.value = ''; sideSearch(''); browse.node = null; browse.q = v; browse.status = 'all'; browse.rate = 0; study = null; return go('browse'); }
     case 'cloud-in': return cloudAuth('in');
     case 'cloud-up': return cloudAuth('up');
     case 'cloud-out': { await cloud.sb?.auth.signOut(); cloudStop(); closeDialog(); return toast('Signed out. Your cards stay on this device.'); }
@@ -3364,8 +3666,11 @@ document.addEventListener('keydown', e => {
   if ($('.lightbox') && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')){ e.preventDefault(); return stepGallery(e.key === 'ArrowRight' ? 1 : -1); }
   if (e.key === 'Escape'){ const lb = $('.lightbox'); if (lb){ gallery = null; return lb.remove(); } if ($('#menu')) return closeMenu(); if (dialogOpen()) return closeDialog(); if (view.name === 'study'){ const n = study?.node; study = null; return n ? go('overview', n) : go('decks'); } return; }
   if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 's' && document.body.classList.contains('desktop')){ e.preventDefault(); return toggleSidebar(); }
+  if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && (e.key.toLowerCase() === 'k' || (e.key.toLowerCase() === 'f' && view.name !== 'browse')) && $('#sidesq') && getComputedStyle($('.sidesearch')).display !== 'none' && !dialogOpen()){ e.preventDefault(); if (document.body.classList.contains('sidebar-hidden')) toggleSidebar(); const q = $('#sidesq'); q.focus(); q.select(); return; }
   if (ed && (e.metaKey || e.ctrlKey) && e.key === 'Enter'){ e.preventDefault(); return saveCard(); }
   if (dialogOpen() && e.key === 'Enter' && e.target.tagName === 'INPUT'){ const p = (e.target.dataset.enter && $(e.target.dataset.enter)) || $('#layer .btn.primary'); if (p && !ed){ e.preventDefault(); p.click(); } return; }
+  if (view.name === 'study' && study?.cur && !study.shown && e.target.id === 'dthink' && (e.metaKey || e.ctrlKey) && e.key === 'Enter'){ e.preventDefault(); return showAnswer(); }
+  if (view.name === 'study' && study?.cur && e.target.id === 'dthink' && e.key === 'Escape'){ e.target.blur(); return; }
   if (dialogOpen() || typing || e.metaKey || e.ctrlKey || e.altKey) return;
   if (view.name === 'study' && study && (e.key === 'z' || e.key === 'Z' || e.key === 'Backspace')){ e.preventDefault(); return goBack(); }
   if (view.name === 'study' && study?.cur){
@@ -3381,7 +3686,12 @@ document.addEventListener('keydown', e => {
     if (e.key === 's' && view.name === 'overview') return startStudy(view.node);
   }
 });
-initStore().finally(() => cloudBoot());
+function lhMigrate(){
+  if (ls.get('lh-look-1', false)) return; ls.set('lh-look-1', true);
+  const ts = { ...themeSettings(), base: 'harness', over: {}, layout: 'harness' }; Object.values(FONT_KEY).forEach(k => delete ts[k]);
+  undoMute = true; saveTheme(ts); undoMute = false; render();
+}
+initStore().finally(() => { lhMigrate(); cloudBoot(); });
 render();
 </script>
 
