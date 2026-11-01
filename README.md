@@ -3,7 +3,8 @@
 <h1 align="center">Recall</h1>
 
 <p align="center"><b>Flashcards for the mistakes you actually make.</b><br>
-Free spaced-repetition flashcards for Mac, Windows, iPad, iPhone and Android, with sync between them.</p>
+Free spaced-repetition flashcards for Mac, Windows, iPad, iPhone and Android, with sync between them.<br>
+<sub>Made by Jeremy Chen</sub></p>
 
 <p align="center">
   <a href="https://whisz12.github.io/Recall/download.html"><b>⬇ Download Recall</b></a> &nbsp;·&nbsp;
@@ -38,3 +39,7 @@ The first time you open the desktop app, macOS or Windows asks you to confirm be
 ## Updates
 
 Recall updates itself on every device. The desktop apps download new versions in the background and offer a restart; the iPad, phone and browser versions load the newest version whenever they open.
+
+---
+
+<p align="center"><sub>Made by <b>Jeremy Chen</b></sub></p>
