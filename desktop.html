@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261101230032 min-shell:1.27.0 -->
+<!-- recall-build:20261102002241 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -244,6 +244,32 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .revchips span{font-size:12.5px;color:var(--fg-2);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:4px 11px}
 .revchips b{color:var(--fg);font-weight:700;font-variant-numeric:tabular-nums}
 .hact{display:flex;align-items:center;gap:10px}
+.hexams{flex:1;display:flex;align-items:center;gap:8px;flex-wrap:nowrap;min-width:0;align-self:center;overflow-x:auto;scrollbar-width:none;padding:2px}
+.hexams::-webkit-scrollbar{display:none}
+.hexams > .exchip:first-child{margin-left:auto} .hexams > .exchip:last-child{margin-right:auto}
+.exchip{flex:none;display:flex;align-items:center;gap:8px;border:1px solid var(--border-2);border-radius:11px;padding:6px 12px 6px 6px;background:color-mix(in srgb, var(--surface) 75%, transparent);color:var(--fg);font:inherit;text-align:left;max-width:210px;cursor:pointer;transition:border-color .15s, background .15s}
+.exchip:hover{border-color:var(--fg-3);background:var(--surface)}
+.exchip.soon{border-color:color-mix(in srgb, var(--accent) 55%, var(--border-2))}
+.exchip .exd{min-width:34px} .exchip .exd b{font-size:20px} .exchip .exd span{font-size:8.5px}
+.exchip .exi{display:flex;flex-direction:column;min-width:0} .exchip .exn{font-size:13.5px;line-height:1.25} .exchip .exm{font-size:10.5px}
+@media (max-width:900px){ .hexams{order:3;flex-basis:100%;justify-content:flex-start} }
+.home{-webkit-touch-callout:none}
+.sidecd{display:flex;align-items:center;gap:10px;width:100%;border:1px solid transparent;background:none;text-align:left;padding:6px 10px;border-radius:10px;color:var(--fg);-webkit-app-region:no-drag;min-width:0;transition:background .12s,border-color .12s}
+.sidecd:hover{background:color-mix(in srgb, var(--again) 12%, transparent);border-color:color-mix(in srgb, var(--again) 26%, transparent)}
+.sidecd .cdd{display:flex;flex-direction:column;align-items:center;min-width:30px;font-family:var(--chrome);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:color-mix(in srgb, var(--again) 70%, var(--fg-3))}
+.sidecd .cdd b{font-family:var(--title);font-size:19px;line-height:1;letter-spacing:0;color:var(--again);font-weight:700}
+.sidecd .cdi{display:flex;flex-direction:column;min-width:0;flex:1}
+.sidecd .nm{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidecd .meta{font-family:var(--chrome);font-size:10px;color:var(--fg-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidecd.soon{background:color-mix(in srgb, var(--again) 9%, transparent)}
+.sideadd{opacity:0;transition:opacity .12s} #sidesubs:hover .sideadd,.sideadd:focus-visible{opacity:1}
+@media (hover:none){ .sideadd{opacity:1} }
+.hcount{display:none;flex-wrap:wrap;gap:4px 14px;margin-top:8px}
+.hcount button{border:0;background:none;padding:0;font-family:var(--chrome);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb, var(--again) 80%, var(--fg-2));cursor:pointer}
+.hcount button b{color:var(--again);font-weight:700}
+.hcount button:hover{color:var(--again)}
+body:not(.desktop) .hcount, body.sidebar-hidden .hcount{display:flex}
+.hhint{font-family:var(--chrome);font-size:11px;color:var(--fg-3);align-self:center;margin-left:auto;padding:0 4px}
 .mono.has-emoji{font-size:21px}
 .sname .h2{cursor:pointer}
 .sname .meta b{color:var(--sc);font-weight:700}
@@ -964,7 +990,7 @@ body.desktop .sidesres .sidelabel{padding-top:2px}
 .leechrow .lq{color:var(--fg-3);margin-left:8px}
 .leechrow .leechtag{margin:0}
 /* exams */
-.exampill{display:inline-block;font-family:var(--chrome);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border:1px solid color-mix(in srgb, var(--accent) 45%, transparent);border-radius:999px;padding:1px 8px;margin-left:10px;vertical-align:3px;white-space:nowrap;font-weight:500}
+.exampill{display:inline-block;font-family:var(--chrome);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--again);border:1px solid color-mix(in srgb, var(--again) 45%, transparent);border-radius:999px;padding:1px 8px;margin-left:10px;vertical-align:3px;white-space:nowrap;font-weight:500}
 .exams{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin:0 0 18px}
 .examcard{display:flex;align-items:center;gap:12px;border:1px solid var(--border-2);border-radius:12px;padding:10px 12px;background:var(--surface)}
 .examcard.soon{border-color:color-mix(in srgb, var(--accent) 55%, var(--border-2))}
@@ -1429,7 +1455,7 @@ function renderDecks(){
     return `<section class="subj ${open ? '' : 'is-collapsed'}" style="--sc:${scol(sub.id)}" data-drop="${sub.id}" data-win="${sub.id}">
       <div class="shd" title="Drag to move ${esc(sub.name)} anywhere">
         <button class="mono ${sub.emoji ? 'has-emoji' : ''}" data-act="open" data-id="${sub.id}" aria-label="Open ${esc(sub.name)}">${glyph(sub)}</button>
-        <div class="sname"><button class="h2" data-act="toggle" data-id="${sub.id}" aria-expanded="${open}">${esc(sub.name)}</button>${examPill(sub.id)}<span class="meta">${n} card${n===1?'':'s'} · <button class="mlink" data-act="browse-status" data-id="${sub.id}" data-st="done">${seen} done</button> · <button class="mlink" data-act="browse-status" data-id="${sub.id}" data-st="todo">${n - seen} not done</button></span></div>
+        <div class="sname"><button class="h2" data-act="toggle" data-id="${sub.id}" aria-expanded="${open}">${esc(sub.name)}</button><span class="meta">${n} card${n===1?'':'s'} · <button class="mlink" data-act="browse-status" data-id="${sub.id}" data-st="done">${seen} done</button> · <button class="mlink" data-act="browse-status" data-id="${sub.id}" data-st="todo">${n - seen} not done</button></span></div>
         <span class="grow"></span>
         ${n ? `<button class="btn sm tint" data-act="${ts ? 'study' : 'practise'}" data-id="${sub.id}">Study</button>` : ''}
         <button class="icon soft" aria-label="Options for ${esc(sub.name)}" data-act="gear" data-id="${sub.id}">${I.gear}</button>
@@ -1448,7 +1474,6 @@ function renderDecks(){
       <div><div class="date">${esc(dateStr)}</div><p class="sum"><b>${rt}</b> review${rt===1?'':'s'} today<span class="sep">·</span><b>${rw}</b> this week</p></div>
       <div class="hact">${hasLayout() ? '<button class="link" data-act="layout-reset" title="Put the subjects back into neat columns">Tidy up</button>' : ''}${subjects.length ? `<button class="link" data-act="${anyOpen ? 'collapse-all' : 'expand-all'}">${anyOpen ? 'Collapse all' : 'Expand all'}</button>` : ''}${all.total ? `<button class="btn primary" data-act="${total ? 'study' : 'practise'}" data-id="">Study all</button>` : ''}</div>
     </div>
-    ${examsBanner()}
     ${subjects.length ? `<div class="subjgrid">${cardsHtml}</div>` : `<div class="empty"><p>No subjects yet.</p></div>`}
     <div class="hfoot">
       <button class="link" data-act="new-deck">+ New subject or topic</button>
@@ -1457,6 +1482,7 @@ function renderDecks(){
       <button class="link" data-act="export-all">Export all…</button>
       <button class="link" data-act="options">Options</button>
       <button class="link danger-link" data-act="reset-all">Reset</button>
+      <span class="hhint">${matchMedia('(hover: none)').matches ? 'Press and hold' : 'Right-click'} anything here for more options</span>
     </div>
   </div>`;
   layoutWindows();
@@ -1472,7 +1498,7 @@ function renderOverview(){
   $('#root').innerHTML = `<div class="narrow" style="--sc:${scol(n.id)}">
     ${crumbs(n.id)}
     <div class="ovcard">
-      <h1>${esc(n.name)}</h1>${n.virtual ? '' : (examPill(n.id) ? `<div style="margin:-4px 0 6px">${examPill(n.id)}</div>` : '')}
+      <h1>${esc(n.name)}</h1>
       ${(() => { const cs = cardsIn(n.id), dn = cs.filter(isDone).length; return `<div class="ovtiles"><div><b>${cs.length}</b><span>Cards</span></div><button data-act="browse-status" data-id="${n.id}" data-st="done"><b>${dn}</b><span>Done</span></button><button data-act="browse-status" data-id="${n.id}" data-st="todo"><b>${cs.length - dn}</b><span>Not done</span></button></div>
       <div class="rbreak">${[1,2,3,4].map(r => { const k = cs.filter(x => lastRate(x) === r).length; return `<button class="fchip r${r}" data-act="browse-rate" data-id="${n.id}" data-r="${r}" ${k ? '' : 'disabled'}>${RATES[r][0]}<span>${k}</span></button>`; }).join('')}</div>`; })()}
       <div class="ovactions">
@@ -1577,6 +1603,45 @@ function upcomingExams(){
 }
 const examLabel = ts => { const d = daysTo(ts); return d === 0 ? 'today' : d === 1 ? 'tomorrow' : `in ${d} days`; };
 function examPill(id){ const ex = S.nodes[id]?.exam; if (!ex?.date || examTs(ex.date) < Date.now() - DAY / 2) return ''; return `<span class="exampill" title="${esc(ex.name || 'Exam')} on ${new Date(examTs(ex.date)).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}">${esc(ex.name || 'Exam')} ${examLabel(examTs(ex.date))}</span>`; }
+/* countdowns live in the top bar of the home page; click one to prep (or edit), right-click for options */
+/* countdown rows for the sidebar (Mac, Windows, iPad); click to prep or edit, right-click for options */
+function examSide(){
+  const ex = upcomingExams(); if (!ex.length) return '';
+  return `<div class="sidelabel sidelabrow sidecdh" style="margin-top:16px"><span>Countdowns</span><button class="sideclr sideadd" data-act="gexam-edit" title="New countdown">+ New</button></div>` + ex.slice(0, 6).map(e => {
+    const d = daysTo(e.ts), date = new Date(e.ts).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+    const act = e.gen ? `data-act="gexam-edit" data-id="${e.gen.id}" data-exg="${e.gen.id}" title="${esc(e.name)} · click to edit, right-click for options"` : `data-act="exam-prep" data-id="${e.node.id}" data-exn="${e.node.id}" title="${esc(e.name)} · click to prep for it, right-click for options"`;
+    return `<button class="sidecd ${d <= 7 ? 'soon' : ''}" ${act}><span class="cdd"><b>${d}</b>${d === 1 ? 'day' : 'days'}</span><span class="cdi"><span class="nm">${esc(e.name)}</span><span class="meta">${e.gen ? '' : esc(pathOf(e.node.id)[0]?.name || '') + ' · '}${date}</span></span></button>`;
+  }).join('');
+}
+function examLine(){
+  const ex = upcomingExams(); if (!ex.length) return '';
+  return `<div class="hcount">${ex.slice(0, 4).map(e => { const d = daysTo(e.ts); return `<button ${e.gen ? `data-act="gexam-edit" data-id="${e.gen.id}" data-exg="${e.gen.id}"` : `data-act="exam-prep" data-id="${e.node.id}" data-exn="${e.node.id}"`}><b>${d}</b> ${d === 1 ? 'day' : 'days'} · ${esc(e.name)}</button>`; }).join('')}</div>`;
+}
+function examChips(){
+  const ex = upcomingExams(); if (!ex.length) return '<div class="hexams"></div>';
+  const chip = e => { const d = daysTo(e.ts), date = new Date(e.ts).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+    const sub = e.gen ? date : `${esc(pathOf(e.node.id)[0]?.name || '')} · ${date}`;
+    const act = e.gen ? `data-act="gexam-edit" data-id="${e.gen.id}" data-exg="${e.gen.id}" title="${esc(e.name)} · click to edit, right-click for options"` : `data-act="exam-prep" data-id="${e.node.id}" data-exn="${e.node.id}" title="${esc(e.name)} · click to prep for it, right-click for options"`;
+    return `<button class="exchip ${d <= 7 ? 'soon' : ''}" ${act}><span class="exd"><b>${d}</b><span>${d === 1 ? 'day' : 'days'}</span></span><span class="exi"><span class="exn">${esc(e.name)}</span><span class="exm">${sub}</span></span></button>`; };
+  return `<div class="hexams">${ex.slice(0, 6).map(chip).join('')}</div>`;
+}
+function menuAt(html, at){
+  closeMenu(); const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu'); m.innerHTML = html;
+  document.body.appendChild(m); const w = m.offsetWidth, h = m.offsetHeight;
+  m.style.left = Math.max(8, Math.min(innerWidth - w - 8, at.x)) + 'px'; m.style.top = Math.max(8, Math.min(innerHeight - h - 8, at.y)) + 'px';
+  m.querySelector('button')?.focus({ preventScroll: true });
+}
+function homeMenu(at){
+  const subjects = kids(null), anyOpen = subjects.some(x => !collapsed.has(x.id) || kids(x.id).some(t => !collapsed.has(t.id)));
+  menuAt(`<button data-act="new-deck">New subject or topic…</button><button data-nav="add">Add card…</button><hr>
+    <button data-act="import">Import decks…</button><button data-act="export-all">Export all…</button><hr>
+    ${subjects.length ? `<button data-act="${anyOpen ? 'collapse-all' : 'expand-all'}">${anyOpen ? 'Collapse all' : 'Expand all'}</button>` : ''}${hasLayout() ? '<button data-act="layout-reset">Tidy up windows</button>' : ''}<button data-act="options">Options…</button>`, at);
+}
+function examMenu(chip, at){
+  const g = chip.dataset.exg, n = chip.dataset.exn;
+  if (g) return menuAt(`<button data-act="gexam-edit" data-id="${esc(g)}">Edit countdown…</button><button data-act="gexam-edit">New countdown…</button><hr><button class="danger" data-act="gexam-del" data-id="${esc(g)}">Remove countdown</button>`, at);
+  menuAt(`<button data-act="exam-prep" data-id="${esc(n)}">Prep for this exam</button><button data-act="exam-set" data-id="${esc(n)}">Change exam date…</button><button data-act="gexam-edit">New countdown…</button><hr><button class="danger" data-act="exam-clear" data-id="${esc(n)}">Remove exam date</button>`, at);
+}
 function examsBanner(){
   const ex = upcomingExams();
   const card = e => { const d = daysTo(e.ts), date = new Date(e.ts).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
@@ -1608,6 +1673,7 @@ function examPrepList(id){
 }
 /* never schedule a card past its exam */
 function capForExam(c, srs){
+  return srs;   // countdowns removed
   const ex = examFor(c.nodeId); if (!ex || srs.state !== 'review') return srs;
   const target = ex.ts - DAY * 0.6, now = Date.now();
   if (srs.due > target && target > now + HOUR * 3){ const s = { ...srs, due: target }; s.ivl = Math.max(1, Math.round((target - now) / DAY)); return s; }
@@ -3675,7 +3741,7 @@ function gearMenu(id, anchor){
   const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
   const kidWord = n.parentId ? 'subtopics' : 'topics';
   if (n.virtual) m.innerHTML = `<button data-act="customise" data-id="${id}">Rename or customise…</button><button data-act="move" data-id="${id}">Move to…</button><button data-act="link-deck" data-id="${id}">Also show its cards in…</button><button data-act="add-here" data-id="${id}">Add card here</button><button data-act="practise" data-id="${id}">Practise all cards</button><button data-act="browse-here" data-id="${id}">Browse cards</button><button data-act="reset-deck" data-id="${id}">Reset progress…</button><button data-act="export-deck" data-id="${id}">Export / share…</button><hr><button class="danger" data-act="del-type" data-id="${id}">Remove bubble…</button>`;
-  else m.innerHTML = `<button data-act="add-child" data-id="${id}">Add ${n.parentId ? 'subtopic' : 'topic'} inside…</button>${n.parentId ? `<button data-act="add-bubble" data-id="${id}">Add big bubble…</button><button data-act="manage" data-id="${id}">Edit subtopics &amp; bubbles…</button>` : kids(id).length ? `<button data-act="manage" data-id="${id}">Rename or delete topics…</button>` : ''}<button data-act="customise" data-id="${id}">Rename or customise…</button><button data-act="move" data-id="${id}">Move to…</button><button data-act="link-deck" data-id="${id}">Also show its cards in…</button><button data-act="add-here" data-id="${id}">Add card here</button><button data-act="practise" data-id="${id}">Practise all cards</button><button data-act="browse-here" data-id="${id}">Browse cards</button><button data-act="reset-deck" data-id="${id}">Reset progress…</button><button data-act="exam-set" data-id="${id}">${S.nodes[id]?.exam ? 'Change exam date…' : 'Set exam date…'}</button><button data-act="export-deck" data-id="${id}">Export / share…</button><button data-act="import-here" data-id="${id}">Import cards here…</button><hr><button class="danger" data-act="del-deck" data-id="${id}">Delete</button>`;
+  else m.innerHTML = `<button data-act="add-child" data-id="${id}">Add ${n.parentId ? 'subtopic' : 'topic'} inside…</button>${n.parentId ? `<button data-act="add-bubble" data-id="${id}">Add big bubble…</button><button data-act="manage" data-id="${id}">Edit subtopics &amp; bubbles…</button>` : kids(id).length ? `<button data-act="manage" data-id="${id}">Rename or delete topics…</button>` : ''}<button data-act="customise" data-id="${id}">Rename or customise…</button><button data-act="move" data-id="${id}">Move to…</button><button data-act="link-deck" data-id="${id}">Also show its cards in…</button><button data-act="add-here" data-id="${id}">Add card here</button><button data-act="practise" data-id="${id}">Practise all cards</button><button data-act="browse-here" data-id="${id}">Browse cards</button><button data-act="reset-deck" data-id="${id}">Reset progress…</button><button data-act="export-deck" data-id="${id}">Export / share…</button><button data-act="import-here" data-id="${id}">Import cards here…</button><hr><button class="danger" data-act="del-deck" data-id="${id}">Delete</button>`;
   document.body.appendChild(m);
   const r = anchor.getBoundingClientRect ? anchor.getBoundingClientRect() : { left: anchor.x, right: anchor.x + m.offsetWidth, top: anchor.y, bottom: anchor.y }; const w = m.offsetWidth, h = m.offsetHeight;
   m.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px';
@@ -4078,6 +4144,7 @@ document.addEventListener('click', async e => {
   if (nav){ const t = nav.dataset.nav; if (t === 'add') return editor(null, view.node || browse.node); if (t === 'browse') browse.node = view.node || browse.node; study = null; return go(t); }
   const a = e.target.closest('[data-act]'); if (!a) return;
   const act = a.dataset.act, id = a.dataset.id || null;
+  if (a.closest('#menu')) closeMenu();
   if (act.startsWith('cl-')) return clAction(act, a);
   switch (act){
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
@@ -4266,12 +4333,26 @@ function confirmCardDelete(id){
     <div class="body"><p style="margin:0;color:var(--fg-2)">“${esc(c.label || (c.qText || 'Card').slice(0, 60))}” is removed from every deck it's in. You can undo with ⌘Z.</p></div>
     <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn danger" data-act="do-del-card" data-id="${id}">Delete</button></footer></div>`, d => d.querySelector('.btn.danger').focus());
 }
+let lpress = null, lpressAt = 0;
+document.addEventListener('pointerdown', e => {
+  clearTimeout(lpress?.t); lpress = null;
+  if (e.pointerType !== 'touch' || view.name !== 'decks' || !e.target.closest('#root .home') || dialogOpen()) return;
+  const x = e.clientX, y = e.clientY, tgt = e.target;
+  lpress = { x, y, t: setTimeout(() => { lpress = null; lpressAt = Date.now(); tgt.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: x, clientY: y })); }, 520) };
+}, true);
+document.addEventListener('pointermove', e => { if (lpress && Math.hypot(e.clientX - lpress.x, e.clientY - lpress.y) > 10){ clearTimeout(lpress.t); lpress = null; } }, true);
+['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, () => { if (lpress){ clearTimeout(lpress.t); lpress = null; } }, true));
+document.addEventListener('click', e => { if (Date.now() - lpressAt < 700 && !e.target.closest('#menu')){ e.preventDefault(); e.stopPropagation(); lpressAt = 0; } }, true);
 document.addEventListener('contextmenu', e => {
   const row = e.target.closest('tr[data-card]');
   if (row && !$('#layer .dialog')){ e.preventDefault(); return cardMenu(row.dataset.card, { x: e.clientX, y: e.clientY }); }
-  const t = e.target.closest('[data-act="open"][data-id], .sideitem[data-act="bnode"][data-id]');
-  const id = t?.dataset.id; if (!id || !nodeOf(id) || $('#layer .dialog')) return;
-  e.preventDefault(); gearMenu(id, { x: e.clientX, y: e.clientY });
+  if ($('#layer .dialog')) return;
+  const at = { x: e.clientX, y: e.clientY };
+  const chip = e.target.closest('[data-exg], [data-exn]'); if (chip){ e.preventDefault(); return examMenu(chip, at); }
+  const t = e.target.closest('[data-act="open"][data-id], .sideitem[data-act="bnode"][data-id], .home .topic[data-drop], .home .subj[data-win]');
+  const id = t && (t.dataset.id || t.dataset.drop || t.dataset.win);
+  if (id && nodeOf(id)){ e.preventDefault(); return gearMenu(id, at); }
+  if (view.name === 'decks' && e.target.closest('#root .home') && !isTyping(e.target)){ e.preventDefault(); return homeMenu(at); }
 });
 document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === 'z' && !isTyping(document.activeElement) && !cleanerOpen()){ e.preventDefault(); undoTx = null; return e.shiftKey ? appRedo() : appUndo(); }
