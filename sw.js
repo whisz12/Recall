@@ -12,6 +12,7 @@ self.addEventListener('fetch', e => {
   }
   if (!same && !cdn) return;
   if (same && /\/(version\.json|desktop\.html)$/.test(u.pathname)) return;   // update checks always go to GitHub
+  if (e.request.mode === 'navigate' && !/\/(index\.html)?$/.test(u.pathname)) return;   // other pages (like download.html) never replace the cached app
   if (e.request.mode === 'navigate') return e.respondWith(fetch(e.request).then(r => { const cp = r.clone(); caches.open(C).then(c => c.put('index.html', cp)); return r; }).catch(() => caches.match('index.html')));
   e.respondWith(caches.match(e.request).then(hit => { const net = fetch(e.request).then(r => { if (r.ok || r.type === 'opaque') { const cp = r.clone(); caches.open(C).then(c => c.put(e.request, cp)); } return r; }).catch(() => hit); return hit || net; }));
 });

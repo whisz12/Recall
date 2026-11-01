@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Download Recall</title>
+<meta name="description" content="Recall: spaced-repetition flashcards for the mistakes you actually make. Free for Mac, Windows, iPad, iPhone and Android, with sync between them.">
+<meta name="theme-color" content="#101216">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#101216; --bg-2:#14171c; --surface:#181b21; --surface-2:#1e2229; --border:rgba(255,255,255,.08); --border-2:rgba(255,255,255,.14);
+  --fg:#e9ebf0; --fg-2:#a9b0bd; --fg-3:#737b89; --accent:#e2b23c; --accent-ink:#1a1405;
+  --red:#ee6f6f; --blue:#5aa8ea; --orange:#f0a443; --green:#5fc48c;
+  --serif:"Source Serif 4", Georgia, serif; --sans:"Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif; --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 max(20px, env(safe-area-inset-left))}
+.mono{font-family:var(--mono)}
+kbd,code{font-family:var(--mono);font-size:.82em;background:var(--surface-2);border:1px solid var(--border-2);border-radius:6px;padding:1px 6px;white-space:nowrap}
+code.block{display:block;white-space:pre-wrap;word-break:break-all;padding:10px 12px;margin:8px 0;font-size:.85em}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:10;background:color-mix(in srgb, var(--bg) 82%, transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.top .wrap{display:flex;align-items:center;gap:14px;height:58px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--fg);text-decoration:none;font-family:var(--serif);font-weight:700;font-size:21px}
+.brand img{width:30px;height:30px;border-radius:8px}
+.top nav{margin-left:auto;display:flex;gap:4px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.top nav a{color:var(--fg-2);text-decoration:none;padding:6px 10px;border-radius:8px;white-space:nowrap}
+.top nav a:hover{color:var(--fg);background:var(--surface)}
+@media (max-width:640px){ .top nav a.hide-sm{display:none} .top nav{font-size:11px} .top nav a{padding:6px 7px} }
+section{scroll-margin-top:64px}
+
+/* hero */
+.hero{padding:72px 0 56px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;align-items:center}
+@media (max-width:900px){ .hero{grid-template-columns:1fr;padding-top:48px;gap:40px} }
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(95,196,140,.15)}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(40px, 6vw, 62px);line-height:1.04;letter-spacing:-.01em;margin:16px 0 18px}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:19px;color:var(--fg-2);max-width:34em;margin:0 0 28px}
+.cta{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--sans);font-weight:600;font-size:16px;text-decoration:none;border-radius:12px;padding:13px 20px;border:1px solid var(--border-2);background:var(--surface);color:var(--fg);cursor:pointer;transition:background .15s, border-color .15s, transform .15s}
+.btn:hover{background:var(--surface-2);border-color:rgba(255,255,255,.22)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{background:#ecc154}
+.btn svg{width:19px;height:19px;flex:none}
+.btn small{font-family:var(--mono);font-weight:400;font-size:11.5px;opacity:.7}
+.btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.meta{margin-top:16px;font-family:var(--mono);font-size:12.5px;color:var(--fg-3)}
+.meta a{color:var(--fg-2)}
+
+/* hero illustration: a card the way Recall shows it */
+.demo{position:relative}
+.demo .card{background:var(--surface);border:1px solid var(--border-2);border-radius:18px;padding:24px 26px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.demo .crumb{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-3)}
+.demo h3{font-family:var(--serif);font-size:25px;margin:6px 0 14px;line-height:1.15}
+.demo .q{font-size:16px;color:var(--fg);margin:0 0 16px}
+.demo .sect{border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14.5px}
+.demo .sect b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;margin-bottom:3px}
+.demo .mist{background:rgba(238,111,111,.09);border:1px solid rgba(238,111,111,.28)} .demo .mist b{color:var(--red)}
+.demo .sol{background:rgba(95,196,140,.08);border:1px solid rgba(95,196,140,.26)} .demo .sol b{color:var(--green)}
+.demo .rates{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.demo .rates span{text-align:center;font-family:var(--mono);font-size:12px;border:1px solid var(--border-2);border-radius:9px;padding:8px 0;color:var(--fg-2)}
+.demo .rates span small{display:block;font-size:10px;color:var(--fg-3)}
+.demo .rates span:nth-child(1){border-color:rgba(238,111,111,.4)} .demo .rates span:nth-child(3){border-color:rgba(95,196,140,.4)}
+.demo .float{position:absolute;font-family:var(--mono);font-size:11.5px;background:var(--surface-2);border:1px solid var(--border-2);border-radius:999px;padding:6px 12px;color:var(--fg-2);box-shadow:0 10px 30px rgba(0,0,0,.4);white-space:nowrap}
+.demo .f1{top:-16px;right:18px} .demo .f2{bottom:-16px;left:22px}
+.demo .float i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:1px}
+
+/* sections */
+section{padding:56px 0;border-top:1px solid var(--border)}
+h2{font-family:var(--serif);font-size:clamp(28px, 4vw, 38px);line-height:1.1;margin:0 0 10px}
+.sub{color:var(--fg-2);margin:0 0 28px;max-width:44em}
+.label{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+
+/* platform cards */
+.plats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:900px){ .plats{grid-template-columns:1fr} }
+.plat{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px;position:relative}
+.plat.yours{border-color:color-mix(in srgb, var(--accent) 55%, transparent);box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent)}
+.plat .yourtag{display:none;position:absolute;top:-11px;right:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:3px 9px}
+.plat.yours .yourtag{display:block}
+.plat .ph{display:flex;align-items:center;gap:12px}
+.plat .ph svg{width:30px;height:30px;color:var(--fg)}
+.plat h3{margin:0;font-family:var(--serif);font-size:22px}
+.plat p{margin:0;color:var(--fg-2);font-size:15.5px}
+.plat .req{font-family:var(--mono);font-size:11.5px;color:var(--fg-3);margin-top:auto}
+.plat .btn{justify-content:center}
+
+/* instructions */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px}
+.tab{font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;border:1px solid var(--border-2);background:transparent;color:var(--fg-2);border-radius:999px;padding:8px 15px;cursor:pointer}
+.tab:hover{color:var(--fg);background:var(--surface)}
+.tab[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.panel{display:none;background:var(--bg-2);border:1px solid var(--border);border-radius:18px;padding:30px clamp(18px, 4vw, 38px)}
+.panel.on{display:block}
+.panel h3{font-family:var(--serif);font-size:26px;margin:0 0 6px}
+.panel .intro{color:var(--fg-2);margin:0 0 26px}
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+ol.steps > li{counter-increment:s;position:relative;padding:0 0 26px 54px}
+ol.steps > li::before{content:counter(s);position:absolute;left:0;top:-1px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:13px;background:var(--surface-2);border:1px solid var(--border-2);color:var(--fg)}
+ol.steps > li::after{content:"";position:absolute;left:17px;top:38px;bottom:4px;width:1px;background:var(--border-2)}
+ol.steps > li:last-child{padding-bottom:4px} ol.steps > li:last-child::after{display:none}
+ol.steps h4{margin:3px 0 4px;font-size:18px;font-weight:700}
+ol.steps p{margin:0 0 6px;color:var(--fg-2)}
+ol.steps ul{margin:6px 0 0;padding-left:20px;color:var(--fg-2)} ol.steps ul li{margin:3px 0}
+.note{display:flex;gap:12px;background:rgba(226,178,60,.07);border:1px solid rgba(226,178,60,.28);border-radius:12px;padding:12px 14px;margin:10px 0 4px;font-size:15px;color:var(--fg)}
+.note::before{content:"!";flex:none;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:13px;margin-top:1px}
+.note.tip{background:rgba(90,168,234,.07);border-color:rgba(90,168,234,.28)} .note.tip::before{content:"i";background:var(--blue);color:#06121d}
+.mock{display:inline-block;font-family:var(--sans);font-size:14px;background:#2b2f37;border:1px solid var(--border-2);border-radius:8px;padding:2px 9px;color:#fff;white-space:nowrap}
+.mock.blue{background:#2f6fd6;border-color:#2f6fd6}
+details{border-top:1px solid var(--border);margin-top:22px;padding-top:6px}
+details + details{margin-top:0}
+summary{cursor:pointer;padding:12px 0;font-weight:600;color:var(--fg);list-style:none;display:flex;align-items:center;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:var(--mono);color:var(--accent);width:16px}
+details[open] summary::before{content:"−"}
+details .dbody{padding:0 0 14px 26px;color:var(--fg-2)}
+details .dbody p{margin:0 0 8px}
+
+/* sync + features */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:860px){ .grid2,.grid3{grid-template-columns:1fr} }
+.box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px}
+.box h3{margin:0 0 6px;font-family:var(--serif);font-size:20px}
+.box p{margin:0;color:var(--fg-2);font-size:15.5px}
+.box .k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3);margin-bottom:8px}
+.feat .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;margin-bottom:12px;font-size:17px}
+
+footer{border-top:1px solid var(--border);padding:34px 0 calc(40px + env(safe-area-inset-bottom));color:var(--fg-3);font-family:var(--mono);font-size:12px}
+footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
+footer a{color:var(--fg-2)}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <a class="brand" href="./download.html"><img src="icon-192.png" alt="">Recall</a>
+  <nav><a href="#get">Download</a><a class="hide-sm" href="#install">How to install</a><a class="hide-sm" href="#sync">Sync</a><a href="./">Open app</a></nav>
+</div></header>
+
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <div class="eyebrow"><span class="dot"></span><span>Free</span><span>·</span><span>Mac · Windows · iPad · iPhone · Android</span></div>
+      <h1>Flashcards for the mistakes <em>you actually make.</em></h1>
+      <p class="lede">Recall turns every question you got wrong into a card: the question, what tripped you up, and the right working. Then it brings each one back just before you'd forget it.</p>
+      <div class="cta" id="herocta">
+        <a class="btn primary" id="heroBtn" href="#get">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          <span id="heroLabel">Download Recall</span>
+        </a>
+        <a class="btn" href="#install">How to install</a>
+      </div>
+      <div class="meta" id="metaLine">Latest version · checking…</div>
+    </div>
+    <div class="demo" aria-hidden="true">
+      <div class="card">
+        <div class="crumb">Maths › Year 12 › Integration</div>
+        <h3>Integration by parts</h3>
+        <p class="q">Find ∫ x e<sup>2x</sup> dx.</p>
+        <div class="sect mist"><b>My mistake</b>Picked u = e<sup>2x</sup>, which made the integral harder instead of easier.</div>
+        <div class="sect sol"><b>Correct solution</b>Let u = x, dv = e<sup>2x</sup> dx → ½x e<sup>2x</sup> − ¼e<sup>2x</sup> + C</div>
+        <div class="rates"><span>Again<small>1m</small></span><span>Hard<small>6m</small></span><span>Good<small>1d</small></span><span>Easy<small>4d</small></span></div>
+      </div>
+      <div class="float f1"><i style="background:var(--green)"></i>Synced to iPad</div>
+      <div class="float f2"><i style="background:var(--orange)"></i>Exam in 12 days</div>
+    </div>
+  </div>
+
+  <section id="get">
+    <div class="label">Download</div>
+    <h2>Get Recall on every device</h2>
+    <p class="sub">Recall is free. Install it on your computer, add it to your iPad or phone's home screen, and sign in on each one to keep a single library everywhere.</p>
+    <div class="plats">
+      <div class="plat" data-os="mac">
+        <span class="yourtag">Your device</span>
+        <div class="ph"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.37 12.6c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.48.83-.72 0-1.82-.81-3-.79-1.54.02-2.96.9-3.76 2.28-1.6 2.78-.41 6.9 1.15 9.15.76 1.1 1.67 2.34 2.86 2.3 1.15-.05 1.58-.74 2.97-.74 1.38 0 1.77.74 2.98.72 1.23-.02 2.01-1.12 2.76-2.23.87-1.28 1.23-2.52 1.25-2.58-.03-.01-2.4-.92-2.42-3.66ZM14.1 5.86c.63-.77 1.06-1.83.94-2.89-.91.04-2.01.61-2.66 1.37-.58.67-1.1 1.76-.96 2.8 1.01.08 2.05-.52 2.68-1.28Z"/></svg><h3>Mac</h3></div>
+        <p>The full desktop app, with your library saved on your Mac.</p>
+        <a class="btn primary" id="dlMac" href="https://github.com/whisz12/Recall/releases/latest/download/Recall-mac.zip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Download for Mac <small id="szMac"></small></a>
+        <div class="req">Apple silicon Mac (M1 or newer) · macOS 11+</div>
+      </div>
+      <div class="plat" data-os="win">
+        <span class="yourtag">Your device</span>
+        <div class="ph"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10 4.5v7H3zM11 4.3 21 3v8.5H11zM3 12.5h7v7L3 18.5zM11 12.5h10V21l-10-1.4z"/></svg><h3>Windows</h3></div>
+        <p>The full desktop app for Windows laptops and PCs.</p>
+        <a class="btn primary" id="dlWin" href="https://github.com/whisz12/Recall/releases/latest/download/Recall-windows.zip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Download for Windows <small id="szWin"></small></a>
+        <div class="req">Windows 10 or 11 · 64-bit</div>
+      </div>
+      <div class="plat" data-os="mobile">
+        <span class="yourtag">Your device</span>
+        <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="13" height="18" rx="2.2"/><rect x="15" y="9" width="6.5" height="12" rx="1.6" fill="var(--surface)"/><path d="M8 18h3"/></svg><h3>iPad, iPhone &amp; Android</h3></div>
+        <p>Nothing to download. Add Recall to your home screen and it opens like an app, even offline. Apple Pencil works in the scratchpad.</p>
+        <a class="btn" href="#install" data-jump="ios">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>Add to home screen</a>
+        <div class="req">Safari on iPad/iPhone · Chrome on Android</div>
+      </div>
+    </div>
+    <p class="meta" id="relNote" style="margin-top:18px">Every download is the newest version. Recall then updates itself, so you never have to download it again.</p>
+  </section>
+
+  <section id="install">
+    <div class="label">How to install</div>
+    <h2>Step by step</h2>
+    <p class="sub">Pick your device. Each takes about two minutes.</p>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="mac" aria-selected="true">Mac</button>
+      <button class="tab" role="tab" data-tab="win" aria-selected="false">Windows</button>
+      <button class="tab" role="tab" data-tab="ios" aria-selected="false">iPad &amp; iPhone</button>
+      <button class="tab" role="tab" data-tab="android" aria-selected="false">Android</button>
+      <button class="tab" role="tab" data-tab="other" aria-selected="false">Chromebook &amp; others</button>
+    </div>
+
+    <div class="panel on" data-panel="mac" role="tabpanel">
+      <h3>Install on a Mac</h3>
+      <p class="intro">Recall isn't from the App Store, so the first time you open it macOS asks you to confirm. That only happens once.</p>
+      <ol class="steps">
+        <li><h4>Check your Mac has Apple silicon</h4><p>Click the Apple menu  → <b>About This Mac</b>. If <b>Chip</b> says <b>Apple M1</b> or newer (M2, M3, M4, M5…), you're good. If it says <b>Processor: Intel</b>, use the <a href="./">web version</a> instead.</p></li>
+        <li><h4>Download Recall</h4><p>Click <a href="#get">Download for Mac</a>. You'll get <code>Recall-mac.zip</code> (about 110 MB) in your <b>Downloads</b> folder.</p></li>
+        <li><h4>Unzip it</h4><p>Open <b>Downloads</b> in Finder and double-click <code>Recall-mac.zip</code>. The <b>Recall</b> app appears next to it.</p></li>
+        <li><h4>Move it to Applications</h4><p>Drag <b>Recall</b> onto <b>Applications</b> in the Finder sidebar. (Running it from Downloads works too, but Applications keeps it tidy and in Launchpad.)</p></li>
+        <li><h4>Open it once</h4><p>Double-click Recall in Applications. macOS shows a message like <span class="mock">“Recall” Not Opened</span> or <i>“Apple could not verify Recall is free of malware”</i>. That's normal for apps from outside the App Store. Click <span class="mock">Done</span> (not <i>Move to Bin</i>).</p></li>
+        <li><h4>Allow it in Privacy &amp; Security</h4><p>Open <b>System Settings</b> → <b>Privacy &amp; Security</b> and scroll down to the <b>Security</b> section. Next to <i>“Recall was blocked to protect your Mac”</i>, click <span class="mock">Open Anyway</span>, then confirm with your password or Touch ID and click <span class="mock blue">Open Anyway</span> once more.</p>
+          <div class="note tip">On older macOS (Ventura or earlier) you can instead right-click Recall → <b>Open</b> → <b>Open</b>.</div></li>
+        <li><h4>Keep it in your Dock</h4><p>While Recall is open, right-click its Dock icon → <b>Options</b> → <b>Keep in Dock</b>. From now on it opens like any other app.</p></li>
+      </ol>
+      <details><summary>“Recall is damaged and can't be opened”</summary><div class="dbody">
+        <p>macOS sometimes says this about downloaded apps that aren't from the App Store. The app is fine. Open <b>Terminal</b> (⌘ Space, type Terminal), paste this and press Return, then open Recall again:</p>
+        <code class="block">xattr -cr /Applications/Recall.app</code></div></details>
+      <details><summary>Where are my cards kept?</summary><div class="dbody"><p>In a folder called <b>Recall</b> in your home folder (Finder → Go → Home). In the app, <b>File → Show Library in Finder</b> opens it. Turn on <a href="#sync">sync</a> to also keep a copy online.</p></div></details>
+      <details><summary>How do updates work?</summary><div class="dbody"><p>Recall checks for updates by itself. When one is ready, a bar says <b>“A new version of Recall is ready”</b>. Click <span class="mock">Restart now</span>. You can also use <b>Recall → Check for Updates…</b> in the menu bar.</p></div></details>
+    </div>
+
+    <div class="panel" data-panel="win" role="tabpanel">
+      <h3>Install on Windows</h3>
+      <p class="intro">Recall isn't from the Microsoft Store, so Windows asks you to confirm the first time. That only happens once.</p>
+      <ol class="steps">
+        <li><h4>Download Recall</h4><p>Click <a href="#get">Download for Windows</a>. You'll get <code>Recall-windows.zip</code> (about 115 MB) in your <b>Downloads</b> folder.</p></li>
+        <li><h4>Extract the zip</h4><p>Open <b>File Explorer</b> → <b>Downloads</b>, right-click <code>Recall-windows.zip</code> → <b>Extract All…</b> → <span class="mock">Extract</span>.</p>
+          <div class="note">Don't run Recall from inside the zip without extracting it first. It won't be able to save your cards.</div></li>
+        <li><h4>Put the folder somewhere permanent</h4><p>Move the extracted <b>Recall</b> folder somewhere it can stay, like <b>Documents</b>. Keep everything inside the folder together.</p></li>
+        <li><h4>Open Recall.exe</h4><p>Open the folder and double-click <b>Recall</b> (<code>Recall.exe</code>).</p></li>
+        <li><h4>Get past SmartScreen</h4><p>If a blue box says <span class="mock blue">Windows protected your PC</span>, click <b>More info</b>, then <span class="mock">Run anyway</span>. This only appears the first time.</p></li>
+        <li><h4>Make a shortcut</h4><p>While Recall is open, right-click its icon on the taskbar → <b>Pin to taskbar</b>. For a desktop shortcut, right-click <code>Recall.exe</code> → <b>Show more options</b> → <b>Send to</b> → <b>Desktop (create shortcut)</b>.</p></li>
+      </ol>
+      <details><summary>My antivirus blocked it</summary><div class="dbody"><p>Some antivirus programs are wary of new apps they haven't seen before. Choose <b>Allow</b> or <b>Restore</b> for Recall in your antivirus, then open <code>Recall.exe</code> again.</p></div></details>
+      <details><summary>Where are my cards kept?</summary><div class="dbody"><p>In a <b>Recall</b> folder inside your user folder (<code>C:\Users\<i>you</i>\Recall</code>). In the app, <b>File → Show Library in File Explorer</b> opens it. Turn on <a href="#sync">sync</a> to also keep a copy online.</p></div></details>
+      <details><summary>How do updates work?</summary><div class="dbody"><p>Recall checks for updates by itself. When one is ready, a bar says <b>“A new version of Recall is ready”</b>. Click <span class="mock">Restart now</span>. You can also go to <b>Themes → Updates → Check for updates</b>.</p></div></details>
+    </div>
+
+    <div class="panel" data-panel="ios" role="tabpanel">
+      <h3>Add to iPad or iPhone</h3>
+      <p class="intro">There's no App Store download. Recall runs from its website and, once it's on your home screen, opens full screen like any app and keeps working offline.</p>
+      <ol class="steps">
+        <li><h4>Open Recall in Safari</h4><p>On your iPad or iPhone, open <b>Safari</b> and go to <a id="appLink" href="./"><span class="mono" id="appUrl">whisz12.github.io/Recall</span></a>.</p></li>
+        <li><h4>Tap the Share button</h4><p>It's the square with an arrow pointing up <span class="mock">⬆︎</span>. On iPad it's at the top right; on iPhone it's at the bottom (or behind the <b>⋯</b> button on newer iOS).</p></li>
+        <li><h4>Tap “Add to Home Screen”</h4><p>Scroll down the list of actions to find <b>Add to Home Screen</b> (on newer iOS you may need to tap <b>View More</b> first). If you see <b>Open as Web App</b>, leave it switched on. Then tap <span class="mock blue">Add</span>.</p></li>
+        <li><h4>Open it from your home screen</h4><p>Always open Recall with the new <b>Recall</b> icon rather than from Safari. It opens full screen, without Safari's address bar, and works with no internet.</p></li>
+        <li><h4>Turn on sync</h4><p>Tap <b>Turn on sync</b> at the bottom of the sidebar and sign in (see <a href="#sync">Sync</a> below). This keeps your cards safe and matches them with your computer.</p>
+          <div class="note">Do this on iPad and iPhone. If your device ever clears website data, synced cards come straight back when you sign in.</div></li>
+      </ol>
+      <details><summary>Using Apple Pencil</summary><div class="dbody"><p>While studying, tap <b>Scratchpad</b> (or press <kbd>P</kbd> on a keyboard) to work out answers by hand. You get a stroke eraser, scribble-to-erase, and a full-screen mode with the question beside your working. Double-tap the page with a finger to swap between pen and eraser.</p></div></details>
+      <details><summary>How do updates work?</summary><div class="dbody"><p>Automatically. Each time you open Recall online it loads the newest version. If it has been open for a while, a bar offers <span class="mock">Reload</span> when there's an update.</p></div></details>
+    </div>
+
+    <div class="panel" data-panel="android" role="tabpanel">
+      <h3>Add to an Android phone or tablet</h3>
+      <p class="intro">Recall installs straight from its website in Chrome. No Play Store needed.</p>
+      <ol class="steps">
+        <li><h4>Open Recall in Chrome</h4><p>Go to <a href="./"><span class="mono">whisz12.github.io/Recall</span></a> in <b>Chrome</b>.</p></li>
+        <li><h4>Install it</h4><p>Tap the <b>⋮</b> menu at the top right → <b>Add to Home screen</b> (or <b>Install app</b>) → <span class="mock blue">Install</span>.</p></li>
+        <li><h4>Open it from your home screen</h4><p>Recall gets its own icon, opens full screen and works offline.</p></li>
+        <li><h4>Turn on sync</h4><p>Tap <b>Turn on sync</b> in the sidebar and sign in to match your cards with your other devices.</p></li>
+      </ol>
+    </div>
+
+    <div class="panel" data-panel="other" role="tabpanel">
+      <h3>Chromebooks, Linux, Intel Macs and school computers</h3>
+      <p class="intro">Anywhere with a modern browser can run Recall, with nothing to install.</p>
+      <ol class="steps">
+        <li><h4>Open Recall</h4><p>Go to <a href="./"><span class="mono">whisz12.github.io/Recall</span></a> in Chrome, Edge, Safari or Firefox.</p></li>
+        <li><h4>Install it (optional)</h4><p>In Chrome or Edge, click the <b>install</b> icon at the right of the address bar (a small screen with an arrow) → <span class="mock blue">Install</span>. Recall then gets its own window and app icon.</p></li>
+        <li><h4>Turn on sync</h4><p>Click <b>Turn on sync</b> in the sidebar and sign in. On a shared or school computer this matters: your cards live in your account, not on that computer.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="sync">
+    <div class="label">Sync</div>
+    <h2>One library on every device</h2>
+    <p class="sub">Sign in with the same email on each device and your cards, progress, images and theme stay matched. You can study offline and it catches up when you reconnect.</p>
+    <div class="grid3">
+      <div class="box"><div class="k">Step 1</div><h3>Turn on sync</h3><p>In Recall, click <b>Turn on sync</b> at the bottom of the sidebar.</p></div>
+      <div class="box"><div class="k">Step 2 · first device</div><h3>Create an account</h3><p>Enter your email and a password (6+ characters), then click <b>Create account</b>. Cards already in the app are uploaded.</p></div>
+      <div class="box"><div class="k">Step 3 · other devices</div><h3>Sign in</h3><p>Use the same email and password and click <b>Sign in</b>. Your cards appear within a few seconds.</p></div>
+    </div>
+    <p class="meta" style="margin-top:16px">Each person has their own private account. Nobody else can see your cards.</p>
+  </section>
+
+  <section id="features">
+    <div class="label">What's inside</div>
+    <h2>Built for exam prep</h2>
+    <p class="sub">Everything you need to turn mistakes into marks.</p>
+    <div class="grid3">
+      <div class="box feat"><div class="ic" style="background:rgba(238,111,111,.12);color:var(--red)">✕</div><h3>Mistake cards</h3><p>Question, what went wrong, and the correct solution, with screenshots, maths and rich notes.</p></div>
+      <div class="box feat"><div class="ic" style="background:rgba(95,196,140,.12);color:var(--green)">↻</div><h3>Spaced repetition</h3><p>Again, Hard, Good or Easy. Recall schedules each card for just before you'd forget it.</p></div>
+      <div class="box feat"><div class="ic" style="background:rgba(240,164,67,.12);color:var(--orange)">◷</div><h3>Exam countdowns</h3><p>Set exam dates and Recall makes sure everything comes up before the day. Timed mode practises speed.</p></div>
+      <div class="box feat"><div class="ic" style="background:rgba(90,168,234,.12);color:var(--blue)">✎</div><h3>Scratchpad</h3><p>Work answers out with Apple Pencil, a mouse or a trackpad, then save the working to the card.</p></div>
+      <div class="box feat"><div class="ic" style="background:rgba(226,178,60,.12);color:var(--accent)">▦</div><h3>Hide and reveal</h3><p>Cover parts of a diagram and test yourself on them, one box at a time.</p></div>
+      <div class="box feat"><div class="ic" style="background:rgba(255,255,255,.07);color:var(--fg)">⇄</div><h3>Bring your decks</h3><p>Import from Anki (.apkg) or Quizlet, and share your own decks with friends as a <code>.recall</code> file.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  <span>Recall · free spaced-repetition flashcards</span>
+  <span><a href="./">Open the web app</a> · <a href="https://github.com/whisz12/Recall/releases">All releases</a> · <a href="https://github.com/whisz12/Recall">GitHub</a></span>
+</div></footer>
+
+<script>
+(() => {
+  const REPO = 'whisz12/Recall', $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const mb = n => n ? Math.round(n / 1048576) + ' MB' : '';
+  const nice = d => d.toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
+
+  // which device is this? (iPads report themselves as Macs, so check for touch)
+  const ua = navigator.userAgent, touchMac = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+  const os = /iPhone|iPad|iPod/.test(ua) || touchMac ? 'ios' : /Android/.test(ua) ? 'android' : /Windows/.test(ua) ? 'win' : /Macintosh|Mac OS X/.test(ua) ? 'mac' : /CrOS|Linux/.test(ua) ? 'other' : null;
+
+  // tabs
+  const pick = t => { $$('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t))); $$('.panel').forEach(p => p.classList.toggle('on', p.dataset.panel === t)); };
+  $$('.tab').forEach(b => b.addEventListener('click', () => pick(b.dataset.tab)));
+  $$('[data-jump]').forEach(a => a.addEventListener('click', () => pick(a.dataset.jump)));
+
+  // highlight this device and point the big button at it
+  const card = { mac: 'mac', win: 'win', ios: 'mobile', android: 'mobile' }[os];
+  if (card) $(`.plat[data-os="${card}"]`)?.classList.add('yours');
+  if (os) pick(os);
+  const hero = $('#heroBtn'), label = $('#heroLabel');
+  if (os === 'mac'){ label.textContent = 'Download for Mac'; hero.href = $('#dlMac').href; }
+  else if (os === 'win'){ label.textContent = 'Download for Windows'; hero.href = $('#dlWin').href; }
+  else if (os === 'ios' || os === 'android'){ label.textContent = 'Add to your home screen'; hero.href = '#install'; hero.addEventListener('click', () => pick(os)); }
+  else if (os === 'other'){ label.textContent = 'Open the web app'; hero.href = './'; }
+
+  // the app's own address, wherever this page is hosted
+  const appUrl = new URL('./', location.href); $('#appUrl').textContent = (appUrl.host + appUrl.pathname).replace(/\/$/, '');
+
+  // newest version on GitHub (updates whenever new files are uploaded)
+  fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(v => {
+    if (!v || !/^\d{14}$/.test(v.build)) { $('#metaLine').textContent = ''; return; }
+    const b = v.build, d = new Date(+b.slice(0, 4), +b.slice(4, 6) - 1, +b.slice(6, 8));
+    $('#metaLine').innerHTML = `Latest version · ${nice(d)} · <a href="./">or use it in your browser</a>`;
+  }).catch(() => { $('#metaLine').textContent = ''; });
+
+  // the downloads always come from the newest GitHub release, whatever the files are called
+  fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers: { Accept: 'application/vnd.github+json' } }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(rel => {
+    const as = rel.assets || [], mac = as.find(a => /mac|darwin|osx/i.test(a.name) && /\.zip$/i.test(a.name)), win = as.find(a => /win/i.test(a.name) && /\.(zip|exe)$/i.test(a.name));
+    if (mac){ $('#dlMac').href = mac.browser_download_url; $('#szMac').textContent = mb(mac.size); }
+    if (win){ $('#dlWin').href = win.browser_download_url; $('#szWin').textContent = mb(win.size); }
+    if (os === 'mac' && mac) hero.href = mac.browser_download_url;
+    if (os === 'win' && win) hero.href = win.browser_download_url;
+    $('#relNote').innerHTML = `Desktop app ${rel.tag_name ? rel.tag_name.replace(/^v/, 'v') : ''} · released ${nice(new Date(rel.published_at))}. Recall updates itself after you install it, so you never need to download it again.`;
+  }).catch(() => {});
+})();
+</script>
+</body>
+</html>
