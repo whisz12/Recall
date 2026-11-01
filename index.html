@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261101222532";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261101230032";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -469,6 +469,8 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.45}
 @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.99)}to{opacity:1;transform:none}}
 .dialog header{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--border)}
 .dialog header h2{margin:0;font-size:15.5px;font-weight:600;flex:1}
+.updbar{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:65;display:flex;align-items:center;gap:10px;flex-wrap:wrap;max-width:min(520px,calc(100% - 36px));background:var(--surface-2);border:1px solid var(--border-2);border-radius:12px;padding:10px 12px 10px 14px;box-shadow:0 14px 36px rgba(0,0,0,.45);font-size:13.5px}
+.updbar span{flex:1;min-width:200px}
 .ednav{display:inline-flex;align-items:center;gap:2px;margin-right:4px;font-family:var(--chrome);font-size:12px;color:var(--fg-2)}
 .ednav .icon{font-size:15px;line-height:1}
 .ednav .icon[disabled]{opacity:.3;pointer-events:none} .ednavn{min-width:54px;text-align:center;font-variant-numeric:tabular-nums}
@@ -2721,6 +2723,7 @@ function themeSwatch(id, th){ return `<button class="thcard" data-act="th-pick" 
   <div class="thname">${esc(th.name)}<small>${lum(th.bg) < .3 ? 'Dark' : 'Light'}</small></div></button>`; }
 let fontSlot = 'all';
 function renderThemes(){
+  setTimeout(updAbout, 0);
   loadFonts(FONTS.map(f => f.id));
   const ts = themeSettings(), t = themeColours(ts), o = ts.over || {}, nOver = Object.keys(o).length;
   const row = ([k, label]) => `<div class="crow" data-k="${k}"><span class="${o[k] ? 'ov' : ''}">${esc(label)}</span><input type="color" class="cpick" data-ck="${k}" value="${t[k]}" aria-label="${esc(label)} colour"><input class="in chex" data-hk="${k}" value="${t[k]}" spellcheck="false" aria-label="${esc(label)} hex code"><button class="creset" data-act="th-reset1" data-k="${k}" title="Back to the theme's colour" aria-label="Reset ${esc(label)}" ${o[k] ? '' : 'hidden'}>↺</button></div>`;
@@ -2745,6 +2748,7 @@ function renderThemes(){
       <label class="rrange">Panel opacity<input type="range" min="40" max="100" step="1" data-rg="panel" value="${Math.round((ts.panel ?? .88) * 100)}"><b>${Math.round((ts.panel ?? .88) * 100)}%</b></label>` : '<p class="sub" style="margin:10px 0 0">Any photo works. Dim and blur sliders appear once it\'s added so text stays readable.</p>'}
     </div>
     <div class="panel"><h2>Subject colours</h2><p class="sub" style="margin:-6px 0 8px">Topics use their subject's colour unless you right-click one and pick its own.</p><div class="subjc">${kids(null).map(n => `<div class="crow" style="grid-template-columns:minmax(0,1fr) 36px 82px 24px"><span><span class="sdot" style="background:${scol(n.id)}"></span>${esc(n.name)}</span><input type="color" class="cpick" data-subj="${n.id}" value="${isHex(scol(n.id)) ? scol(n.id) : '#9aa6ff'}" aria-label="${esc(n.name)} colour"><input class="in chex" data-subjhex="${n.id}" value="${isHex(scol(n.id)) ? scol(n.id) : ''}" spellcheck="false" aria-label="${esc(n.name)} hex code"><button class="creset" data-act="subj-auto" data-id="${n.id}" title="Back to automatic colour" ${n.color ? '' : 'hidden'}>↺</button></div>`).join('') || '<p class="sub">No subjects yet.</p>'}</div></div>
+    <div class="panel"><h2>Updates</h2><p class="sub" id="aboutv" style="margin:-6px 0 10px">Checking…</p><button class="btn sm" data-act="upd-check">Check for updates</button></div>
   </div>
   <div class="stickyprev"><div class="panel" style="padding:14px"><h2>Preview</h2>
     <div class="qa tprev"><div class="label"><span class="dot" style="background:${scol(kids(null)[0]?.id || '')}"></span>Economics › Topic 1</div><div class="qtext">${esc(demoQ.qText)}</div><hr>
@@ -4116,6 +4120,9 @@ document.addEventListener('click', async e => {
     case 'show': return showAnswer();
     case 'rate': return rate(+a.dataset.r);
     case 'edit': return editor(id || study?.cur);
+    case 'upd-check': return updCheck(true);
+    case 'upd-go': return updGo();
+    case 'upd-later': return $('#updbar')?.remove();
     case 'ednav': return edNav(+a.dataset.dir);
     case 'clean-img': { e.stopPropagation(); if (!ed) return; const z = a.dataset.zone, i = +a.dataset.i, e0 = ed; const im = z === 'q' ? (e0.card.qImgs || [])[i] : (e0.card.solImgs || [])[i]; if (!im) return;
       const crop = a.dataset.mode === 'crop';
@@ -4217,6 +4224,49 @@ document.addEventListener('keydown', e => {
     if (e.key === 's' && view.name === 'overview') return startStudy(view.node);
   }
 });
+
+/* ---------- updates ----------
+   iPad / phone / browser: the page comes straight from GitHub; while it stays open it checks version.json and offers a reload.
+   Mac / Windows: the app downloads newer pages from GitHub itself (see main.js) and offers a restart. */
+const fmtBuild = b => b && /^\d{14}$/.test(b) ? new Date(+b.slice(0, 4), +b.slice(4, 6) - 1, +b.slice(6, 8), +b.slice(8, 10), +b.slice(10, 12)).toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'unknown';
+const updS = { ready: null, lastWeb: 0, manual: false };
+function updBar(m){
+  if (m.state === 'current'){ if (updS.manual) toast('Recall is up to date'); updS.manual = false; return updAbout(); }
+  if (m.state === 'error'){ if (updS.manual) toast('Couldn’t check for updates: ' + (m.msg || 'no connection')); updS.manual = false; return; }
+  updS.manual = false;
+  $('#updbar')?.remove();
+  const el = document.createElement('div'); el.id = 'updbar'; el.className = 'updbar'; el.setAttribute('role', 'status');
+  if (m.state === 'shell') el.innerHTML = `<span>The latest Recall update needs a one-time reinstall of the app. Ask Claude for the newest Mac/Windows download.</span><button class="btn sm" data-act="upd-later">OK</button>`;
+  else { updS.ready = m.build; el.innerHTML = `<span><b>A new version of Recall is ready.</b> ${window.desktop ? 'Restart to use it.' : 'Reload to use it.'}</span><button class="btn sm primary" data-act="upd-go">${window.desktop ? 'Restart now' : 'Reload'}</button><button class="btn sm" data-act="upd-later">Later</button>`; }
+  document.body.appendChild(el); updAbout();
+}
+function updGo(){
+  if (window.desktop?.restartUpdate) return window.desktop.restartUpdate();
+  // a fresh query string skips any cached copy of the page; the address is tidied up again after loading
+  const go = () => location.replace(location.pathname + '?v=' + (updS.ready || Date.now()));
+  Promise.resolve(navigator.serviceWorker?.getRegistration?.()).then(r => r?.update()).catch(() => {}).finally(go);
+}
+async function updCheck(manual){
+  updS.manual = !!manual;
+  if (window.desktop?.checkUpdate){ if (manual) toast('Checking for updates…', 1500); return window.desktop.checkUpdate(); }
+  if (!window.RECALL_HOSTED || !navigator.onLine){ if (manual) toast(navigator.onLine ? 'Updates come from GitHub when you use the hosted app.' : 'You’re offline. Recall will check when you’re back online.'); updS.manual = false; return; }
+  updS.lastWeb = Date.now();
+  try { const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) throw new Error('GitHub replied ' + r.status); const v = await r.json();
+    if (/^\d{14}$/.test(v.build) && v.build > (window.RECALL_BUILD || '0')) updBar({ state: 'ready', build: v.build }); else updBar({ state: 'current' }); }
+  catch (e) { updBar({ state: 'error', msg: e.message }); }
+}
+async function updAbout(){
+  const el = $('#aboutv'); if (!el) return;
+  if (window.desktop?.appInfo){ const i = await window.desktop.appInfo().catch(() => null); if (!i || !$('#aboutv')) return;
+    $('#aboutv').innerHTML = `App ${esc(i.shell)} · version from ${esc(fmtBuild(i.build))}${i.updated ? ' (updated from GitHub)' : ''}.${i.ready ? ' <b>A newer version is ready: restart Recall to use it.</b>' : ''} Recall checks GitHub for updates by itself, so one upload there updates every device.`; return; }
+  el.innerHTML = window.RECALL_HOSTED ? `Version from ${esc(fmtBuild(window.RECALL_BUILD))}.${updS.ready ? ' <b>A newer version is ready: reload to use it.</b>' : ''} This app loads from GitHub, so it updates itself.` : 'This copy doesn’t update itself.';
+}
+if (window.desktop?.onUpdate) window.desktop.onUpdate(updBar);
+if (window.RECALL_HOSTED){
+  if (/[?&]v=\d+/.test(location.search)) history.replaceState(null, '', location.pathname + location.hash);
+  setTimeout(() => updCheck(false), 8000); setInterval(() => updCheck(false), 30 * 60e3);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Date.now() - updS.lastWeb > 10 * 60e3) updCheck(false); });
+}
 function lhMigrate(){
   if (ls.get('lh-look-1', false)) return; ls.set('lh-look-1', true);
   const ts = { ...themeSettings(), base: 'harness', over: {}, layout: 'harness' }; Object.values(FONT_KEY).forEach(k => delete ts[k]);
