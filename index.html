@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261102002241";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261102005121";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -196,8 +196,6 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .sidecd .nm{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sidecd .meta{font-family:var(--chrome);font-size:10px;color:var(--fg-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sidecd.soon{background:color-mix(in srgb, var(--again) 9%, transparent)}
-.sideadd{opacity:0;transition:opacity .12s} #sidesubs:hover .sideadd,.sideadd:focus-visible{opacity:1}
-@media (hover:none){ .sideadd{opacity:1} }
 .hcount{display:none;flex-wrap:wrap;gap:4px 14px;margin-top:8px}
 .hcount button{border:0;background:none;padding:0;font-family:var(--chrome);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb, var(--again) 80%, var(--fg-2));cursor:pointer}
 .hcount button b{color:var(--again);font-weight:700}
@@ -769,7 +767,9 @@ mark{background:color-mix(in srgb, #ffd43b 42%, transparent);color:inherit;borde
 body.desktop .cloudpill{margin-top:auto;justify-content:center;border-radius:10px;padding:8px 10px;background:transparent;font-family:var(--side-font)}
 body.desktop .cloudpill + .sideadd{margin-top:8px}
 .cloudhero{display:flex}
-@media (max-width:760px){ .cloudpill span{display:none} .cloudpill{padding:6px} }
+@media (max-width:760px){ .cloudpill span{display:none} .cloudpill{padding:6px} body:not(.desktop) .toolbar #cloudpill{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;margin:0} }
+/* phones: study pills wrap instead of running off the screen, and never break inside a pill */
+.lhpills{flex-wrap:wrap} .lhpill,.studytop .link,.studytop .tpill{white-space:nowrap} .studytop{flex-wrap:wrap;row-gap:6px}
 
 /* Windows app */
 html.win.desktop, html.win body.desktop{background:var(--bg) !important}
@@ -976,8 +976,10 @@ body.desktop .sidesres .sidelabel{padding-top:2px}
 .padwrap.full{position:fixed;inset:0;z-index:45;margin:0;max-width:none;border:0;border-radius:0;display:flex;flex-direction:column;background:var(--bg);padding-top:env(safe-area-inset-top,0px)}
 .padwrap.full,.padwrap.full *{-webkit-app-region:no-drag}
 .padwrap.full .padbar{background:var(--surface);padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
-body.desktop:not(.win) .padwrap.full .padbar{padding-left:84px;min-height:46px}
-body.desktop.win .padwrap.full .padbar{padding-right:150px;min-height:40px}
+body.desktop:not(.win):not(.hosted) .padwrap.full .padbar{padding-left:84px;min-height:46px}
+body.desktop.win:not(.hosted) .padwrap.full .padbar{padding-right:150px;min-height:40px}
+@media (max-width:700px){ .padwrap.full .padbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none} .padwrap.full .padbar::-webkit-scrollbar{display:none} .padwrap.full .padbar > *{flex:none} .padwrap.full .padbar .dlabel,.padwrap.full .padbar .grow,.padwrap.full .hintm{display:none} }
+.padb{white-space:nowrap}
 .padbody{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,var(--pqa)) 12px minmax(0,var(--pqb))}
 .padq{overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--surface);padding:18px 20px 40px}
 .padq .padqa{max-width:none;margin:0;padding:0;border:0;border-radius:0;box-shadow:none;background:transparent;font-size:16px}
@@ -1533,7 +1535,7 @@ function examPill(id){ const ex = S.nodes[id]?.exam; if (!ex?.date || examTs(ex.
 /* countdown rows for the sidebar (Mac, Windows, iPad); click to prep or edit, right-click for options */
 function examSide(){
   const ex = upcomingExams(); if (!ex.length) return '';
-  return `<div class="sidelabel sidelabrow sidecdh" style="margin-top:16px"><span>Countdowns</span><button class="sideclr sideadd" data-act="gexam-edit" title="New countdown">+ New</button></div>` + ex.slice(0, 6).map(e => {
+  return `<div class="sidelabel sidelabrow sidecdh" style="margin-top:16px"><span>Countdowns</span><button class="sideclr" data-act="gexam-edit" title="New countdown">+ New</button></div>` + ex.slice(0, 6).map(e => {
     const d = daysTo(e.ts), date = new Date(e.ts).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
     const act = e.gen ? `data-act="gexam-edit" data-id="${e.gen.id}" data-exg="${e.gen.id}" title="${esc(e.name)} · click to edit, right-click for options"` : `data-act="exam-prep" data-id="${e.node.id}" data-exn="${e.node.id}" title="${esc(e.name)} · click to prep for it, right-click for options"`;
     return `<button class="sidecd ${d <= 7 ? 'soon' : ''}" ${act}><span class="cdd"><b>${d}</b>${d === 1 ? 'day' : 'days'}</span><span class="cdi"><span class="nm">${esc(e.name)}</span><span class="meta">${e.gen ? '' : esc(pathOf(e.node.id)[0]?.name || '') + ' · '}${date}</span></span></button>`;
@@ -2622,7 +2624,7 @@ function renderBrowse(){
   const rows = cs.slice(0, 400).map(c => {
     const added = c.createdAt ? new Date(c.createdAt).toLocaleDateString(undefined, { day:'numeric', month:'short', year:'numeric' }) : '—';
     return `<tr data-act="edit" data-id="${c.id}" data-card="${c.id}" draggable="true" title="Drag onto a deck in the sidebar to move it (hold ⌥ Option to also keep it here)"><td><div class="q">${c.qImg ? `<button class="bthumb" data-gallery="${c.id}" data-i="0" aria-label="View question image" title="View images"><img src="${esc(imgSrc(c.qImg))}" alt="" loading="lazy"></button>` : ''}<div style="min-width:0"><div class="qt">${c.kind === 'learn' ? '<span class="ktag">Knowledge</span>' : ''}${c.label ? `<b>${esc(c.label)}</b> ` : ''}${esc(plainMd(c.qText) || (c.qImg ? '' : 'No question'))}</div>${c.mistake && c.kind !== 'learn' ? `<div class="sub qt" style="color:var(--mistake)">${esc(plainMd(c.mistake))}</div>` : ''}${(c.solImgs||[]).length ? `<button class="solink" data-gallery="${c.id}" data-i="${c.qImg ? 1 : 0}">View ${c.solImgs.length} ${c.kind === 'learn' ? 'explanation' : 'solution'} image${c.solImgs.length===1?'':'s'}</button>` : ''}</div></div></td>
-      <td class="hide-sm sub">${esc(pathOf(c.nodeId).slice(1).map(n=>n.name).join(' :: ') || pathName(c.nodeId))}${linkedHere(c, browse.node) ? ` <span class="ltag" title="Linked here; the deck shown is its home">linked</span> <button class="link sm" data-act="unlink-here" data-id="${c.id}" data-ref="${esc(browse.node)}">remove from here</button>` : (c.also || []).length ? ` <span class="ltag" title="Also in: ${esc((c.also || []).map(refName).join(', '))}">+${c.also.length} more</span>` : ''}</td><td class="sub nowrap">${added}</td><td class="nowrap">${isDone(c) ? `${rateTag(c)}<span class="sub"> ${c.srs.reps}×</span>` : '<span class="sub">Not done</span>'}</td>
+      <td class="hide-sm sub">${esc(pathOf(c.nodeId).slice(1).map(n=>n.name).join(' :: ') || pathName(c.nodeId))}${linkedHere(c, browse.node) ? ` <span class="ltag" title="Linked here; the deck shown is its home">linked</span> <button class="link sm" data-act="unlink-here" data-id="${c.id}" data-ref="${esc(browse.node)}">remove from here</button>` : (c.also || []).length ? ` <span class="ltag" title="Also in: ${esc((c.also || []).map(refName).join(', '))}">+${c.also.length} more</span>` : ''}</td><td class="hide-sm sub nowrap">${added}</td><td class="nowrap">${isDone(c) ? `${rateTag(c)}<span class="sub"> ${c.srs.reps}×</span>` : '<span class="sub">Not done</span>'}</td>
       <td><button class="icon" aria-label="Preview card" title="Preview" data-act="preview" data-id="${c.id}">▶</button></td></tr>`;
   }).join('');
   $('#root').innerHTML = `<div class="wide browser">
@@ -2635,7 +2637,7 @@ function renderBrowse(){
       </div>
       ${filters}
       <div class="bmeta"><p class="sub" style="margin:0">${cs.length} card${cs.length===1?'':'s'}${browse.node ? ' in ' + esc(pathName(browse.node)) : ''}</p>${cs.length ? `<span class="bbtns"><button class="btn sm" data-act="link-list">Add these ${cs.length} to a deck…</button><button class="btn sm primary" data-act="practise-list">Practise these ${cs.length}</button></span>` : ''}</div>
-      ${cs.length ? `<div class="tabwrap"><table class="btable"><thead><tr><th>Question</th><th class="hide-sm">Deck</th><th>Added</th><th>Progress</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : `<div class="empty"><p>No cards match.</p></div>`}
+      ${cs.length ? `<div class="tabwrap"><table class="btable"><thead><tr><th>Question</th><th class="hide-sm">Deck</th><th class="hide-sm">Added</th><th>Progress</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : `<div class="empty"><p>No cards match.</p></div>`}
     </section></div>`;
 }
 
