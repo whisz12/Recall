@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261103225936 min-shell:1.27.0 -->
+<!-- recall-build:20261103232505 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -2259,6 +2259,28 @@ html.lh.pat-stars .msheet{background-size:600px auto}
 html.stripe body.desktop .page::before{content:"";position:sticky;top:var(--appbar);z-index:6;display:block;height:4px;margin:-28px var(--pgx,0px) 24px;border-radius:11px 11px 0 0;background:var(--stripe);transition:background .4s}
 @media (max-width:700px){ .tdadd{height:46px} .tdof{display:none} .sttdr{grid-template-columns:8px minmax(0,1fr) auto} .sttdr .stmini{display:none} }
 @media (prefers-reduced-motion:reduce){ .tdr *,.tdr,.sttdbars i,.brfig img{animation:none !important;transition:none !important} }
+/* round 6: to-do card with its header inside, deck page tighter, picker buttons */
+.tdo{margin:var(--s6) 0 0}
+.tdoh{display:flex;align-items:center;gap:10px;margin:0;padding:14px 14px 10px 16px;min-height:0}
+.tdohl{display:flex;flex-direction:column;gap:2px;min-width:0}
+.tdprog{height:3px;margin:0 16px 10px;border-radius:2px;background:rgba(var(--ovr),.08);overflow:hidden}
+.tdprog i{display:block;height:100%;border-radius:2px;background:var(--sc);transition:width .5s var(--ease)}
+.tdadd{border-top:1px solid var(--border)}
+.tdbox > .tdprog + .tdadd,.tdbox > .tdoh + .tdadd{border-top:1px solid var(--border)}
+.tdr{padding-left:12px}
+.tdodue{margin-left:6px}
+.ovside .tdo{margin-top:var(--s5)}
+.ovside > .tdo:first-child{margin-top:0}
+.ovsub .gln small{display:block;font:500 12px var(--ui);color:var(--fg-3);margin-top:1px}
+.ovhead{padding-top:28px;padding-bottom:22px;gap:10px}
+.ovhead h1{font-size:30px}
+.ovbody{gap:var(--s5) var(--s6) !important;padding-top:var(--s5) !important}
+.brdeckf,.pxfield{position:relative;gap:6px}
+.brdeckf .pickpop,.pxfield .pickpop{right:auto;width:340px;max-width:calc(100vw - 32px)}
+.pxsolrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:30px}
+.pxfront{padding:14px 16px;font:600 16px/1.35 var(--ui);color:var(--fg)}
+.pxdef p{margin:4px 0 0;font:400 14px/1.45 var(--ui);color:#222}
+.pxlbl{flex:1;width:auto}
 
 </style>
 
@@ -2698,11 +2720,11 @@ function renderDecks(){
         <button class="icon soft" aria-label="Options for ${esc(subj.name)}" data-act="gear" data-id="${subj.id}">${I.gear}</button>
       </div>`}
       ${topics.length ? `<div class="tcols">${[...full, ...empty].map(tcard).join('')}</div>` : ''}
+      ${todoSection(subj.id)}
       ${recent.length || forgot.length ? `<div class="dklower">
         ${recent.length ? `<section><div class="glhead"><h2>Pick up where you left off</h2></div>${recentHtml}</section>` : ''}
         ${forgot.length ? `<section><div class="glhead"><h2>You keep forgetting</h2><button class="link acc" data-act="practise-forgot" data-id="${subj.id}">Practise ${forgot.length}</button></div>${forgotHtml}</section>` : ''}
       </div>` : ''}
-      ${todoSection(subj.id)}
     </div>
     ${foot}
   </div>`;
@@ -2946,12 +2968,13 @@ function renderOverview(){
       <section>
         ${bubbles.length ? `<h2>Question types</h2><div class="bbubs">${bubbles.map(deckBubble).join('')}</div>` : ''}
         <div class="glhead"><h2>${n.parentId ? 'Subtopics' : 'Topics'}</h2><button class="link" data-act="add-child" data-id="${esc(n.id)}">+ New</button></div>
-        ${chips.length ? `<div class="glist">${chips.map(s => { const sn = cardsIn(s.id).length, sd = toStudy(counts(s.id)), sk = cardsIn(s.id).filter(x => isDone(x) && lastRate(x) >= 3).length; return `<button class="glrow ovsub" data-act="open" data-id="${esc(s.id)}" data-drop="${esc(s.id)}"><span class="gln"><span>${esc(s.name)}</span></span><span class="stmini"><i style="width:${sn ? sk / sn * 100 : 0}%"></i></span><span class="glm">${sn}</span><span class="glm due">${sd ? sd + ' due' : ''}</span></button>`; }).join('')}</div>` : ''}
-      </section>
-      <section>
-        <div class="glhead"><h2>Got wrong lately</h2>${wrong.length ? `<button class="link acc" data-act="practise-forgot" data-id="${esc(n.id)}">Practise these</button>` : ''}</div>
-        ${wrong.length ? wrong.map(x => `<button class="ovwrong" data-act="study-one" data-id="${x.id}"><span class="ovwh"><b>${esc(x.label || 'Card')}</b><span>${esc(pathOf(x.nodeId).slice(-1)[0]?.name || '')}</span><span class="glx">×${failCount(x)}</span></span><span class="ovwq">${esc((plainMd(x.qText) || (x.qImg ? 'Image question' : '')).slice(0, 140))}</span></button>`).join('') : ''}
+        ${chips.length ? `<div class="glist">${chips.map(s => { const sn = cardsIn(s.id).length, sd = toStudy(counts(s.id)), sk = cardsIn(s.id).filter(x => isDone(x) && lastRate(x) >= 3).length; return `<button class="glrow ovsub" data-act="open" data-id="${esc(s.id)}" data-drop="${esc(s.id)}"><span class="gln"><span>${esc(s.name)}</span><small>${sk} of ${sn} known</small></span><span class="stmini"><i style="width:${sn ? sk / sn * 100 : 0}%"></i></span><span class="glm due">${sd ? sd + ' due' : ''}</span></button>`; }).join('')}</div>` : ''}
         <div class="ovlinks"><button class="link" data-act="browse-here" data-id="${esc(n.id)}">See all ${cs.length} cards in Browse</button></div>
+      </section>
+      <section class="ovside">
+        ${wrong.length ? `<div class="glhead"><h2>Got wrong lately</h2><button class="link acc" data-act="practise-forgot" data-id="${esc(n.id)}">Practise these</button></div>
+        ${wrong.map(x => `<button class="ovwrong" data-act="study-one" data-id="${x.id}"><span class="ovwh"><b>${esc(x.label || 'Card')}</b><span>${esc(pathOf(x.nodeId).slice(-1)[0]?.name || '')}</span><span class="glx">×${failCount(x)}</span></span><span class="ovwq">${esc((plainMd(x.qText) || (x.qImg ? 'Image question' : '')).slice(0, 140))}</span></button>`).join('')}` : ''}
+        ${todoSection(ps[0].id)}
       </section>
     </div>
   </div>`;
@@ -4178,7 +4201,7 @@ function renderBrowse(){
       <div class="brhead">
         <label class="brsearch"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input id="bsearch" type="search" placeholder="Search questions, mistakes, solutions" value="${esc(browse.q)}" aria-label="Search cards"></label>
         <div class="brfil">
-          <button type="button" class="brdeck ${browse.node ? 'on' : ''}" id="bdeckbtn" aria-haspopup="true">${browse.node ? `<span class="sdot2" style="--sc:${scol(browse.node)}"></span>${esc(deckShort(browse.node))}` : 'All decks'}<span class="pkcar">▾</span></button>
+          <span class="field brdeckf"><button type="button" class="brdeck pickbtn ${browse.node ? 'on' : ''}" id="bdeckbtn" aria-haspopup="true" aria-expanded="false">${browse.node ? `<span class="sdot2" style="--sc:${scol(browse.node)}"></span>${esc(deckShort(browse.node))}` : 'All decks'}<span class="pkcar">▾</span></button></span>
           ${browse.node ? `<button type="button" class="brclr" data-act="bnode" data-id="" aria-label="Show all decks">${I.x}</button>` : ''}
           <select class="brsel" id="bstatus" aria-label="Status">${stOpt.map(([v, l]) => `<option value="${v}" ${browse.status === v ? 'selected' : ''}>${l} · ${cnt(v)}</option>`).join('')}</select>
           <select class="brsel" id="brate" aria-label="Last rating"><option value="0">Any rating</option>${[1, 2, 3, 4].map(r => `<option value="${r}" ${browse.rate === r ? 'selected' : ''}>Last: ${RATES[r][0]}</option>`).join('')}</select>
@@ -4190,7 +4213,7 @@ function renderBrowse(){
     <section class="brprev" id="brprev" aria-label="Selected card"></section>
   </div>`;
   browsePreview();
-  $('#bdeckbtn')?.addEventListener('click', () => openPicker($('#bdeckbtn'), { multi: false, bubbles: true, sel: new Set([browse.node || '']), onPick: id => { browse.node = id || null; closePicker(); renderBrowse(); } }));
+  $('#bdeckbtn')?.addEventListener('click', e => { e.stopPropagation(); openPicker($('#bdeckbtn'), { multi: false, bubbles: true, sel: new Set([browse.node || '']), onPick: id => { browse.node = id || null; closePicker(); renderBrowse(); } }); });
   $('#brrows .brow[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
 }
 function browseSelect(id, open, key){
@@ -5815,7 +5838,9 @@ function pdfLib(){
 }
 const isPdf = f => !!f && (f.type === 'application/pdf' || /\.pdf$/i.test(f.name || ''));
 const PX_STOP = /^(section\s+[ivx]+\b|attempt questions|allow about|answer (each|questions)|extra writing space|end of (question|paper|section|exam|examination|test)|blank page|this page (is )?(intentionally )?(left )?blank|please turn over|office use only|do not write)/i;
-const PX_Q = /^question\s+(\d{1,2})\b(?:\s*\(([a-h])\))?/i, PX_N = /^(\d{1,2})(?:[.)](?=\s|$)|\s+(?=\S)|$)/, PX_P = /^\(([a-h])\)/;
+const PX_Q = /^(?:question|q)\.?\s*(\d{1,2})\b\s*(?:\(([a-h])\)|([a-h])\b(?=[\s.)]))?/i, PX_N = /^(\d{1,2})(?:[.)](?=\s|$)|\s+(?=\S)|$)/, PX_P = /^\(([a-h])\)/;
+const PX_SOLHEAD = /^(?:worked\s+|sample\s+|suggested\s+|full\s+)?(?:solutions?|answers?|answer\s+key|marking\s+(?:guidelines?|criteria|scheme)|mark(?:ing)?\s+scheme)\b[\s:.]*$/i;
+const PX_SOLLINE = /^(?:solutions?|answers?|worked\s+solution|sample\s+answer|ans)\b\s*[:.\-–]?/i;
 async function pxRead(file){
   const L = await pdfLib(), doc = await L.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
   const pages = [];
@@ -5824,24 +5849,38 @@ async function pxRead(file){
     const its = tc.items.filter(i => i.str && i.str.trim()).map(i => { const [, , c, d, e, f] = i.transform, h = Math.abs(d) || Math.hypot(c, d) || 10; return { s: i.str, x: e, y: vp.height - f - h * .85, h, r: e + (i.width || 0) }; }).sort((p, q) => p.y - q.y || p.x - q.x);
     const lines = [];
     for (const it of its){ const ln = lines.slice(-4).find(l => Math.abs(l.y - it.y) < Math.max(2.5, it.h * .4)); if (ln){ ln.items.push(it); ln.b = Math.max(ln.b, it.y + it.h); } else lines.push({ y: it.y, b: it.y + it.h, items: [it] }); }
-    for (const l of lines){ l.items.sort((p, q) => p.x - q.x); l.x = l.items[0].x; l.text = l.items.map(i => i.s).join(' ').replace(/\s+/g, ' ').trim(); }
+    for (const l of lines){ l.items.sort((p, q) => p.x - q.x); l.x = l.items[0].x; l.r = Math.max(...l.items.map(i => i.r)); l.h = Math.max(...l.items.map(i => i.h)); l.text = l.items.map(i => i.s).join(' ').replace(/\s+/g, ' ').trim(); }
     const body = lines.filter(l => l.y > vp.height * .05 && l.b < vp.height * .95 && !(/^[–—-]?\s*\d{1,3}\s*[–—-]?$/.test(l.text) && l.x > vp.width * .3 && l.x < vp.width * .7));
     const xs = body.map(l => l.x).sort((a, b) => a - b), margin = xs.length ? xs[Math.floor(xs.length * .05)] : 50;
     pages.push({ n, w: vp.width, h: vp.height, lines: body, margin, pg });
   }
-  return { doc, pages, total: doc.numPages };
+  const hs = pages.flatMap(p => p.lines.map(l => Math.round(l.h * 2) / 2)).sort((a, b) => a - b);
+  return { doc, pages, total: doc.numPages, bodyH: hs.length ? hs[Math.floor(hs.length / 2)] : 11, textLines: hs.length };
+}
+/* the same pages, but only the lines inside [from, to) — used to read the questions and the solutions of one PDF separately */
+const pxAt = (p, y) => p * 100000 + y;
+function pxSlice(R, from, to){ return { ...R, pages: R.pages.map(p => ({ ...p, lines: p.lines.filter(l => pxAt(p.n, l.y) >= from && pxAt(p.n, l.y) < to) })) }; }
+/* a "Solutions" / "Answers" / "Marking guidelines" heading after the questions splits one PDF into questions and answers */
+function pxSplit(R){
+  const st = pxStarts(R.pages).filter(s => s.k !== 'stop'); if (st.length < 2) return null;
+  for (const p of R.pages) for (const l of p.lines){
+    if (!PX_SOLHEAD.test(l.text) || l.text.length > 40) continue;
+    const at = pxAt(p.n, l.y), before = st.filter(s => pxAt(s.p, s.y) < at).length, after = st.filter(s => pxAt(s.p, s.y) > at).length;
+    if (before >= 2 && after >= 1) return at;
+  }
+  return null;
 }
 /* find where each question, part and page starts */
 function pxStarts(pages){
   const out = []; let q = null;
   for (const p of pages) for (const l of p.lines){
-    if (PX_STOP.test(l.text)){ out.push({ k: 'stop', p: p.n, y: l.y }); continue; }
+    if (PX_STOP.test(l.text) || PX_SOLHEAD.test(l.text)){ out.push({ k: 'stop', p: p.n, y: l.y }); continue; }
     let m = PX_Q.exec(l.text);
-    if (m && l.x < p.margin + 60){ q = +m[1]; out.push(m[2] ? { k: 'P', q, part: m[2].toLowerCase(), p: p.n, y: l.y } : { k: 'Q', q, p: p.n, y: l.y, text: l.text }); continue; }
+    if (m && l.x < p.margin + 60){ q = +m[1]; const pt = (m[2] || m[3] || '').toLowerCase(); out.push(pt ? { k: 'P', q, part: pt, p: p.n, y: l.y } : { k: 'Q', q, p: p.n, y: l.y, text: l.text }); continue; }
     m = PX_P.exec(l.text);
     if (m && q != null && l.x < p.margin + 40){ out.push({ k: 'P', q, part: m[1].toLowerCase(), p: p.n, y: l.y }); continue; }
     m = PX_N.exec(l.text);
-    if (m && l.x < p.margin + 14 && +m[1] > 0) out.push({ k: 'N', q: +m[1], p: p.n, y: l.y, alone: l.text.trim() === m[1] });
+    if (m && l.x < p.margin + 14 && +m[1] > 0) out.push({ k: 'N', q: +m[1], p: p.n, y: l.y });
   }
   // numbered questions only count as the longest run 1, 2, 3, … (drops page numbers, numbered instructions and list items)
   const ns = out.filter(s => s.k === 'N'); let best = [];
@@ -5849,31 +5888,67 @@ function pxStarts(pages){
   const keep = new Set(best.length >= 2 ? best : []), qs = new Set(out.filter(s => s.k === 'Q').map(s => s.q));
   return out.filter(s => s.k !== 'N' || (keep.has(s) && !qs.has(s.q)));
 }
+function pxRegion(pages, s, nx){
+  const segs = [], lastP = nx ? nx.p : Math.min(s.p + 1, pages.length);
+  for (let n = s.p; n <= lastP; n++){
+    const p = pages[n - 1]; if (!p) break;
+    const y0 = n === s.p ? s.y - 4 : p.h * .05, y1 = nx && nx.p === n ? nx.y - 3 : p.h * .95;
+    if (y1 - y0 < 14) continue;
+    if (n > s.p && !p.lines.some(l => l.y >= y0 && l.b <= y1 + 2)){ if (!nx || nx.p > n) break; else continue; }
+    segs.push({ p: n, y0, y1 });
+    if ((!nx && n > s.p) || n >= s.p + 2) break;
+  }
+  // stop at the last line of text, so a region never runs into blank space or the next section
+  const last = segs[segs.length - 1]; if (last){ const ls2 = pages[last.p - 1].lines.filter(l => l.y >= last.y0 && l.y < last.y1); if (ls2.length) last.y1 = Math.min(last.y1, Math.max(...ls2.map(l => l.b)) + (nx ? 40 : 60)); }
+  return segs;
+}
 function pxPlan(R, mode){
-  const pages = R.pages, P = n => pages[n - 1];
-  if (mode === 'page') return pages.filter(p => p.lines.length).map(p => ({ key: 'p' + p.n, label: 'Page ' + p.n, segs: [{ p: p.n, y0: p.h * .04, y1: p.h * .96 }], marks: pxMarks([{ p: p.n, y0: 0, y1: p.h }], pages) }));
+  const pages = R.pages;
+  if (mode === 'page') return pages.filter(p => p.lines.length || !R.textLines).map(p => ({ key: 'p' + p.n, label: 'Page ' + p.n, segs: [{ p: p.n, y0: p.h * .03, y1: p.h * .97 }], marks: 0 }));
+  if (mode === 'notes') return pxNotes(R);
   const st = pxStarts(pages), hasPart = new Set(st.filter(s => s.k === 'P').map(s => s.q));
-  const use = st.filter(s => s.k === 'stop' || (mode === 'part' ? (s.k === 'P' || s.k === 'N' || (s.k === 'Q' && !hasPart.has(s.q))) : (s.k === 'Q' || s.k === 'N' || (s.k === 'P' && !st.some(x => x.k === 'Q' && x.q === s.q) && s.part === 'a'))));
-  // in "part" mode a question header still ends the part before it
+  const use = st.filter(s => s.k === 'stop' || (mode === 'part' ? (s.k === 'P' || s.k === 'N' || (s.k === 'Q' && !hasPart.has(s.q))) : (s.k === 'Q' || s.k === 'N' || (s.k === 'P' && !st.some(x => x.k === 'Q' && x.q === s.q) && !st.some(x => x.k === 'P' && x.q === s.q && pxAt(x.p, x.y) < pxAt(s.p, s.y))))));
   const ends = mode === 'part' ? st.filter(s => s.k === 'Q' || s.k === 'stop' || use.includes(s)) : use;
   const after = s => ends.find(x => x !== s && (x.p > s.p || (x.p === s.p && x.y > s.y + 2)));
-  const items = [];
+  const items = [], seen = new Set();
   for (const s of use){
     if (s.k === 'stop') continue;
-    const nx = after(s), segs = [];
-    const lastP = nx ? nx.p : Math.min(s.p + 1, pages.length);
-    for (let n = s.p; n <= lastP; n++){
-      const p = P(n); if (!p) break;
-      const y0 = n === s.p ? s.y - 4 : p.h * .05, y1 = nx && nx.p === n ? nx.y - 3 : p.h * .95;
-      if (y1 - y0 < 14) continue;
-      if (n > s.p && !p.lines.some(l => l.y >= y0 && l.b <= y1 + 2)) { if (!nx || nx.p > n) break; else continue; }
-      segs.push({ p: n, y0, y1 });
-      if ((!nx && n > s.p) || n >= s.p + 2) break;
+    let segs = pxRegion(pages, s, after(s)); if (!segs.length) continue;
+    // a "Solution:" / "Answer:" line inside the region: everything after it is the answer
+    let sol = null;
+    for (const [i, g] of segs.entries()){
+      const hit = pages[g.p - 1].lines.find(l => l.y > g.y0 + (i ? 0 : 10) && l.y < g.y1 && PX_SOLLINE.test(l.text) && l.x < pages[g.p - 1].margin + 40);
+      if (hit){ sol = [{ p: g.p, y0: hit.y - 3, y1: g.y1 }, ...segs.slice(i + 1)]; segs = [...segs.slice(0, i), { ...g, y1: hit.y - 3 }].filter(z => z.y1 - z.y0 > 14); break; }
     }
-    if (!segs.length) continue;
-    const label = s.k === 'P' ? `Q${s.q}(${s.part})` : `Q${s.q}`;
+    const key = s.k === 'P' ? s.q + s.part : String(s.q); if (seen.has(key)) continue; seen.add(key);
     const hdr = s.k === 'Q' ? /\((\d{1,2})\s*marks?\)/i.exec(s.text || '') : null;
-    items.push({ key: s.k === 'P' ? s.q + s.part : String(s.q), q: s.q, label, segs, marks: hdr ? +hdr[1] : pxMarks(segs, pages) });
+    items.push({ key, q: s.q, label: s.k === 'P' ? `Q${s.q}(${s.part})` : `Q${s.q}`, segs, sol, inlineSol: !!sol, marks: hdr ? +hdr[1] : pxMarks(segs, pages) });
+  }
+  return items;
+}
+/* notes: each heading becomes a card (the heading on the front, its section cut out on the back),
+   and every "Term: meaning" / "Term – meaning" line becomes a text card */
+function pxNotes(R){
+  const pages = R.pages, body = R.bodyH || 11, items = [], heads = [];
+  const isHead = l => l.text.length >= 3 && l.text.length <= 90 && !/[.,;]$/.test(l.text) && /[A-Za-z]/.test(l.text) && (l.h >= body * 1.18 || (/^(\d+(\.\d+)*|[IVX]+\.)\s+[A-Z]/.test(l.text) && l.h >= body * .98 && l.text.length < 70) || (l.text.length < 50 && l.text === l.text.toUpperCase() && /[A-Z]{3}/.test(l.text)));
+  for (const p of pages) for (const l of p.lines) if (isHead(l) && !PX_STOP.test(l.text)) heads.push({ p: p.n, y: l.y, text: l.text, h: l.h });
+  // ignore a title that is much bigger than every other heading, and headings stacked straight on top of each other
+  for (const [i, s] of heads.entries()){
+    const nx = heads[i + 1];
+    if (nx && nx.p === s.p && nx.y - s.y < s.h * 2.2) continue;
+    const segs = pxRegion(pages, s, nx); if (!segs.length) continue;
+    segs[0].y0 = Math.min(segs[0].y1 - 10, s.y + s.h * 1.15);
+    const words = segs.reduce((a, g) => a + pages[g.p - 1].lines.filter(l => l.y > g.y0 + 4 && l.y < g.y1).reduce((b, l) => b + l.text.split(' ').length, 0), 0);
+    if (words < 6) continue;
+    const t = s.text.replace(/^(\d+(\.\d+)*|[IVX]+\.)\s+/, '').slice(0, 80);
+    items.push({ key: 'h' + i, label: t.slice(0, 40), front: t, kind: 'learn', back: segs, segs: [], sol: segs, marks: 0, notes: true });
+  }
+  const defRx = /^(?:[•▪◦‣\-–*]\s*)?([A-Z][\w'’()/&\- ]{1,48}?)\s*(?::|\s[–—-]\s|\s=\s)\s*(\S.{10,})$/;
+  for (const p of pages) for (const [j, l] of p.lines.entries()){
+    const m = defRx.exec(l.text); if (!m || isHead(l) || m[1].split(' ').length > 6 || /^(question|q|page|figure|table|source|note|example|eg|e\.g|solution|answer)\b/i.test(m[1])) continue;
+    let def = m[2];
+    for (let k = j + 1; k < p.lines.length && k < j + 5; k++){ const n2 = p.lines[k], pv = p.lines[k - 1]; if (n2.y - pv.b > pv.h * .9 || defRx.test(n2.text) || isHead(n2) || /^[•▪◦‣\-–*]\s/.test(n2.text) || n2.x < l.x - 2) break; def += ' ' + n2.text; }
+    items.push({ key: 'd' + p.n + '-' + j, label: m[1].trim().slice(0, 40), front: m[1].trim(), backText: def.trim(), kind: 'learn', segs: [], marks: 0, notes: true, text: true, p: p.n });
   }
   return items;
 }
@@ -5885,16 +5960,17 @@ function pxMarks(segs, pages){
     if (/^[A-D][.)]?\s+\S/.test(l.text) || /^\(?[A-D]\)\s/.test(l.text)) mc++; } }
   return Math.min(30, sum || (mc >= 3 ? 1 : 0));
 }
-/* render pages and cut out each segment, trimming the white space round it */
+/* render pages and cut out each region, trimming the white space round it */
 async function pxCrop(R, items, prog){
-  const need = [...new Set(items.flatMap(it => it.segs.map(g => g.p)))].sort((a, b) => a - b);
+  const all = items.flatMap(it => [...(it.segs || []), ...(it.sol || [])]);
+  const need = [...new Set(all.map(g => g.p))].sort((a, b) => a - b);
   for (const [k, n] of need.entries()){
     prog?.(k, need.length);
     const p = R.pages[n - 1], sc = 2, vp = p.pg.getViewport({ scale: sc }), cv = document.createElement('canvas');
     cv.width = Math.ceil(vp.width); cv.height = Math.ceil(vp.height);
     const cx = cv.getContext('2d', { willReadFrequently: true }); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
     await p.pg.render({ canvasContext: cx, viewport: vp }).promise;
-    for (const it of items) for (const g of it.segs) if (g.p === n && !g.blob){
+    for (const g of all) if (g.p === n && !g.blob && !g.skip){
       const x0 = Math.round(p.w * .03 * sc), x1 = Math.round(p.w * .97 * sc), y0 = Math.max(0, Math.round(g.y0 * sc)), y1 = Math.min(cv.height, Math.round(g.y1 * sc));
       const box = pxTrim(cx, x0, y0, x1, y1); if (!box){ g.skip = true; continue; }
       const out = document.createElement('canvas'); out.width = box.w; out.height = box.h;
@@ -5903,8 +5979,8 @@ async function pxCrop(R, items, prog){
     }
     cv.width = cv.height = 0;
   }
-  items.forEach(it => { it.segs = it.segs.filter(g => !g.skip && g.blob); });
-  return items.filter(it => it.segs.length);
+  items.forEach(it => { it.segs = (it.segs || []).filter(g => g.blob); if (it.sol) it.sol = it.sol.filter(g => g.blob); if (it.sol && !it.sol.length) it.sol = null; });
+  return items.filter(it => it.text || it.segs.length || (it.notes && it.sol));
 }
 function pxTrim(cx, x0, y0, x1, y1){
   if (x1 - x0 < 4 || y1 - y0 < 4) return null;
@@ -5920,22 +5996,33 @@ function pxTrim(cx, x0, y0, x1, y1){
 async function pdfImport(file, intoId){
   if (!isPdf(file)) return;
   if (file.size > 60 * 1024 * 1024) return toast('That PDF is over 60 MB. Split it into smaller files and try again.', 5000);
-  pdfx = { file, name: (file.name || 'PDF').replace(/\.pdf$/i, ''), mode: 'part', items: [], node: intoId || (view.name === 'overview' && view.node) || (view.name === 'browse' && browse.node) || ls.get('md-last-node', null), busy: 'Opening the PDF…', ans: null, ai: false };
+  pdfx = { file, name: (file.name || 'PDF').replace(/\.pdf$/i, ''), mode: 'part', items: [], node: intoId || (view.name === 'overview' && view.node) || (view.name === 'browse' && browse.node) || (view.name === 'decks' && curSubj()?.id) || ls.get('md-last-node', null), busy: 'Opening the PDF…', ans: null };
   if (pdfx.node && !nodeOf(pdfx.node)) pdfx.node = null;
   openDialog(`<div class="dialog builder pdfx" role="dialog" aria-modal="true" aria-labelledby="pxh"><header class="bhead"><button class="btn" data-act="close">Cancel</button><h2 id="pxh">Make cards from a PDF</h2><span class="pxfile" id="pxfile"></span><span class="grow"></span><button class="btn primary" data-act="px-add" id="pxgo" disabled>Add cards</button></header><div class="pxbody" id="pxbody"></div></div>`);
   pxDraw();
   try {
-    pdfx.R = await pxRead(file);
-    pdfx.mode = pxStarts(pdfx.R.pages).some(s => s.k === 'P') ? 'part' : pxStarts(pdfx.R.pages).some(s => s.k !== 'stop') ? 'question' : 'page';
+    const R = await pxRead(file); if (!pdfx) return; pdfx.R = R;
+    // questions and their solutions in the same PDF: read the two halves separately
+    const cut = pxSplit(R); pdfx.cut = cut;
+    const Q = cut ? pxSlice(R, 0, cut) : R, st = pxStarts(Q.pages).filter(s => s.k !== 'stop');
+    pdfx.mode = !R.textLines ? 'page' : st.length >= 2 ? (st.some(s => s.k === 'P') ? 'part' : 'question') : pxNotes(R).length >= 2 ? 'notes' : 'page';
     await pxBuild();
   } catch (e){ console.error(e); if (!pdfx) return; pdfx.busy = ''; pdfx.err = e.message && !/^pdf$/.test(e.message) ? e.message : "Couldn't read that PDF. It may be password-protected or damaged."; pxDraw(); }
 }
 async function pxBuild(){
   const x = pdfx; if (!x?.R) return;
-  x.busy = 'Finding the questions…'; x.items = []; pxDraw();
-  let items = pxPlan(x.R, x.mode);
-  if (!items.length && x.mode !== 'page'){ x.mode = 'page'; items = pxPlan(x.R, 'page'); x.note = "Couldn't find numbered questions, so this makes one card a page."; } else x.note = '';
-  items = await pxCrop(x.R, items, (k, n) => { if (pdfx !== x) return; x.busy = `Cutting out the questions… page ${k + 1} of ${n}`; const b = $('#pxbusy'); if (b) b.textContent = x.busy; });
+  x.busy = x.mode === 'notes' ? 'Reading the notes…' : 'Finding the questions…'; x.items = []; pxDraw();
+  const exam = x.mode === 'part' || x.mode === 'question', Q = exam && x.cut ? pxSlice(x.R, 0, x.cut) : x.R;
+  let items = pxPlan(Q, x.mode); x.note = '';
+  if (!x.R.textLines) x.note = 'This PDF is scanned (there is no text in it), so each page becomes a card.';
+  else if (!items.length && x.mode !== 'page'){ x.mode = 'page'; items = pxPlan(x.R, 'page'); x.note = x.mode === 'notes' ? "Couldn't find headings or definitions, so this makes one card a page." : "Couldn't find numbered questions, so this makes one card a page."; }
+  // solutions printed after the questions in the same PDF
+  let same = null;
+  if (exam && x.cut && !x.ansFile){ const A = pxSlice(x.R, x.cut, Infinity); same = pxPlan(A, x.mode); if (!same.length && x.mode === 'part') same = pxPlan(A, 'question'); }
+  const prog = (k, n) => { if (pdfx !== x) return; x.busy = `Cutting out the ${x.mode === 'notes' ? 'sections' : 'questions'}… page ${k + 1} of ${n}`; const b = $('#pxbusy'); if (b) b.textContent = x.busy; };
+  items = await pxCrop(x.R, items, prog);
+  if (same?.length){ same = await pxCrop(x.R, same, prog); x.ans = same; x.ansSame = true; }
+  else if (x.ansSame){ x.ans = null; x.ansSame = false; }
   if (pdfx !== x) return;
   items.forEach(it => { it.on = true; });
   x.items = items; x.busy = '';
@@ -5943,8 +6030,8 @@ async function pxBuild(){
 }
 function pxMatch(){
   const x = pdfx; if (!x?.ans) return;
-  const by = new Map(x.ans.map(a => [a.key, a])), byQ = new Map(x.ans.map(a => [String(a.q), a]));
-  x.items.forEach(it => { it.sol = (by.get(it.key) || (x.mode !== 'part' ? byQ.get(String(it.q)) : null))?.segs || null; });
+  const by = new Map(x.ans.map(a => [a.key, a])), byQ = new Map(x.ans.filter(a => a.key === String(a.q)).map(a => [String(a.q), a]));
+  x.items.forEach(it => { if (it.inlineSol || it.notes) return; const a = by.get(it.key) || byQ.get(String(it.q)) || (x.mode === 'question' ? x.ans.find(z => z.q === it.q) : null); it.sol = a ? a.segs : null; });
 }
 function pxDraw(){
   const x = pdfx, box = $('#pxbody'); if (!x || !box) return;
@@ -5952,33 +6039,35 @@ function pxDraw(){
   const on = x.items.filter(it => it.on), go = $('#pxgo');
   if (go){ go.disabled = !on.length || !!x.busy || !x.node; go.textContent = on.length ? `Add ${on.length} card${on.length === 1 ? '' : 's'}` : 'Add cards'; }
   if (x.err){ box.innerHTML = `<div class="pxmsg"><h3>That didn't work</h3><p>${esc(x.err)}</p><button class="btn" data-act="close">Close</button></div>`; return; }
-  const seg = (k, opts) => `<div class="seg" role="group">${opts.map(([v, l]) => `<button type="button" data-act="px-mode" data-v="${v}" aria-pressed="${x.mode === v}" ${x.busy ? 'disabled' : ''}>${l}</button>`).join('')}</div>`;
-  const matched = x.ans ? x.items.filter(it => it.sol).length : 0;
+  const seg = opts => `<div class="seg" role="group">${opts.map(([v, l]) => `<button type="button" data-act="px-mode" data-v="${v}" aria-pressed="${x.mode === v}" ${x.busy ? 'disabled' : ''}>${l}</button>`).join('')}</div>`;
+  const exam = x.mode === 'part' || x.mode === 'question', withSol = x.items.filter(it => it.sol && !it.notes).length;
+  const img = g => `<img src="${g.url}" alt="" data-zoom style="width:${Math.min(100, g.w / g.pw * 100).toFixed(1)}%">`;
+  const solTxt = x.ansSame ? `Found in this PDF · ${withSol} of ${x.items.length} matched` : x.ans ? `${withSol} of ${x.items.length} matched` : withSol ? `${withSol} found next to their questions` : '';
   box.innerHTML = `<div class="pxopts">
-      <div class="pxo"><span class="pxl">One card for each</span>${seg('mode', [['part', 'Part (a), (b)…'], ['question', 'Question'], ['page', 'Page']])}</div>
-      <div class="pxo"><span class="pxl">Put them in</span><button type="button" class="brdeck ${x.node ? 'on' : ''}" id="pxdeck" aria-haspopup="true">${x.node ? `<span class="sdot2" style="--sc:${scol(x.node)}"></span>${esc(pathName(x.node))}` : 'Choose a deck'}<span class="pkcar">▾</span></button></div>
-      <div class="pxo"><span class="pxl">Solutions</span>${x.ans ? `<span class="pxans">Matched ${matched} of ${x.items.length}</span><button class="link sm" data-act="px-ansclear">Remove</button>` : `<button class="btn" data-act="px-ans" ${x.busy || !x.items.length ? 'disabled' : ''}>Add the answers PDF…</button>`}</div>
+      <div class="pxo"><span class="pxl">Make cards from</span>${seg([['part', 'Parts (a), (b)'], ['question', 'Questions'], ['notes', 'Notes'], ['page', 'Pages']])}</div>
+      <div class="pxo field pxfield"><span class="pxl">Put them in</span><button type="button" class="brdeck pickbtn ${x.node ? 'on' : ''}" id="pxdeck" aria-haspopup="true" aria-expanded="false">${x.node ? `<span class="sdot2" style="--sc:${scol(x.node)}"></span>${esc(pathName(x.node))}` : 'Choose a deck'}<span class="pkcar">▾</span></button></div>
+      ${exam ? `<div class="pxo"><span class="pxl">Solutions</span><span class="pxsolrow">${solTxt ? `<span class="pxans">${solTxt}</span>` : ''}${x.ans && !x.ansSame ? `<button class="link sm" data-act="px-ansclear">Remove</button>` : `<button class="btn" data-act="px-ans" ${x.busy || !x.items.length ? 'disabled' : ''}>${withSol ? 'Use a separate answers PDF…' : 'Add the answers PDF…'}</button>`}</span></div>` : ''}
       <span class="grow"></span>
       ${x.items.length ? `<button class="link sm" data-act="px-all">${on.length === x.items.length ? 'Untick all' : 'Tick all'}</button>` : ''}
     </div>
     ${x.note ? `<p class="pxnote">${esc(x.note)}</p>` : ''}
-    ${x.busy ? `<div class="pxmsg"><span class="pxspin" aria-hidden="true"></span><p id="pxbusy">${esc(x.busy)}</p></div>` : `<p class="pxhint">Untick anything you don't want, and fix a label by clicking it. Each card gets the cut-out as its question${x.ans ? ' and the matching solution as its answer' : ''}.</p>
+    ${x.busy ? `<div class="pxmsg"><span class="pxspin" aria-hidden="true"></span><p id="pxbusy">${esc(x.busy)}</p></div>` : `<p class="pxhint">${x.mode === 'notes' ? 'Each heading became a card with its section as the answer, and each "term: meaning" line became a card of its own.' : exam ? 'Each question was cut out as it looks in the paper, with its solution on the back when one was found.' : 'One card for each page.'} Untick anything you don't want; click a label to rename it.</p>
     <div class="pxgrid">${x.items.map((it, i) => `<article class="pxit ${it.on ? '' : 'off'}" style="--i:${Math.min(i, 20)}">
-      <header><label class="pxchk"><input type="checkbox" data-pxon="${i}" ${it.on ? 'checked' : ''} aria-label="Make a card from ${esc(it.label)}"></label><input class="pxlbl" data-pxl="${i}" value="${esc(it.label)}" aria-label="Label"><span class="grow"></span>${it.marks ? `<span class="pxmk">${it.marks} mark${it.marks === 1 ? '' : 's'}</span>` : ''}<span class="pxpg">p.${it.segs[0].p}${it.segs.length > 1 ? '–' + it.segs[it.segs.length - 1].p : ''}</span></header>
-      <div class="pximg">${it.segs.map(g => `<img src="${g.url}" alt="" data-zoom style="width:${Math.min(100, g.w / g.pw * 100).toFixed(1)}%">`).join('')}</div>
-      ${it.sol ? `<div class="pxsol"><span>Solution</span>${it.sol.map(g => `<img src="${g.url}" alt="" data-zoom style="width:${Math.min(100, g.w / g.pw * 100).toFixed(1)}%">`).join('')}</div>` : x.ans ? '<div class="pxsol none">No solution found for this one</div>' : ''}
+      <header><label class="pxchk"><input type="checkbox" data-pxon="${i}" ${it.on ? 'checked' : ''} aria-label="Make a card from ${esc(it.label)}"></label><input class="pxlbl" data-pxl="${i}" value="${esc(it.label)}" aria-label="Label"><span class="grow"></span>${it.marks ? `<span class="pxmk">${it.marks} mark${it.marks === 1 ? '' : 's'}</span>` : ''}<span class="pxpg">${it.text ? 'Definition · p.' + it.p : 'p.' + ((it.segs[0] || it.sol?.[0])?.p || '')}</span></header>
+      ${it.notes ? `<div class="pxfront">${esc(it.front)}</div>` : `<div class="pximg">${it.segs.map(img).join('')}</div>`}
+      ${it.text ? `<div class="pxsol pxdef"><span>Answer</span><p>${esc(it.backText)}</p></div>` : it.sol ? `<div class="pxsol"><span>${it.notes ? 'Answer' : 'Solution'}</span>${it.sol.map(img).join('')}</div>` : ''}
     </article>`).join('')}</div>`}`;
-  $('#pxdeck')?.addEventListener('click', () => openPicker($('#pxdeck'), { multi: false, bubbles: true, sel: new Set([x.node || '']), onPick: id => { x.node = id || null; closePicker(); pxDraw(); } }));
+  $('#pxdeck')?.addEventListener('click', e => { e.stopPropagation(); openPicker($('#pxdeck'), { multi: false, bubbles: true, sel: new Set([x.node || '']), onPick: id => { x.node = id || null; closePicker(); pxDraw(); } }); });
 }
 async function pxAnswers(file){
   const x = pdfx; if (!x || !isPdf(file)) return;
   x.busy = 'Reading the answers…'; pxDraw();
   try {
     const R = await pxRead(file);
-    let a = pxPlan(R, x.mode === 'page' ? 'question' : x.mode);
+    let a = pxPlan(R, x.mode === 'part' ? 'part' : 'question'); if (!a.length && x.mode === 'part') a = pxPlan(R, 'question');
     if (!a.length) throw new Error("Couldn't find question numbers in the answers PDF.");
     a = await pxCrop(R, a, (k, n) => { const b = $('#pxbusy'); if (b) b.textContent = `Cutting out the answers… page ${k + 1} of ${n}`; });
-    if (pdfx !== x) return; x.ans = a; x.busy = ''; pxMatch(); pxDraw();
+    if (pdfx !== x) return; x.ans = a; x.ansSame = false; x.ansFile = true; x.busy = ''; pxMatch(); pxDraw();
   } catch (e){ console.error(e); x.busy = ''; pxDraw(); toast(e.message && e.message !== 'pdf' ? e.message : "Couldn't read that PDF.", 4500); }
 }
 async function pxAdd(){
@@ -5992,13 +6081,14 @@ async function pxAdd(){
   try {
     for (const [i, it] of items.entries()){
       const b = $('#pxbusy'); if (b) b.textContent = `Adding card ${i + 1} of ${items.length}…`;
-      const c = { id: uid('c'), nodeId: x.node, label: it.label.trim(), qText: '', qImg: null, mistake: '', solText: '', solImgs: await imgs(it.sol), createdAt: now + i, order: now + i, srs: freshSrs() };
+      const c = { id: uid('c'), nodeId: x.node, label: it.label.trim(), qText: it.notes ? it.front : '', qImg: null, mistake: '', solText: it.text ? it.backText : '', solImgs: await imgs(it.sol), createdAt: now + i, order: now + i, srs: freshSrs() };
+      if (it.kind === 'learn') c.kind = 'learn';
       setQImgs(c, await imgs(it.segs)); if (it.marks) c.marks = it.marks;
       if (await put('cards', c) === false) break; n++;
     }
   } catch (e){ console.error(e); toast("Some cards couldn't be added.", 4000); }
   ls.set('md-last-node', x.node);
-  x.items.forEach(it => it.segs.concat(it.sol || []).forEach(g => g.url && URL.revokeObjectURL(g.url)));
+  [...x.items, ...(x.ans || [])].forEach(it => [...(it.segs || []), ...(it.sol || [])].forEach(g => g.url && URL.revokeObjectURL(g.url)));
   pdfx = null; closeDialog(); toast(`Added ${n} card${n === 1 ? '' : 's'} to ${nodeOf(x.node)?.name || 'the deck'} · ⌘Z to undo`, 3500);
 }
 function pxPickFile(cb){
@@ -6039,30 +6129,29 @@ function todoSave(list, label){ undoTx = null; undoLabel = label || 'to-do'; und
 const todoDay = d => { if (!d) return ''; const t = new Date(d + 'T00:00'), n = Math.round((t - today0()) / DAY); return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n === -1 ? 'Yesterday' : n > 1 && n < 7 ? t.toLocaleDateString(undefined, { weekday: 'short' }) : t.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }); };
 const todoLate = x => x.due && !x.done && new Date(x.due + 'T23:59') < Date.now();
 function todoList(subj){
-  const all = todoAll().filter(x => todoAllSubj || !subj || x.s === subj);
-  const open = all.filter(x => !x.done).sort((a, b) => (a.due || '9999') < (b.due || '9999') ? -1 : (a.due || '9999') > (b.due || '9999') ? 1 : a.at - b.at);
-  const done = all.filter(x => x.done).sort((a, b) => b.done - a.done);
-  return { open, done };
+  return todoAll().filter(x => !x.done && (todoAllSubj || !subj || x.s === subj)).sort((a, b) => (a.due || '9999') < (b.due || '9999') ? -1 : (a.due || '9999') > (b.due || '9999') ? 1 : a.at - b.at);
 }
+const todoDoneLog = () => Array.isArray(S.settings?.todoDone) ? S.settings.todoDone : [];
 function todoRow(x, i){
-  const sn = x.s && nodeOf(x.s);
-  return `<div class="tdr ${x.done ? 'tdon' : ''}" data-tid="${x.id}" style="--sc:${x.s ? scol(x.s) : 'var(--accent)'};--i:${Math.min(i || 0, 12)}">
-    <button class="tdck" data-act="todo-tick" data-id="${x.id}" role="checkbox" aria-checked="${!!x.done}" aria-label="${x.done ? 'Mark as not done' : 'Tick off'}: ${esc(x.t)}"><svg viewBox="0 0 22 22" aria-hidden="true"><circle class="tdcr" cx="11" cy="11" r="9"/><path class="tdcv" d="M6.6 11.4 9.6 14.3 15.6 8"/></svg><span class="tdburst" aria-hidden="true">${'<i></i>'.repeat(8)}</span></button>
+  const sn = x.s && nodeOf(x.s), late = todoLate(x);
+  return `<div class="tdr" data-tid="${x.id}" style="--sc:${x.s ? scol(x.s) : 'var(--accent)'};--i:${Math.min(i || 0, 12)}">
+    <button class="tdck" data-act="todo-tick" data-id="${x.id}" role="checkbox" aria-checked="false" aria-label="Tick off: ${esc(x.t)}"><svg viewBox="0 0 22 22" aria-hidden="true"><circle class="tdcr" cx="11" cy="11" r="9"/><path class="tdcv" d="M6.6 11.4 9.6 14.3 15.6 8"/></svg><span class="tdburst" aria-hidden="true">${'<i></i>'.repeat(8)}</span></button>
     <span class="tdt"><span class="tdtx">${esc(x.t)}</span></span>
     ${todoAllSubj && sn ? `<span class="tdsub"><span class="sdot2" style="--sc:${scol(x.s)}"></span>${esc(sn.name)}</span>` : ''}
-    ${x.due ? `<span class="tdodue ${todoLate(x) ? 'late' : ''}">${todoLate(x) ? 'Was due ' : ''}${todoDay(x.due)}</span>` : ''}
+    ${late ? `<span class="tdodue late">From ${todoDay(x.due).toLowerCase()}</span>` : ''}
     <button class="tddel" data-act="todo-del" data-id="${x.id}" aria-label="Delete ${esc(x.t)}">${I.x}</button>
   </div>`;
 }
 function todoSection(subj){
-  const sn = subj && nodeOf(subj), { open, done } = todoList(subj), today = done.filter(x => x.done >= today0()).length;
+  const sn = subj && nodeOf(subj), open = todoList(subj), t0 = today0();
+  const today = todoDoneLog().filter(d => d.t >= t0 && (todoAllSubj || !subj || d.s === subj)).length, tot = open.length + today;
   return `<section class="tdo" id="tdo" data-subj="${subj || ''}" style="--sc:${subj ? scol(subj) : 'var(--accent)'}">
-    <div class="tdoh"><h2>To do</h2><span class="tdoc">${open.length ? `${open.length} left` : ''}${today ? `${open.length ? ' · ' : ''}${today} done today` : ''}</span><span class="grow"></span>
-      ${sn ? `<div class="seg tdof" role="group" aria-label="Show tasks for"><button type="button" data-act="todo-f" data-v="" aria-pressed="${!todoAllSubj}">${esc(sn.name)}</button><button type="button" data-act="todo-f" data-v="all" aria-pressed="${todoAllSubj}">All subjects</button></div>` : ''}</div>
     <div class="tdbox">
-      <label class="tdadd"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" placeholder="Add a task${sn ? ' for ' + esc(sn.name) : ''}" aria-label="New task"><span class="tddate" title="Due date (optional)"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span id="tdduel">Due</span><input type="date" id="tdodate" aria-label="Due date (optional)"></span></label>
-      ${open.length ? `<div class="tdl">${open.map(todoRow).join('')}</div>` : today ? `<p class="tdall"><b>All done${sn && !todoAllSubj ? ' for ' + esc(sn.name) : ''}.</b> Nice.</p>` : ''}
-      ${done.length ? `<button class="tdmore" data-act="todo-showdone" aria-expanded="${todoShowDone}">${todoShowDone ? 'Hide' : 'Show'} ${done.length} done</button>${todoShowDone ? `<div class="tdl tddone">${done.slice(0, 30).map(todoRow).join('')}</div>` : ''}` : ''}
+      <div class="tdoh"><div class="tdohl"><h2>Today's to-do</h2><span class="tdoc">${open.length ? `${open.length} left` : today ? 'All done' : 'Due by the end of today'}${today ? ` · ${today} done` : ''}</span></div><span class="grow"></span>
+        ${sn ? `<div class="seg tdof" role="group" aria-label="Show tasks for"><button type="button" data-act="todo-f" data-v="" aria-pressed="${!todoAllSubj}">${esc(sn.name)}</button><button type="button" data-act="todo-f" data-v="all" aria-pressed="${todoAllSubj}">All subjects</button></div>` : ''}</div>
+      ${tot ? `<div class="tdprog" aria-hidden="true"><i style="width:${today / tot * 100}%"></i></div>` : ''}
+      ${open.length ? `<div class="tdl">${open.map(todoRow).join('')}</div>` : ''}
+      <label class="tdadd"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" placeholder="New task${sn ? ' for ' + esc(sn.name) : ''}" aria-label="New task"></label>
     </div>
   </section>`;
 }
@@ -6073,35 +6162,39 @@ function todoRefresh(focus){
 }
 function todoAdd(){
   const inp = $('#tdoin'), t = (inp?.value || '').replace(/\s+/g, ' ').trim(); if (!t) return;
-  const subj = $('#tdo')?.dataset.subj || null, due = $('#tdodate')?.value || null;
+  const subj = $('#tdo')?.dataset.subj || null, due = dayKey();
   const x = { id: uid('t'), t: t.slice(0, 200), s: subj, due, done: 0, at: Date.now() };
   todoSave([...todoAll(), x], 'add task'); todoRefresh(true);
   const row = document.querySelector(`.tdr[data-tid="${x.id}"]`); row?.classList.add('tdnew');
 }
-function todoTick(id){
+function todoDone(id){
   const list = todoAll(), x = list.find(z => z.id === id); if (!x) return;
+  undoTx = null; undoLabel = 'tick off task'; undoRecordSettings();
+  S.settings = { ...S.settings, todos: list.filter(z => z.id !== id), todoDone: [...todoDoneLog(), { s: x.s || null, t: Date.now() }].slice(-500) }; saveSettings();
+}
+function todoTick(id){
   const row = document.querySelector(`.tdr[data-tid="${id}"]`);
-  if (x.done || !row || reducedMotion()){ todoSave(list.map(z => z.id === id ? { ...z, done: z.done ? 0 : Date.now() } : z), x.done ? 'untick task' : 'tick off task'); return todoRefresh(); }
+  if (!row || reducedMotion()){ todoDone(id); return todoRefresh(); }
   if (row.classList.contains('ticking')) return;
   row.classList.add('ticking'); row.querySelector('.tdck')?.setAttribute('aria-checked', 'true');
   setTimeout(() => { row.style.height = row.offsetHeight + 'px'; void row.offsetHeight; row.classList.add('leaving'); row.style.height = '0px'; }, 620);
-  setTimeout(() => { todoSave(todoAll().map(z => z.id === id ? { ...z, done: Date.now() } : z), 'tick off task'); todoRefresh(); if (view.name === 'stats') renderStats(); }, 900);
+  setTimeout(() => { todoDone(id); todoRefresh(); if (view.name === 'stats') renderStats(); }, 900);
 }
-document.addEventListener('change', e => { if (e.target.id === 'tdodate'){ const l = $('#tdduel'); if (l){ l.textContent = e.target.value ? todoDay(e.target.value) : 'Due'; l.parentElement.classList.toggle('set', !!e.target.value); } } });
 document.addEventListener('keydown', e => {
   if (e.target.id === 'tdoin' && e.key === 'Enter' && !e.isComposing){ e.preventDefault(); e.stopPropagation(); todoAdd(); }
   else if (e.target.id === 'tdoin' && e.key === 'Escape'){ e.target.value = ''; e.target.blur(); e.stopPropagation(); }
 }, true);
 /* stats: what you've ticked off */
 function todoStatsCard(){
-  const all = todoAll(); if (!all.length) return '';
-  const t0 = today0(), days = [...Array(14)].map((_, i) => { const a = t0 - (13 - i) * DAY; return all.filter(x => x.done >= a && x.done < a + DAY).length; });
-  const max = Math.max(1, ...days), wk = all.filter(x => x.done >= t0 - 6 * DAY).length, open = all.filter(x => !x.done), late = open.filter(todoLate).length;
-  const subs = kids(null).map(s => ({ s, o: all.filter(x => x.s === s.id && !x.done).length, d: all.filter(x => x.s === s.id && x.done).length })).filter(r => r.o + r.d);
-  return `<section class="stcard sttodo"><div class="sth"><h2>To do</h2><span class="sub">${wk} ticked off this week</span></div>
-    <div class="sttdk"><span><b>${open.length}</b>open</span><span><b class="${late ? 'late' : ''}">${late}</b>overdue</span><span><b>${all.filter(x => x.done).length}</b>done in all</span></div>
+  const log = todoDoneLog(), open = todoAll(); if (!log.length && !open.length) return '';
+  const t0 = today0(), days = [...Array(14)].map((_, i) => { const a = t0 - (13 - i) * DAY; return log.filter(x => x.t >= a && x.t < a + DAY).length; });
+  const max = Math.max(1, ...days), wk = log.filter(x => x.t >= t0 - 6 * DAY).length, late = open.filter(todoLate).length;
+  let streak = 0; for (let i = 13; i >= 0; i--){ if (days[i]) streak++; else if (i < 13) break; }
+  const subs = kids(null).map(s => ({ s, o: open.filter(x => x.s === s.id).length, d: log.filter(x => x.s === s.id && x.t >= t0 - 6 * DAY).length })).filter(r => r.o + r.d);
+  return `<section class="stcard sttodo"><div class="sth"><h2>To-do</h2><span class="sub">${wk} ticked off this week</span></div>
+    <div class="sttdk"><span><b>${days[13]}</b>done today</span><span><b>${open.length}</b>still open</span><span><b class="${late ? 'late' : ''}">${late}</b>left from before</span><span><b>${streak}</b>day${streak === 1 ? '' : 's'} in a row</span></div>
     <div class="sttdbars" aria-label="Tasks ticked off in the last 14 days">${days.map((n, i) => `<span title="${n} on ${new Date(t0 - (13 - i) * DAY).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}"><i style="height:${n ? Math.max(8, n / max * 100) : 0}%" class="${i === 13 ? 'now' : ''}"></i></span>`).join('')}</div>
-    ${subs.length ? `<div class="sttdsub">${subs.map(r => `<div class="sttdr" style="--sc:${scol(r.s.id)}"><span class="sdot2"></span><span class="sttdn">${esc(r.s.name)}</span><span class="stmini"><i style="width:${r.d / (r.o + r.d) * 100}%"></i></span><span class="sttdc">${r.d} of ${r.o + r.d}</span></div>`).join('')}</div>` : ''}
+    ${subs.length ? `<div class="sttdsub">${subs.map(r => `<div class="sttdr" style="--sc:${scol(r.s.id)}"><span class="sdot2"></span><span class="sttdn">${esc(r.s.name)}</span><span class="stmini"><i style="width:${r.d / (r.o + r.d) * 100}%"></i></span><span class="sttdc">${r.d} done · ${r.o} open</span></div>`).join('')}</div>` : ''}
   </section>`;
 }
 /* stars pattern: a fixed, seeded sky so it never shifts between visits */
