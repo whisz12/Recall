@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261103232505 min-shell:1.27.0 -->
+<!-- recall-build:20261104103639 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -2281,6 +2281,23 @@ html.stripe body.desktop .page::before{content:"";position:sticky;top:var(--appb
 .pxfront{padding:14px 16px;font:600 16px/1.35 var(--ui);color:var(--fg)}
 .pxdef p{margin:4px 0 0;font:400 14px/1.45 var(--ui);color:#222}
 .pxlbl{flex:1;width:auto}
+/* round 7: dragging subject tabs, swipe hint, deck button that wraps */
+.stabs{-webkit-user-select:none;user-select:none}
+.stab.stdrag{z-index:3;cursor:grabbing;transition:none !important;background:var(--surface-2) !important;border-radius:8px;box-shadow:0 8px 22px rgba(0,0,0,.28),0 0 0 1px var(--border-2)}
+.stabs.stdragging .stabind{opacity:0}
+.stabs.stdragging .stab{cursor:grabbing}
+.swhint{position:fixed;top:50%;left:18px;z-index:90;width:44px;height:44px;margin-top:-22px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);color:var(--fg);border:1px solid var(--border-2);box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;pointer-events:none;transform:translateX(calc(-60px + var(--f, 0) * 60px)) scale(calc(.7 + var(--f, 0) * .3));transition:opacity .18s,background .15s,color .15s}
+.swhint.fwd{left:auto;right:18px;transform:translateX(calc(60px - var(--f, 0) * 60px)) scale(calc(.7 + var(--f, 0) * .3))}
+.swhint.fwd svg{transform:scaleX(-1)}
+.swhint svg{width:20px;height:20px}
+.swhint.on{opacity:1}
+.swhint.go{background:var(--accent-btn);color:var(--btn-fg);border-color:transparent}
+body.sidebar-hidden .swhint:not(.fwd),body:not(.desktop) .swhint{left:18px}
+html.lh body.desktop:not(.sidebar-hidden) .swhint:not(.fwd){left:calc(var(--sidew) + 18px)}
+.brdeckf{flex:0 1 auto;min-width:0;max-width:100%}
+.brdeck.pickbtn{height:auto;min-height:28px;padding:5px 10px;max-width:100%;white-space:normal;line-height:1.3;text-align:left;font:500 12px var(--ui);overflow-wrap:anywhere}
+.brdeck.pickbtn .sdot2{flex:none}
+.brdeck.pickbtn .pkcar{flex:none;margin-left:auto}
 
 </style>
 
@@ -5840,22 +5857,76 @@ const isPdf = f => !!f && (f.type === 'application/pdf' || /\.pdf$/i.test(f.name
 const PX_STOP = /^(section\s+[ivx]+\b|attempt questions|allow about|answer (each|questions)|extra writing space|end of (question|paper|section|exam|examination|test)|blank page|this page (is )?(intentionally )?(left )?blank|please turn over|office use only|do not write)/i;
 const PX_Q = /^(?:question|q)\.?\s*(\d{1,2})\b\s*(?:\(([a-h])\)|([a-h])\b(?=[\s.)]))?/i, PX_N = /^(\d{1,2})(?:[.)](?=\s|$)|\s+(?=\S)|$)/, PX_P = /^\(([a-h])\)/;
 const PX_SOLHEAD = /^(?:worked\s+|sample\s+|suggested\s+|full\s+)?(?:solutions?|answers?|answer\s+key|marking\s+(?:guidelines?|criteria|scheme)|mark(?:ing)?\s+scheme)\b[\s:.]*$/i;
-const PX_SOLLINE = /^(?:solutions?|answers?|worked\s+solution|sample\s+answer|ans)\b\s*[:.\-–]?/i;
-async function pxRead(file){
+const PX_SOLLINE = /^(?:worked\s+|sample\s+|suggested\s+|full\s+)?(?:solutions?|soln|sol|answers?|ans|working|marking\s+(?:guide|criteria))\b\s*(?:to\s+)?(?:q(?:uestion)?\.?\s*)?(\d{1,2})?\s*(?:\(([a-h])\))?\s*([:.\-–)]?)/i;
+const isSolLine = t => { const m = PX_SOLLINE.exec(t); return !!m && (!!m[3] || !!m[1] || t.length < 22); };
+const PX_QSOL = /\b(?:solutions?|answers?|worked|soln)\b/i;
+/* text inside pictures (screenshots in a Google Doc, scanned pages): tesseract, loaded only when a PDF has pictures */
+const TESS_V = '5.1.1', TESS_CDN = 'https://cdn.jsdelivr.net/npm/';
+let tessP = null;
+function tessWorker(){
+  if (tessP) return tessP;
+  const load = src => new Promise((res, rej) => { if (window.Tesseract) return res(window.Tesseract); const sc = document.createElement('script'); sc.src = src; sc.onload = () => window.Tesseract ? res(window.Tesseract) : rej(new Error('ocr')); sc.onerror = () => { sc.remove(); rej(new Error('ocr')); }; document.head.appendChild(sc); });
+  tessP = load(`${TESS_CDN}tesseract.js@${TESS_V}/dist/tesseract.min.js`)
+    .then(T => T.createWorker('eng', 1, { workerPath: `${TESS_CDN}tesseract.js@${TESS_V}/dist/worker.min.js`, corePath: `${TESS_CDN}tesseract.js-core@${TESS_V}`, langPath: `${TESS_CDN}@tesseract.js-data/eng@1.0.0/4.0.0_best_int`, logger: () => {} }))
+    .catch(e => { tessP = null; throw e; });
+  return tessP;
+}
+const ocrLines = d => d.lines?.length ? d.lines : (d.blocks || []).flatMap(b => (b.paragraphs || []).flatMap(p => p.lines || []));
+/* where each picture sits on the page (page points, top-left origin) */
+async function pxImages(pg, vp, L){
+  const ops = await pg.getOperatorList(), O = L.OPS, out = [], stack = []; let m = [1, 0, 0, 1, 0, 0];
+  const mul = (m, t) => [t[0] * m[0] + t[1] * m[2], t[0] * m[1] + t[1] * m[3], t[2] * m[0] + t[3] * m[2], t[2] * m[1] + t[3] * m[3], t[4] * m[0] + t[5] * m[2] + m[4], t[4] * m[1] + t[5] * m[3] + m[5]];
+  const paint = new Set([O.paintImageXObject, O.paintInlineImageXObject, O.paintJpegXObject, O.paintImageXObjectRepeat].filter(x => x != null));
+  for (let i = 0; i < ops.fnArray.length; i++){
+    const fn = ops.fnArray[i], a = ops.argsArray[i];
+    if (fn === O.save) stack.push(m.slice()); else if (fn === O.restore) m = stack.pop() || m; else if (fn === O.transform) m = mul(m, a);
+    else if (paint.has(fn)){
+      const pts = [[0, 0], [1, 0], [0, 1], [1, 1]].map(([x, y]) => vp.convertToViewportPoint(m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5]));
+      const xs = pts.map(q => q[0]), ys = pts.map(q => q[1]), b = { x: Math.max(0, Math.min(...xs)), y: Math.max(0, Math.min(...ys)), r: Math.min(vp.width, Math.max(...xs)), b: Math.min(vp.height, Math.max(...ys)) };
+      if (b.r - b.x > 40 && b.b - b.y > 16) out.push(b);
+    }
+  }
+  return out.filter((b, i) => !out.some((c, j) => j < i && Math.abs(c.x - b.x) < 2 && Math.abs(c.y - b.y) < 2));
+}
+async function pxRead(file, prog){
   const L = await pdfLib(), doc = await L.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
-  const pages = [];
+  const pages = []; let ocrFail = false, ocrN = 0;
   for (let n = 1; n <= Math.min(doc.numPages, 80); n++){
     const pg = await doc.getPage(n), vp = pg.getViewport({ scale: 1 }), tc = await pg.getTextContent();
     const its = tc.items.filter(i => i.str && i.str.trim()).map(i => { const [, , c, d, e, f] = i.transform, h = Math.abs(d) || Math.hypot(c, d) || 10; return { s: i.str, x: e, y: vp.height - f - h * .85, h, r: e + (i.width || 0) }; }).sort((p, q) => p.y - q.y || p.x - q.x);
     const lines = [];
     for (const it of its){ const ln = lines.slice(-4).find(l => Math.abs(l.y - it.y) < Math.max(2.5, it.h * .4)); if (ln){ ln.items.push(it); ln.b = Math.max(ln.b, it.y + it.h); } else lines.push({ y: it.y, b: it.y + it.h, items: [it] }); }
     for (const l of lines){ l.items.sort((p, q) => p.x - q.x); l.x = l.items[0].x; l.r = Math.max(...l.items.map(i => i.r)); l.h = Math.max(...l.items.map(i => i.h)); l.text = l.items.map(i => i.s).join(' ').replace(/\s+/g, ' ').trim(); }
+    let imgs = []; try { imgs = await pxImages(pg, vp, L); } catch (e){ console.warn(e); }
+    // read the text inside each picture (and whole scanned pages) so numbers and "Solution" labels in screenshots count too
+    if (imgs.length && !ocrFail){
+      try {
+        prog?.(`Reading the text in the pictures… page ${n}`);
+        const W = await tessWorker(), sc = 2, v2 = pg.getViewport({ scale: sc }), cv = document.createElement('canvas'); cv.width = Math.ceil(v2.width); cv.height = Math.ceil(v2.height);
+        const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); await pg.render({ canvasContext: cx, viewport: v2 }).promise;
+        for (const b of imgs){
+          const c2 = document.createElement('canvas'); c2.width = Math.max(1, Math.round((b.r - b.x) * sc)); c2.height = Math.max(1, Math.round((b.b - b.y) * sc));
+          c2.getContext('2d').drawImage(cv, b.x * sc, b.y * sc, c2.width, c2.height, 0, 0, c2.width, c2.height);
+          const { data } = await W.recognize(c2); ocrN++;
+          b.lines = [];
+          for (const ol of ocrLines(data)){
+            const t = (ol.text || '').replace(/\s+/g, ' ').trim(); if (t.length < 2 || (ol.confidence ?? 80) < 45) continue;
+            const bb = ol.bbox, ln = { y: b.y + bb.y0 / sc, b: b.y + bb.y1 / sc, x: b.x + bb.x0 / sc, r: b.x + bb.x1 / sc, text: t, ocr: true };
+            ln.h = (ln.b - ln.y) * .8; ln.items = [{ s: t, x: ln.x, r: ln.r, h: ln.h, y: ln.y }];
+            lines.push(ln); b.lines.push(ln);
+          }
+          c2.width = c2.height = 0;
+        }
+        cv.width = cv.height = 0;
+      } catch (e){ console.warn('OCR off', e); ocrFail = true; }
+    }
+    lines.sort((p, q) => p.y - q.y || p.x - q.x);
     const body = lines.filter(l => l.y > vp.height * .05 && l.b < vp.height * .95 && !(/^[–—-]?\s*\d{1,3}\s*[–—-]?$/.test(l.text) && l.x > vp.width * .3 && l.x < vp.width * .7));
     const xs = body.map(l => l.x).sort((a, b) => a - b), margin = xs.length ? xs[Math.floor(xs.length * .05)] : 50;
-    pages.push({ n, w: vp.width, h: vp.height, lines: body, margin, pg });
+    pages.push({ n, w: vp.width, h: vp.height, lines: body, margin, pg, imgs });
   }
-  const hs = pages.flatMap(p => p.lines.map(l => Math.round(l.h * 2) / 2)).sort((a, b) => a - b);
-  return { doc, pages, total: doc.numPages, bodyH: hs.length ? hs[Math.floor(hs.length / 2)] : 11, textLines: hs.length };
+  const hs = pages.flatMap(p => p.lines.filter(l => !l.ocr).map(l => Math.round(l.h * 2) / 2)).sort((a, b) => a - b);
+  return { doc, pages, total: doc.numPages, bodyH: hs.length ? hs[Math.floor(hs.length / 2)] : 11, textLines: pages.reduce((a, p) => a + p.lines.length, 0), ocrFail, ocrN, imgN: pages.reduce((a, p) => a + p.imgs.length, 0) };
 }
 /* the same pages, but only the lines inside [from, to) — used to read the questions and the solutions of one PDF separately */
 const pxAt = (p, y) => p * 100000 + y;
@@ -5876,16 +5947,18 @@ function pxStarts(pages){
   for (const p of pages) for (const l of p.lines){
     if (PX_STOP.test(l.text) || PX_SOLHEAD.test(l.text)){ out.push({ k: 'stop', p: p.n, y: l.y }); continue; }
     let m = PX_Q.exec(l.text);
-    if (m && l.x < p.margin + 60){ q = +m[1]; const pt = (m[2] || m[3] || '').toLowerCase(); out.push(pt ? { k: 'P', q, part: pt, p: p.n, y: l.y } : { k: 'Q', q, p: p.n, y: l.y, text: l.text }); continue; }
+    if (m && l.x < p.margin + 60){ q = +m[1]; const pt = (m[2] || m[3] || '').toLowerCase(); out.push(pt ? { k: 'P', q, part: pt, p: p.n, y: l.y, sol: PX_QSOL.test(l.text) } : { k: 'Q', q, p: p.n, y: l.y, text: l.text, sol: PX_QSOL.test(l.text) }); continue; }
+    m = PX_SOLLINE.exec(l.text);
+    if (m && m[1] && l.x < p.margin + 60){ q = +m[1]; out.push(m[2] ? { k: 'P', q, part: m[2].toLowerCase(), p: p.n, y: l.y, sol: true } : { k: 'Q', q, p: p.n, y: l.y, text: l.text, sol: true }); continue; }
     m = PX_P.exec(l.text);
     if (m && q != null && l.x < p.margin + 40){ out.push({ k: 'P', q, part: m[1].toLowerCase(), p: p.n, y: l.y }); continue; }
     m = PX_N.exec(l.text);
     if (m && l.x < p.margin + 14 && +m[1] > 0) out.push({ k: 'N', q: +m[1], p: p.n, y: l.y });
   }
   // numbered questions only count as the longest run 1, 2, 3, … (drops page numbers, numbered instructions and list items)
-  const ns = out.filter(s => s.k === 'N'); let best = [];
-  for (let i = 0; i < ns.length; i++){ if (ns[i].q !== 1) continue; const run = [ns[i]]; for (let j = i + 1; j < ns.length; j++) if (ns[j].q === run[run.length - 1].q + 1) run.push(ns[j]); if (run.length > best.length) best = run; }
-  const keep = new Set(best.length >= 2 ? best : []), qs = new Set(out.filter(s => s.k === 'Q').map(s => s.q));
+  const ns = out.filter(s => s.k === 'N'), keep = new Set();
+  for (let i = 0; i < ns.length; i++){ if (ns[i].q !== 1 || keep.has(ns[i])) continue; const run = [ns[i]]; for (let j = i + 1; j < ns.length; j++){ if (ns[j].q === 1 && run.length > 1) break; if (ns[j].q === run[run.length - 1].q + 1) run.push(ns[j]); } if (run.length >= 2) run.forEach(x => keep.add(x)); }
+  const qs = new Set(out.filter(s => s.k === 'Q').map(s => s.q));
   return out.filter(s => s.k !== 'N' || (keep.has(s) && !qs.has(s.q)));
 }
 function pxRegion(pages, s, nx){
@@ -5907,7 +5980,7 @@ function pxPlan(R, mode){
   if (mode === 'page') return pages.filter(p => p.lines.length || !R.textLines).map(p => ({ key: 'p' + p.n, label: 'Page ' + p.n, segs: [{ p: p.n, y0: p.h * .03, y1: p.h * .97 }], marks: 0 }));
   if (mode === 'notes') return pxNotes(R);
   const st = pxStarts(pages), hasPart = new Set(st.filter(s => s.k === 'P').map(s => s.q));
-  const use = st.filter(s => s.k === 'stop' || (mode === 'part' ? (s.k === 'P' || s.k === 'N' || (s.k === 'Q' && !hasPart.has(s.q))) : (s.k === 'Q' || s.k === 'N' || (s.k === 'P' && !st.some(x => x.k === 'Q' && x.q === s.q) && !st.some(x => x.k === 'P' && x.q === s.q && pxAt(x.p, x.y) < pxAt(s.p, s.y))))));
+  const use = st.filter(s => s.k === 'stop' || (mode === 'part' ? (s.k === 'P' || s.k === 'N' || (s.k === 'Q' && (s.sol || !hasPart.has(s.q)))) : (s.k === 'Q' || s.k === 'N' || (s.k === 'P' && !st.some(x => x.k === 'Q' && x.q === s.q) && !st.some(x => x.k === 'P' && x.q === s.q && pxAt(x.p, x.y) < pxAt(s.p, s.y))))));
   const ends = mode === 'part' ? st.filter(s => s.k === 'Q' || s.k === 'stop' || use.includes(s)) : use;
   const after = s => ends.find(x => x !== s && (x.p > s.p || (x.p === s.p && x.y > s.y + 2)));
   const items = [], seen = new Set();
@@ -5917,12 +5990,36 @@ function pxPlan(R, mode){
     // a "Solution:" / "Answer:" line inside the region: everything after it is the answer
     let sol = null;
     for (const [i, g] of segs.entries()){
-      const hit = pages[g.p - 1].lines.find(l => l.y > g.y0 + (i ? 0 : 10) && l.y < g.y1 && PX_SOLLINE.test(l.text) && l.x < pages[g.p - 1].margin + 40);
+      const hit = pages[g.p - 1].lines.find(l => l.y > g.y0 + (i ? 0 : 10) && l.y < g.y1 && isSolLine(l.text) && l.x < pages[g.p - 1].margin + 60);
       if (hit){ sol = [{ p: g.p, y0: hit.y - 3, y1: g.y1 }, ...segs.slice(i + 1)]; segs = [...segs.slice(0, i), { ...g, y1: hit.y - 3 }].filter(z => z.y1 - z.y0 > 14); break; }
     }
-    const key = s.k === 'P' ? s.q + s.part : String(s.q); if (seen.has(key)) continue; seen.add(key);
+    const key = s.k === 'P' ? s.q + s.part : String(s.q);
+    if (s.sol || seen.has(key)){
+      // "Solution 3", "Q3 answer", or the same number a second time: this region is the answer to an earlier question
+      const all = [...(sol ? [] : segs), ...(sol || [])], hits = items.filter(it => it.key === key || (s.k !== 'P' && it.q === s.q));
+      hits.filter(it => !it.sol).forEach(it => { it.sol = all.map(g => ({ ...g })); it.inlineSol = true; });
+      continue;
+    }
+    seen.add(key);
     const hdr = s.k === 'Q' ? /\((\d{1,2})\s*marks?\)/i.exec(s.text || '') : null;
     items.push({ key, q: s.q, label: s.k === 'P' ? `Q${s.q}(${s.part})` : `Q${s.q}`, segs, sol, inlineSol: !!sol, marks: hdr ? +hdr[1] : pxMarks(segs, pages) });
+  }
+  return items.length >= 2 || (R.imgN || 0) < 2 ? items : pxImgPlan(R);
+}
+/* no numbered questions, but pictures (screenshots pasted into a doc): each picture is a question, a picture labelled
+   "Solution" / "Answer" (in the text above it or inside it) is the answer to the one before */
+function pxImgPlan(R){
+  const items = []; let k = 0;
+  for (const p of R.pages) for (const b of p.imgs){
+    if (b.b - b.y < 24 || b.b < p.h * .05 || b.y > p.h * .95) continue;
+    const above = p.lines.filter(l => !l.ocr && l.b <= b.y + 2 && l.b > b.y - 34 && !p.imgs.some(c => c !== b && l.y >= c.y && l.b <= c.b)).pop();
+    const inside = (b.lines || []).slice().sort((x, y) => x.y - y.y)[0];
+    const label = above?.text || inside?.text || '';
+    const seg = { p: p.n, y0: (above ? above.y : b.y) - 4, y1: b.b + 4 };
+    if (items.length && (isSolLine(label) || PX_QSOL.test(label.slice(0, 24)))){ const prev = items[items.length - 1]; prev.sol = [...(prev.sol || []), seg]; prev.inlineSol = true; continue; }
+    const m = PX_Q.exec(label) || PX_N.exec(label); k++;
+    const q = m ? +m[1] : k, pt = m && (m[2] || m[3]);
+    items.push({ key: pt ? q + pt.toLowerCase() : String(q), q, label: `Q${q}${pt ? `(${pt.toLowerCase()})` : ''}`, segs: [seg], sol: null, marks: pxMarks([seg], R.pages) || detectMarks(label) });
   }
   return items;
 }
@@ -6001,11 +6098,11 @@ async function pdfImport(file, intoId){
   openDialog(`<div class="dialog builder pdfx" role="dialog" aria-modal="true" aria-labelledby="pxh"><header class="bhead"><button class="btn" data-act="close">Cancel</button><h2 id="pxh">Make cards from a PDF</h2><span class="pxfile" id="pxfile"></span><span class="grow"></span><button class="btn primary" data-act="px-add" id="pxgo" disabled>Add cards</button></header><div class="pxbody" id="pxbody"></div></div>`);
   pxDraw();
   try {
-    const R = await pxRead(file); if (!pdfx) return; pdfx.R = R;
+    const R = await pxRead(file, t => { if (!pdfx) return; pdfx.busy = t; const b = $('#pxbusy'); if (b) b.textContent = t; }); if (!pdfx) return; pdfx.R = R;
     // questions and their solutions in the same PDF: read the two halves separately
     const cut = pxSplit(R); pdfx.cut = cut;
     const Q = cut ? pxSlice(R, 0, cut) : R, st = pxStarts(Q.pages).filter(s => s.k !== 'stop');
-    pdfx.mode = !R.textLines ? 'page' : st.length >= 2 ? (st.some(s => s.k === 'P') ? 'part' : 'question') : pxNotes(R).length >= 2 ? 'notes' : 'page';
+    pdfx.mode = !R.textLines && !R.imgN ? 'page' : (st.length >= 2 || R.imgN >= 2) ? (st.some(s => s.k === 'P') ? 'part' : 'question') : pxNotes(R).length >= 2 ? 'notes' : 'page';
     await pxBuild();
   } catch (e){ console.error(e); if (!pdfx) return; pdfx.busy = ''; pdfx.err = e.message && !/^pdf$/.test(e.message) ? e.message : "Couldn't read that PDF. It may be password-protected or damaged."; pxDraw(); }
 }
@@ -6013,7 +6110,7 @@ async function pxBuild(){
   const x = pdfx; if (!x?.R) return;
   x.busy = x.mode === 'notes' ? 'Reading the notes…' : 'Finding the questions…'; x.items = []; pxDraw();
   const exam = x.mode === 'part' || x.mode === 'question', Q = exam && x.cut ? pxSlice(x.R, 0, x.cut) : x.R;
-  let items = pxPlan(Q, x.mode); x.note = '';
+  let items = pxPlan(Q, x.mode); x.note = x.R.ocrFail && x.R.imgN ? "Couldn't load the reader for text inside pictures (are you online?), so only typed text was used." : '';
   if (!x.R.textLines) x.note = 'This PDF is scanned (there is no text in it), so each page becomes a card.';
   else if (!items.length && x.mode !== 'page'){ x.mode = 'page'; items = pxPlan(x.R, 'page'); x.note = x.mode === 'notes' ? "Couldn't find headings or definitions, so this makes one card a page." : "Couldn't find numbered questions, so this makes one card a page."; }
   // solutions printed after the questions in the same PDF
@@ -6045,7 +6142,7 @@ function pxDraw(){
   const solTxt = x.ansSame ? `Found in this PDF · ${withSol} of ${x.items.length} matched` : x.ans ? `${withSol} of ${x.items.length} matched` : withSol ? `${withSol} found next to their questions` : '';
   box.innerHTML = `<div class="pxopts">
       <div class="pxo"><span class="pxl">Make cards from</span>${seg([['part', 'Parts (a), (b)'], ['question', 'Questions'], ['notes', 'Notes'], ['page', 'Pages']])}</div>
-      <div class="pxo field pxfield"><span class="pxl">Put them in</span><button type="button" class="brdeck pickbtn ${x.node ? 'on' : ''}" id="pxdeck" aria-haspopup="true" aria-expanded="false">${x.node ? `<span class="sdot2" style="--sc:${scol(x.node)}"></span>${esc(pathName(x.node))}` : 'Choose a deck'}<span class="pkcar">▾</span></button></div>
+      <div class="pxo field pxfield"><span class="pxl">Put them in</span><button type="button" class="brdeck pickbtn ${x.node ? 'on' : ''}" id="pxdeck" aria-haspopup="true" aria-expanded="false">${x.node ? `<span class="sdot2" style="--sc:${scol(x.node)}"></span>${esc(pathOf(x.node).map(n => n.name).join(' › '))}` : 'Choose a deck'}<span class="pkcar">▾</span></button></div>
       ${exam ? `<div class="pxo"><span class="pxl">Solutions</span><span class="pxsolrow">${solTxt ? `<span class="pxans">${solTxt}</span>` : ''}${x.ans && !x.ansSame ? `<button class="link sm" data-act="px-ansclear">Remove</button>` : `<button class="btn" data-act="px-ans" ${x.busy || !x.items.length ? 'disabled' : ''}>${withSol ? 'Use a separate answers PDF…' : 'Add the answers PDF…'}</button>`}</span></div>` : ''}
       <span class="grow"></span>
       ${x.items.length ? `<button class="link sm" data-act="px-all">${on.length === x.items.length ? 'Untick all' : 'Tick all'}</button>` : ''}
@@ -6206,6 +6303,60 @@ function starsSvg(t, dark){
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 900'><g stroke='${ln}' stroke-width='1'>${lines.map(([a, b]) => `<line x1='${a[0]}' y1='${a[1]}' x2='${b[0]}' y2='${b[1]}'/>`).join('')}</g>${pts.map(([x, y, z]) => `<circle cx='${x}' cy='${y}' r='${z > .87 ? 2.6 : z > .5 ? 1.6 : 1.1}' fill='${z > .87 ? hi : st}'/>`).join('')}</svg>`;
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
+
+/* ---------- subject tabs: hold the mouse down on a tab and drag it sideways to reorder ---------- */
+let tabDrag = null, tabDragEat = false;
+document.addEventListener('pointerdown', e => {
+  const t = e.target.closest?.('.stab[data-id]'); if (!t || e.button !== 0 || e.pointerType === 'touch') return;
+  tabDrag = { el: t, id: t.dataset.id, x0: e.clientX, grab: e.clientX - t.getBoundingClientRect().left, on: false };
+});
+document.addEventListener('pointermove', e => {
+  const d = tabDrag; if (!d) return;
+  if (!d.on){ if (Math.abs(e.clientX - d.x0) < 6) return; d.on = true; d.bar = d.el.parentElement; d.el.classList.add('stdrag'); d.bar.classList.add('stdragging'); }
+  const want = e.clientX - d.grab, mid = want + d.el.offsetWidth / 2;
+  const others = [...d.bar.querySelectorAll('.stab[data-id]')].filter(x => x !== d.el);
+  const before = others.find(x => { const r = x.getBoundingClientRect(); return mid < r.left + r.width / 2; }) || d.bar.querySelector('.stabadd');
+  if (before && d.el.nextElementSibling !== before){
+    const first = new Map(others.map(x => [x, x.getBoundingClientRect().left]));
+    d.bar.insertBefore(d.el, before);
+    others.forEach(x => { const dx = first.get(x) - x.getBoundingClientRect().left; if (!dx) return; x.style.transition = 'none'; x.style.transform = `translateX(${dx}px)`; void x.offsetWidth; x.style.transition = 'transform .2s var(--ease)'; x.style.transform = ''; });
+  }
+  d.el.style.transform = 'none'; const nat = d.el.getBoundingClientRect().left;
+  const r0 = d.bar.getBoundingClientRect(), lim = Math.max(r0.left, Math.min(r0.right - d.el.offsetWidth, want));
+  d.el.style.transform = `translateX(${lim - nat}px)`;
+});
+addEventListener('pointerup', async () => {
+  const d = tabDrag; tabDrag = null; if (!d?.on) return;
+  tabDragEat = true; setTimeout(() => tabDragEat = false, 0);
+  d.el.classList.remove('stdrag'); d.bar.classList.remove('stdragging'); d.el.style.transform = '';
+  const next = d.el.nextElementSibling?.closest?.('.stab[data-id]'), ids = [...d.bar.querySelectorAll('.stab[data-id]')].map(x => x.dataset.id);
+  const was = kids(null).map(n => n.id);
+  if (ids.join() === was.join()) return placeTabInd();
+  undoTx = null; undoLabel = 'reorder subjects';
+  await moveNode(d.id, null, next ? next.dataset.id : null); render(); toast('Subjects reordered · ⌘Z to undo', 1600);
+});
+document.addEventListener('click', e => { if (tabDragEat && e.target.closest?.('.stab')){ e.stopPropagation(); e.preventDefault(); tabDragEat = false; } }, true);
+
+/* ---------- two-finger swipe on a trackpad: swipe left to go back, right to go forward ---------- */
+const swipe = { x: 0, t: 0, done: false };
+function swipeHint(dx){
+  let h = $('#swhint'); if (!h){ h = document.createElement('div'); h.id = 'swhint'; h.className = 'swhint'; h.setAttribute('aria-hidden', 'true'); h.innerHTML = '<svg viewBox="0 0 20 20"><path d="M12 4 6 10l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; document.body.appendChild(h); }
+  const f = Math.min(1, Math.abs(dx) / 140);
+  h.classList.toggle('fwd', dx < 0); h.classList.toggle('go', f >= 1);
+  h.style.setProperty('--f', f.toFixed(3)); h.classList.toggle('on', f > .05);
+  clearTimeout(h._t); h._t = setTimeout(() => h.classList.remove('on'), 260);
+}
+addEventListener('wheel', e => {
+  if (!document.body.classList.contains('desktop') || e.ctrlKey || !S.ready) return;
+  const now = performance.now(); if (now - swipe.t > 240){ swipe.x = 0; swipe.done = false; } swipe.t = now;
+  if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) * 1.4){ if (Math.abs(e.deltaY) > 3) swipe.x = 0; return; }
+  if (swipe.done || dialogOpen() || $('.lightbox') || $('#padwrap.full') || e.target.closest?.('input, textarea, [contenteditable="true"], .pad, #padwrap, .pickpop, .menu')) return;
+  for (let n = e.target; n && n !== document.body && n.nodeType === 1; n = n.parentElement){ if (n.scrollWidth > n.clientWidth + 2 && /(auto|scroll)/.test(getComputedStyle(n).overflowX)) return; }
+  const back = e.deltaX > 0, can = back ? (navH.back.length || view.name === 'study') : navH.fwd.length;
+  if (!can){ swipe.x = 0; return; }
+  swipe.x += e.deltaX; swipeHint(swipe.x);
+  if (Math.abs(swipe.x) >= 140){ swipe.done = true; histGo(back ? -1 : 1); }
+}, { passive: true });
 
 /* ---------- sidebar toggle (Mac app) ---------- */
 function toggleSidebar(force){
