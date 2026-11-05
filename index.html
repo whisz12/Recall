@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261105111717";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261105112431";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -2297,6 +2297,15 @@ html:not(.dk) .cdcard{box-shadow:0 1px 1px rgba(20,20,40,.04),0 8px 18px -12px r
 .cdedrow .icon:hover{color:var(--fg)}
 @media (max-width:640px){ .cdedrow{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} .cdedrow > *{min-width:0} .cdpair input[type=time]{width:104px} }
 @media (max-width:1100px){ .cdgrid .cdcard{order:-1} }
+/* round 10: countdown card under the topic cards, full width */
+.dkbody > .cdcard{display:grid;grid-template-columns:minmax(240px,300px) minmax(0,1fr);margin-top:var(--s5)}
+.cdleft{display:flex;flex-direction:column;justify-content:space-between}
+.cdright{display:flex;flex-direction:column;border-left:1px solid var(--border);min-width:0}
+.cdright .cdlist{border-top:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.cdright .cdrowv{border-top:0;border-bottom:1px solid var(--border)}
+.cdright .cdpace{border-top:0;margin-top:auto}
+@media (max-width:700px){ .dkbody > .cdcard{grid-template-columns:1fr} .cdright{border-left:0;border-top:1px solid var(--border)} .cdright .cdlist{grid-template-columns:1fr} }
+.cdh .icon{opacity:1 !important;color:var(--fg-3)}
 
 
 /* iPad / browser tweaks */
@@ -2727,7 +2736,8 @@ function renderDecks(){
         ${n ? `<button class="btn primary" data-act="${due ? 'study' : 'practise'}" data-id="${subj.id}">${due ? 'Study' : 'Practise'} ${esc(subj.name)}</button>` : ''}
         <button class="icon soft" aria-label="Options for ${esc(subj.name)}" data-act="gear" data-id="${subj.id}">${I.gear}</button>
       </div>`}
-      ${cdOn() ? `<div class="cdgrid"><div class="cdmain">${topics.length ? `<div class="tcols">${[...full, ...empty].map(tcard).join('')}</div>` : ''}</div>${cdCard(subj.id)}</div>` : topics.length ? `<div class="tcols">${[...full, ...empty].map(tcard).join('')}</div>` : ''}
+      ${topics.length ? `<div class="tcols">${[...full, ...empty].map(tcard).join('')}</div>` : ''}
+      ${cdOn() ? cdCard(subj.id) : ''}
       ${todoSection(subj.id)}
       ${recent.length || forgot.length ? `<div class="dklower">
         ${recent.length ? `<section><div class="glhead"><h2>Pick up where you left off</h2></div>${recentHtml}</section>` : ''}
@@ -6435,10 +6445,11 @@ function cdCard(subj){
   let wk = 0; for (let d = new Date(today0()); d < t; d = new Date(d.getTime() + DAY)) if (d.getDay() === 6) wk++;
   const mine = ex.find(x => x.subj === subj && cdExamAt(x) > Date.now()), left = mine ? cardsIn(subj).filter(c => !isDone(c)).length : 0, dleft = mine ? Math.max(1, cdDaysTo(cdExamAt(mine))) : 0;
   return `<section class="cdcard" aria-label="${esc(cd.name || 'Countdown')}">
-    <div class="cdh"><span class="cdname">${esc(cd.name || 'Exams')}<small>${esc(range)}</small></span><button class="icon soft" data-act="cd-edit" aria-label="Edit the countdown" title="Edit">${IC.edit}</button></div>
-    <div class="cdbig">${days > 0 ? `<b>${days}</b><span>day${days === 1 ? '' : 's'}<br>${wk ? `${wk} weekend${wk === 1 ? '' : 's'}` : 'to go'}</span>` : days === 0 ? `<b class="sm">Today</b><span>good luck</span>` : `<b class="sm">Underway</b><span>${esc(cdClock())}</span>`}</div>
+    <div class="cdleft"><div class="cdh"><span class="cdname">${esc(cd.name || 'Exams')}<small>${esc(range)}</small></span><button class="icon soft" data-act="cd-edit" aria-label="Edit the countdown" title="Edit">${IC.edit}</button></div>
+    <div class="cdbig">${days > 0 ? `<b>${days}</b><span>day${days === 1 ? '' : 's'}<br>${wk ? `${wk} weekend${wk === 1 ? '' : 's'}` : 'to go'}</span>` : days === 0 ? `<b class="sm">Today</b><span>good luck</span>` : `<b class="sm">Underway</b><span>${esc(cdClock())}</span>`}</div></div>
+    <div class="cdright">
     ${ex.length ? `<div class="cdlist">${ex.map(x => { const n = cdDaysTo(cdExamAt(x)); return `<div class="cdrowv ${n < 0 ? 'past' : ''} ${x.subj === subj ? 'here' : ''}"><span class="sdot2" style="--sc:${x.subj && nodeOf(x.subj) ? scol(x.subj) : 'var(--fg-3)'}"></span><span class="cdx">${esc(x.name || (x.subj && nodeOf(x.subj)?.name) || 'Exam')}</span><span class="cdd">${esc(fmt(x.date))}</span><b>${n < 0 ? 'done' : n === 0 ? 'today' : n + 'd'}</b></div>`; }).join('')}</div>` : ''}
-    ${mine && left ? `<p class="cdpace">To see every ${esc(nodeOf(subj).name)} card before ${esc(fmt(mine.date))}: <b>${Math.ceil(left / dleft)} a day</b></p>` : ''}
+    ${mine && left ? `<p class="cdpace">To see every ${esc(nodeOf(subj).name)} card before ${esc(fmt(mine.date))}: <b>${Math.ceil(left / dleft)} a day</b></p>` : ''}</div>
   </section>`;
 }
 /* ---------- set up or edit ---------- */
