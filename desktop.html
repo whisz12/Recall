@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261105215727 min-shell:1.27.0 -->
+<!-- recall-build:20261105220419 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -2385,6 +2385,16 @@ html:not(.dk) .cdcard{box-shadow:0 1px 1px rgba(20,20,40,.04),0 8px 18px -12px r
 .tdr.tdon .tdck:hover .tdcr{fill:color-mix(in srgb,var(--sc) 70%,transparent)}
 .tdclear{display:block;width:100%;text-align:left;padding:10px 16px;border:0;border-top:1px solid var(--border);background:none;color:var(--fg-3);font:500 12px var(--ui);cursor:pointer}
 .tdclear:hover{color:var(--fg)}
+/* round 13: edit tasks in place; slide between subjects */
+.tdt[data-tedit]{cursor:text}
+.tdt[data-tedit]:hover .tdtx{text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--fg) 30%,transparent);text-underline-offset:3px}
+.tdr.tdon .tdt[data-tedit]:hover .tdtx{text-decoration:none}
+.tdedit{width:100%;height:30px;margin:-4px 0;padding:0 8px;border:1px solid var(--accent);border-radius:6px;background:var(--bg);color:var(--fg);font:500 14px var(--ui);outline:none;box-sizing:border-box}
+.dkin-next{animation:dk-slide-next .34s var(--ease) both}
+.dkin-prev{animation:dk-slide-prev .34s var(--ease) both}
+@keyframes dk-slide-next{from{opacity:0;transform:translateX(90px)}}
+@keyframes dk-slide-prev{from{opacity:0;transform:translateX(-90px)}}
+@media (prefers-reduced-motion:reduce){ .dkin-next,.dkin-prev{animation:none} }
 
 </style>
 
@@ -6386,7 +6396,7 @@ function todoRow(x, i){
   const sn = x.s && nodeOf(x.s), late = todoLate(x);
   return `<div class="tdr ${x.done ? 'tdon' : ''}" data-tid="${x.id}" style="--sc:${x.s ? scol(x.s) : 'var(--accent)'};--i:${Math.min(i || 0, 12)}">
     <button class="tdck" data-act="todo-tick" data-id="${x.id}" role="checkbox" aria-checked="${!!x.done}" aria-label="${x.done ? 'Untick' : 'Tick off'}: ${esc(x.t)}"><svg viewBox="0 0 22 22" aria-hidden="true"><circle class="tdcr" cx="11" cy="11" r="9"/><path class="tdcv" d="M6.6 11.4 9.6 14.3 15.6 8"/></svg><span class="tdburst" aria-hidden="true">${'<i></i>'.repeat(8)}</span></button>
-    <span class="tdt"><span class="tdtx">${esc(x.t)}</span></span>
+    <span class="tdt" data-tedit="${x.id}" title="Click to edit"><span class="tdtx">${esc(x.t)}</span></span>
     ${todoAllSubj && sn ? `<span class="tdsub"><span class="sdot2" style="--sc:${scol(x.s)}"></span>${esc(sn.name)}</span>` : ''}
     ${late ? `<span class="tdodue late">From ${todoDay(x.due).toLowerCase()}</span>` : ''}
     <button class="tdmove" data-act="todo-move" data-id="${x.id}" title="Move to another list" aria-haspopup="true">Move</button>
@@ -6477,6 +6487,20 @@ function todoMoveTo(id, l){
   todoSave(todoAll().map(z => { if (z.id !== id) return z; const n = { ...z }; if (l === 'all') delete n.l; else n.l = l; return n; }), 'move task'); todoRefresh(); toast('Moved to ' + name, 1400);
 }
 
+/* edit a task: click its text, Enter or click away to save, Esc to cancel */
+function todoEditStart(id){
+  const x = todoAll().find(z => z.id === id), el = document.querySelector(`.tdt[data-tedit="${id}"]`); if (!x || !el || el.querySelector('input')) return;
+  el.innerHTML = `<input class="tdedit" maxlength="200" aria-label="Edit task" value="${esc(x.t)}">`;
+  const inp = el.querySelector('input'); inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length);
+  let done = false;
+  const finish = save => { if (done) return; done = true; const v = inp.value.replace(/\s+/g, ' ').trim();
+    if (save && v && v !== x.t){ todoSave(todoAll().map(z => z.id === id ? { ...z, t: v.slice(0, 200) } : z), 'edit task'); toast('Task updated', 1200); }
+    todoRefresh(); };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); e.stopPropagation(); finish(true); } else if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); finish(false); } });
+  inp.addEventListener('blur', () => finish(true));
+}
+document.addEventListener('click', e => { const t = e.target.closest?.('.tdt[data-tedit]'); if (!t || e.target.closest('input') || t.closest('.ticking')) return; todoEditStart(t.dataset.tedit); });
+
 /* ---------- subject tabs: hold the mouse down on a tab and drag it sideways to reorder ---------- */
 let tabDrag = null, tabDragEat = false;
 document.addEventListener('pointerdown', e => {
@@ -6525,10 +6549,47 @@ addEventListener('wheel', e => {
   if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) * 1.4){ if (Math.abs(e.deltaY) > 3) swipe.x = 0; return; }
   if (swipe.done || dialogOpen() || $('.lightbox') || $('#padwrap.full') || e.target.closest?.('input, textarea, [contenteditable="true"], .pad, #padwrap, .pickpop, .menu')) return;
   for (let n = e.target; n && n !== document.body && n.nodeType === 1; n = n.parentElement){ if (n.scrollWidth > n.clientWidth + 2 && /(auto|scroll)/.test(getComputedStyle(n).overflowX)) return; }
+  if (view.name === 'decks' && kids(null).length > 1){ swipe.x += e.deltaX; return subjDrag(swipe.x); }
   const back = e.deltaX > 0, can = back ? (navH.back.length || view.name === 'study') : navH.fwd.length;
   if (!can){ swipe.x = 0; return; }
   swipe.x += e.deltaX; swipeHint(swipe.x);
   if (Math.abs(swipe.x) >= 140){ swipe.done = true; histGo(back ? -1 : 1); }
+}, { passive: true });
+
+/* ---------- Decks: swipe sideways (two fingers, or a finger on touch screens) or press ← → to move between subjects ---------- */
+let subjSnapT = 0;
+const subjEls = () => [...document.querySelectorAll('.dkhome > .dkbody, .dkhome .dkspread')];
+function subjDrag(x){
+  if (swipe.done) return;
+  const subs = kids(null), i = subs.findIndex(s => s.id === curSubj()?.id), dir = x > 0 ? 1 : -1, edge = i + dir < 0 || i + dir >= subs.length;
+  const k = edge ? .08 : .3, off = -x * k;
+  if (!reducedMotion()) subjEls().forEach(el => { el.style.transition = 'none'; el.style.transform = `translateX(${off}px)`; el.style.opacity = String(Math.max(.4, 1 - Math.abs(x) / 500)); });
+  clearTimeout(subjSnapT); subjSnapT = setTimeout(subjSnap, 160);
+  if (!edge && Math.abs(x) >= 110){ swipe.done = true; clearTimeout(subjSnapT); subjStep(dir); }
+}
+function subjSnap(){ subjEls().forEach(el => { el.style.transition = 'transform .28s var(--ease), opacity .28s'; el.style.transform = ''; el.style.opacity = ''; }); }
+function subjStep(dir){
+  const subs = kids(null), i = subs.findIndex(s => s.id === curSubj()?.id), j = i + dir;
+  if (i < 0 || j < 0 || j >= subs.length){ subjSnap(); return false; }
+  const go2 = () => {
+    const on = $('.stab[aria-selected="true"]'); tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null;
+    ls.set('md-subj', subs[j].id); deckSwap = false; renderDecks(); renderSideSubjects();
+    if (!reducedMotion()) subjEls().forEach(el => { el.classList.remove('dkin-next', 'dkin-prev'); void el.offsetWidth; el.classList.add(dir > 0 ? 'dkin-next' : 'dkin-prev'); });
+  };
+  if (reducedMotion()) return go2(), true;
+  subjEls().forEach(el => { el.style.transition = 'transform .14s ease-in, opacity .14s ease-in'; el.style.transform = `translateX(${dir > 0 ? -90 : 90}px)`; el.style.opacity = '0'; });
+  setTimeout(go2, 140); return true;
+}
+document.addEventListener('keydown', e => {
+  if (view.name !== 'decks' || e.metaKey || e.ctrlKey || e.altKey || isTyping(document.activeElement) || dialogOpen() || $('#menu') || $('.pickpop')) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft'){ e.preventDefault(); subjStep(e.key === 'ArrowRight' ? 1 : -1); }
+});
+let subjTouch = null;
+document.addEventListener('touchstart', e => { if (view.name !== 'decks' || e.touches.length !== 1 || e.target.closest('.stabs, input, textarea, .tdr, .menu')) return subjTouch = null; subjTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const t = subjTouch; subjTouch = null; if (!t || view.name !== 'decks') return;
+  const dx = e.changedTouches[0].clientX - t.x, dy = e.changedTouches[0].clientY - t.y;
+  if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8) subjStep(dx < 0 ? 1 : -1);
 }, { passive: true });
 
 /* ---------- exam countdown: one block (e.g. HSC Trials) with its exams; a live clock at the top of every page, a card on Decks ---------- */
