@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261105213658";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261105215727";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -2306,6 +2306,19 @@ html:not(.dk) .cdcard{box-shadow:0 1px 1px rgba(20,20,40,.04),0 8px 18px -12px r
 .cdright .cdpace{border-top:0;margin-top:auto}
 @media (max-width:700px){ .dkbody > .cdcard{grid-template-columns:1fr} .cdright{border-left:0;border-top:1px solid var(--border)} .cdright .cdlist{grid-template-columns:1fr} }
 .cdh .icon{opacity:1 !important;color:var(--fg-3)}
+/* round 11: Today / Overall to-do lists */
+.tdtab{margin-left:14px}
+.tdtab button{height:28px;font-size:13px;padding:0 12px;display:inline-flex;align-items:center;gap:6px}
+.tdtab b{font:600 11px var(--ui);min-width:18px;height:18px;padding:0 5px;border-radius:9px;display:inline-grid;place-items:center;background:rgba(var(--ovr),.1);font-variant-numeric:tabular-nums}
+.tdmove{flex:none;height:26px;padding:0 9px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--fg-3);font:500 12px var(--ui);cursor:pointer;opacity:0;transition:opacity var(--t-fast)}
+.tdr:hover .tdmove,.tdmove:focus-visible{opacity:1}
+.tdmove:hover{color:var(--fg);border-color:var(--border-2)}
+@media (hover:none){ .tdmove{opacity:.8} }
+@media (max-width:700px){ .tdoh{flex-wrap:wrap} .tdtab{margin-left:0;order:3;width:100%} .tdtab button{flex:1} }
+/* round 12: ticked tasks stay, struck through, under the open ones */
+.tdr.tdon .tdck:hover .tdcr{fill:color-mix(in srgb,var(--sc) 70%,transparent)}
+.tdclear{display:block;width:100%;text-align:left;padding:10px 16px;border:0;border-top:1px solid var(--border);background:none;color:var(--fg-3);font:500 12px var(--ui);cursor:pointer}
+.tdclear:hover{color:var(--fg)}
 
 
 /* iPad / browser tweaks */
@@ -6275,34 +6288,43 @@ function subjBgPick(id){
 
 /* ---------- to-do: tasks for each subject, ticked off with a small moment; kept in settings so they sync ---------- */
 const todoAll = () => Array.isArray(S.settings?.todos) ? S.settings.todos : [];
-let todoAllSubj = false, todoShowDone = false;
+let todoAllSubj = false, todoShowDone = false, todoTab = ['today', 'hw', 'all'].includes(ls.get('md-todo-tab', 'today')) ? ls.get('md-todo-tab', 'today') : 'today';
+const TODO_TABS = [['today', 'Today'], ['hw', 'Homework'], ['all', 'Revision']];
+const todoL = x => x.l === 'today' || x.l === 'hw' ? x.l : 'all';
+const todoIn = (x, tab) => todoL(x) === tab;
 function todoSave(list, label){ undoTx = null; undoLabel = label || 'to-do'; undoRecordSettings(); S.settings = { ...S.settings, todos: list }; saveSettings(); }
 const todoDay = d => { if (!d) return ''; const t = new Date(d + 'T00:00'), n = Math.round((t - today0()) / DAY); return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n === -1 ? 'Yesterday' : n > 1 && n < 7 ? t.toLocaleDateString(undefined, { weekday: 'short' }) : t.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }); };
 const todoLate = () => false;
-function todoList(subj){
-  return todoAll().filter(x => !x.done && (todoAllSubj || !subj || x.s === subj)).sort((a, b) => a.at - b.at);
+function todoList(subj, tab = todoTab){
+  return todoAll().filter(x => !x.done && todoIn(x, tab) && (todoAllSubj || !subj || x.s === subj)).sort((a, b) => a.at - b.at);
+}
+function todoDoneList(subj, tab = todoTab){
+  return todoAll().filter(x => x.done && todoIn(x, tab) && (todoAllSubj || !subj || x.s === subj)).sort((a, b) => a.done - b.done);
 }
 const todoDoneLog = () => Array.isArray(S.settings?.todoDone) ? S.settings.todoDone : [];
 function todoRow(x, i){
   const sn = x.s && nodeOf(x.s), late = todoLate(x);
-  return `<div class="tdr" data-tid="${x.id}" style="--sc:${x.s ? scol(x.s) : 'var(--accent)'};--i:${Math.min(i || 0, 12)}">
-    <button class="tdck" data-act="todo-tick" data-id="${x.id}" role="checkbox" aria-checked="false" aria-label="Tick off: ${esc(x.t)}"><svg viewBox="0 0 22 22" aria-hidden="true"><circle class="tdcr" cx="11" cy="11" r="9"/><path class="tdcv" d="M6.6 11.4 9.6 14.3 15.6 8"/></svg><span class="tdburst" aria-hidden="true">${'<i></i>'.repeat(8)}</span></button>
+  return `<div class="tdr ${x.done ? 'tdon' : ''}" data-tid="${x.id}" style="--sc:${x.s ? scol(x.s) : 'var(--accent)'};--i:${Math.min(i || 0, 12)}">
+    <button class="tdck" data-act="todo-tick" data-id="${x.id}" role="checkbox" aria-checked="${!!x.done}" aria-label="${x.done ? 'Untick' : 'Tick off'}: ${esc(x.t)}"><svg viewBox="0 0 22 22" aria-hidden="true"><circle class="tdcr" cx="11" cy="11" r="9"/><path class="tdcv" d="M6.6 11.4 9.6 14.3 15.6 8"/></svg><span class="tdburst" aria-hidden="true">${'<i></i>'.repeat(8)}</span></button>
     <span class="tdt"><span class="tdtx">${esc(x.t)}</span></span>
     ${todoAllSubj && sn ? `<span class="tdsub"><span class="sdot2" style="--sc:${scol(x.s)}"></span>${esc(sn.name)}</span>` : ''}
     ${late ? `<span class="tdodue late">From ${todoDay(x.due).toLowerCase()}</span>` : ''}
+    <button class="tdmove" data-act="todo-move" data-id="${x.id}" title="Move to another list" aria-haspopup="true">Move</button>
     <button class="tddel" data-act="todo-del" data-id="${x.id}" aria-label="Delete ${esc(x.t)}">${I.x}</button>
   </div>`;
 }
 function todoSection(subj){
-  const sn = subj && nodeOf(subj), open = todoList(subj), t0 = today0();
-  const today = todoDoneLog().filter(d => d.t >= t0 && (todoAllSubj || !subj || d.s === subj)).length, tot = open.length + today;
+  const sn = subj && nodeOf(subj), open = todoList(subj), done = todoDoneList(subj), today = done.length, tot = open.length + today;
+  const nOf = k => todoList(subj, k).length;
   return `<section class="tdo" id="tdo" data-subj="${subj || ''}" style="--sc:${subj ? scol(subj) : 'var(--accent)'}">
     <div class="tdbox">
-      <div class="tdoh"><div class="tdohl"><h2>To-do</h2><span class="tdoc">${open.length ? `${open.length} left` : today ? 'All done' : 'Stays here until you tick it off'}${today ? ` · ${today} done today` : ''}</span></div><span class="grow"></span>
+      <div class="tdoh"><div class="tdohl"><h2>To-do</h2><span class="tdoc">${open.length ? `${open.length} left` : today ? 'All done' : todoTab === 'today' ? 'What you want done today' : todoTab === 'hw' ? 'Homework still to hand in' : 'What you want to revise'}${today ? ` · ${today} done` : ''}</span></div>
+        <div class="seg tdtab" role="tablist" aria-label="Which list">${TODO_TABS.map(([k, l]) => { const n = nOf(k); return `<button type="button" role="tab" data-act="todo-tab" data-v="${k}" aria-pressed="${todoTab === k}">${l}${n ? ` <b>${n}</b>` : ''}</button>`; }).join('')}</div><span class="grow"></span>
         ${sn ? `<div class="seg tdof" role="group" aria-label="Show tasks for"><button type="button" data-act="todo-f" data-v="" aria-pressed="${!todoAllSubj}">${esc(sn.name)}</button><button type="button" data-act="todo-f" data-v="all" aria-pressed="${todoAllSubj}">All subjects</button></div>` : ''}</div>
       ${tot ? `<div class="tdprog" aria-hidden="true"><i style="width:${today / tot * 100}%"></i></div>` : ''}
-      ${open.length ? `<div class="tdl">${open.map(todoRow).join('')}</div>` : ''}
-      <label class="tdadd"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" placeholder="New task${sn ? ' for ' + esc(sn.name) : ''}" aria-label="New task"></label>
+      ${tot ? `<div class="tdl">${[...open, ...done].map(todoRow).join('')}</div>` : ''}
+      ${today ? `<button class="tdclear" data-act="todo-clear">Clear ${today} done</button>` : ''}
+      <label class="tdadd"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" placeholder="${todoTab === 'today' ? 'New task for today' : todoTab === 'hw' ? 'New homework' : 'Something to revise'}${sn ? ' in ' + esc(sn.name) : ''}" aria-label="New task"></label>
     </div>
   </section>`;
 }
@@ -6314,22 +6336,27 @@ function todoRefresh(focus){
 function todoAdd(){
   const inp = $('#tdoin'), t = (inp?.value || '').replace(/\s+/g, ' ').trim(); if (!t) return;
   const subj = $('#tdo')?.dataset.subj || null;
-  const x = { id: uid('t'), t: t.slice(0, 200), s: subj, done: 0, at: Date.now() };
+  const x = { id: uid('t'), t: t.slice(0, 200), s: subj, done: 0, at: Date.now() }; if (todoTab !== 'all') x.l = todoTab;
   todoSave([...todoAll(), x], 'add task'); todoRefresh(true);
   const row = document.querySelector(`.tdr[data-tid="${x.id}"]`); row?.classList.add('tdnew');
 }
 function todoDone(id){
   const list = todoAll(), x = list.find(z => z.id === id); if (!x) return;
-  undoTx = null; undoLabel = 'tick off task'; undoRecordSettings();
-  S.settings = { ...S.settings, todos: list.filter(z => z.id !== id), todoDone: [...todoDoneLog(), { s: x.s || null, t: Date.now() }].slice(-500) }; saveSettings();
+  undoTx = null; undoLabel = x.done ? 'untick task' : 'tick off task'; undoRecordSettings();
+  const now = Date.now(), log = x.done ? todoDoneLog().filter(d => d.id !== id) : [...todoDoneLog(), { id, s: x.s || null, t: now, l: todoL(x) }].slice(-500);
+  S.settings = { ...S.settings, todos: list.map(z => z.id === id ? { ...z, done: z.done ? 0 : now } : z), todoDone: log }; saveSettings();
+}
+function todoClearDone(subj){
+  const ids = new Set(todoDoneList(subj).map(x => x.id)); if (!ids.size) return;
+  todoSave(todoAll().filter(x => !ids.has(x.id)), 'clear done tasks'); todoRefresh(); toast(`Cleared ${ids.size} done · ⌘Z to undo`, 1800);
 }
 function todoTick(id){
   const row = document.querySelector(`.tdr[data-tid="${id}"]`);
-  if (!row || reducedMotion()){ todoDone(id); return todoRefresh(); }
+  const x = todoAll().find(z => z.id === id);
+  if (!row || reducedMotion() || x?.done){ todoDone(id); todoRefresh(); return view.name === 'stats' ? renderStats() : null; }
   if (row.classList.contains('ticking')) return;
   row.classList.add('ticking'); row.querySelector('.tdck')?.setAttribute('aria-checked', 'true');
-  setTimeout(() => { row.style.height = row.offsetHeight + 'px'; void row.offsetHeight; row.classList.add('leaving'); row.style.height = '0px'; }, 620);
-  setTimeout(() => { todoDone(id); todoRefresh(); if (view.name === 'stats') renderStats(); }, 900);
+  setTimeout(() => { todoDone(id); todoRefresh(); if (view.name === 'stats') renderStats(); }, 700);
 }
 document.addEventListener('keydown', e => {
   if (e.target.id === 'tdoin' && e.key === 'Enter' && !e.isComposing){ e.preventDefault(); e.stopPropagation(); todoAdd(); }
@@ -6337,7 +6364,7 @@ document.addEventListener('keydown', e => {
 }, true);
 /* stats: what you've ticked off */
 function todoStatsCard(){
-  const log = todoDoneLog(), open = todoAll(); if (!log.length && !open.length) return '';
+  const log = todoDoneLog(), open = todoAll().filter(x => !x.done); if (!log.length && !open.length) return '';
   const t0 = today0(), days = [...Array(14)].map((_, i) => { const a = t0 - (13 - i) * DAY; return log.filter(x => x.t >= a && x.t < a + DAY).length; });
   const max = Math.max(1, ...days), wk = log.filter(x => x.t >= t0 - 6 * DAY).length, late = open.filter(todoLate).length;
   let streak = 0; for (let i = 13; i >= 0; i--){ if (days[i]) streak++; else if (i < 13) break; }
@@ -6356,6 +6383,18 @@ function starsSvg(t, dark){
   for (let k = 0; k < 9; k++){ let a = pts[k * 5]; used.add(a); for (let j = 0; j < 4; j++){ const b = pts.filter(p => !used.has(p)).sort((p, q) => Math.hypot(p[0] - a[0], p[1] - a[1]) - Math.hypot(q[0] - a[0], q[1] - a[1]))[0]; if (!b || Math.hypot(b[0] - a[0], b[1] - a[1]) > 210) break; lines.push([a, b]); used.add(b); a = b; } }
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 900'><g stroke='${ln}' stroke-width='1'>${lines.map(([a, b]) => `<line x1='${a[0]}' y1='${a[1]}' x2='${b[0]}' y2='${b[1]}'/>`).join('')}</g>${pts.map(([x, y, z]) => `<circle cx='${x}' cy='${y}' r='${z > .87 ? 2.6 : z > .5 ? 1.6 : 1.1}' fill='${z > .87 ? hi : st}'/>`).join('')}</svg>`;
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
+
+function todoMoveMenu(id, anchor){
+  closeMenu(); const x = todoAll().find(z => z.id === id); if (!x) return;
+  const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
+  m.innerHTML = TODO_TABS.filter(([k]) => k !== todoL(x)).map(([k, l]) => `<button data-act="todo-moveto" data-id="${id}" data-l="${k}">Move to ${l}</button>`).join('');
+  document.body.appendChild(m); const r = anchor.getBoundingClientRect(), w = m.offsetWidth;
+  m.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px'; m.style.top = Math.min(innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px'; m.querySelector('button').focus();
+}
+function todoMoveTo(id, l){
+  const name = TODO_TABS.find(([k]) => k === l)?.[1] || 'Revision';
+  todoSave(todoAll().map(z => { if (z.id !== id) return z; const n = { ...z }; if (l === 'all') delete n.l; else n.l = l; return n; }), 'move task'); todoRefresh(); toast('Moved to ' + name, 1400);
 }
 
 /* ---------- subject tabs: hold the mouse down on a tab and drag it sideways to reorder ---------- */
@@ -6542,6 +6581,10 @@ document.addEventListener('click', async e => {
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
     case 'side-subj': { if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; renderDecks(); return renderSideSubjects(); } ls.set('md-subj', id); study = null; return go('decks'); }
     case 'hist-back': return histGo(-1);
+    case 'todo-clear': return todoClearDone($('#tdo')?.dataset.subj || null);
+    case 'todo-tab': todoTab = ['today', 'hw', 'all'].includes(a.dataset.v) ? a.dataset.v : 'today'; ls.set('md-todo-tab', todoTab); return todoRefresh();
+    case 'todo-move': e.stopPropagation(); return $('#menu') ? closeMenu() : todoMoveMenu(id, a);
+    case 'todo-moveto': return todoMoveTo(id, a.dataset.l);
     case 'cd-edit': closeMenu(); return cdEdit();
     case 'cd-save': return cdSave();
     case 'cd-del': return cdDelete();
