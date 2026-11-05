@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261105112431 min-shell:1.27.0 -->
+<!-- recall-build:20261105213658 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -6358,9 +6358,9 @@ const todoAll = () => Array.isArray(S.settings?.todos) ? S.settings.todos : [];
 let todoAllSubj = false, todoShowDone = false;
 function todoSave(list, label){ undoTx = null; undoLabel = label || 'to-do'; undoRecordSettings(); S.settings = { ...S.settings, todos: list }; saveSettings(); }
 const todoDay = d => { if (!d) return ''; const t = new Date(d + 'T00:00'), n = Math.round((t - today0()) / DAY); return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n === -1 ? 'Yesterday' : n > 1 && n < 7 ? t.toLocaleDateString(undefined, { weekday: 'short' }) : t.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }); };
-const todoLate = x => x.due && !x.done && new Date(x.due + 'T23:59') < Date.now();
+const todoLate = () => false;
 function todoList(subj){
-  return todoAll().filter(x => !x.done && (todoAllSubj || !subj || x.s === subj)).sort((a, b) => (a.due || '9999') < (b.due || '9999') ? -1 : (a.due || '9999') > (b.due || '9999') ? 1 : a.at - b.at);
+  return todoAll().filter(x => !x.done && (todoAllSubj || !subj || x.s === subj)).sort((a, b) => a.at - b.at);
 }
 const todoDoneLog = () => Array.isArray(S.settings?.todoDone) ? S.settings.todoDone : [];
 function todoRow(x, i){
@@ -6378,7 +6378,7 @@ function todoSection(subj){
   const today = todoDoneLog().filter(d => d.t >= t0 && (todoAllSubj || !subj || d.s === subj)).length, tot = open.length + today;
   return `<section class="tdo" id="tdo" data-subj="${subj || ''}" style="--sc:${subj ? scol(subj) : 'var(--accent)'}">
     <div class="tdbox">
-      <div class="tdoh"><div class="tdohl"><h2>Today's to-do</h2><span class="tdoc">${open.length ? `${open.length} left` : today ? 'All done' : 'Due by the end of today'}${today ? ` · ${today} done` : ''}</span></div><span class="grow"></span>
+      <div class="tdoh"><div class="tdohl"><h2>To-do</h2><span class="tdoc">${open.length ? `${open.length} left` : today ? 'All done' : 'Stays here until you tick it off'}${today ? ` · ${today} done today` : ''}</span></div><span class="grow"></span>
         ${sn ? `<div class="seg tdof" role="group" aria-label="Show tasks for"><button type="button" data-act="todo-f" data-v="" aria-pressed="${!todoAllSubj}">${esc(sn.name)}</button><button type="button" data-act="todo-f" data-v="all" aria-pressed="${todoAllSubj}">All subjects</button></div>` : ''}</div>
       ${tot ? `<div class="tdprog" aria-hidden="true"><i style="width:${today / tot * 100}%"></i></div>` : ''}
       ${open.length ? `<div class="tdl">${open.map(todoRow).join('')}</div>` : ''}
@@ -6393,8 +6393,8 @@ function todoRefresh(focus){
 }
 function todoAdd(){
   const inp = $('#tdoin'), t = (inp?.value || '').replace(/\s+/g, ' ').trim(); if (!t) return;
-  const subj = $('#tdo')?.dataset.subj || null, due = dayKey();
-  const x = { id: uid('t'), t: t.slice(0, 200), s: subj, due, done: 0, at: Date.now() };
+  const subj = $('#tdo')?.dataset.subj || null;
+  const x = { id: uid('t'), t: t.slice(0, 200), s: subj, done: 0, at: Date.now() };
   todoSave([...todoAll(), x], 'add task'); todoRefresh(true);
   const row = document.querySelector(`.tdr[data-tid="${x.id}"]`); row?.classList.add('tdnew');
 }
@@ -6423,7 +6423,7 @@ function todoStatsCard(){
   let streak = 0; for (let i = 13; i >= 0; i--){ if (days[i]) streak++; else if (i < 13) break; }
   const subs = kids(null).map(s => ({ s, o: open.filter(x => x.s === s.id).length, d: log.filter(x => x.s === s.id && x.t >= t0 - 6 * DAY).length })).filter(r => r.o + r.d);
   return `<section class="stcard sttodo"><div class="sth"><h2>To-do</h2><span class="sub">${wk} ticked off this week</span></div>
-    <div class="sttdk"><span><b>${days[13]}</b>done today</span><span><b>${open.length}</b>still open</span><span><b class="${late ? 'late' : ''}">${late}</b>left from before</span><span><b>${streak}</b>day${streak === 1 ? '' : 's'} in a row</span></div>
+    <div class="sttdk"><span><b>${days[13]}</b>done today</span><span><b>${open.length}</b>still open</span><span><b>${streak}</b>day${streak === 1 ? '' : 's'} in a row</span></div>
     <div class="sttdbars" aria-label="Tasks ticked off in the last 14 days">${days.map((n, i) => `<span title="${n} on ${new Date(t0 - (13 - i) * DAY).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}"><i style="height:${n ? Math.max(8, n / max * 100) : 0}%" class="${i === 13 ? 'now' : ''}"></i></span>`).join('')}</div>
     ${subs.length ? `<div class="sttdsub">${subs.map(r => `<div class="sttdr" style="--sc:${scol(r.s.id)}"><span class="sdot2"></span><span class="sttdn">${esc(r.s.name)}</span><span class="stmini"><i style="width:${r.d / (r.o + r.d) * 100}%"></i></span><span class="sttdc">${r.d} done · ${r.o} open</span></div>`).join('')}</div>` : ''}
   </section>`;
