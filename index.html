@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261104121735";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261105111717";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -2247,6 +2247,56 @@ html.lh body.desktop:not(.sidebar-hidden) .swhint:not(.fwd){left:calc(var(--side
 .bmcard > span{padding:12px;font:500 12px/1.35 var(--ui);color:#222;text-align:left}
 @keyframes bm-in{from{opacity:0;transform:translateY(8px)}}
 @media (prefers-reduced-motion:reduce){ .bmcard{animation:none} }
+/* round 9: exam countdown */
+.cdpill{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;margin-right:8px;border-radius:8px;border:1px solid var(--border-2);background:var(--surface);color:var(--fg-2);font:500 13px var(--ui);cursor:pointer;white-space:nowrap;-webkit-app-region:no-drag}
+.cdpill:hover{border-color:var(--fg-3);color:var(--fg)}
+.cddot{width:7px;height:7px;border-radius:50%;background:var(--accent-btn);animation:cd-pulse 2s ease-in-out infinite}
+.cdpill b{font:600 13px ui-monospace,'SF Mono',Menlo,monospace;color:var(--fg);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+@keyframes cd-pulse{50%{opacity:.35}}
+#cdmob{display:flex;justify-content:center;margin:0 0 12px}
+#cdmob .cdpill{margin:0}
+.cdgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+.cdgrid .tcols{columns:2 300px}
+.cdcard{border-radius:14px;background:var(--surface);border:1px solid var(--border);overflow:hidden}
+html.dk .cdcard{background-image:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0) 72px);box-shadow:inset 0 1px 0 rgba(255,255,255,.065),0 1px 2px rgba(0,0,0,.35),0 12px 24px -16px rgba(0,0,0,.75)}
+html:not(.dk) .cdcard{box-shadow:0 1px 1px rgba(20,20,40,.04),0 8px 18px -12px rgba(20,20,40,.14)}
+.cdh{display:flex;align-items:flex-start;gap:8px;padding:16px 12px 0 18px}
+.cdname{flex:1;min-width:0;font:600 15px var(--ui);color:var(--fg)}
+.cdname small{display:block;margin-top:2px;font:500 12px var(--ui);color:var(--fg-3)}
+.cdbig{display:flex;align-items:flex-end;gap:10px;padding:8px 18px 16px}
+.cdbig b{font:800 56px/1 var(--ui);letter-spacing:-.05em;color:var(--accent);font-variant-numeric:tabular-nums}
+.cdbig b.sm{font-size:34px}
+.cdbig span{font:500 14px/1.3 var(--ui);color:var(--fg-2);padding-bottom:4px}
+.cdlist{border-top:1px solid var(--border)}
+.cdrowv{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 18px;border-top:1px solid var(--border);font:500 13px var(--ui);color:var(--fg)}
+.cdrowv:first-child{border-top:0}
+.cdrowv .cdx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cdrowv .cdd{color:var(--fg-3);white-space:nowrap}
+.cdrowv b{width:44px;text-align:right;font-variant-numeric:tabular-nums}
+.cdrowv.here{background:color-mix(in srgb,var(--accent-btn) 8%,transparent)}
+.cdrowv.past{color:var(--fg-3)}
+.cdrowv .sdot2{background:var(--sc)}
+.cdpace{margin:0;padding:12px 18px 14px;border-top:1px solid var(--border);font:400 13px var(--ui);color:var(--fg-2)}
+.cdpace b{color:var(--fg)}
+.cd2{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
+.cdpair{display:flex;gap:6px}
+.cdpair input[type=date]{flex:1;min-width:0}
+.cdpair input[type=time]{width:110px}
+.cdexams{display:flex;flex-direction:column;gap:6px}
+.cdedrow{display:grid;grid-template-columns:120px minmax(0,1fr) 140px 96px 30px;gap:6px;align-items:center}
+.cdadd{align-self:flex-start;margin-top:4px}
+.cddialog .field label span{font-weight:400;color:var(--fg-3)}
+@media (max-width:1100px){ .cdgrid{grid-template-columns:1fr} }
+@media (max-width:640px){ .cd2{grid-template-columns:1fr} .cdedrow{grid-template-columns:1fr 1fr;padding:8px 0;border-top:1px solid var(--border)} .cdedrow .cdxn{grid-column:1 / -1;order:-1} .cdedrow .icon{justify-self:end} }
+@media (prefers-reduced-motion:reduce){ .cddot{animation:none} }
+#appbar:has(.cdpill) .abmeta{display:none}
+.cdpn{max-width:140px;overflow:hidden;text-overflow:ellipsis}
+.cdpair input[type=time]{width:128px}
+.cdedrow{grid-template-columns:120px minmax(0,1fr) 140px 112px 30px}
+.cdedrow .icon{opacity:1 !important;color:var(--fg-3)}
+.cdedrow .icon:hover{color:var(--fg)}
+@media (max-width:640px){ .cdedrow{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} .cdedrow > *{min-width:0} .cdpair input[type=time]{width:104px} }
+@media (max-width:1100px){ .cdgrid .cdcard{order:-1} }
 
 
 /* iPad / browser tweaks */
@@ -2611,7 +2661,7 @@ function forgotIn(id){ return cardsIn(id).filter(c => failCount(c) > 0).sort((a,
 function renderDecks(){
   const subjects = kids(null), all = counts(null);
   const banner = S.mode === 'local' && !cloudOn() ? (cloudConfigured() ? '<div class="banner">Sign in to bring in your cards from your Mac and keep both in sync. <button class="link" data-act="cloud">Sign in</button></div>' : '<div class="banner">Cards are saved in this browser only. Open this page from claude.ai while signed in to keep them across devices.</div>') : '';
-  const foot = `<div class="hfoot"><button class="link" data-act="new-deck">New subject</button><button class="link" data-act="pdf-import">Cards from a PDF…</button><button class="link" data-act="import">Import…</button><button class="link" data-act="export-all">Export all…</button><button class="link" data-act="options">Options</button><button class="link danger-link" data-act="reset-all">Reset</button></div>`;
+  const foot = `<div class="hfoot"><button class="link" data-act="new-deck">New subject</button><button class="link" data-act="pdf-import">Cards from a PDF…</button><button class="link" data-act="cd-edit">${cdOn() ? 'Edit the countdown…' : 'Exam countdown…'}</button><button class="link" data-act="import">Import…</button><button class="link" data-act="export-all">Export all…</button><button class="link" data-act="options">Options</button><button class="link danger-link" data-act="reset-all">Reset</button></div>`;
   if (!subjects.length){
     $('#root').innerHTML = `<div class="narrow home dkhome">${banner}<div class="dkempty"><h1>Start with a subject</h1><p>Make a subject such as Maths or Physics, then add topics inside it and the mistakes you want to stop making.</p><button class="btn primary big" data-act="new-deck">New subject</button></div>${foot}</div>`;
     return;
@@ -2677,7 +2727,7 @@ function renderDecks(){
         ${n ? `<button class="btn primary" data-act="${due ? 'study' : 'practise'}" data-id="${subj.id}">${due ? 'Study' : 'Practise'} ${esc(subj.name)}</button>` : ''}
         <button class="icon soft" aria-label="Options for ${esc(subj.name)}" data-act="gear" data-id="${subj.id}">${I.gear}</button>
       </div>`}
-      ${topics.length ? `<div class="tcols">${[...full, ...empty].map(tcard).join('')}</div>` : ''}
+      ${cdOn() ? `<div class="cdgrid"><div class="cdmain">${topics.length ? `<div class="tcols">${[...full, ...empty].map(tcard).join('')}</div>` : ''}</div>${cdCard(subj.id)}</div>` : topics.length ? `<div class="tcols">${[...full, ...empty].map(tcard).join('')}</div>` : ''}
       ${todoSection(subj.id)}
       ${recent.length || forgot.length ? `<div class="dklower">
         ${recent.length ? `<section><div class="glhead"><h2>Pick up where you left off</h2></div>${recentHtml}</section>` : ''}
@@ -2728,7 +2778,7 @@ const IC = {
 function renderAppbar(){
   const el = $('#appbar'); if (!el) return;
   const nb = $('#navcl'); if (nb){ const b = nb.querySelector('[data-act="hist-back"]'), f = nb.querySelector('[data-act="hist-fwd"]'); if (b) b.disabled = !(navH.back.length || view.name === 'study'); if (f) f.disabled = !navH.fwd.length; }
-  if (!document.body.classList.contains('desktop')) return;
+  if (!document.body.classList.contains('desktop')) return cdMobile();
   if (!$('#abt')){ el.innerHTML = '<div class="abt" id="abt"></div><div class="abmid" id="abmid"></div><div class="abr" id="abr"></div><span class="abprog" id="abprog" hidden></span><span class="abline" aria-hidden="true"></span>'; const ss = $('.sidesearch'), sr = $('#sidesres'); if (ss) $('#abmid').append(ss); if (sr) $('#abmid').append(sr); const q = $('#sidesq'); if (q) q.placeholder = 'Search cards, decks, mistakes'; }
   if (!S.ready){ $('#abt').innerHTML = ''; $('#abr').innerHTML = ''; return; }
   const crumbsB = id => pathOf(id).map((n, i, a) => i < a.length - 1 ? `<button class="abcr" data-act="open" data-id="${esc(n.id)}">${esc(n.name)}</button><i>›</i>` : `<b>${esc(n.name)}</b>`).join('');
@@ -2751,7 +2801,7 @@ function renderAppbar(){
   }
   if (document.documentElement.classList.contains('stripe')){ const ss = kids(null).map(x => ({ c: scol(x.id), d: toStudy(counts(x.id)) })), tot2 = ss.reduce((a, b) => a + b.d, 0); let acc = 0; const parts = ss.filter(x => tot2 ? x.d : 1).map(x => { const w = (tot2 ? x.d / tot2 : 1 / ss.length) * 100, s0 = acc; acc += w; return `${x.c} ${s0.toFixed(2)}% ${acc.toFixed(2)}%`; }); document.documentElement.style.setProperty('--stripe', parts.length ? `linear-gradient(90deg, ${parts.join(', ')})` : 'var(--border)'); const pg = $('.page'); if (pg) document.documentElement.style.setProperty('--pgx', -(parseFloat(getComputedStyle(pg).paddingLeft) || 0) + 'px'); }
   el.dataset.v = view.name;
-  $('#abt').innerHTML = title; $('#abr').innerHTML = act;
+  $('#abt').innerHTML = title; $('#abr').innerHTML = cdPill() + act;
   const pg = $('#abprog'); pg.hidden = !prog; if (prog) pg.style.transform = (prog.match(/scaleX\([^)]*\)/) || [''])[0];
 }
 
@@ -6352,6 +6402,82 @@ addEventListener('wheel', e => {
   if (Math.abs(swipe.x) >= 140){ swipe.done = true; histGo(back ? -1 : 1); }
 }, { passive: true });
 
+/* ---------- exam countdown: one block (e.g. HSC Trials) with its exams; a live clock at the top of every page, a card on Decks ---------- */
+const cdGet = () => S.settings?.countdown || null;
+const cdDay = d => new Date(d + 'T00:00');
+function cdTarget(cd = cdGet()){ if (!cd) return null; const t = new Date(cd.start || ''); if (!isNaN(t)) return t; const ex = (cd.exams || []).filter(x => x.date).map(x => cdExamAt(x)).sort((a, b) => a - b); return ex[0] || null; }
+const cdExamAt = x => new Date(x.date + 'T' + (x.time || '09:00'));
+const cdEnd = cd => { const ds = [cd.end, ...(cd.exams || []).map(x => x.date)].filter(Boolean).sort(); return ds.length ? new Date(ds[ds.length - 1] + 'T23:59') : null; };
+function cdOn(){ const cd = cdGet(); if (!cd || !cdTarget(cd)) return false; const end = cdEnd(cd) || cdTarget(cd); return Date.now() < end.getTime() + DAY; }
+const cdDaysTo = d => Math.round((new Date(d).setHours(0, 0, 0, 0) - today0()) / DAY);
+function cdClock(){
+  const cd = cdGet(), t = cdTarget(cd); if (!t) return '';
+  const ms = t - Date.now();
+  if (ms > 0){ const s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60, p = n => String(n).padStart(2, '0'); return `${d ? d + 'd ' : ''}${p(h)}:${p(m)}:${p(sec)}`; }
+  const now = (cd.exams || []).find(x => x.date === dayKey()); if (now) return `${now.name || 'Exam'} today`;
+  const next = (cd.exams || []).filter(x => cdExamAt(x) > Date.now()).sort((a, b) => cdExamAt(a) - cdExamAt(b))[0];
+  return next ? `next: ${next.name || 'exam'} in ${cdDaysTo(cdExamAt(next))}d` : 'finished';
+}
+function cdShort(cd){ const n = (cd.name || 'Exams').trim(); return n.length > 22 ? n.slice(0, 21) + '…' : n; }
+function cdPill(){
+  if (!cdOn()) return ''; const cd = cdGet(), before = cdTarget(cd) > Date.now();
+  return `<button class="cdpill" data-act="cd-edit" title="${esc(cd.name || 'Countdown')} · ${esc(cdTarget(cd).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }))} · click to edit"><span class="cddot" aria-hidden="true"></span><span class="cdpn">${esc(cdShort(cd))}</span><b id="cdclock">${cdClock()}</b></button>`;
+}
+function cdMobile(){
+  $('#cdmob')?.remove(); if (!cdOn() || !$('#root')) return;
+  const d = document.createElement('div'); d.id = 'cdmob'; d.innerHTML = cdPill(); $('#root').prepend(d);
+}
+setInterval(() => { if (document.hidden) return; const c = $('#cdclock'); if (c) c.textContent = cdClock(); }, 1000);
+function cdCard(subj){
+  const cd = cdGet(), t = cdTarget(cd), days = cdDaysTo(t), ex = (cd.exams || []).filter(x => x.date).slice().sort((a, b) => cdExamAt(a) - cdExamAt(b));
+  const fmt = d => cdDay(d).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+  const range = ex.length ? `${fmt(ex[0].date)}${ex.length > 1 || cd.end ? ' – ' + fmt(cd.end || ex[ex.length - 1].date) : ''}` : t.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+  let wk = 0; for (let d = new Date(today0()); d < t; d = new Date(d.getTime() + DAY)) if (d.getDay() === 6) wk++;
+  const mine = ex.find(x => x.subj === subj && cdExamAt(x) > Date.now()), left = mine ? cardsIn(subj).filter(c => !isDone(c)).length : 0, dleft = mine ? Math.max(1, cdDaysTo(cdExamAt(mine))) : 0;
+  return `<section class="cdcard" aria-label="${esc(cd.name || 'Countdown')}">
+    <div class="cdh"><span class="cdname">${esc(cd.name || 'Exams')}<small>${esc(range)}</small></span><button class="icon soft" data-act="cd-edit" aria-label="Edit the countdown" title="Edit">${IC.edit}</button></div>
+    <div class="cdbig">${days > 0 ? `<b>${days}</b><span>day${days === 1 ? '' : 's'}<br>${wk ? `${wk} weekend${wk === 1 ? '' : 's'}` : 'to go'}</span>` : days === 0 ? `<b class="sm">Today</b><span>good luck</span>` : `<b class="sm">Underway</b><span>${esc(cdClock())}</span>`}</div>
+    ${ex.length ? `<div class="cdlist">${ex.map(x => { const n = cdDaysTo(cdExamAt(x)); return `<div class="cdrowv ${n < 0 ? 'past' : ''} ${x.subj === subj ? 'here' : ''}"><span class="sdot2" style="--sc:${x.subj && nodeOf(x.subj) ? scol(x.subj) : 'var(--fg-3)'}"></span><span class="cdx">${esc(x.name || (x.subj && nodeOf(x.subj)?.name) || 'Exam')}</span><span class="cdd">${esc(fmt(x.date))}</span><b>${n < 0 ? 'done' : n === 0 ? 'today' : n + 'd'}</b></div>`; }).join('')}</div>` : ''}
+    ${mine && left ? `<p class="cdpace">To see every ${esc(nodeOf(subj).name)} card before ${esc(fmt(mine.date))}: <b>${Math.ceil(left / dleft)} a day</b></p>` : ''}
+  </section>`;
+}
+/* ---------- set up or edit ---------- */
+let cdDraft = null;
+function cdEdit(){
+  const cd = cdGet(), t = cd?.start ? new Date(cd.start) : null, p2 = n => String(n).padStart(2, '0');
+  cdDraft = cd ? JSON.parse(JSON.stringify(cd)) : { name: '', start: '', end: '', exams: [] };
+  cdDraft.sd = t ? `${t.getFullYear()}-${p2(t.getMonth() + 1)}-${p2(t.getDate())}` : ''; cdDraft.st = t ? `${p2(t.getHours())}:${p2(t.getMinutes())}` : '09:00';
+  if (!cdDraft.exams.length) cdDraft.exams.push({ id: uid('x'), name: '', subj: curSubj()?.id || '', date: '', time: '09:00' });
+  openDialog(`<div class="dialog cddialog" role="dialog" aria-modal="true" aria-labelledby="cdh" style="max-width:600px"><header><h2 id="cdh">${cd ? 'Edit countdown' : 'New countdown'}</h2></header><div class="body" id="cdbody"></div>
+    <footer>${cd ? '<button class="btn danger" data-act="cd-del">Delete countdown</button>' : ''}<span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="cd-save">${cd ? 'Save' : 'Start countdown'}</button></footer></div>`, () => { cdDrawForm(); $('#cdname')?.focus(); });
+}
+function cdRead(){
+  if (!cdDraft || !$('#cdbody')) return;
+  cdDraft.name = $('#cdname').value; cdDraft.sd = $('#cdsd').value; cdDraft.st = $('#cdst').value || '09:00'; cdDraft.end = $('#cded').value;
+  cdDraft.exams = [...document.querySelectorAll('.cdedrow')].map(r => ({ id: r.dataset.id, name: r.querySelector('.cdxn').value, subj: r.querySelector('.cdxs').value, date: r.querySelector('.cdxd').value, time: r.querySelector('.cdxt').value || '09:00' }));
+}
+function cdDrawForm(){
+  const d = cdDraft, subs = kids(null);
+  $('#cdbody').innerHTML = `<div class="field"><label for="cdname">Name</label><input class="in" id="cdname" maxlength="40" placeholder="HSC Trials" value="${esc(d.name || '')}"></div>
+    <div class="cd2"><div class="field"><label for="cdsd">Counts down to</label><span class="cdpair"><input class="in" type="date" id="cdsd" value="${esc(d.sd || '')}"><input class="in" type="time" id="cdst" value="${esc(d.st || '09:00')}"></span><span class="hint">Leave empty to count down to the first exam.</span></div>
+    <div class="field"><label for="cded">Block ends <span>· optional</span></label><input class="in" type="date" id="cded" value="${esc(d.end || '')}"></div></div>
+    <div class="field"><span class="lbl">Exams in this block</span><div class="cdexams">${d.exams.map(x => `<div class="cdedrow" data-id="${esc(x.id)}">
+      <select class="in cdxs" aria-label="Subject"><option value="">No subject</option>${subs.map(s => `<option value="${s.id}" ${x.subj === s.id ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select>
+      <input class="in cdxn" placeholder="Exam name (e.g. Maths Advanced)" maxlength="40" value="${esc(x.name || '')}" aria-label="Exam name">
+      <input class="in cdxd" type="date" value="${esc(x.date || '')}" aria-label="Exam date"><input class="in cdxt" type="time" value="${esc(x.time || '09:00')}" aria-label="Start time">
+      <button type="button" class="icon soft" data-act="cd-rmexam" data-id="${esc(x.id)}" aria-label="Remove this exam">${I.x}</button></div>`).join('')}</div>
+      <button type="button" class="link sm cdadd" data-act="cd-addexam">+ Add an exam</button></div>`;
+}
+function cdSave(){
+  cdRead(); const d = cdDraft; if (!d) return;
+  const exams = d.exams.filter(x => x.date).map(x => ({ id: x.id || uid('x'), name: x.name.trim(), subj: x.subj || '', date: x.date, time: x.time || '09:00' }));
+  if (!d.sd && !exams.length) return toast('Pick the date to count down to, or add an exam with a date.', 3500);
+  const cd = { name: (d.name || '').trim() || 'Exams', start: d.sd ? `${d.sd}T${d.st || '09:00'}` : '', end: d.end || '', exams };
+  undoTx = null; undoLabel = 'countdown'; undoRecordSettings(); S.settings = { ...S.settings, countdown: cd }; saveSettings();
+  cdDraft = null; closeDialog(); toast(`Counting down to ${cd.name}`, 2000);
+}
+function cdDelete(){ undoTx = null; undoLabel = 'delete countdown'; undoRecordSettings(); const s2 = { ...S.settings }; delete s2.countdown; S.settings = s2; saveSettings(); cdDraft = null; closeDialog(); toast('Countdown deleted · ⌘Z to undo', 2200); }
+
 /* ---------- sidebar toggle (Mac app) ---------- */
 function toggleSidebar(force){
   if (!document.body.classList.contains('desktop')) return;
@@ -6405,6 +6531,11 @@ document.addEventListener('click', async e => {
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
     case 'side-subj': { if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; renderDecks(); return renderSideSubjects(); } ls.set('md-subj', id); study = null; return go('decks'); }
     case 'hist-back': return histGo(-1);
+    case 'cd-edit': closeMenu(); return cdEdit();
+    case 'cd-save': return cdSave();
+    case 'cd-del': return cdDelete();
+    case 'cd-addexam': cdRead(); cdDraft.exams.push({ id: uid('x'), name: '', subj: '', date: '', time: '09:00' }); cdDrawForm(); return document.querySelector('.cdedrow:last-child .cdxs')?.focus();
+    case 'cd-rmexam': cdRead(); cdDraft.exams = cdDraft.exams.filter(x => x.id !== id); return cdDrawForm();
     case 'bm-start': brPick = true; return brMultiDraw();
     case 'bm-done': return brMultiClear();
     case 'bm-all': { const ids = browse.ids || []; if (brMulti.size === ids.length) brMulti.clear(); else ids.forEach(x => brMulti.add(x)); brPick = true; return brMultiDraw(); }
