@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261105223844 min-shell:1.27.0 -->
+<!-- recall-build:20261106232449 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -2250,6 +2250,12 @@ html.dk body.desktop .page{box-shadow:inset 0 1px 0 rgba(255,255,255,.045)}
 .brvnav span{flex:1;text-align:center}
 .brvnav small{color:var(--fg-3);font-size:12px;margin-left:4px}
 .brvnav .icon{font-size:20px;line-height:1}
+.brshow{margin:20px 0 4px}
+.brshow kbd{margin-left:8px}
+.brans{animation:dk-in .2s var(--ease)}
+.brin{color:var(--fg-3)}
+.brhit{background:rgba(var(--ovr),.14);color:var(--fg);font-weight:600;border-radius:3px;padding:0 2px}
+.brocrst{margin-left:10px;color:var(--fg-3);font-variant-numeric:tabular-nums}
 
 /* patterns: exercise book and stars; and the subject stripe */
 html.lh.pat-book body .page,html.lh.pat-book .msheet{background-image:linear-gradient(90deg,transparent 0 26px,rgba(214,69,69,.42) 26px 27.5px,transparent 27.5px),repeating-linear-gradient(180deg,transparent 0 31px,color-mix(in srgb,var(--accent-2) 22%,transparent) 31px 32px)}
@@ -2258,7 +2264,7 @@ html.lh.pat-stars body .page,html.lh.pat-stars .msheet{background-image:var(--pa
 html.lh.pat-stars .msheet{background-size:600px auto}
 html.stripe body.desktop .page::before{content:"";position:sticky;top:var(--appbar);z-index:6;display:block;height:4px;margin:-28px var(--pgx,0px) 24px;border-radius:11px 11px 0 0;background:var(--stripe);transition:background .4s}
 @media (max-width:700px){ .tdadd{height:46px} .tdof{display:none} .sttdr{grid-template-columns:8px minmax(0,1fr) auto} .sttdr .stmini{display:none} }
-@media (prefers-reduced-motion:reduce){ .tdr *,.tdr,.sttdbars i,.brfig img{animation:none !important;transition:none !important} }
+@media (prefers-reduced-motion:reduce){ .tdr *,.tdr,.sttdbars i,.brfig img,.brans{animation:none !important;transition:none !important} }
 /* round 6: to-do card with its header inside, deck page tighter, picker buttons */
 .tdo{margin:var(--s6) 0 0}
 .tdoh{display:flex;align-items:center;gap:10px;margin:0;padding:14px 14px 10px 16px;min-height:0}
@@ -2729,14 +2735,15 @@ function sideSearch(q){
   const words = q.split(/\s+/).filter(Boolean), hit = t => { t = t.toLowerCase(); return words.every(w => t.includes(w)); };
   const decks = Object.values(S.nodes).filter(n => hit(pathName(n.id) + ' ' + n.name)).sort((a, b) => (b.name.toLowerCase().startsWith(q)) - (a.name.toLowerCase().startsWith(q))).slice(0, 6).map(n => n.id);
   const types = []; Object.values(S.nodes).forEach(n => typesOf(n.id).forEach(t => { if (hit(t.name) && types.length < 3) types.push(n.id + '::' + t.k); }));
-  const cards = Object.values(S.cards).filter(c => hit([c.label, c.qText, c.mistake, c.solText, c.source].join(' ')));
+  ocrSoon();
+  const cards = Object.values(S.cards).filter(c => hit([c.label, c.qText, c.mistake, c.solText, c.source, cardOcr(c)].join(' ')));
   const snip = c => { const t = plainMd([c.label, c.qText].filter(Boolean).join(' · ') || c.solText || (c.qImg ? 'Image question' : 'Card')).replace(/\s+/g, ' '); return t.length > 60 ? t.slice(0, 59) + '…' : t; };
   const row = (act, id, nm, meta) => `<button class="siderec" data-act="${act}" data-id="${esc(id)}"><span class="nm">${esc(nm)}</span><span class="meta">${esc(meta)}</span></button>`;
   let html = '';
   if (decks.length || types.length) html += `<div class="sidelabel">Decks</div>` + [...decks, ...types].map(id => row('side-go', id, nodeOf(id)?.name || '', pathOf(id).slice(0, -1).map(p => p.name).join(' › ') || 'Subject')).join('');
   if (cards.length) html += `<div class="sidelabel" style="margin-top:12px">Cards · ${cards.length}</div>` + cards.slice(0, 6).map(c => row('side-card', c.id, snip(c), pathOf(c.nodeId).map(p => p.name).slice(-2).join(' › '))).join('')
     + (cards.length > 6 ? `<button class="siderec" data-act="side-cards"><span class="nm">See all ${cards.length} cards</span><span class="meta">open in Browse</span></button>` : '');
-  if (!html) html = `<p class="sideempty">Nothing matches “${esc(q)}”. Search looks at deck names and the text on your cards (not text inside images).</p>`;
+  if (!html) html = `<p class="sideempty">Nothing matches “${esc(q)}”. Search looks at deck names, the text on your cards and the text inside their pictures.</p>`;
   box.innerHTML = html; box.hidden = false; subs.hidden = !document.body.classList.contains('desktop');
 }
 document.addEventListener('input', e => { if (e.target.id === 'sidesq') sideSearch(e.target.value); });
@@ -4321,17 +4328,20 @@ function refLabel(ref){ const ps = pathOf(ref); return ps.map(n => n.name).join(
 /* ---------- browse: card list with thumbnails on the left, the selected card on the right (like Mail) ---------- */
 const deckShort = id => { const ps = pathOf(id).map(n => n.name); return ps.slice(-2).join(' › ') || 'No deck'; };
 const RPILL = { 1: 'again', 2: 'hard', 3: 'good', 4: 'easy' };
-let brImg = 0;
+let brImg = 0, brShown = null;
+const brImgs = c => cardImages({ ...c, solImgs: [] });
 function brViewer(c){
-  const L = cardImages(c); if (!L.length) return '';
+  const L = brImgs(c); if (!L.length) return '';
   const i = Math.min(brImg, L.length - 1), lab = L[i].label.replace(/^.* · /, '');
-  return `<div class="brview"><figure class="brfig"><img src="${esc(L[i].src)}" alt="${esc(L[i].label)}" data-gallery="${c.id}" data-i="${i}"></figure>
+  return `<div class="brview"><figure class="brfig"><img src="${esc(L[i].src)}" alt="${esc(L[i].label)}" data-gallery="${c.id}" data-gq="1" data-i="${i}"></figure>
     <div class="brvnav">${L.length > 1 ? `<button class="icon soft" data-act="brimg" data-d="-1" ${i ? '' : 'disabled'} aria-label="Previous image">‹</button>` : ''}<span>${esc(lab)}${L.length > 1 ? ` <small>${i + 1} of ${L.length} · ← →</small>` : ''}</span>${L.length > 1 ? `<button class="icon soft" data-act="brimg" data-d="1" ${i < L.length - 1 ? '' : 'disabled'} aria-label="Next image">›</button>` : ''}</div></div>`;
 }
+const brWords = () => browse.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+const brHay = c => [c.label, plainMd(c.qText), plainMd(c.mistake), plainMd(c.solText), c.source, pathName(c.nodeId)].join(' ').toLowerCase();
 function browseList(){
-  const q = browse.q.trim().toLowerCase();
+  const ws = brWords();
   let cs = sortCards(cardsIn(browse.node));
-  if (q) cs = cs.filter(c => [c.label, c.qText, c.mistake, c.solText, pathName(c.nodeId)].join(' ').toLowerCase().includes(q));
+  if (ws.length) cs = cs.filter(c => { const t = brHay(c) + ' ' + cardOcr(c).toLowerCase(); return ws.every(w => t.includes(w)); });
   const scope = cs;
   if (browse.status === 'done') cs = cs.filter(isDone); else if (browse.status === 'todo') cs = cs.filter(c => !isDone(c)); else if (browse.status === 'leech') cs = cs.filter(isLeech); else if (browse.status === 'due') cs = cs.filter(c => kind(c) !== 'new' && c.srs.due <= Date.now());
   if (browse.rate) cs = cs.filter(c => lastRate(c) === browse.rate);
@@ -4341,8 +4351,9 @@ function browseRow(c){
   const r = lastRate(c), sel = browse.sel === c.id;
   const thumb = c.qImg ? `<span class="brthumb"><img src="${esc(imgSrc(c.qImg))}" alt="" loading="lazy"></span>` : `<span class="brthumb txt" aria-hidden="true">${esc((plainMd(c.qText) || '?').slice(0, 40))}</span>`;
   const title = plainMd(c.qText) || (c.qImg ? 'Image question' : 'No question');
-  const ms = brMulti.has(c.id);
-  return `<button class="brow ${ms ? 'msel' : ''}" data-act="bsel" data-id="${c.id}" data-card="${c.id}" draggable="true" aria-selected="${sel}" title="Double-click to edit · ⌘-click or Shift-click to select several">${brPick || brMulti.size ? `<span class="brck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.6 11 12.2 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>` : ''}${thumb}<span class="brtx"><span class="brt1">${c.label ? `<b>${esc(c.label)}</b>` : `<b>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</b>`}${r ? `<span class="rpill ${RPILL[r]}">${RATES[r][0]}</span>` : isDone(c) ? '' : '<span class="rpill new">New</span>'}</span><span class="brq">${esc(title.length > 110 ? title.slice(0, 109) + '…' : title)}</span><span class="brd"><span class="sdot2" style="--sc:${scol(c.nodeId)}"></span>${esc(deckShort(c.nodeId))}</span></span></button>`;
+  const ms = brMulti.has(c.id), ws = brWords(), hay = ws.length ? brHay(c) : '';
+  const pic = ws.length && !ws.every(w => hay.includes(w)) ? ocrSnip(cardOcr(c), ws) : '';
+  return `<button class="brow ${ms ? 'msel' : ''}" data-act="bsel" data-id="${c.id}" data-card="${c.id}" draggable="true" aria-selected="${sel}" title="Double-click to edit · ⌘-click or Shift-click to select several">${brPick || brMulti.size ? `<span class="brck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.6 11 12.2 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>` : ''}${thumb}<span class="brtx"><span class="brt1">${c.label ? `<b>${esc(c.label)}</b>` : `<b>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</b>`}${r ? `<span class="rpill ${RPILL[r]}">${RATES[r][0]}</span>` : isDone(c) ? '' : '<span class="rpill new">New</span>'}</span><span class="brq">${pic ? `<span class="brin">In a picture:</span> ${pic}` : esc(title.length > 110 ? title.slice(0, 109) + '…' : title)}</span><span class="brd"><span class="sdot2" style="--sc:${scol(c.nodeId)}"></span>${esc(deckShort(c.nodeId))}</span></span></button>`;
 }
 function browsePreview(){
   const box = $('#brprev'); if (!box) return;
@@ -4351,18 +4362,25 @@ function browsePreview(){
   if (!c){ box.innerHTML = `<div class="brempty"><p>Pick a card to see it here.</p></div>`; return; }
   const revs = (c.revs || []).slice(-10);
   const added = c.createdAt ? new Date(c.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '';
-  const tc = { ...c }, view2 = brViewer(c); if (view2){ setQImgs(tc, []); tc.solImgs = []; delete tc.occl; } else setQImgs(tc, qImgsOf(c));
+  const tc = { ...c }, view2 = brViewer(c), shown = brShown === c.id; if (view2){ setQImgs(tc, []); delete tc.occl; }
   box.innerHTML = `<div class="brph"><span class="brcrumb">${esc(pathOf(c.nodeId).map(n => n.name).join(' › '))}</span><span class="grow"></span>
       <button class="btn" data-act="cm-move" data-id="${c.id}">Move</button><button class="btn" data-act="edit" data-id="${c.id}">Edit</button><button class="btn primary" data-act="cm-practise" data-id="${c.id}">Practise</button>
       <button class="icon soft" data-act="brmore" data-id="${c.id}" aria-label="More for this card">${I.gear}</button></div>
     <article class="qa brqa">
       <div class="label">${c.label ? `<span class="lhtag">${esc(c.label)}</span>` : ''}<span>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</span>${marksOf(c) ? `<span class="qmk">${marksOf(c)} mark${marksOf(c) === 1 ? '' : 's'}</span>` : ''}<span class="brmeta">${added ? 'Added ' + added + ' · ' : ''}${isDone(c) ? `reviewed ${c.srs.reps} time${c.srs.reps === 1 ? '' : 's'}` : 'not reviewed yet'}</span></div>
-      ${view2}${tc.qText || !view2 ? front(tc) : ''}${view2 && !tc.qText ? '' : '<hr class="bhr">'}${back(tc).replace(ADDM_HTML, '')}
+      ${view2}${tc.qText || !view2 ? front(tc) : ''}
+      ${shown ? `<div class="brans"><hr class="bhr">${back(tc).replace(ADDM_HTML, '')}</div>` : `<div class="brshow"><button class="btn" data-act="brshow">${c.kind === 'learn' ? 'Show explanation' : 'Show answer'}<kbd>Space</kbd></button></div>`}
     </article>
     ${revs.length ? `<div class="brhist" aria-label="Your last ratings">${revs.map(r => `<span class="rpill ${RPILL[r.r] || 'new'}" title="${new Date(r.t).toLocaleDateString()}">${RATES[r.r]?.[0] || '?'}</span>`).join('')}</div>` : ''}`;
   typeset(box);
 }
+function brToggle(){
+  const c = S.cards[browse.sel]; if (!c || brMulti.size) return;
+  brShown = brShown === c.id ? null : c.id; browsePreview();
+  const hr = $('#brprev .bhr'); if (hr && hr.getBoundingClientRect().top > innerHeight * 0.6) hr.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+}
 function renderBrowse(){
+  ocrSoon();
   const { cs, scope } = browseList();
   browse.ids = cs.map(c => c.id);
   if (!browse.sel || !browse.ids.includes(browse.sel)) browse.sel = browse.ids[0] || null;
@@ -4371,7 +4389,7 @@ function renderBrowse(){
   $('#root').innerHTML = `<div class="brw">
     <section class="brlist" aria-label="Cards">
       <div class="brhead">
-        <label class="brsearch"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input id="bsearch" type="search" placeholder="Search questions, mistakes, solutions" value="${esc(browse.q)}" aria-label="Search cards"></label>
+        <label class="brsearch"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input id="bsearch" type="search" placeholder="Search cards and text in pictures" value="${esc(browse.q)}" aria-label="Search cards"></label>
         <div class="brfil">
           <span class="field brdeckf"><button type="button" class="brdeck pickbtn ${browse.node ? 'on' : ''}" id="bdeckbtn" aria-haspopup="true" aria-expanded="false">${browse.node ? `<span class="sdot2" style="--sc:${scol(browse.node)}"></span>${esc(deckShort(browse.node))}` : 'All decks'}<span class="pkcar">▾</span></button></span>
           ${browse.node ? `<button type="button" class="brclr" data-act="bnode" data-id="" aria-label="Show all decks">${I.x}</button>` : ''}
@@ -4408,7 +4426,7 @@ document.addEventListener('dblclick', e => { const r = e.target.closest('.brow[d
 const brMulti = new Set(); let brPick = false;
 function brMetaHtml(n){
   if (brPick || brMulti.size) return `<span><b>${brMulti.size}</b> selected</span><span class="grow"></span><button class="link sm" data-act="bm-all">${brMulti.size === n && n ? 'Select none' : `Select all ${n}`}</button>${brMulti.size ? `<button class="link sm danger-link" data-act="bm-delete">Delete ${brMulti.size}</button>` : ''}<button class="link sm" data-act="bm-done">Done</button>`;
-  return `<span>${n} card${n === 1 ? '' : 's'}</span><span class="grow"></span>${n ? `<button class="link sm" data-act="bm-start">Select</button><button class="link sm" data-act="link-list">Add to a deck…</button><button class="link sm acc" data-act="practise-list">Practise ${n}</button>` : ''}`;
+  return `<span>${n} card${n === 1 ? '' : 's'}</span>${ocrStatus()}<span class="grow"></span>${n ? `<button class="link sm" data-act="bm-start">Select</button><button class="link sm" data-act="link-list">Add to a deck…</button><button class="link sm acc" data-act="practise-list">Practise ${n}</button>` : ''}`;
 }
 function brMultiPanel(){
   const ids = [...brMulti].filter(id => S.cards[id]), n = ids.length, shown = ids.slice(0, 5);
@@ -6085,6 +6103,69 @@ function tessWorker(){
     .catch(e => { tessP = null; throw e; });
   return tessP;
 }
+/* text inside card pictures, read once per picture in the background and kept on this device, so search finds a word that's only in a screenshot */
+const OCR_LS = 'md-ocr1';
+let ocrIdx = ls.get(OCR_LS, {}), ocrRun = null, ocrT = 0, ocrSaveT = 0, ocrRowsT = 0; const ocrSkip = new Set(); let ocrProg = { done: 0, total: 0 }, ocrOff = 0;
+const cardPics = c => [...qImgsOf(c), ...(c.solImgs || [])];
+const cardOcr = c => cardPics(c).map(o => ocrIdx[imgKey(o)] || '').join(' ');
+function ocrSnip(t, ws){
+  const lo = t.toLowerCase(), w = ws.find(x => lo.includes(x)); if (!w) return '';
+  const i = lo.indexOf(w), a = Math.max(0, i - 40), b = Math.min(t.length, i + w.length + 60);
+  return esc((a ? '…' : '') + t.slice(a, i)) + `<mark class="brhit">${esc(t.slice(i, i + w.length))}</mark>` + esc(t.slice(i + w.length, b) + (b < t.length ? '…' : ''));
+}
+function ocrStatus(){ return ocrRun && ocrProg.total > ocrProg.done ? `<span class="brocrst">Reading text in pictures · ${ocrProg.done} of ${ocrProg.total}</span>` : ''; }
+function ocrPending(){
+  const out = [], seen = new Set();
+  for (const c of Object.values(S.cards)) for (const o of cardPics(c)){ const k = imgKey(o); if (!k || seen.has(k) || k in ocrIdx || ocrSkip.has(k)) continue; seen.add(k); out.push(o); }
+  return out;
+}
+/* the picture as a canvas sized for tesseract: small screenshots scaled up, huge ones scaled down */
+async function ocrCanvas(src){
+  let bm;
+  try { bm = await createImageBitmap(await (await fetch(src)).blob()); }
+  catch { bm = await new Promise((res, rej) => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => res(im); im.onerror = rej; im.src = src; }); }
+  const w = bm.width || bm.naturalWidth, h = bm.height || bm.naturalHeight; if (!w || !h) throw new Error('img');
+  const s = Math.min(2.5, Math.max(1, 1400 / w), 3000 / Math.max(w, h));
+  const cv = document.createElement('canvas'); cv.width = Math.round(w * s); cv.height = Math.round(h * s);
+  const x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, cv.width, cv.height); x.drawImage(bm, 0, 0, cv.width, cv.height); bm.close?.();
+  return cv;
+}
+function ocrSoon(){ clearTimeout(ocrT); ocrT = setTimeout(ocrIndex, 700); }
+function ocrMetaDraw(){ const m = $('#brmeta2'); if (m && view.name === 'browse') m.innerHTML = brMetaHtml(browse.ids?.length || 0); }
+/* new picture text arrived: redo the result rows only, so the search box keeps focus and the preview stays put */
+function ocrRowsRedraw(){
+  if (view.name !== 'browse' || !$('#brrows')) return;
+  if (browse.q.trim()){ const { cs } = browseList(); browse.ids = cs.map(c => c.id); $('#brrows').innerHTML = cs.length ? cs.slice(0, 400).map(browseRow).join('') : `<p class="brnone">No cards match. <button class="link" data-act="bclear">Clear the filters</button></p>`; }
+  ocrMetaDraw();
+  const q = $('#sidesq'); if (q && q.value.trim() && $('#sidesres') && !$('#sidesres').hidden) sideSearch(q.value);
+}
+function ocrIndex(){
+  if (ocrRun || !S.cards || Date.now() < ocrOff) return ocrRun;
+  const list = ocrPending(); if (!list.length) return null;
+  ocrRun = (async () => {
+    ocrProg = { done: 0, total: list.length };
+    let W; try { W = await tessWorker(); } catch { ocrOff = Date.now() + 60000; return; }
+    ocrMetaDraw();
+    for (const o of list){
+      const k = imgKey(o);
+      if (!(k in ocrIdx)){
+        const src = imgSrc(o);
+        if (src){
+          try { const { data } = await W.recognize(await ocrCanvas(src)); ocrIdx[k] = String(data?.text || '').replace(/\s+/g, ' ').trim().slice(0, 3000); }
+          catch { ocrSkip.add(k); }
+          clearTimeout(ocrSaveT); ocrSaveT = setTimeout(() => ls.set(OCR_LS, ocrIdx), 1500);
+          clearTimeout(ocrRowsT); ocrRowsT = setTimeout(ocrRowsRedraw, 300);
+        }
+      }
+      ocrProg.done++; ocrMetaDraw();
+      await new Promise(r => (window.requestIdleCallback || setTimeout)(r, { timeout: 400 }));
+    }
+  })().finally(() => {
+    ocrRun = null; ls.set(OCR_LS, ocrIdx); ocrMetaDraw();
+    if (Date.now() > ocrOff && ocrPending().some(o => imgSrc(o))) ocrSoon();
+  });
+  return ocrRun;
+}
 const ocrLines = d => d.lines?.length ? d.lines : (d.blocks || []).flatMap(b => (b.paragraphs || []).flatMap(p => p.lines || []));
 /* where each picture sits on the page (page points, top-left origin) */
 async function pxImages(pg, vp, L, art){
@@ -6945,7 +7026,7 @@ function stepGallery(d){ if (!gallery) return; const n = gallery.i + d; if (n < 
 document.addEventListener('click', async e => {
   if (e.target.closest('.lightbox')){ const lb = e.target.closest('.lightbox'); const nav = e.target.closest('[data-step]'); if (nav) return stepGallery(+nav.dataset.step); gallery = null; lb.remove(); return; }
   const g = e.target.closest('[data-gallery]');
-  if (g){ e.stopPropagation(); const c = S.cards[g.dataset.gallery]; if (c) openGallery(cardImages(c), +g.dataset.i || 0); return; }
+  if (g){ e.stopPropagation(); const c = S.cards[g.dataset.gallery]; if (c) openGallery(g.dataset.gq ? brImgs(c) : cardImages(c), +g.dataset.i || 0); return; }
   const oc = e.target.closest('.occ'); if (oc){ oc.classList.toggle('open'); return; }
   const pb = e.target.closest('[data-pad]'); if (pb){ return padAction(pb.dataset.pad); }
   const z = e.target.closest('[data-zoom]');
@@ -6995,7 +7076,8 @@ document.addEventListener('click', async e => {
     case 'todo-del': { todoSave(todoAll().filter(z => z.id !== id), 'delete task'); todoRefresh(); return toast('Task deleted · ⌘Z to undo', 1800); }
     case 'todo-f': todoAllSubj = a.dataset.v === 'all'; return todoRefresh();
     case 'todo-showdone': todoShowDone = !todoShowDone; return todoRefresh();
-    case 'brimg': { const L = cardImages(S.cards[browse.sel] || {}); brImg = Math.max(0, Math.min(L.length - 1, brImg + +a.dataset.d)); return browsePreview(); }
+    case 'brshow': return brToggle();
+    case 'brimg': { const L = brImgs(S.cards[browse.sel] || {}); brImg = Math.max(0, Math.min(L.length - 1, brImg + +a.dataset.d)); return browsePreview(); }
     case 'th-stripe': { const ts = { ...themeSettings() }; ts.stripe = !ts.stripe; saveTheme(ts); return renderThemes(); }
     case 'th-decks': ls.set('md-decks', a.dataset.v === 'spot' ? 'spot' : 'minimal'); renderThemes(); return toast(a.dataset.v === 'spot' ? 'Decks will show the Spotlight layout' : 'Decks will show the Minimal layout', 1800);
     case 'pdf-import': closeMenu(); return pxPickFile(f => pdfImport(f));
@@ -7269,7 +7351,8 @@ document.addEventListener('keydown', e => {
     if (e.key === 't' || e.key === 'T'){ e.preventDefault(); return tmrPause(); }
   }
   if (view.name === 'browse' && (e.key === 'ArrowDown' || e.key === 'ArrowUp') && browse.ids?.length){ e.preventDefault(); const i = Math.max(0, browse.ids.indexOf(browse.sel)), j = Math.max(0, Math.min(browse.ids.length - 1, i + (e.key === 'ArrowDown' ? 1 : -1))); return browseSelect(browse.ids[j], false, true); }
-  if (view.name === 'browse' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && browse.sel && !isTyping(document.activeElement)){ const L = cardImages(S.cards[browse.sel] || {}); if (L.length > 1){ e.preventDefault(); brImg = Math.max(0, Math.min(L.length - 1, brImg + (e.key === 'ArrowRight' ? 1 : -1))); return browsePreview(); } }
+  if (view.name === 'browse' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && browse.sel && !isTyping(document.activeElement)){ const L = brImgs(S.cards[browse.sel] || {}); if (L.length > 1){ e.preventDefault(); brImg = Math.max(0, Math.min(L.length - 1, brImg + (e.key === 'ArrowRight' ? 1 : -1))); return browsePreview(); } }
+  if (view.name === 'browse' && e.key === ' ' && !ed && browse.sel && !$('.lightbox')){ e.preventDefault(); return brToggle(); }
   if (view.name === 'browse' && e.key === 'Enter' && browse.sel){ e.preventDefault(); return browseSelect(browse.sel, true); }
   if (view.name !== 'study'){
     if (e.key === 'a') { e.preventDefault(); return editor(null, view.node || browse.node); }
