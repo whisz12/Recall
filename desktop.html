@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261106232449 min-shell:1.27.0 -->
+<!-- recall-build:20261107000514 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -587,6 +587,25 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.45}
 .menu button{display:block;width:100%;text-align:left;border:0;background:none;padding:7px 10px;border-radius:6px;font-size:13px}
 .menu button:hover{background:color-mix(in srgb, var(--accent) 16%, transparent)}
 .menu hr{border:0;border-top:1px solid var(--border-2);margin:4px 0}
+.menu .tdsubm{display:flex;align-items:center;gap:8px}
+.sadlg header{display:flex;align-items:center;gap:12px}
+.salist{display:flex;flex-direction:column;max-height:min(56vh,520px);overflow:auto;margin:0 -8px}
+.sarow{display:flex;align-items:center;gap:4px;min-height:36px;padding:0 8px 0 calc(8px + var(--d) * 20px);border-radius:6px}
+.sarow:hover{background:rgba(var(--ovr),.05)}
+.sarow .caret{flex:none;width:24px;height:24px;display:grid;place-items:center;border:0;background:none;color:var(--fg-3);border-radius:4px;cursor:pointer}
+.sarow .caret.blank{visibility:hidden}
+.sarow .caret svg{width:12px;height:12px;transition:transform var(--t-fast)}
+.sarow .caret[aria-expanded="true"] svg{transform:rotate(90deg)}
+.sarow label{flex:1;min-width:0;display:flex;align-items:center;gap:8px;font:500 13px var(--ui);color:var(--fg);cursor:pointer;min-height:36px}
+.sarow input{width:16px;height:16px;margin:0;accent-color:var(--accent-btn);flex:none}
+.sarow .sdot2{width:7px;height:7px;border-radius:50%;background:var(--sc);flex:none}
+.san{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sac{flex:none;font:400 12px var(--ui);color:var(--fg-3);font-variant-numeric:tabular-nums}
+.sac b{font-weight:600;color:var(--accent)}
+.sarow.saoff .san,.sarow.saoff .sac b{color:var(--fg-3)}
+@media (pointer:coarse){ .sarow,.sarow label{min-height:44px} }
+.menu .tdsubm .sdot2{width:7px;height:7px;border-radius:50%;background:var(--sc);flex:none}
+.menu .mlabel{padding:6px 10px 4px;font:500 12px var(--ui);color:var(--fg-3)}
 .menu .danger{color:color-mix(in srgb, var(--again) 70%, var(--fg))}
 .lightbox{position:fixed;inset:0;z-index:60;background:rgba(8,9,12,.94);display:grid;place-items:center;padding:56px max(64px,env(safe-area-inset-right,0px)) 40px max(64px,env(safe-area-inset-left,0px));cursor:zoom-out;animation:fade .14s ease-out}
 .lightbox figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;max-height:100%;min-height:0}
@@ -1930,7 +1949,7 @@ html.lh body.desktop .page.v-overview{padding-top:0}
 .ovb.on{border-color:var(--fg-2);background:color-mix(in srgb, var(--fg) 12%, transparent)}
 .ovb[data-act="gear"]{width:36px;padding:0;justify-content:center}
 .ovnext{position:relative;margin:0;font:400 13px var(--ui);color:var(--fg-2)}
-.ovbody{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:var(--s6)}
+.ovbody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s6)}
 .ovbody section{display:flex;flex-direction:column;gap:12px;min-width:0}
 .ovbody .bbubs{margin-bottom:14px}
 .ovbody h2{margin:0;font:600 15px var(--ui)}
@@ -2263,7 +2282,7 @@ html.lh.pat-book .msheet{background-image:linear-gradient(90deg,transparent 0 22
 html.lh.pat-stars body .page,html.lh.pat-stars .msheet{background-image:var(--pat-stars);background-size:1200px auto;background-repeat:repeat;background-position:center top}
 html.lh.pat-stars .msheet{background-size:600px auto}
 html.stripe body.desktop .page::before{content:"";position:sticky;top:var(--appbar);z-index:6;display:block;height:4px;margin:-28px var(--pgx,0px) 24px;border-radius:11px 11px 0 0;background:var(--stripe);transition:background .4s}
-@media (max-width:700px){ .tdadd{height:46px} .tdof{display:none} .sttdr{grid-template-columns:8px minmax(0,1fr) auto} .sttdr .stmini{display:none} }
+@media (max-width:700px){ .tdadd{height:46px} .sttdr{grid-template-columns:8px minmax(0,1fr) auto} .sttdr .stmini{display:none} }
 @media (prefers-reduced-motion:reduce){ .tdr *,.tdr,.sttdbars i,.brfig img,.brans{animation:none !important;transition:none !important} }
 /* round 6: to-do card with its header inside, deck page tighter, picker buttons */
 .tdo{margin:var(--s6) 0 0}
@@ -2386,7 +2405,23 @@ html:not(.dk) .cdcard{box-shadow:0 1px 1px rgba(20,20,40,.04),0 8px 18px -12px r
 .tdr:hover .tdmove,.tdmove:focus-visible{opacity:1}
 .tdmove:hover{color:var(--fg);border-color:var(--border-2)}
 @media (hover:none){ .tdmove{opacity:.8} }
-@media (max-width:700px){ .tdoh{flex-wrap:wrap} .tdtab{margin-left:0;order:3;width:100%} .tdtab button{flex:1} }
+.tdbox{container-type:inline-size}
+.tdo .tdoh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding:16px 16px 12px}
+.tdo .tdoc{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:0 4px}
+.tdover{margin-left:8px;color:var(--accent);font-weight:600}
+.tdbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:0 16px 14px}
+.tdo .tdtab{margin:0;flex:1 1 380px;max-width:620px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.tdo .tdtab button{height:32px;padding:0 10px;justify-content:center;min-width:0;white-space:nowrap}
+.tdo .tdtab button span{overflow:hidden;text-overflow:ellipsis}
+.tdo .tdtab button.over b{background:var(--accent-btn);color:var(--btn-fg)}
+.tdsf{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+.tdsf button{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:6px;border:1px solid var(--border-2);background:transparent;color:var(--fg-2);font:500 12px var(--ui);cursor:pointer;white-space:nowrap}
+.tdsf button:hover{color:var(--fg);background:rgba(var(--ovr),.06)}
+.tdsf button[aria-pressed="true"]{background:rgba(var(--ovr),.12);border-color:var(--border-2);color:var(--fg)}
+.tdsf .sdot2{width:7px;height:7px;border-radius:50%;background:var(--sc);flex:none}
+.tdsf b{font:600 11px var(--ui);color:var(--fg-3);font-variant-numeric:tabular-nums}
+@container (max-width:560px){ .tdsf{margin-left:0} .tdo .tdtab{flex-basis:100%;max-width:none} }
+@container (max-width:470px){ .tdo .tdtab{grid-template-columns:repeat(2,minmax(0,1fr))} }
 /* round 12: ticked tasks stay, struck through, under the open ones */
 .tdr.tdon .tdck:hover .tdcr{fill:color-mix(in srgb,var(--sc) 70%,transparent)}
 .tdclear{display:block;width:100%;text-align:left;padding:10px 16px;border:0;border-top:1px solid var(--border);background:none;color:var(--fg-3);font:500 12px var(--ui);cursor:pointer}
@@ -3162,21 +3197,80 @@ function nextDueText(id){ const now = Date.now(); const ds = cardsIn(id).filter(
 let shuffleOn = ls.get('md-shuffle', false);
 function shuffled(a){ const b = [...a]; for (let i = b.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
 function buildQueue(){
-  const now = Date.now(), cs = sortCards(cardsIn(study.node));
+  const now = Date.now(), cs = sortCards(cardsIn(study.node)).filter(c => !study.ex || !study.ex.has(c.nodeId));
   if (study.practise) return (shuffleOn ? shuffled(cs) : cs).map(c => c.id);
   const learn = cs.filter(c => kind(c) === 'learn' && c.srs.due <= now).sort((a,b) => a.srs.due - b.srs.due);
   const rev = cs.filter(c => kind(c) === 'review' && c.srs.due <= now).sort((a,b) => a.srs.due - b.srs.due);
   const nw = cs.filter(c => kind(c) === 'new').slice(0, newLeft());
   const q = [...learn, ...rev, ...nw]; return (shuffleOn ? shuffled(q) : q).map(c => c.id);
 }
-function startStudy(node, practise=false, only=null, list=null){
+function startStudy(node, practise=false, only=null, list=null, ex=null){
   if (node) noteRecent(node);
-  study = { node, practise: practise || !!only || !!list, only, queue:[], cur:null, shown:false, done:0, hist:[] }; pad.full = false;
+  study = { node, practise: practise || !!only || !!list, only, ex: ex && ex.size ? ex : null, queue:[], cur:null, shown:false, done:0, hist:[] }; pad.full = false;
   study.queue = list ? (shuffleOn ? shuffled(list) : [...list]) : only ? [only] : buildQueue();
   nextCard(); view = { name:'study', node }; closeMenu(); render(); window.scrollTo(0,0);
+  if (isPhone() && !ls.get('md-taphint', 0)){ ls.set('md-taphint', 1); setTimeout(() => toast('Tap the card to show the answer, tap again for Good', 3600), 400); }
+}
+/* phone: tap the card to show the answer, tap again to rate it Good and go on (double-tap a picture to zoom) */
+const isPhone = () => !document.body.classList.contains('desktop') && matchMedia('(max-width: 700px) and (pointer: coarse)').matches;
+let studyTapT = 0;
+function studyTap(){ if (view.name !== 'study' || !study?.cur) return; if (!study.shown) showAnswer(); else rate(3); }
+document.addEventListener('click', e => {
+  if (view.name !== 'study' || !study?.cur || !isPhone()) return;
+  if (!e.target.closest('#root') || e.target.closest('button, a, input, textarea, select, label, summary, [contenteditable], [data-act], .occ, #padwrap, .lhhead, .studytop, .lhdock, #lhdock, .pred')) return;
+  if (dialogOpen() || $('.lightbox') || String(getSelection() || '').trim()) return;
+  e.preventDefault(); e.stopPropagation();
+  const img = e.target.closest('[data-zoom]');
+  if (img){
+    if (studyTapT){ clearTimeout(studyTapT); studyTapT = 0; return openGallery([{ src: img.getAttribute('src'), label: img.alt || '' }], 0); }
+    studyTapT = setTimeout(() => { studyTapT = 0; studyTap(); }, 280); return;
+  }
+  studyTap();
+}, true);
+
+/* ---------- study all: choose which subjects, topics and subtopics go in; the choice is remembered ---------- */
+let saOpen = null, saMode = 'study';
+const saEx = () => new Set(ls.get('md-study-ex', []).filter(id => S.nodes[id]));
+const saCards = ex => Object.values(S.cards).filter(c => !ex.has(c.nodeId));
+function saState(id, ex){ const ids = [...subtree(id)], off = ids.filter(i => ex.has(i)).length; return !off ? 'on' : off === ids.length ? 'off' : 'mixed'; }
+function saDue(ex){ const now = Date.now(); let nw = 0, n = 0; for (const c of saCards(ex)){ const k = kind(c); if (k === 'new') nw++; else if ((c.srs.due || 0) <= now) n++; } return n + Math.min(nw, newLeft()); }
+function saRows(ex){
+  const row = (n, d) => {
+    const ch = kids(n.id), st = saState(n.id, ex), open = saOpen.has(n.id), due = toStudy(counts(n.id)), tot = cardsIn(n.id).length;
+    if (!tot && !ch.length) return '';
+    return `<div class="sarow ${st === 'off' ? 'saoff' : ''}" style="--d:${d}">
+      <button type="button" class="caret ${ch.length ? '' : 'blank'}" data-sa-tog="${n.id}" aria-expanded="${open}" aria-label="${open ? 'Collapse' : 'Expand'} ${esc(n.name)}">${I.caret}</button>
+      <label><input type="checkbox" data-sa="${n.id}" ${st === 'on' ? 'checked' : ''} data-mixed="${st === 'mixed'}">${d ? '' : `<span class="sdot2" style="--sc:${scol(n.id)}"></span>`}<span class="san">${esc(n.name)}</span></label>
+      <span class="sac">${due ? `<b>${due}</b> due` : `${tot} card${tot === 1 ? '' : 's'}`}</span></div>` + (open ? ch.map(k => row(k, d + 1)).join('') : '');
+  };
+  return kids(null).map(s => row(s, 0)).join('');
+}
+function saFoot(ex){
+  const due = saDue(ex), all = saCards(ex).length, practise = saMode === 'practise' || !due;
+  return `<span class="hint">${all ? `${all} card${all === 1 ? '' : 's'} picked` : 'Nothing picked'}</span><span class="grow"></span><button class="btn" data-act="close">Cancel</button>
+    <button class="btn primary" data-act="sa-go" data-mode="${practise ? 'practise' : 'study'}" ${all ? '' : 'disabled'}>${practise ? `Practise ${all}` : `Study ${due}`}</button>`;
+}
+function saDraw(){
+  const d = $('#layer .sadlg'); if (!d) return; const ex = saEx();
+  d.querySelector('.salist').innerHTML = saRows(ex); d.querySelector('footer').innerHTML = saFoot(ex);
+  d.querySelectorAll('[data-mixed="true"]').forEach(i => { i.indeterminate = true; });
+}
+function studyAllDialog(mode){
+  saMode = mode; if (!saOpen) saOpen = new Set(kids(null).map(n => n.id));
+  openDialog(`<div class="dialog sadlg" role="dialog" aria-modal="true" aria-labelledby="sah" style="max-width:520px"><header><h2 id="sah">${mode === 'practise' ? 'Practise all' : 'Study all'}</h2><span class="grow"></span><button class="link sm" data-act="sa-all">Pick all</button><button class="link sm" data-act="sa-none">Clear</button></header>
+    <div class="body"><p class="hint" style="margin:0 0 10px">Untick anything to leave it out. Recall remembers what you pick.</p><div class="salist"></div></div><footer></footer></div>`, d => {
+      d.addEventListener('change', e => { const i = e.target.closest('[data-sa]'); if (!i) return; const ex = saEx(), ids = [...subtree(i.dataset.sa)], on = saState(i.dataset.sa, ex) === 'on'; ids.forEach(id => on ? ex.add(id) : ex.delete(id)); ls.set('md-study-ex', [...ex]); saDraw(); d.querySelector(`[data-sa="${i.dataset.sa}"]`)?.focus(); });
+      d.addEventListener('click', e => { const t = e.target.closest('[data-sa-tog]'); if (!t || t.classList.contains('blank')) return; e.preventDefault(); const id = t.dataset.saTog; saOpen.has(id) ? saOpen.delete(id) : saOpen.add(id); saDraw(); });
+    });
+  saDraw(); $('#layer .sadlg footer .btn.primary')?.focus();
+}
+function saGo(mode){
+  const ex = saEx(); closeDialog(); study = null;
+  if (mode === 'practise') return startStudy(null, true, null, sortCards(saCards(ex)).map(c => c.id));
+  startStudy(null, false, null, null, ex);
 }
 function nextCard(){
-  const now = Date.now(); study.shown = false; study.pred = { conf: 50, think: '', set: false }; study.t0 = Date.now(); study.tShown = 0; study.timeUpToast = false; study.pausedMs = 0; study.pausedAt = 0; study.autoShown = false; const inScope = study.node ? new Set(cardsIn(study.node).map(c => c.id)) : null;
+  const now = Date.now(); study.shown = false; study.pred = { conf: 50, think: '', set: false }; study.t0 = Date.now(); study.tShown = 0; study.timeUpToast = false; study.pausedMs = 0; study.pausedAt = 0; study.autoShown = false; const inScope0 = study.node ? new Set(cardsIn(study.node).map(c => c.id)) : null, inScope = (inScope0 || study.ex) ? { has: id => (!inScope0 || inScope0.has(id)) && (!study.ex || !study.ex.has(S.cards[id]?.nodeId)) } : null;
   study.queue = study.queue.filter(id => S.cards[id]);
   if (!study.practise){
     const lrn = Object.values(S.cards).filter(c => study.queue.indexOf(c.id) < 0 && kind(c) === 'learn' && (!inScope || inScope.has(c.id)) && c.srs.due <= now);
@@ -6647,46 +6741,69 @@ document.addEventListener('keydown', e => {
 
 /* ---------- to-do: tasks for each subject, ticked off with a small moment; kept in settings so they sync ---------- */
 const todoAll = () => Array.isArray(S.settings?.todos) ? S.settings.todos : [];
-let todoAllSubj = false, todoShowDone = false, todoTab = ['today', 'hw', 'all'].includes(ls.get('md-todo-tab', 'today')) ? ls.get('md-todo-tab', 'today') : 'today';
-const TODO_TABS = [['today', 'Today'], ['hw', 'Homework'], ['all', 'Revision']];
-const todoL = x => x.l === 'today' || x.l === 'hw' ? x.l : 'all';
+const TODO_TABS = [['today', 'Today'], ['doing', 'In progress'], ['hw', 'Homework'], ['all', 'Revision']], TODO_KEYS = TODO_TABS.map(t => t[0]);
+let todoShowDone = false, todoTab = TODO_KEYS.includes(ls.get('md-todo-tab', 'today')) ? ls.get('md-todo-tab', 'today') : 'today';
+/* which subject's tasks the list shows: this page's subject unless you pick another (or All) in the panel */
+let todoF = { at: null, v: '' };
+function todoEff(subj){ const v = todoF.at === (subj || null) ? todoF.v : ''; if (v === 'all') return null; if (v && S.nodes[v]) return v; return subj || null; }
+const todoL = x => x.l === 'today' || x.l === 'hw' || x.l === 'doing' ? x.l : 'all';
+/* in progress: how many things you're actively working on, across every subject, against a limit you set */
+const todoWip = () => { const n = S.settings?.todoWip; return n === 0 ? 0 : Number.isFinite(n) && n > 0 ? n : 3; };
+const todoDoing = () => todoAll().filter(x => !x.done && todoL(x) === 'doing').length;
+function todoWipWarn(){ const w = todoWip(), n = todoDoing(); if (w && n > w) toast(`${n} in progress, over your limit of ${w}. Finish one before starting another.`, 3200); }
+function todoWipMenu(anchor){
+  closeMenu(); const w = todoWip();
+  const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
+  m.innerHTML = `<div class="mlabel">Most at once</div>` + [1, 2, 3, 4, 5, 6].map(n => `<button data-act="todo-wipset" data-n="${n}" aria-checked="${w === n}" role="menuitemradio">${w === n ? '✓ ' : ''}${n} at once</button>`).join('') + `<button data-act="todo-wipset" data-n="0" role="menuitemradio" aria-checked="${!w}">${!w ? '✓ ' : ''}No limit</button>`;
+  document.body.appendChild(m); const r = anchor.getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(innerWidth - m.offsetWidth - 8, r.left)) + 'px'; m.style.top = Math.min(innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px'; m.querySelector('button').focus();
+}
 const todoIn = (x, tab) => todoL(x) === tab;
 function todoSave(list, label){ undoTx = null; undoLabel = label || 'to-do'; undoRecordSettings(); S.settings = { ...S.settings, todos: list }; saveSettings(); }
 const todoDay = d => { if (!d) return ''; const t = new Date(d + 'T00:00'), n = Math.round((t - today0()) / DAY); return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n === -1 ? 'Yesterday' : n > 1 && n < 7 ? t.toLocaleDateString(undefined, { weekday: 'short' }) : t.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }); };
 const todoLate = () => false;
 function todoList(subj, tab = todoTab){
-  return todoAll().filter(x => !x.done && todoIn(x, tab) && (todoAllSubj || !subj || x.s === subj)).sort((a, b) => a.at - b.at);
+  const f = todoEff(subj); return todoAll().filter(x => !x.done && todoIn(x, tab) && (!f || x.s === f)).sort((a, b) => a.at - b.at);
 }
 function todoDoneList(subj, tab = todoTab){
-  return todoAll().filter(x => x.done && todoIn(x, tab) && (todoAllSubj || !subj || x.s === subj)).sort((a, b) => a.done - b.done);
+  const f = todoEff(subj); return todoAll().filter(x => x.done && todoIn(x, tab) && (!f || x.s === f)).sort((a, b) => a.done - b.done);
 }
 const todoDoneLog = () => Array.isArray(S.settings?.todoDone) ? S.settings.todoDone : [];
 function todoRow(x, i){
-  const sn = x.s && nodeOf(x.s), late = todoLate(x);
+  const sn = x.s && nodeOf(x.s), late = todoLate(x), showSub = !todoEff($('#tdo')?.dataset.subj || todoRowSubj || null);
   return `<div class="tdr ${x.done ? 'tdon' : ''}" data-tid="${x.id}" style="--sc:${x.s ? scol(x.s) : 'var(--accent)'};--i:${Math.min(i || 0, 12)}">
     <button class="tdck" data-act="todo-tick" data-id="${x.id}" role="checkbox" aria-checked="${!!x.done}" aria-label="${x.done ? 'Untick' : 'Tick off'}: ${esc(x.t)}"><svg viewBox="0 0 22 22" aria-hidden="true"><circle class="tdcr" cx="11" cy="11" r="9"/><path class="tdcv" d="M6.6 11.4 9.6 14.3 15.6 8"/></svg><span class="tdburst" aria-hidden="true">${'<i></i>'.repeat(8)}</span></button>
     <span class="tdt" data-tedit="${x.id}" title="Click to edit"><span class="tdtx">${esc(x.t)}</span></span>
     ${x.r && todoRule(x.r) ? `<span class="tdrep" title="Repeats every ${esc(repWords(todoRule(x.r).days))}">${REP_IC}${esc(repShort(todoRule(x.r).days))}</span>` : ''}
-    ${todoAllSubj && sn ? `<span class="tdsub"><span class="sdot2" style="--sc:${scol(x.s)}"></span>${esc(sn.name)}</span>` : ''}
+    ${showSub && sn ? `<span class="tdsub"><span class="sdot2" style="--sc:${scol(x.s)}"></span>${esc(sn.name)}</span>` : ''}
     ${late ? `<span class="tdodue late">From ${todoDay(x.due).toLowerCase()}</span>` : ''}
-    <button class="tdmove" data-act="todo-move" data-id="${x.id}" title="Move to another list" aria-haspopup="true">Move</button>
+    <button class="tdmove" data-act="todo-move" data-id="${x.id}" title="Move to another list or subject" aria-haspopup="true">Move</button>
     <button class="tddel" data-act="todo-del" data-id="${x.id}" aria-label="Delete ${esc(x.t)}">${I.x}</button>
   </div>`;
 }
+let todoRowSubj = null;
 function todoSection(subj){
-  todoSpawn();
-  const nr = todoRules().filter(r => todoAllSubj || !subj || r.s === subj).length;
-  const sn = subj && nodeOf(subj), open = todoList(subj), done = todoDoneList(subj), today = done.length, tot = open.length + today;
-  const nOf = k => todoList(subj, k).length;
-  return `<section class="tdo" id="tdo" data-subj="${subj || ''}" style="--sc:${subj ? scol(subj) : 'var(--accent)'}">
+  todoSpawn(); todoRowSubj = subj || null;
+  const f = todoEff(subj), fn = f && nodeOf(f), addTo = f || subj, an = addTo && nodeOf(addTo);
+  const nr = todoRules().filter(r => !f || r.s === f).length;
+  const open = todoList(subj), done = todoDoneList(subj), today = done.length, tot = open.length + today;
+  const nOf = k => todoList(subj, k).length, w = todoWip(), nd = todoDoing(), over = w && nd > w;
+  const cap = todoTab === 'doing'
+    ? `${w ? `${nd} of ${w} at once` : `${nd} in progress`}${f && nd !== open.length ? ` · ${open.length} in ${esc(fn.name)}` : ''}${today ? ` · ${today} done` : ''} · <button class="tdrepl" data-act="todo-wip">${w ? 'Change limit' : 'Set a limit'}</button>${over ? `<span class="tdover">Over your limit</span>` : ''}`
+    : `${open.length ? `${open.length} left` : today ? 'All done' : todoTab === 'today' ? 'What you want done today' : todoTab === 'hw' ? 'Homework still to hand in' : 'What you want to revise'}${today ? ` · ${today} done` : ''}${nr ? ` · <button class="tdrepl" data-act="todo-reps">${nr} repeating</button>` : ''}`;
+  const subs = kids(null), sOpen = id => todoAll().filter(x => !x.done && todoIn(x, todoTab) && (!id || x.s === id)).length;
+  const chip = (v, label, id, on) => { const n = sOpen(id); return `<button type="button" data-act="todo-f" data-v="${v}" aria-pressed="${on}">${id ? `<span class="sdot2" style="--sc:${scol(id)}"></span>` : ''}${esc(label)}${n ? `<b>${n}</b>` : ''}</button>`; };
+  return `<section class="tdo" id="tdo" data-subj="${subj || ''}" style="--sc:${addTo ? scol(addTo) : 'var(--accent)'}">
     <div class="tdbox">
-      <div class="tdoh"><div class="tdohl"><h2>To-do</h2><span class="tdoc">${open.length ? `${open.length} left` : today ? 'All done' : todoTab === 'today' ? 'What you want done today' : todoTab === 'hw' ? 'Homework still to hand in' : 'What you want to revise'}${today ? ` · ${today} done` : ''}${nr ? ` · <button class="tdrepl" data-act="todo-reps">${nr} repeating</button>` : ''}</span></div>
-        <div class="seg tdtab" role="tablist" aria-label="Which list">${TODO_TABS.map(([k, l]) => { const n = nOf(k); return `<button type="button" role="tab" data-act="todo-tab" data-v="${k}" aria-pressed="${todoTab === k}">${l}${n ? ` <b>${n}</b>` : ''}</button>`; }).join('')}</div><span class="grow"></span>
-        ${sn ? `<div class="seg tdof" role="group" aria-label="Show tasks for"><button type="button" data-act="todo-f" data-v="" aria-pressed="${!todoAllSubj}">${esc(sn.name)}</button><button type="button" data-act="todo-f" data-v="all" aria-pressed="${todoAllSubj}">All subjects</button></div>` : ''}</div>
+      <div class="tdoh"><h2>To-do</h2><span class="tdoc">${cap}</span></div>
+      <div class="tdbar">
+        <div class="seg tdtab" role="tablist" aria-label="Which list">${TODO_TABS.map(([k, l]) => { const n = nOf(k); return `<button type="button" role="tab" data-act="todo-tab" data-v="${k}" aria-pressed="${todoTab === k}" class="${k === 'doing' && over ? 'over' : ''}"><span>${l}</span>${n ? `<b>${n}</b>` : ''}</button>`; }).join('')}</div>
+        ${subs.length > 1 ? `<div class="tdsf" role="group" aria-label="Show tasks for">${chip('all', 'All', null, !f)}${subs.map(s => chip(s.id, s.name, s.id, f === s.id)).join('')}</div>` : ''}
+      </div>
       ${tot ? `<div class="tdprog" aria-hidden="true"><i style="width:${today / tot * 100}%"></i></div>` : ''}
       ${tot ? `<div class="tdl">${[...open, ...done].map(todoRow).join('')}</div>` : ''}
       ${today ? `<button class="tdclear" data-act="todo-clear">Clear ${today} done</button>` : ''}
-      <label class="tdadd"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" placeholder="${todoRepDays.size ? `Every ${repWords([...todoRepDays])}…` : todoTab === 'today' ? 'New task for today' : todoTab === 'hw' ? 'New homework' : 'Something to revise'}${sn ? ' in ' + esc(sn.name) : ''}" aria-label="New task"><button type="button" class="tdrepbtn ${todoRepDays.size ? 'on' : ''}" data-act="todo-repopen" aria-expanded="${todoRepOpen}" title="Repeat on certain days">${REP_IC}${todoRepDays.size ? esc(repShort([...todoRepDays])) : 'Repeat'}</button></label>
+      <label class="tdadd"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" placeholder="${todoRepDays.size ? `Every ${repWords([...todoRepDays])}…` : todoTab === 'today' ? 'New task for today' : todoTab === 'doing' ? 'Something you’re working on now' : todoTab === 'hw' ? 'New homework' : 'Something to revise'}${an ? ' in ' + esc(an.name) : ''}" aria-label="New task"><button type="button" class="tdrepbtn ${todoRepDays.size ? 'on' : ''}" data-act="todo-repopen" aria-expanded="${todoRepOpen}" title="Repeat on certain days">${REP_IC}${todoRepDays.size ? esc(repShort([...todoRepDays])) : 'Repeat'}</button></label>
       ${todoRepOpen ? `<div class="tdrepdays" role="group" aria-label="Repeat on"><span>Every</span>${REP_DAYS.map(([d, l]) => `<button type="button" data-act="todo-repday" data-d="${d}" aria-pressed="${todoRepDays.has(d)}" title="${REP_NAMES[d]}">${l}</button>`).join('')}<span class="grow"></span><span class="tdrephint">${todoRepDays.size ? 'It shows up in Today on those days' : 'Pick the days it should show up'}</span></div>` : ''}
     </div>
   </section>`;
@@ -6698,7 +6815,7 @@ function todoRefresh(focus){
 }
 function todoAdd(){
   const inp = $('#tdoin'), t = (inp?.value || '').replace(/\s+/g, ' ').trim(); if (!t) return;
-  const subj = $('#tdo')?.dataset.subj || null;
+  const page = $('#tdo')?.dataset.subj || null, subj = todoEff(page) || page;
   if (todoRepDays.size){
     const days = [...todoRepDays].sort(), r = { id: uid('r'), t: t.slice(0, 200), s: subj, days, at: Date.now() };
     undoTx = null; undoLabel = 'add repeating task'; undoRecordSettings();
@@ -6707,7 +6824,7 @@ function todoAdd(){
     return toast(`Repeats every ${repWords(days)}${days.includes(new Date().getDay()) ? ' · added to Today' : ' · it will show up in Today'}`, 2600);
   }
   const x = { id: uid('t'), t: t.slice(0, 200), s: subj, done: 0, at: Date.now() }; if (todoTab !== 'all') x.l = todoTab;
-  todoSave([...todoAll(), x], 'add task'); todoRefresh(true);
+  todoSave([...todoAll(), x], 'add task'); todoRefresh(true); if (x.l === 'doing') todoWipWarn();
   const row = document.querySelector(`.tdr[data-tid="${x.id}"]`); row?.classList.add('tdnew');
 }
 function todoDone(id){
@@ -6758,13 +6875,21 @@ function starsSvg(t, dark){
 function todoMoveMenu(id, anchor){
   closeMenu(); const x = todoAll().find(z => z.id === id); if (!x) return;
   const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
-  m.innerHTML = TODO_TABS.filter(([k]) => k !== todoL(x)).map(([k, l]) => `<button data-act="todo-moveto" data-id="${id}" data-l="${k}">Move to ${l}</button>`).join('');
+  const subs = kids(null);
+  m.innerHTML = `<div class="mlabel">List</div>` + TODO_TABS.filter(([k]) => k !== todoL(x)).map(([k, l]) => `<button data-act="todo-moveto" data-id="${id}" data-l="${k}">Move to ${l}</button>`).join('')
+    + `<hr><div class="mlabel">Subject</div>` + subs.map(s => `<button class="tdsubm" data-act="todo-subj" data-id="${id}" data-s="${s.id}" aria-checked="${x.s === s.id}" role="menuitemradio"><span class="sdot2" style="--sc:${scol(s.id)}"></span>${esc(s.name)}${x.s === s.id ? '<span class="grow"></span>✓' : ''}</button>`).join('')
+    + `<button class="tdsubm" data-act="todo-subj" data-id="${id}" data-s="" role="menuitemradio" aria-checked="${!x.s}"><span class="sdot2" style="--sc:var(--fg-3)"></span>No subject${!x.s ? '<span class="grow"></span>✓' : ''}</button>`;
   document.body.appendChild(m); const r = anchor.getBoundingClientRect(), w = m.offsetWidth;
   m.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px'; m.style.top = Math.min(innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px'; m.querySelector('button').focus();
 }
+function todoSetSubj(id, s){
+  const x = todoAll().find(z => z.id === id); if (!x || (x.s || '') === s) return closeMenu();
+  todoSave(todoAll().map(z => z.id === id ? { ...z, s: s || null } : z), 'change subject'); closeMenu(); todoRefresh();
+  toast(s ? 'Now in ' + (nodeOf(s)?.name || 'that subject') : 'No subject now', 1400);
+}
 function todoMoveTo(id, l){
   const name = TODO_TABS.find(([k]) => k === l)?.[1] || 'Revision';
-  todoSave(todoAll().map(z => { if (z.id !== id) return z; const n = { ...z }; if (l === 'all') delete n.l; else n.l = l; return n; }), 'move task'); todoRefresh(); toast('Moved to ' + name, 1400);
+  todoSave(todoAll().map(z => { if (z.id !== id) return z; const n = { ...z }; if (l === 'all') delete n.l; else n.l = l; return n; }), 'move task'); todoRefresh(); toast('Moved to ' + name, 1400); if (l === 'doing') todoWipWarn();
 }
 
 /* edit a task: click its text, Enter or click away to save, Esc to cancel */
@@ -7055,9 +7180,10 @@ document.addEventListener('click', async e => {
     case 'todo-reps': return todoRepsDialog();
     case 'todo-repsave': return todoRepSave();
     case 'todo-clear': return todoClearDone($('#tdo')?.dataset.subj || null);
-    case 'todo-tab': todoTab = ['today', 'hw', 'all'].includes(a.dataset.v) ? a.dataset.v : 'today'; ls.set('md-todo-tab', todoTab); return todoRefresh();
+    case 'todo-tab': todoTab = TODO_KEYS.includes(a.dataset.v) ? a.dataset.v : 'today'; ls.set('md-todo-tab', todoTab); return todoRefresh();
     case 'todo-move': e.stopPropagation(); return $('#menu') ? closeMenu() : todoMoveMenu(id, a);
     case 'todo-moveto': return todoMoveTo(id, a.dataset.l);
+    case 'todo-subj': return todoSetSubj(id, a.dataset.s || '');
     case 'cd-edit': closeMenu(); return cdEdit();
     case 'cd-save': return cdSave();
     case 'cd-del': return cdDelete();
@@ -7074,7 +7200,9 @@ document.addEventListener('click', async e => {
     case 'bm-domove': { const ref = [...brMoveSel][0]; if (!ref) return toast('Pick a deck to move them to.'); const ids = [...brMulti].filter(x => S.cards[x]); $('#layer').innerHTML = ''; undoTx = null; undoLabel = 'move cards'; for (const x of ids) await moveCardFrom(x, browse.node, ref); brMulti.clear(); brPick = false; render(); return toast(`Moved ${ids.length} card${ids.length === 1 ? '' : 's'} to ${refName(ref)} · ⌘Z to undo`, 3000); }
     case 'todo-tick': return todoTick(id);
     case 'todo-del': { todoSave(todoAll().filter(z => z.id !== id), 'delete task'); todoRefresh(); return toast('Task deleted · ⌘Z to undo', 1800); }
-    case 'todo-f': todoAllSubj = a.dataset.v === 'all'; return todoRefresh();
+    case 'todo-f': { const page = $('#tdo')?.dataset.subj || null; todoF = { at: page, v: a.dataset.v === page ? '' : a.dataset.v }; return todoRefresh(); }
+    case 'todo-wip': e.stopPropagation(); return $('#menu') ? closeMenu() : todoWipMenu(a);
+    case 'todo-wipset': { const n = +a.dataset.n; undoTx = null; undoLabel = 'in-progress limit'; undoRecordSettings(); S.settings = { ...S.settings, todoWip: n }; saveSettings(); closeMenu(); todoRefresh(); return toast(n ? `Limit: ${n} at once` : 'No limit on tasks in progress', 1400); }
     case 'todo-showdone': todoShowDone = !todoShowDone; return todoRefresh();
     case 'brshow': return brToggle();
     case 'brimg': { const L = brImgs(S.cards[browse.sel] || {}); brImg = Math.max(0, Math.min(L.length - 1, brImg + +a.dataset.d)); return browsePreview(); }
@@ -7225,11 +7353,14 @@ document.addEventListener('click', async e => {
     case 'bexp': undoRecordUi(); bexp.has(id) ? bexp.delete(id) : bexp.add(id); ls.set('md-bexp', [...bexp]); return renderBrowse();
     case 'bcollapse': undoRecordUi(); bexp.clear(); ls.set('md-bexp', []); return renderBrowse();
     case 'bexpand': undoRecordUi(); Object.values(S.nodes).forEach(n => { if (kids(n.id).length) bexp.add(n.id); }); ls.set('md-bexp', [...bexp]); return renderBrowse();
-    case 'study': return startStudy(id);
+    case 'study': return id ? startStudy(id) : studyAllDialog('study');
+    case 'sa-go': return saGo(a.dataset.mode);
+    case 'sa-all': ls.set('md-study-ex', []); return saDraw();
+    case 'sa-none': ls.set('md-study-ex', Object.keys(S.nodes)); return saDraw();
     case 'back-card': return goBack();
     case 'shuffle-toggle': undoRecordUi(); shuffleOn = !shuffleOn; ls.set('md-shuffle', shuffleOn); render(); return toast(shuffleOn ? 'Shuffle on: cards come in a random order' : 'Shuffle off: cards come in order');
     case 'reshuffle': { if (!study) return; study.queue = shuffled(study.queue); renderStudy(); typeset($('#root')); return toast('Shuffled the ' + study.queue.length + ' cards left'); }
-    case 'practise': return startStudy(id || null, true);
+    case 'practise': return id ? startStudy(id, true) : studyAllDialog('practise');
     case 'preview': e.stopPropagation(); return startStudy(S.cards[id]?.nodeId || null, true, id);
     case 'show': return showAnswer();
     case 'rate': return rate(+a.dataset.r);
