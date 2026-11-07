@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261107190459";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261107202610";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -1787,6 +1787,7 @@ body.desktop{display:flow-root}
 html.lh body.desktop:has(.page.v-browse),html:has(#layer .builder){overflow:hidden}
 .brrows,.brprev,.builder .bform,.builder .bprev,.salist{overscroll-behavior:contain}
 /* picture tools sit under the picture, not on top of it */
+.drop + .thumbs:not(:empty){margin-top:10px}
 .thumbs .thumb{width:180px;height:auto;display:flex;flex-direction:column;gap:6px;overflow:visible;background:none;border:0;border-radius:0}
 .thumbs .thumb img{width:180px;height:112px;border-radius:6px;border:1px solid var(--border);background:#fff;object-fit:cover;object-position:top;display:block}
 .thumbs .thumb > button[data-act="rm-img"]{top:4px;right:4px;width:24px;height:24px}
@@ -5942,7 +5943,7 @@ function editor(cardId, presetNode, pasted){
         <div id="etypef">${typeSeg(card.nodeId, card.qtype)}</div>
         <div class="field"><label for="eq">Question <span class="hint">· type it, add a screenshot, or both. $…$ for maths</span></label>
           <textarea class="in" id="eq" placeholder="Let $z=\\frac{1+i}{1-i}$. Find $|z|$…">${esc(card.qText)}</textarea>
-          <div class="drop" id="zq" tabindex="0" data-zone="q" aria-label="Question image: click to choose, drop, or paste"><div class="thumbs" id="tq"></div><div class="dropcta">Drop or paste <kbd>Ctrl/⌘ V</kbd> screenshots, or <button type="button" class="btn sm" data-act="pick" data-zone="q">Choose images</button></div></div>
+          <div class="drop" id="zq" tabindex="0" data-zone="q" aria-label="Question image: click to choose, drop, or paste"><div class="dropcta">Drop or paste <kbd>Ctrl/⌘ V</kbd> screenshots, or <button type="button" class="btn sm" data-act="pick" data-zone="q">Choose images</button></div></div><div class="thumbs" id="tq"></div>
         </div>
         <div class="row2 btime">
           <div class="field"><span class="lbl">Marks <span class="hint" id="emkhint"></span></span><div class="mkrow">${marksSeg(card)}</div></div>
@@ -5950,7 +5951,7 @@ function editor(cardId, presetNode, pasted){
         </div>
         <div class="field mistake-only"><label for="em">Why I got it wrong</label>${rteBox('em', card.mistake, 'What tripped you up, and what to do next time')}</div>
         <div class="field"><span class="lbl"><span id="eslbl">${learn ? 'Explanation' : 'Worked solution'}</span> <span class="hint">· images and/or notes</span></span>
-          <div class="drop" id="zs" tabindex="0" data-zone="s" aria-label="Solution images: click to choose, drop, or paste"><div class="thumbs" id="ts"></div><div class="dropcta">Drop or paste solution images, or <button type="button" class="btn sm" data-act="pick" data-zone="s">Choose images</button></div></div>
+          <div class="drop" id="zs" tabindex="0" data-zone="s" aria-label="Solution images: click to choose, drop, or paste"><div class="dropcta">Drop or paste solution images, or <button type="button" class="btn sm" data-act="pick" data-zone="s">Choose images</button></div></div><div class="thumbs" id="ts"></div>
           ${rteBox('es', card.solText, 'Optional notes')}
         </div>
         <div class="field"><span class="lbl">Also show in <span class="hint">· optional, the same card in more decks</span></span><div class="alsos" id="ealso"></div></div>
@@ -5992,6 +5993,12 @@ function editor(cardId, presetNode, pasted){
       el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('over'); });
       el.addEventListener('dragleave', () => el.classList.remove('over'));
       el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('over'); zone(z); addFiles([...e.dataTransfer.files], z); });
+      /* the pictures sit under the drop box: dropping on them still adds to that box, clicking them never opens the file picker */
+      const th = $('#t'+z);
+      th.addEventListener('pointerdown', () => zone(z));
+      th.addEventListener('dragover', e => { if ([...(e.dataTransfer?.items || [])].some(i => i.kind === 'file')){ e.preventDefault(); el.classList.add('over'); } });
+      th.addEventListener('dragleave', () => el.classList.remove('over'));
+      th.addEventListener('drop', e => { if (!e.dataTransfer?.files?.length) return; e.preventDefault(); el.classList.remove('over'); zone(z); addFiles([...e.dataTransfer.files], z); });
     });
     d.addEventListener('input', e => { if (e.target.id === 'eq') edTimeHint(); edPreviewSoon(); edDraftSoon(); });
     $('#eauto').addEventListener('change', e => ls.set('md-autoclean', e.target.checked));
