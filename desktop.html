@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261107202610 min-shell:1.27.0 -->
+<!-- recall-build:20261107205403 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -18,7 +18,8 @@
 @font-face{font-family:"Source Serif 4";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/source-serif-4-latin-400-normal.woff2) format("woff2")}
 @font-face{font-family:"Source Serif 4";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/source-serif-4-latin-600-normal.woff2) format("woff2")}
 [hidden]{display:none!important} img{max-width:100%}
-body.desktop .toolbar{-webkit-app-region:drag;padding-left:max(84px,env(safe-area-inset-left,0px))}
+body.desktop .toolbar{padding-left:max(84px,env(safe-area-inset-left,0px))}
+body.desktop .toolbar::before{content:"";position:absolute;top:0;left:0;right:0;height:52px;-webkit-app-region:drag;pointer-events:none}
 body.desktop .toolbar button{-webkit-app-region:no-drag}
 body.desktop{user-select:none;-webkit-user-select:none}
 body.desktop input,body.desktop textarea,body.desktop .qa,body.desktop .stext,body.desktop .qtext{user-select:text;-webkit-user-select:text}
@@ -1848,6 +1849,13 @@ html.lh .brqa{max-width:760px;margin:0;padding:28px 40px 12px;font-size:17px}
 .brqa .bhr{height:1px;border:0;background:var(--border);margin:24px 0 18px}
 .brhist{display:flex;gap:6px;flex-wrap:wrap;padding:8px 40px 32px}
 .brempty{flex:1;display:grid;place-items:center;color:var(--fg-3);font:400 14px var(--ui)}
+/* deck picker: a bigger arrow to open a deck */
+.pkrow .caret{width:28px;height:28px}
+/* Mac: the strip along the top of the window drags the window, even under things drawn over it. Turn it off while a dialog, the editor, a zoomed picture, the image tools or the full scratchpad is open, so their top buttons can be clicked (the editor's own title bar still drags) */
+body.desktop:has(#layer .scrim, #layer2 .scrim, .lightbox, #padwrap.full) .appbar,
+body.desktop:has(#layer .scrim, #layer2 .scrim, .lightbox, #padwrap.full) .toolbar::before,
+body.desktop.sidebar-hidden .toolbar::before{-webkit-app-region:no-drag}
+body.desktop:has(#layer .scrim, #layer2 .scrim, .lightbox, #padwrap.full)::after{display:none}
 /* the window itself never scrolls behind Browse or the card editor: the page's top margin stays inside body, and the panes keep their own scroll */
 body.desktop{display:flow-root}
 html.lh body.desktop:has(.page.v-browse),html:has(#layer .builder){overflow:hidden}
@@ -2424,7 +2432,8 @@ html:not(.dk) .cdcard{box-shadow:0 1px 1px rgba(20,20,40,.04),0 8px 18px -12px r
 .tdo .tdoc{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:0 4px}
 .tdover{margin-left:8px;color:var(--accent);font-weight:600}
 .tdbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:0 16px 14px}
-.tdo .tdtab{margin:0;flex:1 1 380px;max-width:620px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.tdo .tdtab{margin:0;flex:1 1 420px;max-width:720px;display:flex;flex-wrap:wrap;gap:6px}
+.tdo .tdtab button{flex:1 1 auto}
 .tdo .tdtab button{height:32px;padding:0 10px;justify-content:center;min-width:0;white-space:nowrap}
 .tdo .tdtab button span{overflow:hidden;text-overflow:ellipsis}
 .tdo .tdtab button.over b{background:var(--accent-btn);color:var(--btn-fg)}
@@ -2435,7 +2444,7 @@ html:not(.dk) .cdcard{box-shadow:0 1px 1px rgba(20,20,40,.04),0 8px 18px -12px r
 .tdsf .sdot2{width:7px;height:7px;border-radius:50%;background:var(--sc);flex:none}
 .tdsf b{font:600 11px var(--ui);color:var(--fg-3);font-variant-numeric:tabular-nums}
 @container (max-width:560px){ .tdsf{margin-left:0} .tdo .tdtab{flex-basis:100%;max-width:none} }
-@container (max-width:470px){ .tdo .tdtab{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
 /* round 12: ticked tasks stay, struck through, under the open ones */
 .tdr.tdon .tdck:hover .tdcr{fill:color-mix(in srgb,var(--sc) 70%,transparent)}
 .tdclear{display:block;width:100%;text-align:left;padding:10px 16px;border:0;border-top:1px solid var(--border);background:none;color:var(--fg-3);font:500 12px var(--ui);cursor:pointer}
@@ -4412,19 +4421,22 @@ function pkMount(host, o){
   o.uid = o.uid || Math.random().toString(36).slice(2, 7);
   list.addEventListener('click', e => { const t = e.target.closest('[data-pk-tog]'); if (!t) return; e.preventDefault(); const id = t.dataset.pkTog; o.open.has(id) ? o.open.delete(id) : o.open.add(id); draw(); });
   list.addEventListener('change', e => { const i = e.target.closest('[data-pk]'); if (!i) return; const id = i.dataset.pk;
-    if (o.multi){ i.checked ? o.sel.add(id) : o.sel.delete(id); } else { o.sel.clear(); o.sel.add(id); }
-    o.onPick?.(id, i.checked); if (host.isConnected) draw(); });
+    let leaf = true;
+    if (o.multi){ i.checked ? o.sel.add(id) : o.sel.delete(id); }
+    else { o.sel.clear(); o.sel.add(id); if (o.keepOpen && !String(id).includes('::') && S.nodes[id] && (kids(id).length || (o.bubbles && typesOf(id).length))){ leaf = false; o.open.add(id); } }
+    o.onPick?.(id, i.checked, leaf); if (host.isConnected) draw(); });
   search.addEventListener('input', () => { o.q = search.value; draw(); });
   search.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); e.stopPropagation(); } });
   draw();
   return { redraw: draw, focus: () => search.focus() };
 }
-function closePicker(){ document.querySelectorAll('.pickpop').forEach(p => p.remove()); document.querySelectorAll('.pickbtn[aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false')); }
+let pkCur = null;
+function closePicker(){ const c = pkCur; pkCur = null; c?.onClose?.(); document.querySelectorAll('.pickpop').forEach(p => p.remove()); document.querySelectorAll('.pickbtn[aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false')); }
 function openPicker(btn, o){
   const was = btn.getAttribute('aria-expanded') === 'true'; closePicker(); if (was) return;
   const field = btn.closest('.field'); field.classList.add('pkfield');
-  const pop = document.createElement('div'); pop.className = 'pickpop'; pop.innerHTML = `<div class="pkhost"></div><div class="pkfoot"><span class="hint">${o.multi ? 'Tick every deck it should appear in.' : 'Pick a deck or a bubble.'}</span><button type="button" class="btn sm primary" data-pk-done>Done</button></div>`;
-  field.appendChild(pop); btn.setAttribute('aria-expanded', 'true');
+  const pop = document.createElement('div'); pop.className = 'pickpop'; pop.innerHTML = `<div class="pkhost"></div><div class="pkfoot"><span class="hint">${o.multi ? 'Tick every deck it should appear in.' : o.keepOpen ? 'Pick a deck, or open it to pick a topic.' : 'Pick a deck or a bubble.'}</span><button type="button" class="btn sm primary" data-pk-done>Done</button></div>`;
+  field.appendChild(pop); btn.setAttribute('aria-expanded', 'true'); pkCur = o;
   const pk = pkMount(pop.querySelector('.pkhost'), o);
   pop.querySelector('[data-pk-done]').addEventListener('click', closePicker);
   pk.focus();
@@ -6054,11 +6066,11 @@ function editor(cardId, presetNode, pasted){
     $('#etypef').addEventListener('click', e => { const b = e.target.closest('[data-qt]'); if (!b) return; $('#etype').querySelectorAll('[data-qt]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
     $('#emarks').addEventListener('click', e => { const b = e.target.closest('[data-mk]'); if (!b) return; $('#emarks').querySelectorAll('[data-mk]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); $('#emkn').hidden = b.dataset.mk !== '5'; if (b.dataset.mk === '5') $('#emkn').focus(); edTimeHint(); edPreviewSoon(); });
     $('#etime').addEventListener('click', e => { const b = e.target.closest('[data-tm]'); if (!b) return; $('#etime').querySelectorAll('[data-tm]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); $('#etown').hidden = b.dataset.tm !== 'own'; if (b.dataset.tm === 'own'){ const mk = edMarks() || detectMarks($('#eq').value); if (!$('#etown').value) $('#etown').value = fmtSec((mk ? mk * 108 : 180) * 1000); $('#etown').focus(); } });
-    $('#edeckbtn')?.addEventListener('click', () => openPicker($('#edeckbtn'), { multi: false, bubbles: true, sel: new Set([homeRef(ed.card)]), onPick: id => {
+    $('#edeckbtn')?.addEventListener('click', () => openPicker($('#edeckbtn'), { multi: false, bubbles: true, keepOpen: true, sel: new Set([homeRef(ed.card)]), onPick: (id, on, leaf) => {
       const [b, k] = id.split('::'); $('#edeck').value = b; ed.card.nodeId = b;
       const cur = k || ($('#etype [aria-pressed="true"]')?.dataset.qt ?? ed.card.qtype);
       if (k) ed.card.qtype = k; $('#etypef').innerHTML = typeSeg(b, cur);
-      $('#edeckbtn .pkval').textContent = refLabel(id); $('#bwhere').textContent = 'in ' + refLabel(id); drawAlso(); closePicker(); edPreviewSoon(); } }));
+      $('#edeckbtn .pkval').textContent = refLabel(id); $('#bwhere').textContent = 'in ' + refLabel(id); drawAlso(); if (leaf) closePicker(); edPreviewSoon(); } }));
     ['q','s'].forEach(z => {
       const el = $('#z'+z);
       el.addEventListener('focus', () => zone(z)); el.addEventListener('pointerdown', () => zone(z));
@@ -6603,7 +6615,7 @@ function pxDraw(){
       ${it.notes ? `<div class="pxfront">${esc(it.front)}</div>` : `<div class="pximg">${it.segs.map(img).join('')}</div>`}
       ${it.text ? `<div class="pxsol pxdef"><span>Answer</span><p>${esc(it.backText)}</p></div>` : it.sol ? `<div class="pxsol"><span>${it.notes ? 'Answer' : 'Solution'}</span>${it.sol.map(img).join('')}</div>` : ''}
     </article>`).join('')}</div>`}`;
-  $('#pxdeck')?.addEventListener('click', e => { e.stopPropagation(); openPicker($('#pxdeck'), { multi: false, bubbles: true, sel: new Set([x.node || '']), onPick: id => { x.node = id || null; closePicker(); pxDraw(); } }); });
+  $('#pxdeck')?.addEventListener('click', e => { e.stopPropagation(); openPicker($('#pxdeck'), { multi: false, bubbles: true, keepOpen: true, sel: new Set([x.node || '']), onPick: (id, on, leaf) => { x.node = id || null; if (leaf) closePicker(); }, onClose: () => { if (pdfx === x) pxDraw(); } }); });
 }
 async function pxAnswers(file){
   const x = pdfx; if (!x || !isPdf(file)) return;
@@ -6761,12 +6773,12 @@ document.addEventListener('keydown', e => {
 
 /* ---------- to-do: tasks for each subject, ticked off with a small moment; kept in settings so they sync ---------- */
 const todoAll = () => Array.isArray(S.settings?.todos) ? S.settings.todos : [];
-const TODO_TABS = [['today', 'Today'], ['doing', 'In progress'], ['hw', 'Homework'], ['all', 'Revision']], TODO_KEYS = TODO_TABS.map(t => t[0]);
+const TODO_TABS = [['today', 'Today'], ['doing', 'In progress'], ['hw', 'Homework'], ['all', 'Revision'], ['later', 'Later']], TODO_KEYS = TODO_TABS.map(t => t[0]);
 let todoShowDone = false, todoTab = TODO_KEYS.includes(ls.get('md-todo-tab', 'today')) ? ls.get('md-todo-tab', 'today') : 'today';
 /* which subject's tasks the list shows: this page's subject unless you pick another (or All) in the panel */
 let todoF = { at: null, v: '' };
 function todoEff(subj){ const v = todoF.at === (subj || null) ? todoF.v : ''; if (v === 'all') return null; if (v && S.nodes[v]) return v; return subj || null; }
-const todoL = x => x.l === 'today' || x.l === 'hw' || x.l === 'doing' ? x.l : 'all';
+const todoL = x => x.l === 'today' || x.l === 'hw' || x.l === 'doing' || x.l === 'later' ? x.l : 'all';
 /* in progress: how many things you're actively working on, across every subject, against a limit you set */
 const todoWip = () => { const n = S.settings?.todoWip; return n === 0 ? 0 : Number.isFinite(n) && n > 0 ? n : 3; };
 const todoDoing = () => todoAll().filter(x => !x.done && todoL(x) === 'doing').length;
@@ -6810,7 +6822,7 @@ function todoSection(subj){
   const nOf = k => todoList(subj, k).length, w = todoWip(), nd = todoDoing(), over = w && nd > w;
   const cap = todoTab === 'doing'
     ? `${w ? `${nd} of ${w} at once` : `${nd} in progress`}${f && nd !== open.length ? ` · ${open.length} in ${esc(fn.name)}` : ''}${today ? ` · ${today} done` : ''} · <button class="tdrepl" data-act="todo-wip">${w ? 'Change limit' : 'Set a limit'}</button>${over ? `<span class="tdover">Over your limit</span>` : ''}`
-    : `${open.length ? `${open.length} left` : today ? 'All done' : todoTab === 'today' ? 'What you want done today' : todoTab === 'hw' ? 'Homework still to hand in' : 'What you want to revise'}${today ? ` · ${today} done` : ''}${nr ? ` · <button class="tdrepl" data-act="todo-reps">${nr} repeating</button>` : ''}`;
+    : `${open.length ? `${open.length} left` : today ? 'All done' : todoTab === 'today' ? 'What you want done today' : todoTab === 'hw' ? 'Homework still to hand in' : todoTab === 'later' ? 'Things that can wait' : 'What you want to revise'}${today ? ` · ${today} done` : ''}${nr ? ` · <button class="tdrepl" data-act="todo-reps">${nr} repeating</button>` : ''}`;
   const subs = kids(null), sOpen = id => todoAll().filter(x => !x.done && todoIn(x, todoTab) && (!id || x.s === id)).length;
   const chip = (v, label, id, on) => { const n = sOpen(id); return `<button type="button" data-act="todo-f" data-v="${v}" aria-pressed="${on}">${id ? `<span class="sdot2" style="--sc:${scol(id)}"></span>` : ''}${esc(label)}${n ? `<b>${n}</b>` : ''}</button>`; };
   return `<section class="tdo" id="tdo" data-subj="${subj || ''}" style="--sc:${addTo ? scol(addTo) : 'var(--accent)'}">
@@ -6823,7 +6835,7 @@ function todoSection(subj){
       ${tot ? `<div class="tdprog" aria-hidden="true"><i style="width:${today / tot * 100}%"></i></div>` : ''}
       ${tot ? `<div class="tdl">${[...open, ...done].map(todoRow).join('')}</div>` : ''}
       ${today ? `<button class="tdclear" data-act="todo-clear">Clear ${today} done</button>` : ''}
-      <label class="tdadd"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" placeholder="${todoRepDays.size ? `Every ${repWords([...todoRepDays])}…` : todoTab === 'today' ? 'New task for today' : todoTab === 'doing' ? 'Something you’re working on now' : todoTab === 'hw' ? 'New homework' : 'Something to revise'}${an ? ' in ' + esc(an.name) : ''}" aria-label="New task"><button type="button" class="tdrepbtn ${todoRepDays.size ? 'on' : ''}" data-act="todo-repopen" aria-expanded="${todoRepOpen}" title="Repeat on certain days">${REP_IC}${todoRepDays.size ? esc(repShort([...todoRepDays])) : 'Repeat'}</button></label>
+      <label class="tdadd"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" placeholder="${todoRepDays.size ? `Every ${repWords([...todoRepDays])}…` : todoTab === 'today' ? 'New task for today' : todoTab === 'doing' ? 'Something you’re working on now' : todoTab === 'hw' ? 'New homework' : todoTab === 'later' ? 'Something for later' : 'Something to revise'}${an ? ' in ' + esc(an.name) : ''}" aria-label="New task"><button type="button" class="tdrepbtn ${todoRepDays.size ? 'on' : ''}" data-act="todo-repopen" aria-expanded="${todoRepOpen}" title="Repeat on certain days">${REP_IC}${todoRepDays.size ? esc(repShort([...todoRepDays])) : 'Repeat'}</button></label>
       ${todoRepOpen ? `<div class="tdrepdays" role="group" aria-label="Repeat on"><span>Every</span>${REP_DAYS.map(([d, l]) => `<button type="button" data-act="todo-repday" data-d="${d}" aria-pressed="${todoRepDays.has(d)}" title="${REP_NAMES[d]}">${l}</button>`).join('')}<span class="grow"></span><span class="tdrephint">${todoRepDays.size ? 'It shows up in Today on those days' : 'Pick the days it should show up'}</span></div>` : ''}
     </div>
   </section>`;
