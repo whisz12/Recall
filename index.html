@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261107205403";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261108014807";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -2157,6 +2157,11 @@ html.dk body.desktop .page{box-shadow:inset 0 1px 0 rgba(255,255,255,.045)}
 .tddate input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
 .tdl{display:flex;flex-direction:column;border-top:1px solid var(--border)}
 .tdr{position:relative;display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 8px 6px 9px;box-sizing:border-box;border-top:1px solid var(--border)}
+.tdl > .tdr:not(.tdon){-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.tdr.tddrag{z-index:5;background:var(--surface-2);border-radius:8px;border-color:transparent;box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 8px 24px rgba(0,0,0,.22),0 2px 6px rgba(0,0,0,.14);animation:none !important;transition:none !important;cursor:grabbing}
+.tdr.tddrag + .tdr{border-top-color:transparent}
+body.tddragging,body.tddragging *{cursor:grabbing !important}
+body.tddragging .tdl > .tdr:not(.tddrag) .tdmove,body.tddragging .tdl > .tdr:not(.tddrag) .tddel{opacity:0 !important}
 .tdr:first-child{border-top:0}
 .tdck{position:relative;width:30px;height:30px;flex:none;display:grid;place-items:center;border:0;background:none;padding:0;cursor:pointer;border-radius:50%}
 .tdck:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
@@ -2356,6 +2361,22 @@ html:not(.dk) .cdcard{box-shadow:0 1px 1px rgba(20,20,40,.04),0 8px 18px -12px r
 .tdtab{margin-left:14px}
 .tdtab button{height:28px;font-size:13px;padding:0 12px;display:inline-flex;align-items:center;gap:6px}
 .tdtab b{font:600 11px var(--ui);min-width:18px;height:18px;padding:0 5px;border-radius:9px;display:inline-grid;place-items:center;background:rgba(var(--ovr),.1);font-variant-numeric:tabular-nums}
+.tdtime{flex:none;width:64px;height:26px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--fg-3);font:500 12px var(--ui);font-variant-numeric:tabular-nums;cursor:pointer;margin-left:auto}
+.tdtime svg{width:14px;height:14px}
+.tdtime.set{color:var(--fg-2);background:rgba(var(--ovr),.06)}
+.tdtimebtn{flex:none;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:6px;border:1px solid var(--border-2);background:transparent;color:var(--fg-2);font:500 12px var(--ui);font-variant-numeric:tabular-nums;cursor:pointer;margin-right:6px}
+.tdtimebtn svg{width:14px;height:14px}
+.tdtimebtn:hover{background:rgba(var(--ovr),.06);color:var(--fg)}
+.tdtimebtn.on{color:var(--fg);background:rgba(var(--ovr),.08)}
+.tdtime:hover{border-color:var(--border)}
+.tdr.tdon .tdtime.set{color:var(--fg-3);background:none}
+.tdr.tdon .tdtime:not(.set){visibility:hidden}
+.tdtot{color:var(--fg-2);font-weight:500;font-variant-numeric:tabular-nums}
+.menu .tdtgrid{display:grid;grid-template-columns:repeat(5,minmax(56px,1fr));gap:2px;padding:0 4px}
+.menu .tdtgrid button{justify-content:center;padding:6px 8px;font-variant-numeric:tabular-nums}
+.menu .tdtgrid button[aria-checked="true"]{background:rgba(var(--ovr),.12);font-weight:600}
+.menu .tdtother{display:flex;align-items:center;gap:8px;padding:8px 10px 4px;font:400 12px var(--ui);color:var(--fg-3)}
+.menu .tdtother input{width:64px;height:26px;padding:0 6px;border-radius:6px;border:1px solid var(--border-2);background:var(--surface);color:var(--fg);font:500 13px var(--ui)}
 .tdmove{flex:none;height:26px;padding:0 9px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--fg-3);font:500 12px var(--ui);cursor:pointer;opacity:0;transition:opacity var(--t-fast)}
 .tdr:hover .tdmove,.tdmove:focus-visible{opacity:1}
 .tdmove:hover{color:var(--fg);border-color:var(--border-2)}
@@ -6713,8 +6734,31 @@ const todoIn = (x, tab) => todoL(x) === tab;
 function todoSave(list, label){ undoTx = null; undoLabel = label || 'to-do'; undoRecordSettings(); S.settings = { ...S.settings, todos: list }; saveSettings(); }
 const todoDay = d => { if (!d) return ''; const t = new Date(d + 'T00:00'), n = Math.round((t - today0()) / DAY); return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n === -1 ? 'Yesterday' : n > 1 && n < 7 ? t.toLocaleDateString(undefined, { weekday: 'short' }) : t.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }); };
 const todoLate = () => false;
+/* time estimates: minutes on each task, added up per list */
+const fmtMin = m => { m = Math.round(m); if (m < 60) return m + 'm'; const hh = Math.floor(m / 60), mm = m % 60; return hh + 'h' + (mm ? ' ' + mm + 'm' : ''); };
+let todoNewMin = 0;
+const CLOCK_IC = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.8V8l2.2 1.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const todoMins = list => list.reduce((s, x) => s + (x.m || 0), 0);
+function todoTimeMenu(id, anchor){
+  closeMenu(); const x = id === '__new' ? { m: todoNewMin } : todoAll().find(z => z.id === id); if (!x) return;
+  const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
+  m.innerHTML = `<div class="mlabel">About how long?</div><div class="tdtgrid">${[5, 10, 15, 20, 30, 45, 60, 90, 120, 180].map(n => `<button data-act="todo-timeset" data-id="${id}" data-n="${n}" role="menuitemradio" aria-checked="${x.m === n}">${fmtMin(n)}</button>`).join('')}</div>
+    <label class="tdtother">Other <input type="number" min="1" max="1440" step="5" inputmode="numeric" placeholder="min" value="${x.m && ![5, 10, 15, 20, 30, 45, 60, 90, 120, 180].includes(x.m) ? x.m : ''}" data-id="${id}" aria-label="Minutes"> min</label>
+    ${x.m ? `<hr><button data-act="todo-timeset" data-id="${id}" data-n="0">No estimate</button>` : ''}`;
+  document.body.appendChild(m); const r = anchor.getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(innerWidth - m.offsetWidth - 8, r.right - m.offsetWidth)) + 'px'; m.style.top = (r.bottom + 6 + m.offsetHeight > innerHeight - 8 ? r.top - m.offsetHeight - 6 : r.bottom + 6) + 'px';
+  const inp = m.querySelector('input'); (m.querySelector('[aria-checked="true"]') || m.querySelector('button')).focus();
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); e.stopPropagation(); todoSetTime(id, Math.round(+inp.value || 0)); } });
+}
+function todoSetTime(id, n){
+  closeMenu(); n = Math.max(0, Math.min(1440, n | 0));
+  if (id === '__new'){ const v = $('#tdoin')?.value || ''; todoNewMin = n; todoRefresh(true); const i = $('#tdoin'); if (i){ i.value = v; i.setSelectionRange(v.length, v.length); } return; }
+  todoSave(todoAll().map(z => z.id === id ? (n ? { ...z, m: n } : (({ m, ...rest }) => rest)(z)) : z), n ? 'set time' : 'clear time'); todoRefresh();
+}
+/* a task's place in its list: where you dragged it, or when it was added */
+const todoOrd = x => x.o ?? x.at;
 function todoList(subj, tab = todoTab){
-  const f = todoEff(subj); return todoAll().filter(x => !x.done && todoIn(x, tab) && (!f || x.s === f)).sort((a, b) => a.at - b.at);
+  const f = todoEff(subj); return todoAll().filter(x => !x.done && todoIn(x, tab) && (!f || x.s === f)).sort((a, b) => todoOrd(a) - todoOrd(b));
 }
 function todoDoneList(subj, tab = todoTab){
   const f = todoEff(subj); return todoAll().filter(x => x.done && todoIn(x, tab) && (!f || x.s === f)).sort((a, b) => a.done - b.done);
@@ -6722,12 +6766,13 @@ function todoDoneList(subj, tab = todoTab){
 const todoDoneLog = () => Array.isArray(S.settings?.todoDone) ? S.settings.todoDone : [];
 function todoRow(x, i){
   const sn = x.s && nodeOf(x.s), late = todoLate(x), showSub = !todoEff($('#tdo')?.dataset.subj || todoRowSubj || null);
-  return `<div class="tdr ${x.done ? 'tdon' : ''}" data-tid="${x.id}" style="--sc:${x.s ? scol(x.s) : 'var(--accent)'};--i:${Math.min(i || 0, 12)}">
+  return `<div class="tdr ${x.done ? 'tdon' : ''}" data-tid="${x.id}" ${x.done ? '' : 'title="Drag to reorder"'} style="--sc:${x.s ? scol(x.s) : 'var(--accent)'};--i:${Math.min(i || 0, 12)}">
     <button class="tdck" data-act="todo-tick" data-id="${x.id}" role="checkbox" aria-checked="${!!x.done}" aria-label="${x.done ? 'Untick' : 'Tick off'}: ${esc(x.t)}"><svg viewBox="0 0 22 22" aria-hidden="true"><circle class="tdcr" cx="11" cy="11" r="9"/><path class="tdcv" d="M6.6 11.4 9.6 14.3 15.6 8"/></svg><span class="tdburst" aria-hidden="true">${'<i></i>'.repeat(8)}</span></button>
     <span class="tdt" data-tedit="${x.id}" title="Click to edit"><span class="tdtx">${esc(x.t)}</span></span>
     ${x.r && todoRule(x.r) ? `<span class="tdrep" title="Repeats every ${esc(repWords(todoRule(x.r).days))}">${REP_IC}${esc(repShort(todoRule(x.r).days))}</span>` : ''}
     ${showSub && sn ? `<span class="tdsub"><span class="sdot2" style="--sc:${scol(x.s)}"></span>${esc(sn.name)}</span>` : ''}
     ${late ? `<span class="tdodue late">From ${todoDay(x.due).toLowerCase()}</span>` : ''}
+    <button class="tdtime ${x.m ? 'set' : ''}" data-act="todo-time" data-id="${x.id}" title="${x.m ? 'About ' + fmtMin(x.m) + ' · change' : 'Set how long it will take'}" aria-label="${x.m ? 'Time: about ' + fmtMin(x.m) : 'Set time'}" aria-haspopup="true">${x.m ? fmtMin(x.m) : CLOCK_IC}</button>
     <button class="tdmove" data-act="todo-move" data-id="${x.id}" title="Move to another list or subject" aria-haspopup="true">Move</button>
     <button class="tddel" data-act="todo-del" data-id="${x.id}" aria-label="Delete ${esc(x.t)}">${I.x}</button>
   </div>`;
@@ -6738,10 +6783,11 @@ function todoSection(subj){
   const f = todoEff(subj), fn = f && nodeOf(f), addTo = f || subj, an = addTo && nodeOf(addTo);
   const nr = todoRules().filter(r => !f || r.s === f).length;
   const open = todoList(subj), done = todoDoneList(subj), today = done.length, tot = open.length + today;
-  const nOf = k => todoList(subj, k).length, w = todoWip(), nd = todoDoing(), over = w && nd > w;
+  const nOf = k => todoList(subj, k).length, w = todoWip(), nd = todoDoing(), over = w && nd > w, mins = todoMins(open), minsDone = todoMins(done);
+  const tm = mins ? ` · <span class="tdtot" title="Time estimated for the tasks left${minsDone ? ', ' + fmtMin(minsDone) + ' done' : ''}">${fmtMin(mins)} of work</span>` : '';
   const cap = todoTab === 'doing'
-    ? `${w ? `${nd} of ${w} at once` : `${nd} in progress`}${f && nd !== open.length ? ` · ${open.length} in ${esc(fn.name)}` : ''}${today ? ` · ${today} done` : ''} · <button class="tdrepl" data-act="todo-wip">${w ? 'Change limit' : 'Set a limit'}</button>${over ? `<span class="tdover">Over your limit</span>` : ''}`
-    : `${open.length ? `${open.length} left` : today ? 'All done' : todoTab === 'today' ? 'What you want done today' : todoTab === 'hw' ? 'Homework still to hand in' : todoTab === 'later' ? 'Things that can wait' : 'What you want to revise'}${today ? ` · ${today} done` : ''}${nr ? ` · <button class="tdrepl" data-act="todo-reps">${nr} repeating</button>` : ''}`;
+    ? `${w ? `${nd} of ${w} at once` : `${nd} in progress`}${f && nd !== open.length ? ` · ${open.length} in ${esc(fn.name)}` : ''}${tm}${today ? ` · ${today} done` : ''} · <button class="tdrepl" data-act="todo-wip">${w ? 'Change limit' : 'Set a limit'}</button>${over ? `<span class="tdover">Over your limit</span>` : ''}`
+    : `${open.length ? `${open.length} left` : today ? 'All done' : todoTab === 'today' ? 'What you want done today' : todoTab === 'hw' ? 'Homework still to hand in' : todoTab === 'later' ? 'Things that can wait' : 'What you want to revise'}${tm}${today ? ` · ${today} done` : ''}${nr ? ` · <button class="tdrepl" data-act="todo-reps">${nr} repeating</button>` : ''}`;
   const subs = kids(null), sOpen = id => todoAll().filter(x => !x.done && todoIn(x, todoTab) && (!id || x.s === id)).length;
   const chip = (v, label, id, on) => { const n = sOpen(id); return `<button type="button" data-act="todo-f" data-v="${v}" aria-pressed="${on}">${id ? `<span class="sdot2" style="--sc:${scol(id)}"></span>` : ''}${esc(label)}${n ? `<b>${n}</b>` : ''}</button>`; };
   return `<section class="tdo" id="tdo" data-subj="${subj || ''}" style="--sc:${addTo ? scol(addTo) : 'var(--accent)'}">
@@ -6754,27 +6800,92 @@ function todoSection(subj){
       ${tot ? `<div class="tdprog" aria-hidden="true"><i style="width:${today / tot * 100}%"></i></div>` : ''}
       ${tot ? `<div class="tdl">${[...open, ...done].map(todoRow).join('')}</div>` : ''}
       ${today ? `<button class="tdclear" data-act="todo-clear">Clear ${today} done</button>` : ''}
-      <label class="tdadd"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" placeholder="${todoRepDays.size ? `Every ${repWords([...todoRepDays])}…` : todoTab === 'today' ? 'New task for today' : todoTab === 'doing' ? 'Something you’re working on now' : todoTab === 'hw' ? 'New homework' : todoTab === 'later' ? 'Something for later' : 'Something to revise'}${an ? ' in ' + esc(an.name) : ''}" aria-label="New task"><button type="button" class="tdrepbtn ${todoRepDays.size ? 'on' : ''}" data-act="todo-repopen" aria-expanded="${todoRepOpen}" title="Repeat on certain days">${REP_IC}${todoRepDays.size ? esc(repShort([...todoRepDays])) : 'Repeat'}</button></label>
+      <label class="tdadd"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" placeholder="${todoRepDays.size ? `Every ${repWords([...todoRepDays])}…` : todoTab === 'today' ? 'New task for today' : todoTab === 'doing' ? 'Something you’re working on now' : todoTab === 'hw' ? 'New homework' : todoTab === 'later' ? 'Something for later' : 'Something to revise'}${an ? ' in ' + esc(an.name) : ''}" aria-label="New task"><button type="button" class="tdtimebtn ${todoNewMin ? 'on' : ''}" data-act="todo-time" data-id="__new" aria-haspopup="true" title="How long it will take">${CLOCK_IC}${todoNewMin ? fmtMin(todoNewMin) : 'Time'}</button><button type="button" class="tdrepbtn ${todoRepDays.size ? 'on' : ''}" data-act="todo-repopen" aria-expanded="${todoRepOpen}" title="Repeat on certain days">${REP_IC}${todoRepDays.size ? esc(repShort([...todoRepDays])) : 'Repeat'}</button></label>
       ${todoRepOpen ? `<div class="tdrepdays" role="group" aria-label="Repeat on"><span>Every</span>${REP_DAYS.map(([d, l]) => `<button type="button" data-act="todo-repday" data-d="${d}" aria-pressed="${todoRepDays.has(d)}" title="${REP_NAMES[d]}">${l}</button>`).join('')}<span class="grow"></span><span class="tdrephint">${todoRepDays.size ? 'It shows up in Today on those days' : 'Pick the days it should show up'}</span></div>` : ''}
     </div>
   </section>`;
 }
+/* ---------- to-do: drag a task up or down to put it where you want it.
+   Mouse/Pencil: press and drag. Finger: touch and hold, then drag. ---------- */
+let tdDrag = null, tdDragEndAt = 0;
+const tdOpenRows = l => [...l.querySelectorAll(':scope > .tdr:not(.tdon)')];
+function tdDragBegin(row, y){
+  const l = row.parentElement; if (!l) return;
+  clearTimeout(lpress?.t); lpress = null;
+  tdDrag = { row, l, y0: y, on: true, flip: !reducedMotion() };
+  row.classList.add('tddrag'); document.body.classList.add('tddragging');
+}
+function tdDragMove(y){
+  const d = tdDrag; if (!d?.on) return;
+  let dy = y - d.y0; d.row.style.transform = `translateY(${dy}px)`;
+  const rows = tdOpenRows(d.l), others = rows.filter(r => r !== d.row);
+  const r0 = d.row.getBoundingClientRect(), mid = r0.top + r0.height / 2;
+  let idx = others.findIndex(o => { const b = o.getBoundingClientRect(); return mid < b.top + b.height / 2; }); if (idx < 0) idx = others.length;
+  if (rows.indexOf(d.row) === idx) return;
+  const before = new Map(others.map(o => [o, o.getBoundingClientRect().top])), top0 = d.row.offsetTop;
+  const ref = others[idx]; ref ? d.l.insertBefore(d.row, ref) : (others.at(-1) ? others.at(-1).after(d.row) : d.l.prepend(d.row));
+  d.y0 += d.row.offsetTop - top0; d.row.style.transform = `translateY(${y - d.y0}px)`;
+  if (d.flip) others.forEach(o => { const dt = before.get(o) - o.getBoundingClientRect().top; if (!dt) return; o.style.transition = 'none'; o.style.transform = `translateY(${dt}px)`; o.getBoundingClientRect(); o.style.transition = 'transform .16s var(--ease)'; o.style.transform = ''; });
+}
+function tdDragEnd(){
+  const d = tdDrag; tdDrag = null; if (!d) return;
+  document.body.classList.remove('tddragging'); d.row.classList.remove('tddrag'); d.row.style.transform = ''; d.row.style.transition = '';
+  if (!d.on) return;
+  tdDragEndAt = Date.now();
+  const ids = tdOpenRows(d.l).map(r => r.dataset.tid), all = todoAll(), byId = new Map(all.map(x => [x.id, x]));
+  const shown = ids.map(id => byId.get(id)).filter(Boolean);
+  /* the tasks you can see swap places among the spots they already held, so tasks hidden by the subject filter keep theirs */
+  const slots = shown.map(todoOrd).sort((a, b) => a - b);
+  if (shown.every((x, i) => todoOrd(x) === slots[i])) return;
+  const ord = new Map(shown.map((x, i) => [x.id, slots[i]]));
+  for (let i = 1; i < slots.length; i++) if (slots[i] <= slots[i - 1]){ ord.clear(); shown.forEach((x, k) => ord.set(x.id, slots[0] + k)); break; }
+  todoSave(all.map(x => ord.has(x.id) ? { ...x, o: ord.get(x.id) } : x), 'reorder tasks');
+}
+const tdDragOk = (t) => { const row = t.closest?.('#tdo .tdl > .tdr'); return row && !row.classList.contains('tdon') && !row.classList.contains('ticking') && !t.closest('button, input, .tdrep') && !row.querySelector('input') ? row : null; };
+/* mouse and Pencil */
+document.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'touch' || e.button !== 0) return; const row = tdDragOk(e.target); if (!row) return;
+  tdDrag = { row, l: row.parentElement, y0: e.clientY, x0: e.clientX, on: false, pend: true }; 
+}, true);
+document.addEventListener('pointermove', e => {
+  const d = tdDrag; if (!d || e.pointerType === 'touch') return;
+  if (!d.on){ if (Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 5) return; tdDragBegin(d.row, d.y0); getSelection()?.removeAllRanges(); }
+  e.preventDefault(); tdDragMove(e.clientY);
+}, true);
+['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, e => { if (tdDrag && e.pointerType !== 'touch') tdDragEnd(); }, true));
+/* finger: hold still for a moment, then drag; a quick swipe still scrolls */
+let tdHold = null;
+document.addEventListener('touchstart', e => {
+  clearTimeout(tdHold?.t); tdHold = null; if (e.touches.length !== 1) return;
+  const row = tdDragOk(e.target); if (!row) return; const t0 = e.touches[0];
+  tdHold = { x: t0.clientX, y: t0.clientY, t: setTimeout(() => { tdHold = null; tdDragBegin(row, t0.clientY); tdDrag.y0 = tdHold?.y ?? t0.clientY; navigator.vibrate?.(8); }, 320) };
+}, { passive: true });
+document.addEventListener('touchmove', e => {
+  const t = e.touches[0];
+  if (tdHold){ if (Math.hypot(t.clientX - tdHold.x, t.clientY - tdHold.y) > 8){ clearTimeout(tdHold.t); tdHold = null; } return; }
+  if (tdDrag?.on){ e.preventDefault(); tdDragMove(t.clientY); }
+}, { passive: false });
+['touchend', 'touchcancel'].forEach(t => document.addEventListener(t, () => { clearTimeout(tdHold?.t); tdHold = null; if (tdDrag) tdDragEnd(); }, true));
+/* the click that ends a drag doesn't also tick, edit or open the task */
+document.addEventListener('click', e => { if (Date.now() - tdDragEndAt < 400 && e.target.closest?.('#tdo')){ e.preventDefault(); e.stopPropagation(); tdDragEndAt = 0; } }, true);
+document.addEventListener('contextmenu', e => { if (tdDrag?.on || (tdHold && e.target.closest?.('#tdo .tdr'))) e.preventDefault(); }, true);
+
 function todoRefresh(focus){
   const el = $('#tdo'); if (!el) return;
   const subj = el.dataset.subj || null; el.outerHTML = todoSection(subj);
   if (focus) $('#tdoin')?.focus();
 }
 function todoAdd(){
-  const inp = $('#tdoin'), t = (inp?.value || '').replace(/\s+/g, ' ').trim(); if (!t) return;
+  const inp = $('#tdoin'), t = (inp?.value || '').replace(/\s+/g, ' ').trim(); if (!t) return; const est = todoNewMin; todoNewMin = 0;
   const page = $('#tdo')?.dataset.subj || null, subj = todoEff(page) || page;
   if (todoRepDays.size){
-    const days = [...todoRepDays].sort(), r = { id: uid('r'), t: t.slice(0, 200), s: subj, days, at: Date.now() };
+    const days = [...todoRepDays].sort(), r = { id: uid('r'), t: t.slice(0, 200), s: subj, days, at: Date.now(), ...(est ? { m: est } : {}) };
     undoTx = null; undoLabel = 'add repeating task'; undoRecordSettings();
     S.settings = { ...S.settings, todoRepeat: [...todoRules(), r] }; saveSettings();
     todoRepDays = new Set(); todoRepOpen = false; todoRefresh(true);
     return toast(`Repeats every ${repWords(days)}${days.includes(new Date().getDay()) ? ' · added to Today' : ' · it will show up in Today'}`, 2600);
   }
-  const x = { id: uid('t'), t: t.slice(0, 200), s: subj, done: 0, at: Date.now() }; if (todoTab !== 'all') x.l = todoTab;
+  const x = { id: uid('t'), t: t.slice(0, 200), s: subj, done: 0, at: Date.now(), ...(est ? { m: est } : {}) }; if (todoTab !== 'all') x.l = todoTab;
   todoSave([...todoAll(), x], 'add task'); todoRefresh(true); if (x.l === 'doing') todoWipWarn();
   const row = document.querySelector(`.tdr[data-tid="${x.id}"]`); row?.classList.add('tdnew');
 }
@@ -6873,7 +6984,7 @@ function todoSpawn(){
   const next = rules.map(r => {
     if (!r.days?.includes(wd) || r.last === dk) return r;
     list = list.filter(x => !(x.r === r.id && x.done));
-    if (!list.some(x => x.r === r.id && !x.done)) list = [...list, { id: uid('t'), t: r.t, s: r.s || null, l: 'today', r: r.id, done: 0, at: Date.now() }];
+    if (!list.some(x => x.r === r.id && !x.done)) list = [...list, { id: uid('t'), t: r.t, s: r.s || null, l: 'today', r: r.id, done: 0, at: Date.now(), ...(r.m ? { m: r.m } : {}) }];
     changed = true; return { ...r, last: dk };
   });
   if (changed){ S.settings = { ...S.settings, todos: list, todoRepeat: next }; saveSettings(); }
@@ -7152,6 +7263,8 @@ document.addEventListener('click', async e => {
     case 'todo-tick': return todoTick(id);
     case 'todo-del': { todoSave(todoAll().filter(z => z.id !== id), 'delete task'); todoRefresh(); return toast('Task deleted · ⌘Z to undo', 1800); }
     case 'todo-f': { const page = $('#tdo')?.dataset.subj || null; todoF = { at: page, v: a.dataset.v === page ? '' : a.dataset.v }; return todoRefresh(); }
+    case 'todo-time': e.stopPropagation(); return $('#menu') ? closeMenu() : todoTimeMenu(a.dataset.id, a);
+    case 'todo-timeset': return todoSetTime(a.dataset.id, +a.dataset.n);
     case 'todo-wip': e.stopPropagation(); return $('#menu') ? closeMenu() : todoWipMenu(a);
     case 'todo-wipset': { const n = +a.dataset.n; undoTx = null; undoLabel = 'in-progress limit'; undoRecordSettings(); S.settings = { ...S.settings, todoWip: n }; saveSettings(); closeMenu(); todoRefresh(); return toast(n ? `Limit: ${n} at once` : 'No limit on tasks in progress', 1400); }
     case 'todo-showdone': todoShowDone = !todoShowDone; return todoRefresh();
