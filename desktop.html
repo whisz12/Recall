@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261108201836 min-shell:1.27.0 -->
+<!-- recall-build:20261108204911 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -2849,7 +2849,14 @@ async function initStore(){
   db.doc('meta/settings').onSnapshot(s => { if (s.exists) S.settings = { ...S.settings, ...s.data() }; if (S.ready && view.name === 'decks') render(); }, () => {});
   try { S.assets = await window.claude.use('assets'); } catch {}
 }
-function settle(){ if (!(S.got.nodes && S.got.cards)) return; const first = !S.ready; S.ready = true; if (first || (view.name !== 'study' && !dialogOpen())) render(); else if (view.name === 'study') updateCounts(); }
+function settingsRepair(){
+  // 8 Nov 2026: an old copy of the settings on one device wiped the to-do list and changed new cards per day elsewhere.
+  // The first time the desktop app runs this version, its settings (read from the library on disk) win everywhere once.
+  if (!window.desktop || ls.get('set-repair-1', false)) return; ls.set('set-repair-1', Date.now());
+  const now = Date.now(), t = {}; Object.keys(S.settings || {}).forEach(k => { if (k !== '_t' && k !== 'layout') t[k] = now; });
+  S.settings._t = t; setSnap = clone(S.settings); cloudMark('$settings', 'me'); saveSettingsRaw0();
+}
+function settle(){ if (!(S.got.nodes && S.got.cards)) return; const first = !S.ready; S.ready = true; if (first && !setSnap) setSnap = clone(S.settings || {}); if (first || (view.name !== 'study' && !dialogOpen())) render(); else if (view.name === 'study') updateCounts(); }
 function writeFail(e){
   const c = e?.code || '';
   if (/permission|not_granted|unauth/.test(c)) toast('You can study these cards, but only the owner can change them.', 4500);
@@ -2937,7 +2944,28 @@ async function dropImages(c){
 }
 async function saveSettings(){ if (S.mode === 'db'){ try { await S.db.doc('meta/settings').set(S.settings); } catch (e) { writeFail(e); } } else if (S.mode === 'desktop'){ try { await window.desktop.settings(S.settings); } catch {} } else saveLocal(); }
 const saveSettingsRaw0 = saveSettings;
-const saveSettingsRaw = async () => { cloudMark('$settings', 'me'); return saveSettingsRaw0(); };
+/* settings sync key by key: every save stamps the keys that changed (S.settings._t[key] = time), and the cloud copy is
+   merged key by key (newest stamp wins; a key nobody has stamped keeps the cloud's value), so a device holding old
+   settings can no longer overwrite the others' changes by saving something unrelated */
+let setSnap = null;
+function settingsStamp(){
+  const cur = S.settings || {}; if (!setSnap){ setSnap = clone(cur); return; }
+  const now = Date.now(), t = { ...(cur._t || {}) }; let n = 0;
+  for (const k of new Set([...Object.keys(cur), ...Object.keys(setSnap)])){ if (k === '_t' || k === 'layout') continue; if (stable(cur[k]) !== stable(setSnap[k])){ t[k] = now; n++; } }
+  if (n) S.settings._t = t; setSnap = clone(S.settings);
+}
+function settingsMerge(R, L){
+  R = R || {}; L = L || {}; const rt = R._t || {}, lt = L._t || {}, M = { ...L }, mt = { ...lt }; let fromRemote = false, localNewer = false;
+  for (const k of new Set([...Object.keys(R), ...Object.keys(L)])){
+    if (k === '_t' || k === 'layout') continue;
+    const a = rt[k] || 0, b = lt[k] || 0;
+    if (stable(R[k]) === stable(L[k])){ if (a > b) mt[k] = a; continue; }
+    const takeRemote = a || b ? a > b : (k in R);
+    if (takeRemote){ if (k in R) M[k] = R[k]; else delete M[k]; if (a) mt[k] = a; else delete mt[k]; fromRemote = true; } else localNewer = true;
+  }
+  M._t = mt; return { M, fromRemote, localNewer };
+}
+const saveSettingsRaw = async () => { if (cloud.applying) setSnap = clone(S.settings); else settingsStamp(); cloudMark('$settings', 'me'); return saveSettingsRaw0(); };
 saveSettings = async function(){ undoRecordSettings(); return saveSettingsRaw(); };
 
 /* ---------- tree ---------- */
@@ -5370,10 +5398,12 @@ function cloudRefresh(){
 const cloudSettingsOut = () => { const { layout, ...rest } = S.settings || {}; return rest; };
 function cloudSettingsIn(row){
   if (!row?.data) return; const mine = cloud.dirty.get('$settings/me');
-  if (mine && mine >= (+row.updated_at || 0)) return;
   if (stable(cloudSettingsOut()) === stable(row.data)){ if (mine) cloud.dirty.delete('$settings/me'); return; }
-  S.settings = { ...row.data, layout: S.settings?.layout }; ls.set('md-theme', S.settings.theme || null); themeKey = '';
-  cloud.applying = true; saveSettingsRaw().finally(() => cloud.applying = false);
+  const { M, fromRemote, localNewer } = settingsMerge(row.data, cloudSettingsOut());
+  if (localNewer && !mine) cloudMark('$settings', 'me');
+  if (!fromRemote) return;
+  S.settings = { ...M, layout: S.settings?.layout }; ls.set('md-theme', S.settings.theme || null); themeKey = '';
+  setSnap = clone(S.settings); saveSettingsRaw0();
   if (window.desktop && S.settings.theme?.img?.file) cloudEnsureLocal(S.settings.theme.img.file).then(() => { themeKey = ''; applyTheme(); });
   cloudRefresh();
 }
@@ -5394,7 +5424,12 @@ async function cloudPush(force){
     for (const coll of ['nodes', 'cards']) for (let i = 0; i < rows[coll].length; i += 400){
       const { error } = await cloud.sb.from(coll).upsert(rows[coll].slice(i, i + 400), { onConflict: 'user_id,id' }); if (error) throw error;
     }
-    if (srow){ const { error } = await cloud.sb.from('settings').upsert(srow, { onConflict: 'user_id' }); if (error) throw error; }
+    if (srow){
+      // read what's there first and merge key by key, so this device only overwrites the settings it actually changed
+      const { data: cur } = await cloud.sb.from('settings').select('data,updated_at').maybeSingle();
+      if (cur?.data){ const { M, fromRemote } = settingsMerge(cur.data, cloudSettingsOut()); if (fromRemote){ S.settings = { ...M, layout: S.settings?.layout }; setSnap = clone(S.settings); await saveSettingsRaw0(); ls.set('md-theme', S.settings.theme || null); themeKey = ''; cloudRefresh(); } srow.data = cloudSettingsOut(); }
+      const { error } = await cloud.sb.from('settings').upsert(srow, { onConflict: 'user_id' }); if (error) throw error;
+    }
     batch.forEach(([k, ts]) => { if (cloud.dirty.get(k) === ts) cloud.dirty.delete(k); });
     ls.set('cloud-dirty', [...cloud.dirty]); cloud.lastSync = Date.now();
     cloudStatus(cloud.dirty.size ? 'pending' : 'synced');
@@ -8170,18 +8205,29 @@ function ppSubjectsDialog(){
     }));
 }
 /* the Mac and Windows apps (1.28+) download a THSC paper themselves, one paper per click */
-const ppCanFetch = () => !!window.desktop?.paperFetch;
+/* the iPad and the web app go through Recall's download service on Supabase (supabase/functions/thsc-paper), signed-in users only */
+let ppRelayOk = null;
+const ppCanFetch = () => !!window.desktop?.paperFetch || (cloudOn() && ppRelayOk !== false);
+async function ppGetPaper(no, title){
+  if (window.desktop?.paperFetch) return window.desktop.paperFetch(no, title);
+  const { data } = await cloud.sb.auth.getSession(), tok = data?.session?.access_token; if (!tok) throw new Error('Sign in to sync first');
+  const r = await fetch(CLOUD_URL.replace(/\/$/, '') + '/functions/v1/thsc-paper', { method: 'POST', headers: { Authorization: 'Bearer ' + tok, apikey: CLOUD_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ no, title }) });
+  if (r.status === 404){ ppRelayOk = false; const e = new Error('not set up'); e.quiet = true; throw e; }
+  if (!r.ok){ let m = ''; try { m = (await r.json()).error; } catch {} throw new Error(m || 'the download service replied ' + r.status); }
+  ppRelayOk = true;
+  return { name: decodeURIComponent(r.headers.get('x-file-name') || '') || title + '.pdf', bytes: new Uint8Array(await r.arrayBuffer()) };
+}
 async function ppFetchOpen(item){
   const name = `${item.school} ${item.year}`;
   openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="ppfh" style="max-width:420px"><header><h2 id="ppfh">${esc(name)}</h2></header><div class="body"><p class="sub" style="margin:0" aria-live="polite">Getting the paper from THSC…</p></div></div>`);
   try {
-    const r = await window.desktop.paperFetch(item.no, item.title);
+    const r = await ppGetPaper(item.no, item.title);
     if (!$('#ppfh')) return;
     const file = new File([r.bytes], r.name || name + '.pdf', { type: 'application/pdf' });
     return ppAddPdf(item, file);
   } catch (e){
     console.warn('THSC download', e); if (!$('#ppfh')) return;
-    closeDialog(); ppGetDialog(item, "Couldn't get it inside Recall" + (/\d{3}/.test(String(e?.message)) ? ` (${String(e.message).replace(/^.*?(THSC replied \d+).*$/, '$1')})` : '') + ', so open it on THSC instead.');
+    closeDialog(); ppGetDialog(item, e?.quiet ? '' : `Couldn't get it inside Recall (${String(e?.message || 'no connection').replace(/^Error invoking remote method '[^']*': (Error: )?/, '')}), so open it on THSC instead.`);
   }
 }
 /* get a paper you haven't added yet: open it on THSC or NESA, then drop the PDF in */
@@ -8194,7 +8240,7 @@ function ppGetDialog(item, why){
     <div class="body"><p class="sub" style="margin:0 0 16px">${esc(PP_COURSE[item.c].name)} · ${esc(ppSecName(item.sec, true))} · ${item.sol ? 'solutions included' : 'paper only'}</p>${why ? `<p class="ppwarn">${esc(why)}</p>` : ''}
       <ol class="ppsteps"><li><span>Open it on ${where}${item.src === 'nesa' ? ` and download the ${item.year} exam pack` : ''}.</span><a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Open on ${where}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3 7 9M11 9.5V13H3V5h3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
       <li><span>Drop the PDF here, or choose it.</span><div class="zone ppzone" id="ppzone"><button class="btn primary" data-act="pp-pick">Choose PDF</button><span class="hint">or drag it in</span></div></li></ol>
-      ${item.src === 'thsc' && !why ? (window.desktop ? '<p class="hint" style="margin:12px 0 0">Recall 1.28 for Mac and Windows opens THSC papers straight in the app. <a href="https://whisz12.github.io/Recall/download.html" target="_blank" rel="noopener">Get it</a></p>' : '<p class="hint" style="margin:12px 0 0">The Mac and Windows apps open THSC papers straight in Recall. With sync on, papers you open there show up here too.</p>') : ''}
+      ${item.src === 'thsc' && !why ? (window.desktop ? '<p class="hint" style="margin:12px 0 0">Recall 1.28 for Mac and Windows opens THSC papers straight in the app. <a href="https://whisz12.github.io/Recall/download.html" target="_blank" rel="noopener">Get it</a></p>' : (cloudOn() ? '' : '<p class="hint" style="margin:12px 0 0">Turn on sync (sidebar) and Recall gets THSC papers straight into the app on this device too.</p>')) : ''}
       ${item.src === 'nesa' ? '<p class="hint" style="margin:12px 0 0">NESA puts the marking guidelines in a separate PDF, so Recall won’t find solutions inside the exam paper. You can still mark it and flag questions.</p>' : ''}
     </div></div>`, d => ppZone(d.querySelector('#ppzone'), f => ppAddPdf(ppGetItem, f)));
 }
@@ -8400,7 +8446,7 @@ async function ppmLoad(p){
   try {
     let got = m.buf ? { buf: m.buf, name: p.name } : await ppPdfOf(p);
     if (ppm !== m) return;
-    if (!got && p.src === 'thsc' && ppCanFetch()){ const it = ppFind(p.key); if (it?.no){ try { m.busy = 'Getting the paper from THSC…'; ppmSide(); const r = await window.desktop.paperFetch(it.no, it.title); const buf = r.bytes.buffer.slice(r.bytes.byteOffset, r.bytes.byteOffset + r.bytes.byteLength); ppPutPdf(p.id, buf, r.name).catch(() => {}); got = { buf, name: r.name }; } catch (e){ console.warn(e); } if (ppm !== m) return; } }
+    if (!got && p.src === 'thsc' && ppCanFetch()){ const it = ppFind(p.key); if (it?.no){ try { m.busy = 'Getting the paper from THSC…'; ppmSide(); const r = await ppGetPaper(it.no, it.title); const buf = r.bytes.buffer.slice(r.bytes.byteOffset, r.bytes.byteOffset + r.bytes.byteLength); ppPutPdf(p.id, buf, r.name).catch(() => {}); got = { buf, name: r.name }; } catch (e){ console.warn(e); } if (ppm !== m) return; } }
     if (!got){ m.busy = ''; m.need = true; return ppmSide(); }
     const file = new File([got.buf.slice(0)], got.name || 'paper.pdf', { type: 'application/pdf' });
     const R = await pxRead(file, msg => { if (ppm === m){ m.busy = msg; ppmSide(); } }, { noOcr: true });
@@ -8674,7 +8720,7 @@ function designMigrate(){
   if (!THEMES[ts.base]){ ts.base = THEME_ALIAS[ts.base] || 'harness'; ts.over = {}; }
   undoMute = true; saveTheme(ts); undoMute = false; render();
 }
-initStore().finally(() => { lhMigrate(); designMigrate(); cloudBoot(); });
+initStore().finally(() => { lhMigrate(); designMigrate(); if (S.ready) settingsRepair(); cloudBoot(); });
 render();
 </script>
 
