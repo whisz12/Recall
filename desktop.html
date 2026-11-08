@@ -1,10 +1,10 @@
 <!doctype html>
-<!-- recall-build:20261108014807 min-shell:1.27.0 -->
+<!-- recall-build:20261108182935 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' errimg: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net; worker-src 'self' blob: https://cdn.jsdelivr.net; font-src 'self' data:; connect-src 'self' blob: data: errimg: https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' errimg: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net; worker-src 'self' blob: https://cdn.jsdelivr.net; font-src 'self' data:; connect-src 'self' blob: data: errimg: https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net https://raw.githubusercontent.com">
 </head>
 <body>
 <title>Recall</title>
@@ -2536,6 +2536,173 @@ html:not(.dk) .cdcard{box-shadow:0 1px 1px rgba(20,20,40,.04),0 8px 18px -12px r
 .pxit > header .pxlbl{flex:1 1 auto;min-width:84px;width:auto}
 .pxit > header .pxpg{display:none}
 
+
+/* ---------- past papers ---------- */
+.pphome .stabs{margin-bottom:var(--s5)}
+.pphead{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s4);flex-wrap:wrap;margin:0 0 var(--s4)}
+.pphead h1{margin:0;font:600 22px/1.25 var(--ui);letter-spacing:-.01em}
+.ppmeta{margin:2px 0 0;color:var(--fg-3);font-size:12px;font-variant-numeric:tabular-nums}
+.ppcourse button{height:28px;padding:0 12px}
+.ppfilters{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 var(--s6)}
+.ppsearch{flex:1 1 260px;max-width:380px;height:32px;display:flex;align-items:center;gap:8px;padding:0 10px;border-radius:var(--r-sm);background:var(--inset);border:1px solid var(--border-2);color:var(--fg-3)}
+.ppsearch svg{width:14px;height:14px;flex:none}
+.ppsearch input{flex:1;min-width:0;height:100%;border:0;outline:0;background:transparent;color:var(--fg);font:400 13px var(--ui)}
+.ppsearch:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent)}
+.ppsel{position:relative;height:32px;display:inline-flex;align-items:center;gap:6px;padding:0 0 0 10px;border:1px solid var(--border-2);border-radius:var(--r-sm);background:var(--surface);font-size:13px}
+.ppsel span{color:var(--fg-3)}
+.ppsel select{height:30px;max-width:210px;border:0;outline:0;background:transparent;color:var(--fg);font:500 13px var(--ui);padding:0 8px 0 0;cursor:pointer}
+.ppsel:focus-within{border-color:var(--accent)}
+.pptog{height:32px;padding:0 12px;border:1px solid var(--border-2);border-radius:var(--r-sm);background:transparent;color:var(--fg-2);font:500 13px var(--ui);cursor:pointer}
+.pptog[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.ppnote{color:var(--fg-3);font-size:13px;margin:0 0 var(--s4)}
+.ppmine{margin:0 0 var(--s6)}
+.ppcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:var(--s3)}
+.ppcard{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface);color:var(--fg);text-align:left;cursor:pointer;transition:background var(--t-fast)}
+.ppcard:hover{background:var(--surface-2)}
+.ppct{font:600 14px var(--ui)}
+.ppcm{font-size:12px;color:var(--fg-3)}
+.ppcb{display:flex;align-items:center;gap:10px;width:100%;margin-top:6px;font-size:12px;color:var(--fg-2);font-variant-numeric:tabular-nums}
+.ppcb b{font:600 15px var(--ui);color:var(--fg)}
+.ppfl{display:inline-flex;align-items:center;gap:4px;margin-left:auto}
+.ppfl svg{width:12px;height:12px}
+.ppbar{display:block;width:100%;height:3px;margin-top:6px;border-radius:2px;background:var(--border-2);overflow:hidden}
+.ppbar i{display:block;height:100%;background:var(--accent-btn)}
+.pplegend{display:flex;flex-wrap:wrap;gap:16px;margin:0 0 var(--s4);font-size:12px;color:var(--fg-3)}
+.pplegend span{display:inline-flex;align-items:center;gap:6px}
+.pplegend svg{width:12px;height:12px}
+.ppsw{display:inline-block;width:14px;height:10px;border-radius:3px;background:var(--surface-2);border:1px solid var(--border-2)}
+.ppsw.ns{background:transparent}
+.ppsec{margin:0 0 var(--s5)}
+.ppsech{display:flex;align-items:baseline;gap:10px;width:100%;padding:4px 4px;margin:0 0 var(--s2);border:0;background:transparent;color:var(--fg);text-align:left;cursor:pointer;border-radius:var(--r-sm)}
+.ppsech.static{cursor:default}
+.ppsech h2{margin:0;font:600 15px var(--ui);letter-spacing:-.01em}
+.ppsech .ppc{font-size:12px;color:var(--fg-3);font-variant-numeric:tabular-nums}
+.ppsech .ppsrcn{margin-left:auto;font-size:12px;color:var(--fg-3)}
+.ppcar{display:inline-flex;width:14px;height:14px;color:var(--fg-3);align-self:center;transition:transform var(--t-fast)}
+.ppcar svg{width:14px;height:14px}
+.ppsech[aria-expanded="false"] .ppcar{transform:rotate(-90deg)}
+.ppsec.shut .ppsech{padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface)}
+.ppsec.shut{margin-bottom:var(--s2)}
+.ppgroup{padding:0}
+.pprow{position:relative;display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;padding:10px 14px}
+.pprow+.pprow::before,.pphit+.pphit::before{content:"";position:absolute;left:14px;right:0;top:0;height:1px;background:var(--border)}
+.ppsch{flex:0 0 180px;font:500 13px var(--ui)}
+.ppyrs{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}
+.ppyr{flex:none;white-space:nowrap;height:28px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-2);border-radius:var(--r-sm);background:var(--surface-2);color:var(--fg);font:500 12px var(--ui);font-variant-numeric:tabular-nums;cursor:pointer;transition:background var(--t-fast),border-color var(--t-fast)}
+.ppyr:hover{border-color:var(--fg-3)}
+.ppyr.nosol{background:transparent;color:var(--fg-2);font-weight:400}
+.ppyr.ppdone,.ppyr.ppmy{background:rgba(var(--ovr),.12);border-color:rgba(var(--ovr),.28)}
+.ppyr svg{width:11px;height:11px;color:var(--fg-2)}
+.ppyr .pps{color:var(--fg-2);font-weight:400}
+.ppmore{position:relative;display:block;width:100%;padding:10px 14px;border:0;border-top:1px solid var(--border);background:transparent;color:var(--fg-2);font:500 13px var(--ui);text-align:left;cursor:pointer}
+.ppmore:hover,.pphit:hover{background:rgba(var(--ovr),.04)}
+.pphit{position:relative;display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px;width:100%;padding:10px 14px;border:0;background:transparent;color:var(--fg);text-align:left;cursor:pointer}
+.pphn{font:500 13px var(--ui)}
+.pphm{font-size:12px;color:var(--fg-3)}
+.pphs{margin-left:auto;font:600 13px var(--ui);font-variant-numeric:tabular-nums}
+.pphs.mute{font-weight:400;color:var(--fg-3)}
+.ppcredit{margin:var(--s8) 0 0;font-size:12px;color:var(--fg-3)}
+.ppsteps{margin:0;padding:0;list-style:none;counter-reset:pps;display:flex;flex-direction:column;gap:var(--s4)}
+.ppsteps li{counter-increment:pps;display:flex;flex-direction:column;gap:8px;padding-left:28px;position:relative}
+.ppsteps li::before{content:counter(pps);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border-2);display:grid;place-items:center;font:600 11px var(--ui);color:var(--fg-2)}
+.ppsteps li > span{font-size:14px}
+.ppsteps .btn{align-self:flex-start}
+.ppsteps .btn svg{width:13px;height:13px}
+.ppzone{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--inset)}
+.ppzone.over{border-color:var(--accent);background:color-mix(in srgb, var(--accent) 8%, var(--inset))}
+.ppfile{font:500 13px var(--ui);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.ppform{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 var(--s4)}
+.ppform .field{display:flex;flex-direction:column;gap:4px;margin:0}
+.ppform .lab{font-size:12px;color:var(--fg-3)}
+.ppform select.in{height:34px;padding:0 10px;font:500 13px var(--ui)}
+.ppform .ppsolf{grid-column:1 / -1;flex-direction:row;align-items:center;gap:8px;font-size:13px;color:var(--fg-2)}
+.ppsolf input{accent-color:var(--accent-btn);margin:0}
+@media (max-width:560px){ .ppform{grid-template-columns:minmax(0,1fr)} .ppsch{flex-basis:100%} .ppsel select{max-width:150px} }
+
+/* marking a paper */
+html.lh body.desktop .page.v-ppmark,.page.v-ppmark{padding:0;max-width:none}
+.ppm{display:flex;align-items:flex-start;min-height:calc(100vh - var(--appbar) - 8px)}
+.pprail,.pppanel{position:sticky;top:calc(var(--appbar) + 8px);box-sizing:border-box;max-height:calc(100vh - var(--appbar) - 16px);overflow:auto;overscroll-behavior:contain;align-self:flex-start}
+.pprail{flex:0 0 220px;padding:18px 12px;border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:calc(100vh - var(--appbar) - 16px)}
+.pppanel{flex:0 0 330px;border-left:1px solid var(--border);min-height:calc(100vh - var(--appbar) - 16px)}
+.pprl{display:block;font-size:12px;color:var(--fg-3);margin:var(--s4) 0 6px;padding:0 4px}
+.pprail .pprl:first-child,.pphd + .pprl{margin-top:0}
+.ppmc{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.ppq{height:30px;border:1px solid var(--border-2);border-radius:var(--r-sm);background:var(--surface);color:var(--fg-2);font:500 12px var(--ui);font-variant-numeric:tabular-nums;cursor:pointer;padding:0}
+.ppq.on,.ppsq.on{box-shadow:0 0 0 2px var(--accent)}
+.ppq.r-ok{color:var(--fg)}
+.ppq.r-ok::after{content:" ✓";color:color-mix(in srgb, var(--good) 75%, var(--fg))}
+.ppq.r-bad,.ppq.r-part{color:var(--fg);border-color:color-mix(in srgb, var(--again) 60%, var(--border-2));background:color-mix(in srgb, var(--again) 10%, var(--surface))}
+.ppq.r-part{border-color:color-mix(in srgb, var(--hard) 60%, var(--border-2));background:color-mix(in srgb, var(--hard) 10%, var(--surface))}
+.ppsa{display:flex;flex-direction:column;gap:2px}
+.ppsq{height:30px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 8px;border:0;border-radius:var(--r-sm);background:transparent;color:var(--fg);font:500 13px var(--ui);cursor:pointer;text-align:left}
+.ppsq:hover{background:rgba(var(--ovr),.06)}
+.ppsq.on{background:rgba(var(--ovr),.08);box-shadow:none}
+.ppsq .ppm2{font-weight:400;font-size:12px;color:var(--fg-3);font-variant-numeric:tabular-nums}
+.ppsq.r-ok .ppm2{color:color-mix(in srgb, var(--good) 70%, var(--fg))}
+.ppsq.r-part .ppm2{color:color-mix(in srgb, var(--hard) 70%, var(--fg))}
+.ppsq.r-bad .ppm2{color:color-mix(in srgb, var(--again) 70%, var(--fg))}
+.pprfoot{margin-top:auto;padding-top:var(--s5);display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.pprfoot .btn.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.pplg{display:flex;gap:12px;font-size:12px;color:var(--fg-3)}
+.pplg span{display:inline-flex;align-items:center;gap:5px}
+.pplg i,.ppres .d{width:7px;height:7px;border-radius:50%;display:inline-block}
+.pplg .ok,.ppres .d.ok{background:var(--good)}.pplg .part,.ppres .d.part{background:var(--hard)}.pplg .bad,.ppres .d.bad{background:var(--again)}
+.ppstage{flex:999 1 480px;min-width:0;padding:24px;box-sizing:border-box;background:color-mix(in srgb, var(--bg) 70%, #000)}
+.pppages{display:flex;flex-direction:column;align-items:center;gap:20px}
+.pppage{position:relative;width:100%;max-width:820px;background:#fff;border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.25)}
+.pppage canvas{display:block;width:100%;height:100%;border-radius:2px}
+.pppn{position:absolute;right:8px;bottom:6px;font-size:11px;color:#767676;font-variant-numeric:tabular-nums;pointer-events:none}
+.ppov{position:absolute;inset:0}
+.ppbox{position:absolute;margin:0;padding:0;border:0;border-radius:3px;background:transparent;cursor:pointer;outline:1px solid transparent;outline-offset:3px;transition:outline-color var(--t-fast),background var(--t-fast)}
+.ppbox:hover{outline-color:rgba(0,0,0,.25);background:rgba(0,0,0,.025)}
+.ppbox.r-bad{outline-color:color-mix(in srgb, var(--again) 55%, transparent)}
+.ppbox.r-part{outline-color:color-mix(in srgb, var(--hard) 60%, transparent)}
+.ppbox.sel{outline:2px solid var(--accent-btn);background:color-mix(in srgb, var(--accent-btn) 7%, transparent)}
+.ppbox.sel.sol{outline-style:dashed}
+.ppbox.drawing{outline:2px solid var(--accent-btn);background:color-mix(in srgb, var(--accent-btn) 10%, transparent);pointer-events:none}
+.pptag{position:absolute;left:-5px;top:-30px;padding:4px 7px;border-radius:4px;background:var(--accent-btn);color:var(--btn-fg);font:600 12px var(--ui);white-space:nowrap;pointer-events:none}
+.ppstage.drawmode .ppov{cursor:crosshair}
+.ppstage.drawmode .ppbox{pointer-events:none}
+.pppad{padding:20px}
+.pppad h2{margin:0;font:600 17px var(--ui);letter-spacing:-.01em}
+.pphd{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0 0 var(--s4)}
+.pphd .ppnote{margin:0;font-size:12px}
+.pplabel{width:100%;border:1px solid var(--border-2);border-radius:var(--r-sm);background:var(--inset);color:var(--fg);font:600 15px var(--ui);padding:4px 8px}
+.ppres{margin:0;flex-wrap:nowrap}
+.ppres button{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;flex:1;justify-content:center}
+.ppres kbd{margin-left:2px}
+.ppstep{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 4px;border:1px solid var(--border-2);border-radius:var(--r-sm);background:var(--inset);font-size:13px;color:var(--fg-2);font-variant-numeric:tabular-nums}
+.ppstep button{width:24px;height:24px;border:0;border-radius:4px;background:var(--surface-2);color:var(--fg);font:500 14px var(--ui);cursor:pointer;padding:0}
+.ppstep button:disabled{opacity:.4;cursor:default}
+.ppstep b{color:var(--fg);font-weight:600;min-width:18px;text-align:center}
+.ppmarks{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ppof{font-size:13px;color:var(--fg-3)}
+.pppad textarea.in{min-height:72px;font:400 13px/1.45 var(--ui)}
+.ppsol{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;font-size:13px;color:var(--fg-2)}
+.ppdeckf{margin:0}
+.ppsave{width:100%;margin-top:var(--s5);height:34px}
+.ppsum{display:flex;flex-direction:column;gap:2px;margin:var(--s4) 0;padding:14px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface);font-variant-numeric:tabular-nums}
+.ppsum div{font-size:13px;color:var(--fg-2)}
+.ppsum b{font:600 24px var(--ui);color:var(--fg)}
+.ppsum span{font-size:12px;color:var(--fg-3)}
+.ppabs{margin-right:6px;white-space:nowrap}
+.ppmob{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 0 var(--s4)}
+.ppmob .abmeta{font-size:13px;color:var(--fg-3)}
+.ppmob .abi{display:none}
+.ppmob .btn svg{width:14px;height:14px}
+.ppmobm{padding:12px 20px 0;margin:0}
+.ppmob .grow{flex:1}
+.ppsrcl{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px;margin:0 0 10px;font-size:12px;color:var(--fg-3)}
+@media (max-width:1100px){ .pppanel{flex-basis:290px} .pprail{flex-basis:190px} }
+@media (max-width:900px){
+  .ppm{flex-wrap:wrap}
+  .pprail,.pppanel{position:static;max-height:none;min-height:0;flex:1 1 100%;border:0;border-bottom:1px solid var(--border)}
+  .pppanel{order:-1}
+  .ppstage{padding:12px}
+  .pppn{display:none}
+}
+@media (prefers-reduced-motion: reduce){ .ppcar,.ppyr,.ppbox{transition:none} }
 </style>
 
 <header class="toolbar"><button class="sidetoggle" data-act="toggle-sidebar" aria-label="Hide sidebar" title="Hide sidebar (⌘S)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="3.5" width="15" height="13" rx="3"/><path d="M7.5 3.5v13"/></svg></button><div class="tin">
@@ -2544,6 +2711,7 @@ html:not(.dk) .cdcard{box-shadow:0 1px 1px rgba(20,20,40,.04),0 8px 18px -12px r
     <button data-nav="decks"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5.5" width="11" height="11" rx="2.5"/><path d="M6.5 3.5h8a2.5 2.5 0 0 1 2.5 2.5v8"/></svg><span>Decks</span></button>
     <button data-nav="add" class="navadd">Add</button>
     <button data-nav="browse"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M7 5h10M7 10h10M7 15h10"/><circle cx="3.6" cy="5" r=".9" fill="currentColor"/><circle cx="3.6" cy="10" r=".9" fill="currentColor"/><circle cx="3.6" cy="15" r=".9" fill="currentColor"/></svg><span>Browse</span></button>
+    <button data-nav="papers"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5 2.8h6.6L15.5 6.7V17.2H5z"/><path d="M11.4 2.8v4h4M7.8 10.5h4.8M7.8 13.6h4.8"/></svg><span>Past papers</span></button>
     <button data-nav="stats"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 16V10M8.7 16V5M13.3 16v-4M18 16V7.5M2.5 16.5h16"/></svg><span>Stats</span></button>
     <button data-nav="themes"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.8a7.2 7.2 0 1 0 0 14.4c1.1 0 1.6-.8 1.3-1.7-.4-1.2.3-2.3 1.6-2.3h1.6a2.7 2.7 0 0 0 2.7-2.7C17.2 6.2 14 2.8 10 2.8Z"/><circle cx="6.3" cy="9.3" r="1" fill="currentColor"/><circle cx="8.6" cy="6" r="1" fill="currentColor"/><circle cx="12.4" cy="6.1" r="1" fill="currentColor"/></svg><span>Themes</span></button>
   </nav>
@@ -2833,7 +3001,7 @@ document.addEventListener('keydown', e => {
 }, true);
 function render(){
   renderSideSubjects();
-  document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'decks' && (view.name === 'overview' || view.name === 'study')))));
+  document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'papers' && (view.name === 'ppmark' || (view.name === 'study' && study?.tag === 'Paper mistakes'))) || (b.dataset.nav === 'decks' && (view.name === 'overview' || (view.name === 'study' && study?.tag !== 'Paper mistakes'))))));
   applyTheme();
   const root = $('#root');
   if (!S.ready){ root.innerHTML = '<div class="loading">Loading your collection…</div>'; return; }
@@ -2844,6 +3012,8 @@ function render(){
   else if (view.name === 'browse') renderBrowse();
   else if (view.name === 'stats') renderStats();
   else if (view.name === 'themes') renderThemes();
+  else if (view.name === 'papers') renderPapers();
+  else if (view.name === 'ppmark') renderPPMark();
   if (view.name !== 'study'){ $('#answerbar')?.remove(); $('#lhmap')?.remove(); }
   renderAppbar();
   typeset(root);
@@ -3034,11 +3204,12 @@ function renderAppbar(){
   if (view.name === 'decks'){ const tot = toStudy(counts(null)), rt = reviewsToday(), rw = reviewsThisWeek(); title = `<b>Decks</b><span class="abmeta">${rt} review${rt === 1 ? '' : 's'} today · ${rw} this week</span>`; act = `<button class="btn" data-act="pdf-import" title="Turn a paper or notes PDF into cards">${IC.card}Cards from a PDF</button>` + (ls.get('md-decks', 'minimal') !== 'spot' && counts(null).total ? `<button class="btn primary" data-act="${tot ? 'study' : 'practise'}" data-id="">${tot ? `Study all<span class="abn">${tot}</span>` : 'Practise all'}</button>` : ''); }
   else if (view.name === 'overview' && nodeOf(view.node)){ title = crumbsB(view.node); }
   else if (view.name === 'browse') title = '<b>Browse</b>';
+  else if (view.name === 'papers' || view.name === 'ppmark'){ const r = ppAppbar(); title = r.title; act = r.act; }
   else if (view.name === 'stats') title = '<b>Stats</b>';
   else if (view.name === 'themes'){ const m = themeSettings().mode || 'fixed'; title = '<b>Themes</b>'; act = `<div class="seg abseg" role="group" aria-label="Appearance">${[['system', 'Match system'], ['dark', 'Always dark'], ['light', 'Always light']].map(([k, l]) => `<button type="button" data-act="th-mode" data-m="${k}" aria-pressed="${m === k || (m === 'fixed' && k === (lum(themeColours(themeSettings()).bg) < .3 ? 'dark' : 'light'))}">${l}</button>`).join('')}</div>`; }
   else if (view.name === 'study' && study){
     const c = study.cur ? S.cards[study.cur] : null, ps = c ? pathOf(c.nodeId) : (study.node ? pathOf(study.node) : []);
-    title = ps.length ? ps.map((n, i) => i < ps.length - 1 ? `<span>${esc(n.name)}</span><i>›</i>` : `<b>${esc(n.name)}</b>`).join('') : '<b>All cards</b>';
+    title = (study.tag ? `<button class="abcr" data-act="pp-back">${esc(study.tag)}</button><i>›</i>` : '') + (ps.length ? ps.map((n, i) => i < ps.length - 1 ? `<span>${esc(n.name)}</span><i>›</i>` : `<b>${esc(n.name)}</b>`).join('') : '<b>All cards</b>');
     const q = queueCounts(), total = study.done + q.nw + q.lr + q.rv, pos = Math.min(study.done + 1, total), st = tmrGet();
     act = `<span id="rflash" aria-live="polite"></span>${c ? `<button class="abi" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back one step (Z)" aria-label="Back one step">${IC.undo}</button><button class="abi" data-act="edit" data-id="${c.id}" title="Edit this card (E)" aria-label="Edit this card">${IC.edit}</button><span class="absep"></span>` : ''}
       <button class="abi abtimer ${st.mode !== 'off' ? 'on' : ''}" data-act="timer-menu" title="Timer (T pauses)" aria-label="Timer settings" aria-haspopup="true">${IC.clock}<span>${st.mode === 'off' ? '' : st.mode === 'watch' ? 'Stopwatch' : c ? fmtSec(limitOf(c, st)) : 'Limit'}</span></button>
@@ -3241,16 +3412,16 @@ function nextDueText(id){ const now = Date.now(); const ds = cardsIn(id).filter(
 let shuffleOn = ls.get('md-shuffle', false);
 function shuffled(a){ const b = [...a]; for (let i = b.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
 function buildQueue(){
-  const now = Date.now(), cs = sortCards(cardsIn(study.node)).filter(c => !study.ex || !study.ex.has(c.nodeId));
+  const now = Date.now(), cs = sortCards(cardsIn(study.node)).filter(c => (!study.ex || !study.ex.has(c.nodeId)) && (!study.keep || study.keep.has(c.id)));
   if (study.practise) return (shuffleOn ? shuffled(cs) : cs).map(c => c.id);
   const learn = cs.filter(c => kind(c) === 'learn' && c.srs.due <= now).sort((a,b) => a.srs.due - b.srs.due);
   const rev = cs.filter(c => kind(c) === 'review' && c.srs.due <= now).sort((a,b) => a.srs.due - b.srs.due);
   const nw = cs.filter(c => kind(c) === 'new').slice(0, newLeft());
   const q = [...learn, ...rev, ...nw]; return (shuffleOn ? shuffled(q) : q).map(c => c.id);
 }
-function startStudy(node, practise=false, only=null, list=null, ex=null){
+function startStudy(node, practise=false, only=null, list=null, ex=null, keep=null, tag=null){
   if (node) noteRecent(node);
-  study = { node, practise: practise || !!only || !!list, only, ex: ex && ex.size ? ex : null, queue:[], cur:null, shown:false, done:0, hist:[] }; pad.full = false;
+  study = { node, practise: practise || !!only || !!list, only, ex: ex && ex.size ? ex : null, keep: keep || null, tag: tag || null, queue:[], cur:null, shown:false, done:0, hist:[] }; pad.full = false;
   study.queue = list ? (shuffleOn ? shuffled(list) : [...list]) : only ? [only] : buildQueue();
   nextCard(); view = { name:'study', node }; closeMenu(); render(); window.scrollTo(0,0);
   if (isPhone() && !ls.get('md-taphint', 0)){ ls.set('md-taphint', 1); setTimeout(() => toast('Tap the card to show the answer, tap again for Good', 3600), 400); }
@@ -3314,7 +3485,7 @@ function saGo(mode){
   startStudy(null, false, null, null, ex);
 }
 function nextCard(){
-  const now = Date.now(); study.shown = false; study.pred = { conf: 50, think: '', set: false }; study.t0 = Date.now(); study.tShown = 0; study.timeUpToast = false; study.pausedMs = 0; study.pausedAt = 0; study.autoShown = false; const inScope0 = study.node ? new Set(cardsIn(study.node).map(c => c.id)) : null, inScope = (inScope0 || study.ex) ? { has: id => (!inScope0 || inScope0.has(id)) && (!study.ex || !study.ex.has(S.cards[id]?.nodeId)) } : null;
+  const now = Date.now(); study.shown = false; study.pred = { conf: 50, think: '', set: false }; study.t0 = Date.now(); study.tShown = 0; study.timeUpToast = false; study.pausedMs = 0; study.pausedAt = 0; study.autoShown = false; const inScope0 = study.node ? new Set(cardsIn(study.node).map(c => c.id)) : null, inScope = (inScope0 || study.ex || study.keep) ? { has: id => (!inScope0 || inScope0.has(id)) && (!study.ex || !study.ex.has(S.cards[id]?.nodeId)) && (!study.keep || study.keep.has(id)) } : null;
   study.queue = study.queue.filter(id => S.cards[id]);
   if (!study.practise){
     const lrn = Object.values(S.cards).filter(c => study.queue.indexOf(c.id) < 0 && kind(c) === 'learn' && (!inScope || inScope.has(c.id)) && c.srs.due <= now);
@@ -3781,7 +3952,7 @@ function renderStudyLH(c, ps, left, pct){
     <article class="qa fadein" id="qa">
       <div class="label">${c.label ? `<span class="lhtag">${esc(c.label)}</span>` : ''}<span>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</span>${marksOf(c) ? `<span class="qmk">${marksOf(c)} mark${marksOf(c) === 1 ? '' : 's'}</span>` : ''}${isLeech(c) ? `<span class="leechtag" title="You've missed this card ${failCount(c)} times. Consider rewriting it (E).">Leech</span>` : ''}${occOf(c) && !study.shown ? '<span class="hint">tap the boxes to peek</span>' : ''}<span class="qtime" id="qtime" role="timer" aria-live="off"></span></div>
       <div class="qtbar" id="qtbar" hidden><i></i></div>
-      ${front(c)}
+      ${ppSrcLine(c)}${front(c)}
       ${study.shown ? '<hr id="answer">' + predHtml() + back(c) : ''}
     </article>
     ${padHtml()}
@@ -5788,7 +5959,8 @@ function pickImportFile(){
 /* drop a deck file anywhere to import it */
 document.addEventListener('dragover', e => { if ([...(e.dataTransfer?.items || [])].some(i => i.kind === 'file') && (!e.target.closest?.('.drop, .zone, #layer .dialog') || $('.pdfx'))) e.preventDefault(); });
 document.addEventListener('drop', e => {
-  const f = e.dataTransfer?.files?.[0]; if (f && isPdf(f) && $('.pdfx')){ e.preventDefault(); e.stopPropagation(); return pdfx?.items.length ? pxAnswers(f) : null; }
+  const f = e.dataTransfer?.files?.[0]; if (f && isPdf(f) && (view.name === 'papers' || view.name === 'ppmark') && !$('#layer .scrim')){ e.preventDefault(); e.stopPropagation(); return ppDropFile(f); }
+  if (f && isPdf(f) && $('.pdfx')){ e.preventDefault(); e.stopPropagation(); return pdfx?.items.length ? pxAnswers(f) : null; }
   if (!f || !IMPORT_EXT.test(f.name) || e.target.closest?.('.drop, .zone, #layer .dialog')) return;
   e.preventDefault(); e.stopPropagation(); startImport(f);
 }, true);
@@ -6342,7 +6514,7 @@ async function pxImages(pg, vp, L, art){
   }
   return out.filter((b, i) => !out.some((c, j) => j < i && Math.abs(c.x - b.x) < 2 && Math.abs(c.y - b.y) < 2));
 }
-async function pxRead(file, prog){
+async function pxRead(file, prog, opt){
   const L = await pdfLib(), doc = await L.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
   const pages = []; let ocrFail = false, ocrN = 0;
   for (let n = 1; n <= Math.min(doc.numPages, 80); n++){
@@ -6353,7 +6525,7 @@ async function pxRead(file, prog){
     for (const l of lines){ l.items.sort((p, q) => p.x - q.x); l.x = l.items[0].x; l.r = Math.max(...l.items.map(i => i.r)); l.h = Math.max(...l.items.map(i => i.h)); l.text = l.items.map(i => i.s).join(' ').replace(/\s+/g, ' ').trim(); }
     let imgs = [], art = []; try { imgs = await pxImages(pg, vp, L, art); } catch (e){ console.warn(e); }
     // read the text inside each picture (and whole scanned pages) so numbers and "Solution" labels in screenshots count too
-    if (imgs.length && !ocrFail){
+    if (imgs.length && !ocrFail && !opt?.noOcr){
       try {
         prog?.(`Reading the text in the pictures… page ${n}`);
         const W = await tessWorker(), sc = 2, v2 = pg.getViewport({ scale: sc }), cv = document.createElement('canvas'); cv.width = Math.ceil(v2.width); cv.height = Math.ceil(v2.height);
@@ -7303,11 +7475,13 @@ document.addEventListener('click', async e => {
   if ($('#tpop') && !e.target.closest('#tpop') && !e.target.closest('[data-act="timer-menu"]')) $('#tpop').remove();
   if (document.body.classList.contains('desktop') && $('#sidesres') && !$('#sidesres').hidden && (!e.target.closest('#abmid') || e.target.closest('.siderec'))){ $('#sidesres').hidden = true; if (e.target.closest('.siderec')){ const q = $('#sidesq'); if (q) q.value = ''; } }
   const nav = e.target.closest('[data-nav]');
-  if (nav){ const t = nav.dataset.nav; if (t === 'add') return editor(null, view.node || browse.node); if (t === 'browse') browse.node = view.node || browse.node; study = null; return go(t); }
+  if (nav){ const t = nav.dataset.nav; if (t === 'add') return editor(null, nodeOf(view.node) ? view.node : browse.node); if (t === 'browse') browse.node = view.node || browse.node; study = null; return go(t); }
   const a = e.target.closest('[data-act]'); if (!a) return;
   const act = a.dataset.act, id = a.dataset.id || null;
   if (a.closest('#menu')) closeMenu();
   if (act.startsWith('cl-')) return clAction(act, a);
+  if (act === 'pp-back'){ study = null; return go('papers'); }
+  if (act.startsWith('pp-')) return ppAction(act, a, e);
   switch (act){
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
     case 'side-subj': { if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; renderDecks(); return renderSideSubjects(); } ls.set('md-subj', id); study = null; return go('decks'); }
@@ -7630,8 +7804,9 @@ document.addEventListener('keydown', e => {
   if (view.name === 'browse' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && browse.sel && !isTyping(document.activeElement)){ const L = brImgs(S.cards[browse.sel] || {}); if (L.length > 1){ e.preventDefault(); brImg = Math.max(0, Math.min(L.length - 1, brImg + (e.key === 'ArrowRight' ? 1 : -1))); return browsePreview(); } }
   if (view.name === 'browse' && e.key === ' ' && !ed && browse.sel && !$('.lightbox')){ e.preventDefault(); return brToggle(); }
   if (view.name === 'browse' && e.key === 'Enter' && browse.sel){ e.preventDefault(); return browseSelect(browse.sel, true); }
+  if (view.name === 'ppmark' && ppKey(e)) return;
   if (view.name !== 'study'){
-    if (e.key === 'a') { e.preventDefault(); return editor(null, view.node || browse.node); }
+    if (e.key === 'a') { e.preventDefault(); return editor(null, nodeOf(view.node) ? view.node : browse.node); }
     if (e.key === 'd') return go('decks');
     if (e.key === 'b') return go('browse');
     if (e.key === 's' && view.name === 'overview') return startStudy(view.node);
@@ -7680,6 +7855,543 @@ if (window.RECALL_HOSTED){
   setTimeout(() => updCheck(false), 8000); setInterval(() => updCheck(false), 30 * 60e3);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Date.now() - updS.lastWeb > 10 * 60e3) updCheck(false); });
 }
+/* ---------- past papers: THSC trials and assessment tasks and NESA HSC papers (2016 on); mark a paper, flag what you got wrong ----------
+   The list of papers comes from THSC's public GitHub repo (raw.githubusercontent.com allows it from any page) and is kept
+   on the device (md-pp-idx). THSC only serves the PDFs to its own site, so a paper is opened there and the PDF dropped in.
+   A paper you add lives in S.settings.papers (synced); its PDF lives in IndexedDB on the device (recall-papers), plus a
+   copy in cloud storage when sync is on. Each question you get wrong becomes a normal card in the deck you pick, with
+   card.paper = { id, q, got, of }, so it shows in Decks and in the Paper mistakes deck (every card with card.paper). */
+const PP_FROM = 2016, PP_RAW = 'https://raw.githubusercontent.com/thsconline/s/master/yr12/';
+const PP_SUBJ = [
+  { k: 'maths', name: 'Maths', rx: /math/i, courses: ['adv', 'x1', 'x2'] },
+  { k: 'physics', name: 'Physics', rx: /phys/i, courses: ['phy'] },
+  { k: 'economics', name: 'Economics', rx: /econ/i, courses: ['eco'] },
+  { k: 'english', name: 'English', rx: /engl/i, courses: ['en1', 'en2'] },
+];
+const PP_COURSE = {
+  adv: { s: 'maths', name: 'Maths Advanced', short: 'Advanced', trial: 'Maths/trialpapers_advanced', at: 'Maths/assessment-tasks_advanced', nesa: 'mathematics-advanced', arch: 2019 },
+  x1: { s: 'maths', name: 'Maths Extension 1', short: 'Extension 1', trial: 'Maths/trialpapers_extension1', at: 'Maths/assessment-tasks_extension1', nesa: 'mathematics-extension-1', arch: 2019 },
+  x2: { s: 'maths', name: 'Maths Extension 2', short: 'Extension 2', trial: 'Maths/trialpapers_extension2', at: 'Maths/assessment-tasks_extension2', nesa: 'mathematics-extension-2', arch: 2019 },
+  phy: { s: 'physics', name: 'Physics', short: 'Physics', trial: 'Physics/trialpapers', at: 'Physics/assessment-tasks', nesa: 'physics', arch: 2018 },
+  eco: { s: 'economics', name: 'Economics', short: 'Economics', trial: 'Economics/trialpapers', at: 'Economics/assessment-tasks', nesa: 'economics', arch: 0 },
+  en1: { s: 'english', name: 'English Paper 1', short: 'Paper 1', trial: 'English/trialpapers_paper1', at: 'English/assessment-tasks', nesa: 'english-advanced', arch: 2018 },
+  en2: { s: 'english', name: 'English Paper 2 Advanced', short: 'Paper 2 Advanced', trial: 'English/trialpapers_paper2_advanced', nesa: 'english-advanced', arch: 2018 },
+};
+const PP_SECS = [['hsc', 'HSC papers', 'HSC paper'], ['trial', 'Trial papers', 'Trial paper'], ['hy', 'Half-yearly exams', 'Half-yearly exam'], ['ct1', 'CT1 Nov–Dec assessments', 'CT1 Nov–Dec assessment'], ['ct2', 'CT2 Feb–Mar assessments', 'CT2 Feb–Mar assessment'], ['ct3', 'CT3 May–Jun assessments', 'CT3 May–Jun assessment'], ['ct4', 'CT4 Aug–Sep assessments', 'CT4 Aug–Sep assessment'], ['other', 'Other assessment tasks', 'Assessment task']];
+const ppSecName = (k, one) => (PP_SECS.find(s => s[0] === k) || PP_SECS[7])[one ? 2 : 1];
+const PP_ALIAS = { nsb: 'north sydney boys', nsbhs: 'north sydney boys', nsg: 'north sydney girls', nsghs: 'north sydney girls', sbhs: 'sydney boys', sghs: 'sydney girls', ruse: 'james ruse', jr: 'james ruse', jrahs: 'james ruse', sgs: 'sydney grammar', bhhs: 'baulkham hills', nbhs: 'normanhurst boys', hgs: 'hornsby girls', sghs2: 'st george girls', sths: 'sydney tech', cths: 'cherrybrook tech', fsh: 'fort st', fshs: 'fort st', hurl: 'hurlstone', ghs: 'girraween' };
+let ppIdx = ls.get('md-pp-idx', null), ppIdxP = null, ppIdxErr = '';
+let pp = { s: 'maths', c: { maths: 'adv', english: 'en1' }, school: '', y: '', sol: false, todo: false, ...ls.get('md-pp', {}) };
+let ppQ = '', ppMore = new Set(), ppCol = new Set(ls.get('md-pp-col', ['hy', 'ct1', 'ct2', 'ct3', 'ct4', 'other']));
+const ppSave = () => ls.set('md-pp', pp);
+const ppPapers = () => S.settings?.papers || {};
+const ppDecode = s => String(s).replace(/&#160;|&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim();
+function ppSecOf(h){ h = h.toLowerCase(); if (/half/.test(h)) return 'hy'; const m = /ct\s*([1-4])|task[-\s]*([1-4])/.exec(h); return m ? 'ct' + (m[1] || m[2]) : 'other'; }
+/* one THSC listing page: <h5> section headings, <summary> school names, then one link per paper */
+function ppParse(html, kind){
+  const out = [], rx = /<h5[^>]*>([^<]+)<\/h5>|<summary>([^<]+)<\/summary>|onClick="pdf\(this,\s*(\d+)\)">([^<]+)</gi; let m, sec = kind === 'trial' ? 'trial' : 'other', school = '';
+  while ((m = rx.exec(html))){
+    if (m[1]){ if (kind !== 'trial') sec = ppSecOf(ppDecode(m[1])); continue; }
+    if (m[2]){ school = ppDecode(m[2]); continue; }
+    const t = ppDecode(m[4]), y = /\b(?:19|20)\d\d\b/.exec(t); if (!y || +y[0] < PP_FROM) continue;
+    out.push([sec, school || t.slice(0, y.index).trim() || 'Unknown', +y[0], m[3], t, /w\.?\s*sol/i.test(t) ? 1 : 0]);
+  }
+  return out;
+}
+function ppLoad(force){
+  if (ppIdxP) return ppIdxP;
+  if (!force && ppIdx?.at && Date.now() - ppIdx.at < 12 * HOUR) return Promise.resolve(ppIdx);
+  const jobs = []; Object.entries(PP_COURSE).forEach(([c, d]) => ['trial', 'at'].forEach(kind => { if (d[kind]) jobs.push({ c, kind, url: PP_RAW + d[kind] + '.html' }); }));
+  ppIdxP = Promise.all(jobs.map(j => fetch(j.url, { cache: 'no-cache' }).then(r => { if (!r.ok) throw new Error('THSC replied ' + r.status); return r.text(); }).then(t => ({ ...j, rows: ppParse(t, j.kind) }))))
+    .then(res => {
+      const c = {}; res.forEach(j => { (c[j.c] = c[j.c] || []).push(...j.rows); });
+      if (!Object.values(c).some(r => r.length)) throw new Error('empty');
+      ppIdx = { at: Date.now(), c }; ppIdxErr = ''; ls.set('md-pp-idx', ppIdx); return ppIdx;
+    })
+    .catch(e => { console.warn('THSC list', e); ppIdxErr = navigator.onLine === false ? 'offline' : 'error'; return ppIdx; })
+    .finally(() => { ppIdxP = null; if (view.name === 'papers') renderPapers(); });
+  return ppIdxP;
+}
+const ppKeyT = (no, t) => 't' + no + ':' + t;
+const ppHscYears = () => { const now = new Date(), last = now.getFullYear() - (now.getMonth() < 11 ? 1 : 0); const out = []; for (let y = last; y >= PP_FROM; y--) out.push(y); return out; };
+function ppThscUrl(no, t){ const x = String(t).replace(/\(Adv\.\)/g, '__ADV__').replace(/\(Std\.\)/g, '__STD__').replace(/[^A-Za-z0-9._\- ]/g, '').replace(/__ADV__/g, '(Adv.)').replace(/__STD__/g, '(Std.)'); return 'https://thsconline.github.io/s/v/' + encodeURIComponent(no) + '/' + encodeURIComponent(x); }
+const ppNesaUrl = (c, y) => `https://www.nsw.gov.au/education-and-training/nesa/curriculum/hsc-exam-papers/${PP_COURSE[c].nesa}${y && y <= PP_COURSE[c].arch ? '-archive' : ''}`;
+/* every paper for a course: THSC's list, the NESA HSC years, and anything you uploaded yourself */
+function ppItems(c){
+  const lib = Object.values(ppPapers()).filter(p => p.c === c), byKey = new Map(lib.filter(p => p.key).map(p => [p.key, p])), out = [];
+  for (const y of ppHscYears()){ const key = 'n:' + c + ':' + y; out.push({ key, c, sec: 'hsc', school: 'NSW HSC', year: y, sol: 1, src: 'nesa', paper: byKey.get(key) || null }); }
+  for (const [sec, school, year, no, title, sol] of (ppIdx?.c?.[c] || [])){ const key = ppKeyT(no, title); out.push({ key, c, sec, school, year, sol, src: 'thsc', no, title, paper: byKey.get(key) || null }); }
+  const seen = new Set(out.map(i => i.key));
+  for (const p of lib) if (!p.key || !seen.has(p.key)) out.push({ key: 'p:' + p.id, c, sec: p.sec, school: p.school, year: p.year, sol: p.sol ? 1 : 0, src: 'up', paper: p });
+  return out;
+}
+function ppFind(key){ for (const c of Object.keys(PP_COURSE)){ const it = ppItems(c).find(i => i.key === key); if (it) return it; } return null; }
+const ppTitle = p => `${p.school === 'NSW HSC' ? '' : p.school + ' '}${p.year}${p.school === 'NSW HSC' ? ' HSC' : p.sec === 'trial' ? ' Trial' : p.sec === 'hy' ? ' Half-yearly' : /^ct/.test(p.sec) ? ' ' + p.sec.toUpperCase() : ''}`;
+function ppScore(p){
+  const qs = p.qs || [], q = p.q || {}; let got = 0, of = 0, marked = 0, flagged = 0;
+  for (const it of qs){ const m = Math.max(1, it.marks || 1), r = q[it.key]; of += m; if (r){ marked++; got += r.r === 'ok' ? (r.of ?? m) : (r.got || 0); if (r.r !== 'ok') flagged++; } else got += m; }
+  return { got, of, marked, flagged, pct: of ? Math.round(got / of * 100) : 0 };
+}
+/* the Recall subject a course files into by default (Maths, Physics…), matched by name */
+function ppNode(s){ const d = PP_SUBJ.find(x => x.k === s); return kids(null).find(n => d?.rx.test(n.name)) || null; }
+const ppCards = (pred = () => true) => Object.values(S.cards).filter(c => c.paper && pred(c));
+const ppCardCourse = c => ppPapers()[c.paper?.id]?.c || null;
+function ppDueOf(cs){ const now = Date.now(); let nw = 0, n = 0; for (const c of cs){ const k = kind(c); if (k === 'new') nw++; else if ((c.srs?.due || 0) <= now) n++; } return n + Math.min(nw, newLeft()); }
+function ppReview(s){
+  const cs = ppCards(c => !s || PP_COURSE[ppCardCourse(c)]?.s === s); if (!cs.length) return toast('No paper mistakes yet. Mark a paper and flag what you got wrong.');
+  const due = ppDueOf(cs), keep = new Set(cs.map(c => c.id));
+  if (!due) return startStudy(null, true, null, sortCards(cs).map(c => c.id), null, keep, 'Paper mistakes');
+  startStudy(null, false, null, null, null, keep, 'Paper mistakes');
+}
+
+/* the PDFs: IndexedDB on this device, plus a copy in cloud storage when sync is on */
+function ppDB(){ return ppDB.p || (ppDB.p = new Promise((res, rej) => { try { const r = indexedDB.open('recall-papers', 1); r.onupgradeneeded = () => r.result.createObjectStore('pdf'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e){ rej(e); } }).catch(e => { ppDB.p = null; throw e; })); }
+async function ppPutPdf(id, buf, name){ const db = await ppDB(); return new Promise((res, rej) => { const t = db.transaction('pdf', 'readwrite'); t.objectStore('pdf').put({ buf, name }, id); t.oncomplete = () => res(true); t.onerror = () => rej(t.error); }); }
+async function ppGetPdf(id){ try { const db = await ppDB(); return await new Promise(res => { const r = db.transaction('pdf').objectStore('pdf').get(id); r.onsuccess = () => res(r.result || null); r.onerror = () => res(null); }); } catch { return null; } }
+async function ppDelPdf(id){ try { const db = await ppDB(); db.transaction('pdf', 'readwrite').objectStore('pdf').delete(id); } catch {} }
+async function ppPdfOf(p){
+  const got = await ppGetPdf(p.id); if (got?.buf) return got;
+  if (p.file && cloudOn()){ try { const { data, error } = await cloud.sb.storage.from('images').download(cloudPath(p.file)); if (!error && data){ const buf = await data.arrayBuffer(); ppPutPdf(p.id, buf, p.name).catch(() => {}); return { buf, name: p.name }; } } catch (e){ console.warn(e); } }
+  return null;
+}
+async function ppSavePaper(p, label){ undoTx = null; undoLabel = label || 'past paper'; S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings(); }
+/* make (or reuse) the paper record for a listing, store its PDF, then open it for marking */
+async function ppAddPdf(item, file){
+  if (!isPdf(file)) return toast('That isn’t a PDF.');
+  if (file.size > 80 * 1024 * 1024) return toast('That PDF is over 80 MB.', 4000);
+  const old = item.paper, p = old ? { ...old } : { id: uid('pp'), key: item.src === 'up' ? null : item.key, c: item.c, sec: item.sec, school: item.school, year: item.year, sol: !!item.sol, src: item.src, at: Date.now(), st: 'new', q: {} };
+  p.name = file.name || 'paper.pdf';
+  const buf = await file.arrayBuffer();
+  try { await ppPutPdf(p.id, buf, p.name); } catch (e){ console.warn(e); toast('Couldn’t keep the PDF on this device, so it will need adding again next time.', 4500); ppm = { pid: p.id, buf }; }
+  if (cloudOn()){ try { const r = await cloudUploadBlob(new Blob([buf], { type: 'application/pdf' }), 'pdf'); p.file = r.file; } catch (e){ console.warn('pdf upload', e); } }
+  await ppSavePaper(p, 'add paper'); closeDialog(); study = null;
+  if (ppm?.pid === p.id && !ppm.buf) ppm = null;
+  go('ppmark', p.id);
+}
+function ppGuess(name){
+  const n = String(name || '').replace(/\.pdf$/i, '').replace(/[_\-.]+/g, ' '), lo = n.toLowerCase(), g = {};
+  const y = /\b(20[12]\d)\b/.exec(n); if (y) g.year = +y[1];
+  g.sec = /\bhsc\b/.test(lo) && !/trial/.test(lo) ? 'hsc' : /trial/.test(lo) ? 'trial' : /half|\bhy\b|mid ?year/.test(lo) ? 'hy' : (/(?:task|ct|at)\s*([1-4])\b/.exec(lo) ? 'ct' + /(?:task|ct|at)\s*([1-4])\b/.exec(lo)[1] : '');
+  g.c = /ext(?:ension)?\s*2|\bx2\b|\b4u\b|mx2/.test(lo) ? 'x2' : /ext(?:ension)?\s*1|\bx1\b|\b3u\b|mx1/.test(lo) ? 'x1' : /\badv|\b2u\b|maths?\b/.test(lo) ? 'adv' : /phys/.test(lo) ? 'phy' : /econ/.test(lo) ? 'eco' : /paper\s*2|module/.test(lo) && /engl/.test(lo) ? 'en2' : /engl/.test(lo) ? 'en1' : '';
+  const schools = [...new Set(Object.values(ppIdx?.c || {}).flat().map(r => r[1]))].sort((a, b) => b.length - a.length);
+  g.school = schools.find(s => lo.includes(s.toLowerCase())) || Object.entries(PP_ALIAS).map(([a, s]) => new RegExp('\\b' + a + '\\b').test(lo) ? schools.find(x => x.toLowerCase() === s) || '' : '').find(Boolean) || '';
+  return g;
+}
+
+/* ---------- the Past papers page ---------- */
+const ppSubjCur = () => PP_SUBJ.find(s => s.k === pp.s) || PP_SUBJ[0];
+const ppCourseCur = () => { const s = ppSubjCur(), c = pp.c?.[s.k]; return s.courses.includes(c) ? c : s.courses[0]; };
+const ppDot = s => { const n = ppNode(s); return n ? scol(n.id) : 'var(--fg-3)'; };
+function ppFilter(items){
+  return items.filter(i => (!pp.school || i.school === pp.school) && (!pp.y || i.year === +pp.y) && (!pp.sol || i.sol) && (!pp.todo || !i.paper || i.paper.st !== 'done'));
+}
+function ppYearBtn(i){
+  const p = i.paper, sc = p?.st === 'done' ? ppScore(p) : null, cls = 'ppyr' + (i.sol ? '' : ' nosol') + (p?.st === 'done' ? ' ppdone' : p ? ' ppmy' : '');
+  const what = `${i.school === 'NSW HSC' ? '' : i.school + ' '}${i.year} ${ppSecName(i.sec, true).toLowerCase()}, ${i.sol ? 'solutions included' : 'paper only'}${sc ? `, done, ${sc.pct}%` : p ? ', in your library' : ''}`;
+  return `<button class="${cls}" data-act="pp-open" data-k="${esc(i.key)}" aria-label="${esc(what)}" title="${esc(i.title || what)}">${sc ? `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}${i.year}${sc ? `<span class="pps">${sc.pct}%</span>` : p && p.st === 'marking' ? '<span class="pps">marking</span>' : ''}</button>`;
+}
+function ppSection(sec, items){
+  const open = !ppCol.has(sec), name = ppSecName(sec), schools = [...new Set(items.map(i => i.school))];
+  const head = `<button class="ppsech" data-act="pp-col" data-v="${sec}" aria-expanded="${open}"><span class="ppcar" aria-hidden="true">${I.caret}</span><h2>${esc(name)}</h2><span class="ppc">${items.length}${sec === 'hsc' ? '' : ` · ${schools.length} school${schools.length === 1 ? '' : 's'}`}</span>${sec === 'hsc' ? `<span class="ppsrcn">From NESA, with marking guidelines</span>` : ''}</button>`;
+  if (!open) return `<section class="ppsec shut">${head}</section>`;
+  const by = new Map(); items.forEach(i => { if (!by.has(i.school)) by.set(i.school, []); by.get(i.school).push(i); });
+  const rows = [...by.entries()].sort((a, b) => a[0].localeCompare(b[0])), cap = ppMore.has(sec) ? rows.length : 12;
+  return `<section class="ppsec">${head}<div class="glist ppgroup">${rows.slice(0, cap).map(([s, is]) => `<div class="pprow"><div class="ppsch">${esc(s)}</div><div class="ppyrs">${is.sort((a, b) => b.year - a.year || String(a.title).localeCompare(String(b.title))).map(ppYearBtn).join('')}</div></div>`).join('')}
+    ${rows.length > cap ? `<button class="ppmore" data-act="pp-more" data-v="${sec}">Show ${rows.length - cap} more school${rows.length - cap === 1 ? '' : 's'}</button>` : ''}</div></section>`;
+}
+function ppMine(c){
+  const ps = Object.values(ppPapers()).filter(p => p.c === c).sort((a, b) => (b.done || b.at) - (a.done || a.at)).slice(0, 6); if (!ps.length) return '';
+  const flag = n => n ? `<span class="ppfl"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 14V2.5M4 3h7l-1.5 2.5L11 8H4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>${n} flagged</span>` : '';
+  return `<section class="ppmine"><div class="glhead"><h2>Your papers</h2></div><div class="ppcards">${ps.map(p => { const s = ppScore(p), dn = p.st === 'done'; return `<button class="ppcard" data-act="pp-go" data-id="${p.id}"><span class="ppct">${esc(ppTitle(p))}</span><span class="ppcm">${esc(ppSecName(p.sec, true))} · ${dn ? 'done ' + dayWordShort(p.done) : p.st === 'marking' ? 'marking' : 'not started'}</span>
+    <span class="ppcb">${dn ? `<b>${s.pct}%</b><span>${s.got} / ${s.of}</span>` : p.qs?.length ? `<span>${s.marked} of ${p.qs.length} marked</span>` : '<span>Open to start</span>'}${flag(s.flagged)}</span>${!dn && p.qs?.length ? `<span class="ppbar"><i style="width:${p.qs.length ? s.marked / p.qs.length * 100 : 0}%"></i></span>` : ''}</button>`; }).join('')}</div></section>`;
+}
+const dayWordShort = t => t ? new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '';
+/* search: years, sections ("trial", "hsc", "ct2"), courses ("ext 2", "physics") and school names or short names ("nsb", "ruse") */
+function ppSearch(q){
+  let lo = ' ' + q.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ') + ' ';
+  const courses = new Set(), secs = new Set(), years = new Set(), take = (rx, f) => { lo = lo.replace(rx, (...m) => { f(m); return ' '; }); };
+  take(/\b(20[12]\d)\b/g, m => years.add(+m[1]));
+  take(/\b(?:ext(?:ension)?\s*2|x2|mx2|4u)\b/g, () => courses.add('x2')); take(/\b(?:ext(?:ension)?\s*1|x1|mx1|3u)\b/g, () => courses.add('x1')); take(/\b(?:adv(?:anced)?|2u)\b/g, () => courses.add('adv'));
+  take(/\bmaths?\b/g, () => ['adv', 'x1', 'x2'].forEach(c => courses.add(c))); take(/\bphys(?:ics)?\b/g, () => courses.add('phy')); take(/\beco(?:n|nomics)?\b/g, () => courses.add('eco'));
+  take(/\bpaper\s*1\b/g, () => courses.add('en1')); take(/\bpaper\s*2\b/g, () => courses.add('en2')); take(/\beng(?:lish)?\b/g, () => { courses.add('en1'); courses.add('en2'); });
+  take(/\btrials?\b/g, () => secs.add('trial')); take(/\bhsc\b/g, () => secs.add('hsc')); take(/\b(?:half\s*yearly|half|hy)\b/g, () => secs.add('hy')); take(/\b(?:ct|task|at)\s*([1-4])\b/g, m => secs.add('ct' + m[1]));
+  take(/\b(?:papers?|exams?|tests?|w|sol|solutions?|the|of|for)\b/g, () => {});
+  const words = lo.split(/\s+/).filter(Boolean).map(w => PP_ALIAS[w] || w);
+  const cs = courses.size ? [...courses] : Object.keys(PP_COURSE);
+  const hits = cs.flatMap(c => ppItems(c)).filter(i => (!years.size || years.has(i.year)) && (!secs.size || secs.has(i.sec)) && words.every(w => i.school.toLowerCase().includes(w)) && (!pp.sol || i.sol) && (!pp.todo || i.paper?.st !== 'done'));
+  return hits.sort((a, b) => b.year - a.year || a.school.localeCompare(b.school)).slice(0, 150);
+}
+function renderPapers(){
+  if (!ppIdx && !ppIdxP) ppLoad(); else if (ppIdx && Date.now() - (ppIdx.at || 0) > 12 * HOUR && !ppIdxP) ppLoad();
+  const s = ppSubjCur(), c = ppCourseCur(), all = ppItems(c), items = ppFilter(all);
+  const tabs = PP_SUBJ.map(x => { const n = x.courses.reduce((a, k) => a + ppItems(k).length, 0); return `<button class="stab" role="tab" aria-selected="${x.k === s.k}" data-act="pp-subj" data-v="${x.k}" style="--sc:${ppDot(x.k)}"><span class="sdot2"></span>${esc(x.name)}<span class="stabn">${n}</span></button>`; }).join('');
+  const courseSeg = s.courses.length > 1 ? `<div class="seg ppcourse" role="group" aria-label="Course">${s.courses.map(k => `<button type="button" data-act="pp-course" data-v="${k}" aria-pressed="${k === c}">${esc(PP_COURSE[k].short)}</button>`).join('')}</div>` : '';
+  const schools = [...new Set(all.filter(i => i.sec !== 'hsc').map(i => i.school))].sort((a, b) => a.localeCompare(b)), years = [...new Set(all.map(i => i.year))].sort((a, b) => b - a);
+  if (pp.school && !schools.includes(pp.school)) pp.school = '';
+  const nSchools = schools.length, mine = Object.values(ppPapers()).filter(p => p.c === c && p.src === 'up').length;
+  const status = ppIdxP && !ppIdx ? '<p class="ppnote">Getting the list of papers from THSC…</p>' : !ppIdx ? `<p class="ppnote">${ppIdxErr === 'offline' ? 'You’re offline, so the THSC list can’t load yet.' : 'Couldn’t reach THSC for the list of papers.'} You can still upload papers. <button class="link" data-act="pp-reload">Try again</button></p>` : '';
+  const sel = (id, label, cur, opts) => `<label class="ppsel"><span>${label}</span><select id="${id}" aria-label="${label}">${opts.map(([v, l]) => `<option value="${esc(v)}" ${String(cur) === String(v) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label>`;
+  const filters = `<div class="ppfilters">
+      <label class="ppsearch"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input id="ppq" type="search" placeholder="Search papers, e.g. ruse 2023 trial" value="${esc(ppQ)}" autocomplete="off" spellcheck="false" aria-label="Search past papers"></label>
+      ${sel('ppschool', 'School', pp.school, [['', 'All schools'], ...schools.map(x => [x, x])])}
+      ${sel('ppyear', 'Year', pp.y, [['', 'All years'], ...years.map(y => [y, String(y)])])}
+      <button class="pptog" data-act="pp-tog" data-v="sol" aria-pressed="${!!pp.sol}">Has solutions</button>
+      <button class="pptog" data-act="pp-tog" data-v="todo" aria-pressed="${!!pp.todo}">Not done yet</button>
+      ${pp.school || pp.y || pp.sol || pp.todo ? '<button class="link sm" data-act="pp-clear">Clear</button>' : ''}
+    </div>`;
+  let body;
+  if (ppQ.trim()){
+    const hits = ppSearch(ppQ.trim());
+    body = hits.length ? `<section class="ppsec"><div class="ppsech static"><h2>${hits.length === 150 ? 'First 150 matches' : `${hits.length} match${hits.length === 1 ? '' : 'es'}`}</h2></div><div class="glist ppgroup">${hits.map(i => `<button class="pphit" data-act="pp-open" data-k="${esc(i.key)}"><span class="pphn">${esc(i.school === 'NSW HSC' ? `${i.year} HSC` : `${i.school} ${i.year}`)}</span><span class="pphm">${esc(ppSecName(i.sec, true))} · ${esc(PP_COURSE[i.c].name)} · ${i.sol ? 'solutions included' : 'paper only'}</span>${i.paper?.st === 'done' ? `<span class="pphs">${ppScore(i.paper).pct}%</span>` : i.paper ? '<span class="pphs mute">in your library</span>' : ''}</button>`).join('')}</div></section>`
+      : `<p class="ppnote">Nothing matches “${esc(ppQ.trim())}”. Try a school, a year or a section, such as “sydney boys 2022” or “trial 2024”.</p>`;
+  } else {
+    const secs = PP_SECS.map(([k]) => [k, items.filter(i => i.sec === k)]).filter(([, is]) => is.length);
+    body = (secs.length ? secs.map(([k, is]) => ppSection(k, is)).join('') : `<p class="ppnote">No papers match these filters. <button class="link" data-act="pp-clear">Clear the filters</button></p>`);
+  }
+  const legend = `<div class="pplegend"><span><i class="ppsw"></i>Solutions included</span><span><i class="ppsw ns"></i>Paper only</span><span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Done, with your score</span></div>`;
+  $('#root').innerHTML = `<div class="narrow home dkmin pphome">
+    <div class="stabs" role="tablist" aria-label="Subjects">${tabs}<span class="stabind" id="stabind" aria-hidden="true"></span></div>
+    ${document.body.classList.contains('desktop') ? '' : `<div class="ppmob">${ppAppbar().act}</div>`}
+    <div class="pphead"><div><h1>${esc(PP_COURSE[c].name)}</h1><p class="ppmeta">${all.length} paper${all.length === 1 ? '' : 's'} since ${PP_FROM}${nSchools ? ` from ${nSchools} school${nSchools === 1 ? '' : 's'}` : ''}${mine ? ` · ${mine} uploaded by you` : ''}</p></div>${courseSeg}</div>
+    ${filters}${status}
+    ${ppQ.trim() ? '' : ppMine(c)}
+    ${ppQ.trim() ? '' : legend}
+    ${body}
+    <p class="ppcredit">Trial papers and assessment tasks are listed from <a href="https://thsconline.github.io/s/" target="_blank" rel="noopener">THSC Online</a>; HSC papers link to NESA. Recall keeps the list on this device and never re-hosts the papers.</p>
+  </div>`;
+  placeTabInd(ppTabFrom); ppTabFrom = null;
+}
+let ppTabFrom = null;
+document.addEventListener('input', e => {
+  if (e.target.id === 'ppq'){ ppQ = e.target.value; const pos = e.target.selectionStart; renderPapers(); const q = $('#ppq'); if (q){ q.focus(); try { q.setSelectionRange(pos, pos); } catch {} } }
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'ppschool'){ pp.school = e.target.value; ppSave(); renderPapers(); }
+  if (e.target.id === 'ppyear'){ pp.y = e.target.value; ppSave(); renderPapers(); }
+});
+
+/* get a paper you haven't added yet: open it on THSC or NESA, then drop the PDF in */
+let ppGetItem = null;
+function ppGetDialog(item){
+  ppGetItem = item;
+  const where = item.src === 'nesa' ? 'NESA' : 'THSC', url = item.src === 'nesa' ? ppNesaUrl(item.c, item.year) : ppThscUrl(item.no, item.title);
+  const name = item.school === 'NSW HSC' ? `${item.year} HSC` : `${item.school} ${item.year}`;
+  openDialog(`<div class="dialog ppget" role="dialog" aria-modal="true" aria-labelledby="ppgh" style="max-width:520px"><header><h2 id="ppgh">${esc(name)}</h2><button class="icon" data-act="close" aria-label="Close">${I.x}</button></header>
+    <div class="body"><p class="sub" style="margin:0 0 16px">${esc(PP_COURSE[item.c].name)} · ${esc(ppSecName(item.sec, true))} · ${item.sol ? 'solutions included' : 'paper only'}</p>
+      <ol class="ppsteps"><li><span>Open it on ${where}${item.src === 'nesa' ? ` and download the ${item.year} exam pack` : ''}.</span><a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Open on ${where}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3 7 9M11 9.5V13H3V5h3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+      <li><span>Drop the PDF here, or choose it.</span><div class="zone ppzone" id="ppzone"><button class="btn primary" data-act="pp-pick">Choose PDF</button><span class="hint">or drag it in</span></div></li></ol>
+      ${item.src === 'nesa' ? '<p class="hint" style="margin:12px 0 0">NESA puts the marking guidelines in a separate PDF, so Recall won’t find solutions inside the exam paper. You can still mark it and flag questions.</p>' : ''}
+    </div></div>`, d => ppZone(d.querySelector('#ppzone'), f => ppAddPdf(ppGetItem, f)));
+}
+function ppZone(z, cb){
+  if (!z) return;
+  z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('over'); });
+  z.addEventListener('dragleave', () => z.classList.remove('over'));
+  z.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); z.classList.remove('over'); const f = e.dataTransfer?.files?.[0]; if (f) cb(f); });
+}
+function ppPickFile(cb){ let inp = $('#ppfilein'); if (inp) inp.remove(); inp = document.createElement('input'); inp.type = 'file'; inp.id = 'ppfilein'; inp.hidden = true; inp.accept = 'application/pdf,.pdf'; document.body.appendChild(inp); inp.addEventListener('change', () => { const f = inp.files?.[0]; inp.remove(); if (f) cb(f); }); inp.click(); }
+/* upload a paper that isn't on THSC (or one you have already) */
+let ppUp = null;
+function ppUploadDialog(file){
+  const g = file ? ppGuess(file.name) : {}, c0 = g.c || ppCourseCur();
+  ppUp = { file: file || null, c: c0, sec: g.sec || 'trial', school: g.school || '', year: g.year || '' };
+  const schools = [...new Set(Object.values(ppIdx?.c || {}).flat().map(r => r[1]))].sort((a, b) => a.localeCompare(b));
+  openDialog(`<div class="dialog ppup" role="dialog" aria-modal="true" aria-labelledby="ppuh" style="max-width:540px"><header><h2 id="ppuh">Upload a paper</h2><button class="icon" data-act="close" aria-label="Close">${I.x}</button></header>
+    <div class="body"><div class="ppform">
+      <label class="field"><span class="lab">Course</span><select class="in" id="ppuc">${Object.entries(PP_COURSE).map(([k, d]) => `<option value="${k}" ${k === ppUp.c ? 'selected' : ''}>${esc(d.name)}</option>`).join('')}</select></label>
+      <label class="field"><span class="lab">Section</span><select class="in" id="ppus">${PP_SECS.map(([k, , one]) => `<option value="${k}" ${k === ppUp.sec ? 'selected' : ''}>${esc(one)}</option>`).join('')}</select></label>
+      <label class="field"><span class="lab">School</span><input class="in" id="ppusch" list="ppuschl" value="${esc(ppUp.school)}" placeholder="e.g. North Sydney Boys" autocomplete="off"><datalist id="ppuschl">${schools.map(x => `<option value="${esc(x)}"></option>`).join('')}</datalist></label>
+      <label class="field"><span class="lab">Year</span><input class="in" id="ppuy" type="number" min="2000" max="2099" value="${esc(ppUp.year)}" placeholder="${new Date().getFullYear()}"></label>
+      <label class="field ppsolf"><input type="checkbox" id="ppusol" checked> The PDF includes solutions or marking guidelines</label>
+    </div>
+    <div class="zone ppzone" id="ppuzone">${file ? `<span class="ppfile">${esc(file.name)}</span><button class="link sm" data-act="pp-upick">Change</button>` : '<button class="btn" data-act="pp-upick">Choose PDF</button><span class="hint">or drag it in</span>'}</div></div>
+    <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="pp-upgo" id="ppugo">Start marking</button></footer></div>`, d => ppZone(d.querySelector('#ppuzone'), ppUpFile));
+}
+function ppUpFile(f){ const v = ppUpRead(); ppUploadDialog(f); const s = $('#ppusch'), y = $('#ppuy'); if (v.school && s && !s.value) s.value = v.school; if (v.year && y && !y.value) y.value = v.year; }
+function ppUpRead(){ return { c: $('#ppuc')?.value, sec: $('#ppus')?.value, school: ($('#ppusch')?.value || '').trim(), year: +($('#ppuy')?.value || 0), sol: !!$('#ppusol')?.checked }; }
+async function ppUpGo(){
+  const v = ppUpRead(); if (!ppUp?.file) return toast('Choose the PDF first.'); if (!v.school) { toast('Type the school (or NESA for an HSC paper).'); return $('#ppusch')?.focus(); } if (!(v.year > 1990)) { toast('Type the year.'); return $('#ppuy')?.focus(); }
+  const lo = v.school.toLowerCase(), hsc = v.sec === 'hsc', match = ppItems(v.c).find(i => i.sec === v.sec && i.year === v.year && (hsc || i.school.toLowerCase() === lo) && i.src !== 'up');
+  const item = match || { key: null, c: v.c, sec: v.sec, school: hsc ? 'NSW HSC' : v.school, year: v.year, sol: v.sol ? 1 : 0, src: 'up', paper: null };
+  if (match && !match.paper) item.sol = v.sol ? 1 : match.sol;
+  return ppAddPdf(item, ppUp.file);
+}
+
+/* ---------- marking a paper: pages in the middle, questions on the left, the card for the picked question on the right ---------- */
+let ppm = null;
+const ppmP = () => ppPapers()[ppm?.pid];
+function renderPPMark(){
+  const p = ppPapers()[view.node]; if (!p){ view = { name: 'papers', node: null }; return renderPapers(); }
+  if (ppm?.pid !== p.id || (!ppm.R && !ppm.busy && !ppm.need && !ppm.err)){ const keep = ppm?.pid === p.id ? ppm : null; ppm = { pid: p.id, items: [], sel: null, busy: 'Opening the paper…', want: keep?.want || ppm?.want || null, buf: keep?.buf || null }; ppmLoad(p); }
+  const host = $('#ppm');
+  if (!host || host.dataset.pid !== p.id){
+    $('#root').innerHTML = `<div class="ppm" id="ppm" data-pid="${esc(p.id)}"><aside class="pprail" id="pprail" aria-label="Questions"></aside><section class="ppstage" id="ppstage" aria-label="Paper"><div class="pppages" id="pppages"></div></section><aside class="pppanel" id="pppanel" aria-label="Question"></aside></div>`;
+    if (ppm.R) ppmPages();
+  }
+  ppmSide();
+}
+async function ppmLoad(p){
+  const m = ppm;
+  try {
+    const got = m.buf ? { buf: m.buf, name: p.name } : await ppPdfOf(p);
+    if (ppm !== m) return;
+    if (!got){ m.busy = ''; m.need = true; return ppmSide(); }
+    const file = new File([got.buf.slice(0)], got.name || 'paper.pdf', { type: 'application/pdf' });
+    const R = await pxRead(file, msg => { if (ppm === m){ m.busy = msg; ppmSide(); } }, { noOcr: true });
+    if (ppm !== m) return;
+    m.R = R; m.busy = 'Finding the questions…'; ppmSide();
+    const cut = R.textLines ? pxSplit(R) : null, Q = cut ? pxSlice(R, 0, cut) : R;
+    let items = R.textLines ? pxPlan(Q, 'question') : [];
+    if (cut){ const A = pxPlan(pxSlice(R, cut, Infinity), 'question'), by = new Map(A.map(a => [a.key, a])); items.forEach(it => { if (!it.sol){ const a = by.get(it.key) || A.find(z => z.q === it.q); if (a) it.sol = a.segs; } }); }
+    const seen = new Set(); items = items.filter(it => !seen.has(it.key) && seen.add(it.key));
+    items.forEach(it => { it.auto = true; it.mc = (it.marks || 0) <= 1 && /^\d+$/.test(it.key); });
+    for (const b of p.man || []) items.push({ key: b.key, q: 0, label: b.label, marks: b.marks || 1, segs: b.segs.map(g => ({ ...g, hand: true })), sol: null, man: true });
+    for (const [k, segs] of Object.entries(p.msol || {})){ const it = items.find(x => x.key === k); if (it) it.sol = segs.map(g => ({ ...g, hand: true })); }
+    for (const [k, mk] of Object.entries(p.mk || {})){ const it = items.find(x => x.key === k); if (it) it.marks = mk; }
+    items.sort((a, b) => ppmAt(a) - ppmAt(b));
+    m.items = items; m.busy = ''; m.scanned = !R.textLines;
+    const qs = items.map(it => ({ key: it.key, label: it.label, marks: it.marks || 1 }));
+    if (JSON.stringify(qs) !== JSON.stringify(p.qs || [])){ const p2 = { ...ppPapers()[p.id], qs }; S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p2 } }; saveSettingsRaw(); }
+    if (m.want){ const i = items.findIndex(it => it.key === m.want); m.want = null; if (i >= 0) m.sel = i; }
+    ppmPages(); ppmSide();
+    if (m.sel != null) setTimeout(() => ppmScrollTo(m.sel), 120);
+  } catch (e){ console.error(e); if (ppm === m){ m.busy = ''; m.err = e.message || 'Couldn’t open that PDF.'; ppmSide(); } }
+}
+const ppmAt = it => { const g = it.segs?.[0]; return g ? g.p * 100000 + g.y0 : 1e9; };
+/* the pages: drawn when they scroll into view, with the question boxes over them */
+let ppmObs = null;
+function ppmPages(){
+  const m = ppm, host = $('#pppages'); if (!m?.R || !host) return;
+  ppmObs?.disconnect();
+  host.innerHTML = m.R.pages.map(pg => `<div class="pppage" data-p="${pg.n}" style="aspect-ratio:${pg.w} / ${pg.h}"><canvas aria-hidden="true"></canvas><div class="ppov" data-p="${pg.n}"></div><span class="pppn">${pg.n}</span></div>`).join('');
+  ppmObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ ppmDrawPage(+e.target.dataset.p); ppmObs.unobserve(e.target); } }), { root: null, rootMargin: '800px 0px' });
+  host.querySelectorAll('.pppage').forEach(el => ppmObs.observe(el));
+  ppmBoxes();
+}
+async function ppmDrawPage(n){
+  const m = ppm, el = document.querySelector(`.pppage[data-p="${n}"]`), pg = m?.R?.pages[n - 1]; if (!el || !pg || el.dataset.drawn) return; el.dataset.drawn = '1';
+  try {
+    const cv = el.querySelector('canvas'), w = el.clientWidth || 760, sc = Math.min(3, w / pg.w * (window.devicePixelRatio || 1)), vp = pg.pg.getViewport({ scale: sc });
+    cv.width = Math.ceil(vp.width); cv.height = Math.ceil(vp.height);
+    const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+    await pg.pg.render({ canvasContext: cx, viewport: vp }).promise;
+  } catch (e){ console.warn(e); delete el.dataset.drawn; }
+}
+function ppmBoxes(){
+  const m = ppm, p = ppmP(); if (!m?.R) return;
+  document.querySelectorAll('.ppov').forEach(o => { o.innerHTML = ''; });
+  const put = (it, i, g, sol) => {
+    const pg = m.R.pages[g.p - 1], o = document.querySelector(`.ppov[data-p="${g.p}"]`); if (!pg || !o) return;
+    const x0 = g.x0 ?? pg.w * .03, x1 = g.x1 ?? pg.w * .97, r = p?.q?.[it.key]?.r || '';
+    const b = document.createElement('button'); b.type = 'button'; b.className = `ppbox ${sol ? 'sol' : ''} ${i === m.sel ? 'sel' : ''} ${r ? 'r-' + r : ''}`; b.dataset.act = 'pp-q'; b.dataset.i = i;
+    b.style.cssText = `left:${x0 / pg.w * 100}%;top:${g.y0 / pg.h * 100}%;width:${(x1 - x0) / pg.w * 100}%;height:${(g.y1 - g.y0) / pg.h * 100}%`;
+    b.setAttribute('aria-label', `${it.label}${sol ? ' solution' : ''}`);
+    if (i === m.sel && g === (sol ? it.sol[0] : it.segs[0])) b.innerHTML = `<span class="pptag">${esc(it.label)}${sol ? ' · solution' : it.marks ? ` · ${it.marks} mark${it.marks === 1 ? '' : 's'}` : ''}</span>`;
+    o.appendChild(b);
+  };
+  m.items.forEach((it, i) => { (it.segs || []).forEach(g => put(it, i, g, false)); if (i === m.sel) (it.sol || []).forEach(g => put(it, i, g, true)); });
+  if (m.drawBox){ const d = m.drawBox, o = document.querySelector(`.ppov[data-p="${d.p}"]`), pg = m.R.pages[d.p - 1]; if (o && pg){ const b = document.createElement('div'); b.className = 'ppbox drawing'; b.style.cssText = `left:${Math.min(d.x0, d.x1) / pg.w * 100}%;top:${Math.min(d.y0, d.y1) / pg.h * 100}%;width:${Math.abs(d.x1 - d.x0) / pg.w * 100}%;height:${Math.abs(d.y1 - d.y0) / pg.h * 100}%`; o.appendChild(b); } }
+  $('#ppstage')?.classList.toggle('drawmode', !!m.draw);
+}
+function ppmScrollTo(i){ const it = ppm?.items[i], g = it?.segs?.[0]; if (!g) return; const el = document.querySelector(`.pppage[data-p="${g.p}"]`), pg = ppm.R.pages[g.p - 1]; if (!el) return; const y = el.getBoundingClientRect().top + scrollY + el.clientHeight * (g.y0 / pg.h) - 120; window.scrollTo({ top: Math.max(0, y), behavior: reducedMotion() ? 'auto' : 'smooth' }); }
+/* the rail of questions and the panel for the picked one */
+function ppmSide(){
+  const m = ppm, p = ppmP(), rail = $('#pprail'), panel = $('#pppanel'); if (!m || !p || !rail || !panel){ renderAppbar(); return; }
+  const st = it => p.q?.[it.key], cls = it => { const r = st(it)?.r; return r === 'ok' ? 'r-ok' : r === 'part' ? 'r-part' : r === 'bad' ? 'r-bad' : ''; };
+  const mc = m.items.map((it, i) => [it, i]).filter(([it]) => it.mc), sa = m.items.map((it, i) => [it, i]).filter(([it]) => !it.mc);
+  const mark = it => { const r = st(it); return r ? (r.r === 'ok' ? `${r.of ?? it.marks} / ${r.of ?? it.marks}` : `${r.got || 0} / ${r.of ?? it.marks}`) : '–'; };
+  rail.innerHTML = m.busy ? `<p class="ppnote">${esc(m.busy)}</p>` : `
+    ${mc.length ? `<div class="pprl">Multiple choice</div><div class="ppmc">${mc.map(([it, i]) => `<button class="ppq ${cls(it)} ${i === m.sel ? 'on' : ''}" data-act="pp-q" data-i="${i}" aria-label="${esc(it.label)}${st(it) ? ', ' + ({ ok: 'right', part: 'part marks', bad: 'wrong' })[st(it).r] : ''}">${esc(it.label.replace(/^Q/, ''))}</button>`).join('')}</div>` : ''}
+    ${sa.length ? `<div class="pprl">${mc.length ? 'Written questions' : 'Questions'}</div><div class="ppsa">${sa.map(([it, i]) => `<button class="ppsq ${cls(it)} ${i === m.sel ? 'on' : ''}" data-act="pp-q" data-i="${i}"><span>${esc(it.label)}</span><span class="ppm2">${mark(it)}</span></button>`).join('')}</div>` : ''}
+    ${!m.items.length && !m.need && !m.err ? `<p class="ppnote">${m.scanned ? 'This PDF is scanned, so Recall can’t find the questions by itself.' : 'Recall couldn’t find numbered questions.'} Draw a box round each question you got wrong.</p>` : ''}
+    <div class="pprfoot"><button class="btn sm ${m.draw === 'q' ? 'on' : ''}" data-act="pp-draw" data-v="q" aria-pressed="${m.draw === 'q'}">Box a question<kbd>B</kbd></button>
+      <div class="pplg"><span><i class="ok"></i>Right</span><span><i class="part"></i>Part</span><span><i class="bad"></i>Wrong</span></div>
+      <button class="link sm danger-link" data-act="pp-remove">Remove this paper</button></div>`;
+  panel.innerHTML = ppmPanel();
+  const db = $('#ppdeck'); if (db) db.addEventListener('click', ev => { ev.stopPropagation(); openPicker(db, { multi: false, bubbles: true, keepOpen: true, sel: new Set([ppmDeck() || '']), onPick: (id, on, leaf) => { ppm.node = id || null; ls.set('md-pp-node-' + PP_COURSE[p.c].s, ppm.node); if (leaf) closePicker(); }, onClose: () => ppmSide() }); });
+  const why = $('#ppwhy'); if (why){ why.addEventListener('input', () => { if (ppm) ppm.why = why.value; }); }
+  ppmBoxes(); renderAppbar();
+}
+function ppmDeck(){ const p = ppmP(); if (!p) return null; const sel = ppm.items[ppm.sel], c = sel && p.q?.[sel.key]?.card && S.cards[p.q[sel.key].card]; if (c && ppm.node === undefined) return homeRef(c); const v = ppm.node ?? ls.get('md-pp-node-' + PP_COURSE[p.c].s, null); if (v && nodeOf(v)) return v; return ppNode(PP_COURSE[p.c].s)?.id || null; }
+function ppmPanel(){
+  const h = ppmPanel0(); if (document.body.classList.contains('desktop') || !ppm?.items?.length) return h;
+  const p = ppmP(); return `<div class="ppmob ppmobm"><button class="link sm" data-nav="papers">‹ Past papers</button><span class="grow"></span>${ppAppbar().act}</div>` + h;
+}
+function ppmPanel0(){
+  const m = ppm, p = ppmP(), s = ppScore(p);
+  if (m.err) return `<div class="pppad"><h2>That didn’t work</h2><p class="ppnote">${esc(m.err)}</p></div>`;
+  if (m.need) return `<div class="pppad"><h2>Add the PDF</h2><p class="ppnote">This paper’s PDF isn’t on this device yet. ${p.key && p.src === 'thsc' ? 'Open it on THSC, download it, then drop it here.' : p.src === 'nesa' ? 'Open it on NESA, download it, then drop it here.' : 'Drop the same PDF here.'}</p>${p.src === 'thsc' || p.src === 'nesa' ? `<p><a class="btn" href="${esc(p.src === 'nesa' ? ppNesaUrl(p.c, p.year) : (() => { const it = ppFind(p.key); return it?.no ? ppThscUrl(it.no, it.title) : 'https://thsconline.github.io/s/'; })())}" target="_blank" rel="noopener">Open on ${p.src === 'nesa' ? 'NESA' : 'THSC'}</a></p>` : ''}<div class="zone ppzone" id="ppmzone"><button class="btn primary" data-act="pp-repick">Choose PDF</button></div></div>`;
+  const it = m.items[m.sel];
+  if (!it) return `<div class="pppad"><h2>${esc(ppTitle(p))}</h2><p class="ppnote">${esc(PP_COURSE[p.c].name)} · ${esc(ppSecName(p.sec, true))}</p>
+    ${m.items.length ? `<div class="ppsum"><div><b>${s.got}</b> / ${s.of}</div><span>${s.marked} of ${m.items.length} marked · ${s.flagged} flagged</span></div>` : ''}
+    <p class="ppnote">Pick a question on the left (or on the page) and mark it Right, Part or Wrong. The ones you get wrong become cards in your decks and in Paper mistakes.${m.items.length ? ' Questions you don’t mark count as right.' : ''}</p>
+    <p class="hint">Keys: ↑ ↓ move between questions · 1 right · 2 part · 3 wrong · B draws a box</p></div>`;
+  const q = p.q?.[it.key] || {}, r = m.res ?? q.r ?? '', of = m.of ?? q.of ?? (it.marks || 1), got = m.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)), card = q.card && S.cards[q.card];
+  const deck = ppmDeck(), flag = r === 'part' || r === 'bad';
+  return `<div class="pppad">
+    <div class="pphd"><h2>${it.man ? `<input class="pplabel" id="pplabel" value="${esc(it.label)}" aria-label="Question name">` : esc(it.label)}</h2><span class="ppnote">${it.segs?.[0] ? 'page ' + it.segs[0].p : ''}</span></div>
+    <div class="pprl">Result</div>
+    <div class="seg ppres" role="group" aria-label="Result">${[['ok', 'Right', '1'], ['part', 'Part', '2'], ['bad', 'Wrong', '3']].map(([k, l, kb]) => `<button type="button" data-act="pp-res" data-v="${k}" aria-pressed="${r === k}"><i class="d ${k}"></i>${l}<kbd>${kb}</kbd></button>`).join('')}</div>
+    <div class="pprl">Marks</div>
+    <div class="ppmarks"><span class="ppstep" role="group" aria-label="Marks you got"><button type="button" data-act="pp-got" data-d="-1" aria-label="One mark less" ${got <= 0 ? 'disabled' : ''}>−</button><b>${got}</b><button type="button" data-act="pp-got" data-d="1" aria-label="One mark more" ${got >= of ? 'disabled' : ''}>+</button></span><span class="ppof">out of</span><span class="ppstep" role="group" aria-label="Marks the question is worth"><button type="button" data-act="pp-of" data-d="-1" aria-label="Worth one mark less" ${of <= 1 ? 'disabled' : ''}>−</button><b>${of}</b><button type="button" data-act="pp-of" data-d="1" aria-label="Worth one mark more">+</button></span></div>
+    ${flag ? `<label class="pprl" for="ppwhy">Why I got it wrong</label><textarea class="in" id="ppwhy" rows="3" placeholder="What went wrong, in a line or two">${esc(m.why ?? card?.mistake ?? '')}</textarea>
+    <div class="pprl">Correct solution</div>
+    <div class="ppsol">${it.sol?.length ? `<span>Found ${it.sol.length > 1 ? 'on pages ' + [...new Set(it.sol.map(g => g.p))].join(', ') : 'on page ' + it.sol[0].p}</span><button class="link sm" data-act="pp-solgo">Show</button><button class="link sm" data-act="pp-draw" data-v="s">Redraw</button>` : `<span>${p.sol ? 'Not matched yet.' : 'This paper has no solutions.'}</span><button class="link sm" data-act="pp-draw" data-v="s">${m.draw === 's' ? 'Drag across the page…' : 'Draw it on the page'}</button>`}</div>
+    <div class="pprl">Deck</div>
+    <div class="field ppdeckf"><button type="button" class="brdeck pickbtn ${deck ? 'on' : ''}" id="ppdeck" aria-haspopup="true" aria-expanded="false">${deck ? `<span class="sdot2" style="--sc:${scol(deck)}"></span>${esc(pathOf(deck).map(n => n.name).join(' › '))}` : 'Choose a deck'}<span class="pkcar">▾</span></button></div>
+    <p class="hint" style="margin:6px 0 0">It also goes in Paper mistakes.</p>` : ''}
+    <button class="btn ppsave" data-act="pp-save" ${r ? '' : 'disabled'}>${flag ? (card ? 'Update card' : 'Save card') : 'Save'} and next<kbd>↩</kbd></button>
+    ${card ? `<p class="hint" style="margin:8px 0 0">Card saved in ${esc(pathOf(card.nodeId).map(n => n.name).join(' › '))}. <button class="link sm" data-act="edit" data-id="${card.id}">Edit card</button></p>` : ''}
+    ${it.man ? '<button class="link sm danger-link" data-act="pp-qdel" style="margin-top:12px">Remove this box</button>' : ''}
+  </div>`;
+}
+function ppmPick(i){
+  const m = ppm; if (!m || i == null || !m.items[i]) return;
+  if (m.sel !== i){ m.sel = i; m.res = m.got = m.of = m.why = undefined; m.node = undefined; m.draw = m.draw === 's' ? null : m.draw; }
+  ppmSide(); ppmScrollTo(i);
+  const rail = $('#pprail'), b = rail?.querySelector(`[data-i="${i}"]`); if (rail && b){ const r = rail.getBoundingClientRect(), q = b.getBoundingClientRect(); if (q.top < r.top + 8) rail.scrollTop -= r.top + 8 - q.top; else if (q.bottom > r.bottom - 8) rail.scrollTop += q.bottom - r.bottom + 8; }
+}
+async function ppmSaveQ(){
+  const m = ppm, p0 = ppmP(), it = m?.items[m.sel]; if (!it || !p0) return;
+  const q0 = p0.q?.[it.key] || {}, r = m.res ?? q0.r; if (!r) return toast('Pick Right, Part or Wrong.');
+  const of = m.of ?? q0.of ?? (it.marks || 1), got = r === 'ok' ? of : Math.min(of, m.got ?? q0.got ?? (r === 'bad' ? 0 : Math.floor(of / 2)));
+  const why = (($('#ppwhy')?.value ?? m.why ?? '') || '').trim(), label = ($('#pplabel')?.value || it.label).trim() || it.label;
+  const q = { r, got, of, card: q0.card || null };
+  undoTx = null; undoLabel = 'mark question';
+  if (r !== 'ok'){
+    const ref = ppmDeck(); if (!ref) return toast('Pick a deck for the card first.');
+    const [nodeId, qtype] = String(ref).split('::'), old = q.card && S.cards[q.card];
+    const src = `${ppTitle(p0)} · ${label} · ${of} mark${of === 1 ? '' : 's'}`;
+    if (old){ const nc = { ...old, nodeId, mistake: why || old.mistake, marks: of, label, source: src, paper: { id: p0.id, q: it.key, got, of } }; if (qtype) nc.qtype = qtype; else delete nc.qtype; await put('cards', nc); }
+    else {
+      const btn = $('.ppsave'); if (btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
+      try {
+        const copy = { ...it, segs: (it.segs || []).map(g => ({ ...g, blob: null, url: null, skip: false })), sol: it.sol ? it.sol.map(g => ({ ...g, blob: null, url: null, skip: false })) : null };
+        const [cut] = await pxCrop(m.R, [copy]);
+        const imgs = async segs => { const out = []; for (const g of segs || []){ out.push(await storeImage(new File([g.blob], 'cleaned-paper.png', { type: 'image/png' }))); if (g.url) URL.revokeObjectURL(g.url); } return out; };
+        const now = Date.now(), c = { id: uid('c'), nodeId, label, qText: '', qImg: null, mistake: why, solText: '', solImgs: cut ? await imgs(cut.sol) : [], marks: of, source: src, paper: { id: p0.id, q: it.key, got, of }, createdAt: now, order: now, srs: freshSrs() };
+        if (qtype) c.qtype = qtype;
+        setQImgs(c, cut ? await imgs(cut.segs) : []);
+        if (await put('cards', c) === false) throw new Error('save');
+        q.card = c.id;
+      } catch (e){ console.error(e); return toast('Couldn’t make the card for ' + label + '.', 4000); }
+    }
+  }
+  const p = { ...ppPapers()[p0.id] }; p.q = { ...(p.q || {}), [it.key]: q }; if (p.st !== 'done') p.st = 'marking';
+  if (it.man){ p.man = (p.man || []).map(b => b.key === it.key ? { ...b, label, marks: of } : b); it.label = label; }
+  if (of !== (it.marks || 1)){ p.mk = { ...(p.mk || {}), [it.key]: of }; it.marks = of; }
+  p.qs = m.items.map(x => ({ key: x.key, label: x.label, marks: x.marks || 1 }));
+  S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings();
+  if (r !== 'ok') toast(q0.card ? `Updated the card for ${label}` : `${label} saved to ${nodeOf(S.cards[q.card]?.nodeId)?.name || 'your deck'} and Paper mistakes`, 2400);
+  const next = m.items.findIndex((x, j) => j > m.sel && !p.q[x.key]);
+  if (next >= 0) ppmPick(next); else { m.res = m.got = m.of = m.why = undefined; ppmSide(); }
+}
+async function ppmFinish(){
+  const p0 = ppmP(); if (!p0) return; const s = ppScore(p0);
+  undoTx = null; undoLabel = 'finish paper';
+  await ppSavePaper({ ...p0, st: 'done', done: Date.now() }, 'finish paper');
+  toast(`${ppTitle(p0)} done · ${s.got} / ${s.of} (${s.pct}%)${s.flagged ? ` · ${s.flagged} to review` : ''}`, 3600);
+  ppm = null; go('papers');
+}
+/* drawing a box on a page: a new question, or the picked question's solution */
+let ppmDrag = null, ppmDrew = 0;
+document.addEventListener('pointerdown', e => {
+  if (view.name !== 'ppmark' || !ppm?.draw || e.button > 0) return;
+  const ov = e.target.closest('.ppov'); if (!ov) return;
+  e.preventDefault(); const p = +ov.dataset.p, pg = ppm.R.pages[p - 1], r = ov.getBoundingClientRect();
+  const at = ev => ({ x: Math.max(0, Math.min(pg.w, (ev.clientX - r.left) / r.width * pg.w)), y: Math.max(0, Math.min(pg.h, (ev.clientY - r.top) / r.height * pg.h)) });
+  const a = at(e); ppmDrag = { p, pg, at }; ppm.drawBox = { p, x0: a.x, y0: a.y, x1: a.x, y1: a.y }; ov.setPointerCapture?.(e.pointerId);
+}, true);
+document.addEventListener('pointermove', e => { if (!ppmDrag || !ppm?.drawBox) return; const b = ppmDrag.at(e); ppm.drawBox.x1 = b.x; ppm.drawBox.y1 = b.y; ppmBoxes(); });
+document.addEventListener('pointerup', async e => {
+  if (!ppmDrag || !ppm?.drawBox) return; const d = ppm.drawBox; ppmDrag = null; ppm.drawBox = null; ppmDrew = Date.now();
+  const g = { p: d.p, x0: Math.min(d.x0, d.x1), x1: Math.max(d.x0, d.x1), y0: Math.min(d.y0, d.y1), y1: Math.max(d.y0, d.y1) };
+  if (g.x1 - g.x0 < 12 || g.y1 - g.y0 < 12){ ppmBoxes(); return; }
+  const p0 = ppmP(); if (!p0) return; const p = { ...p0 };
+  if (ppm.draw === 's'){
+    const it = ppm.items[ppm.sel]; if (!it) return; it.sol = [{ ...g, hand: true }]; p.msol = { ...(p.msol || {}), [it.key]: [g] }; ppm.draw = null;
+  } else {
+    const n = ppm.items.filter(x => x.man).length + 1, key = 'm' + Date.now().toString(36), label = 'Question ' + (ppm.items.length + 1);
+    p.man = [...(p.man || []), { key, label, marks: 1, segs: [g] }];
+    ppm.items.push({ key, q: 0, label, marks: 1, segs: [{ ...g, hand: true }], sol: null, man: true }); ppm.items.sort((a, b) => ppmAt(a) - ppmAt(b));
+    ppm.draw = null; ppm.sel = ppm.items.findIndex(x => x.key === key); ppm.res = ppm.got = ppm.of = ppm.why = undefined; void n;
+  }
+  S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings(); ppmSide();
+  setTimeout(() => $('#pplabel')?.select(), 30);
+});
+/* keys while marking: ↑ ↓ move, 1 2 3 mark, Enter saves, B draws a box */
+function ppKey(e){
+  if (view.name !== 'ppmark' || !ppm) return false;
+  const m = ppm, k = e.key;
+  if (k === 'ArrowDown' || k === 'ArrowUp' || k === 'j' || k === 'k'){ if (!m.items.length) return false; e.preventDefault(); const d = k === 'ArrowDown' || k === 'j' ? 1 : -1; ppmPick(m.sel == null ? 0 : Math.max(0, Math.min(m.items.length - 1, m.sel + d))); return true; }
+  if (['1', '2', '3'].includes(k) && m.sel != null){ e.preventDefault(); m.res = ({ 1: 'ok', 2: 'part', 3: 'bad' })[k]; ppmSide(); if (m.res !== 'ok') setTimeout(() => $('#ppwhy')?.focus(), 20); return true; }
+  if (k === 'Enter' && m.sel != null && !document.activeElement?.closest?.('button, a, select')){ e.preventDefault(); ppmSaveQ(); return true; }
+  if (k === 'b' || k === 'B'){ e.preventDefault(); m.draw = m.draw === 'q' ? null : 'q'; ppmSide(); if (m.draw) toast('Drag across the page round the question', 1800); return true; }
+  if (k === 'Escape' && m.draw){ e.preventDefault(); m.draw = null; ppmSide(); return true; }
+  return false;
+}
+document.addEventListener('keydown', e => {
+  if (view.name !== 'ppmark' || e.target.id !== 'ppwhy') return;
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)){ e.preventDefault(); ppmSaveQ(); }
+  if (e.key === 'Escape'){ e.target.blur(); }
+});
+
+/* the toolbar title and actions for both pages */
+function ppAppbar(){
+  if (view.name === 'papers'){
+    const cs = ppCards(), due = ppDueOf(cs);
+    return { title: '<b>Past papers</b><span class="abmeta">Trials, tasks and HSC papers since 2016</span>', act: `<button class="btn" data-act="pp-upload">${IC.card}Upload paper</button>${cs.length ? `<button class="btn primary" data-act="pp-review">${due ? `Review paper mistakes<span class="abn">${due}</span>` : `Practise paper mistakes<span class="abn">${cs.length}</span>`}</button>` : ''}` };
+  }
+  const p = ppPapers()[view.node]; if (!p) return { title: '<b>Past papers</b>', act: '' };
+  const s = ppScore(p), m = ppm;
+  return { title: `<button class="abcr" data-nav="papers">Past papers</button><i>›</i><span>${esc(PP_COURSE[p.c].name)}</span><i>›</i><b>${esc(ppTitle(p))}</b>`,
+    act: m?.items?.length ? `<span class="abmeta ppabs">${s.got} / ${s.of}${p.st === 'done' ? ` · ${s.pct}%` : ' so far'}</span><button class="abi ${m.draw === 'q' ? 'on' : ''}" data-act="pp-draw" data-v="q" title="Box a question (B)" aria-label="Box a question" aria-pressed="${m.draw === 'q'}"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.2 1.6"/></svg></button>${p.st === 'done' ? `<button class="btn" data-act="pp-reopen">Mark again</button>` : `<button class="btn primary" data-act="pp-finish">Finish marking</button>`}` : '' };
+}
+/* the paper a card came from, above the question while studying */
+function ppSrcLine(c){
+  const p = c.paper && ppPapers()[c.paper.id]; if (!p) return '';
+  return `<div class="ppsrcl"><span>${esc(ppTitle(p))} · ${esc(c.label || '')}${c.paper.of ? ` · you got ${c.paper.got} of ${c.paper.of}` : ''}</span><button class="link sm" data-act="pp-goq" data-id="${esc(c.id)}">Open in paper</button></div>`;
+}
+function ppDropFile(f){
+  if (view.name === 'ppmark' && ppm?.need){ const p = ppmP(); if (p){ const it = (p.key && ppFind(p.key)) || { key: p.key, c: p.c, sec: p.sec, school: p.school, year: p.year, sol: p.sol, src: p.src }; return ppAddPdf({ ...it, paper: p }, f); } }
+  return ppUploadDialog(f);
+}
+async function ppAction(act, a, e){
+  const v = a.dataset.v;
+  switch (act){
+    case 'pp-subj': { if (pp.s === v) return; const on = $('.pphome .stab[aria-selected="true"]'); ppTabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; pp.s = v; ppSave(); return renderPapers(); }
+    case 'pp-course': pp.c = { ...(pp.c || {}), [ppSubjCur().k]: v }; ppSave(); return renderPapers();
+    case 'pp-tog': pp[v] = !pp[v]; ppSave(); return renderPapers();
+    case 'pp-clear': pp.school = ''; pp.y = ''; pp.sol = false; pp.todo = false; ppSave(); return renderPapers();
+    case 'pp-col': ppCol.has(v) ? ppCol.delete(v) : ppCol.add(v); ls.set('md-pp-col', [...ppCol]); return renderPapers();
+    case 'pp-more': ppMore.add(v); return renderPapers();
+    case 'pp-reload': ppLoad(true); return renderPapers();
+    case 'pp-open': { const it = ppFind(a.dataset.k); if (!it) return toast('That paper isn’t in the list any more.'); if (it.paper){ study = null; return go('ppmark', it.paper.id); } return ppGetDialog(it); }
+    case 'pp-go': study = null; return go('ppmark', a.dataset.id);
+    case 'pp-pick': return ppPickFile(f => ppAddPdf(ppGetItem, f));
+    case 'pp-upload': return ppUploadDialog(null);
+    case 'pp-upick': return ppPickFile(ppUpFile);
+    case 'pp-upgo': return ppUpGo();
+    case 'pp-repick': return ppPickFile(ppDropFile);
+    case 'pp-review': return ppReview(null);
+    case 'pp-q': { if ((ppm?.draw && e?.target?.closest?.('.ppov')) || Date.now() - ppmDrew < 400) return; return ppmPick(+a.dataset.i); }
+    case 'pp-res': if (!ppm) return; ppm.res = v; if (v === 'ok'){ ppm.got = undefined; } ppmSide(); if (v !== 'ok') setTimeout(() => $('#ppwhy')?.focus(), 20); return;
+    case 'pp-got': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}, of = ppm.of ?? q.of ?? (it.marks || 1), r = ppm.res ?? q.r; const g0 = ppm.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)); ppm.got = Math.max(0, Math.min(of, g0 + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (!r || r === 'ok') ppm.res = ppm.got >= of ? 'ok' : ppm.got ? 'part' : 'bad'; else if (ppm.got >= of) ppm.res = 'ok'; else if (r === 'bad' && ppm.got) ppm.res = 'part'; else if (r === 'part' && !ppm.got) ppm.res = 'bad'; return ppmSide(); }
+    case 'pp-of': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}; ppm.of = Math.max(1, Math.min(40, (ppm.of ?? q.of ?? (it.marks || 1)) + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (ppm.got != null) ppm.got = Math.min(ppm.got, ppm.of); return ppmSide(); }
+    case 'pp-save': return ppmSaveQ();
+    case 'pp-draw': if (!ppm?.R) return; ppm.why = $('#ppwhy')?.value ?? ppm.why; ppm.draw = ppm.draw === v ? null : v; ppmSide(); if (ppm.draw) toast(v === 's' ? 'Drag across the page round the solution' : 'Drag across the page round the question', 1800); return;
+    case 'pp-solgo': { const it = ppm?.items[ppm.sel], g = it?.sol?.[0]; if (!g) return; const el = document.querySelector(`.pppage[data-p="${g.p}"]`), pg = ppm.R.pages[g.p - 1]; if (el) window.scrollTo({ top: el.getBoundingClientRect().top + scrollY + el.clientHeight * (g.y0 / pg.h) - 120, behavior: reducedMotion() ? 'auto' : 'smooth' }); return; }
+    case 'pp-qdel': { const p0 = ppmP(), it = ppm?.items[ppm.sel]; if (!p0 || !it?.man) return; const p = { ...p0, man: (p0.man || []).filter(b => b.key !== it.key) }; if (p.q?.[it.key]){ p.q = { ...p.q }; delete p.q[it.key]; } ppm.items.splice(ppm.sel, 1); ppm.sel = null; undoTx = null; undoLabel = 'remove box'; S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings(); return ppmSide(); }
+    case 'pp-finish': return ppmFinish();
+    case 'pp-reopen': { const p0 = ppmP(); if (!p0) return; await ppSavePaper({ ...p0, st: 'marking' }, 'reopen paper'); return ppmSide(); }
+    case 'pp-remove': {
+      if (a.dataset.confirm !== '1'){ a.dataset.confirm = '1'; a.textContent = 'Click again to remove it (its cards stay)'; return; }
+      const p0 = ppmP(); if (!p0) return; const ps = { ...ppPapers() }; delete ps[p0.id]; undoTx = null; undoLabel = 'remove paper'; S.settings = { ...S.settings, papers: ps }; await saveSettings(); ppDelPdf(p0.id); ppm = null; toast('Paper removed. Its cards are still in your decks · ⌘Z to undo', 3500); return go('papers');
+    }
+    case 'pp-goq': { const c = S.cards[a.dataset.id]; if (!c?.paper || !ppPapers()[c.paper.id]) return; ppm = ppm?.pid === c.paper.id ? ppm : null; if (ppm){ const i = ppm.items.findIndex(x => x.key === c.paper.q); if (i >= 0) ppm.sel = i; } else ppm = { pid: c.paper.id, want: c.paper.q }; ppm.want = c.paper.q; study = null; go('ppmark', c.paper.id); if (ppm?.R){ const i = ppm.items.findIndex(x => x.key === c.paper.q); if (i >= 0) ppmPick(i); } return; }
+  }
+}
+
 function lhMigrate(){
   if (ls.get('lh-look-1', false)) return; ls.set('lh-look-1', true);
   const ts = { ...themeSettings(), base: 'harness', over: {}, layout: 'harness' }; Object.values(FONT_KEY).forEach(k => delete ts[k]);
