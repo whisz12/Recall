@@ -1,10 +1,10 @@
 <!doctype html>
-<!-- recall-build:20261108192437 min-shell:1.27.0 -->
+<!-- recall-build:20261108201836 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' errimg: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net; worker-src 'self' blob: https://cdn.jsdelivr.net; font-src 'self' data:; connect-src 'self' blob: data: errimg: https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net https://raw.githubusercontent.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' errimg: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net; worker-src 'self' blob: https://cdn.jsdelivr.net; font-src 'self' data:; connect-src 'self' blob: data: errimg: https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net https://raw.githubusercontent.com https://api.github.com">
 </head>
 <body>
 <title>Recall</title>
@@ -562,6 +562,7 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.45}
 .dialog header h2{margin:0;font-size:15px;font-weight:600;flex:1}
 .updbar{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:65;display:flex;align-items:center;gap:10px;flex-wrap:wrap;max-width:min(520px,calc(100% - 36px));background:var(--surface-2);border:1px solid var(--border-2);border-radius:10px;padding:10px 12px 10px 14px;box-shadow:0 14px 36px rgba(0,0,0,.45);font-size:13px}
 .updbar span{flex:1;min-width:200px}
+.updbar a.btn{text-decoration:none}
 .ednav{display:inline-flex;align-items:center;gap:2px;margin-right:4px;font-family:var(--chrome);font-size:12px;color:var(--fg-2)}
 .ednav .icon{font-size:15px;line-height:1}
 .ednav .icon[disabled]{opacity:.3;pointer-events:none} .ednavn{min-width:54px;text-align:center;font-variant-numeric:tabular-nums}
@@ -7717,6 +7718,7 @@ document.addEventListener('click', async e => {
     case 'upd-check': return updCheck(true);
     case 'upd-go': return updGo();
     case 'upd-later': return $('#updbar')?.remove();
+    case 'shell-later': ls.set('md-rel-later', { tag: a.dataset.v, at: Date.now() }); return $('#updbar')?.remove();
     case 'ednav': return edNav(+a.dataset.dir);
     case 'clean-img': { e.stopPropagation(); if (!ed) return; const z = a.dataset.zone, i = +a.dataset.i, e0 = ed; const im = z === 'q' ? (e0.card.qImgs || [])[i] : (e0.card.solImgs || [])[i]; if (!im) return;
       const crop = a.dataset.mode === 'crop';
@@ -7854,7 +7856,7 @@ function updBar(m){
   updS.manual = false;
   $('#updbar')?.remove();
   const el = document.createElement('div'); el.id = 'updbar'; el.className = 'updbar'; el.setAttribute('role', 'status');
-  if (m.state === 'shell') el.innerHTML = `<span>The latest Recall update needs a one-time reinstall of the app. Ask Claude for the newest Mac/Windows download.</span><button class="btn sm" data-act="upd-later">OK</button>`;
+  if (m.state === 'shell') el.innerHTML = `<span>The latest Recall update needs a one-time reinstall of the app.</span><a class="btn sm primary" href="https://whisz12.github.io/Recall/download.html" target="_blank" rel="noopener">Download</a><button class="btn sm" data-act="upd-later">Later</button>`;
   else { updS.ready = m.build; el.innerHTML = `<span><b>A new version of Recall is ready.</b> ${window.desktop ? 'Restart to use it.' : 'Reload to use it.'}</span><button class="btn sm primary" data-act="upd-go">${window.desktop ? 'Restart now' : 'Reload'}</button><button class="btn sm" data-act="upd-later">Later</button>`; }
   document.body.appendChild(el); updAbout();
 }
@@ -7880,6 +7882,25 @@ async function updAbout(){
   el.innerHTML = window.RECALL_HOSTED ? `Version from ${esc(fmtBuild(window.RECALL_BUILD))}.${updS.ready ? ' <b>A newer version is ready: reload to use it.</b>' : ''} This app loads from GitHub, so it updates itself.` : 'This copy doesn’t update itself.';
 }
 if (window.desktop?.onUpdate) window.desktop.onUpdate(updBar);
+/* an older Mac/Windows app (the page updates itself, the app doesn't): once GitHub has a newer release, offer it.
+   Checks the latest release at most every 6 hours; "Later" hides it for 3 days. */
+const verNum = v => String(v || '').replace(/^v/, '').split('.').map(n => +n || 0).reduce((a, n) => a * 1000 + n, 0);
+async function shellNudge(){
+  if (!window.desktop?.appInfo || !navigator.onLine) return;
+  try {
+    const info = await window.desktop.appInfo(); if (!info?.shell) return;
+    let rel = ls.get('md-rel', null);
+    if (!rel || Date.now() - rel.at > 6 * HOUR){ const r = await fetch('https://api.github.com/repos/whisz12/Recall/releases/latest', { cache: 'no-cache', headers: { Accept: 'application/vnd.github+json' } }); if (!r.ok) return; const j = await r.json(); rel = { at: Date.now(), tag: j.tag_name || '', assets: (j.assets || []).map(a => a.name) }; ls.set('md-rel', rel); }
+    if (verNum(rel.tag) <= verNum(info.shell)) return;
+    const later = ls.get('md-rel-later', null); if (later && later.tag === rel.tag && Date.now() - later.at < 3 * DAY) return;
+    const file = window.desktop.platform === 'win32' ? 'Recall-windows.zip' : 'Recall-mac.zip', url = rel.assets.includes(file) ? `https://github.com/whisz12/Recall/releases/latest/download/${file}` : 'https://whisz12.github.io/Recall/download.html';
+    if ($('#updbar')) return;
+    const v = rel.tag.replace(/^v/, ''), el = document.createElement('div'); el.id = 'updbar'; el.className = 'updbar shellbar'; el.setAttribute('role', 'status');
+    el.innerHTML = `<span><b>Recall ${esc(v)} is out.</b> This app is ${esc(info.shell)}. The new one opens THSC papers straight inside Recall. Download it, unzip it and replace Recall in ${window.desktop.platform === 'win32' ? 'its folder' : 'Applications'}. Your cards stay where they are.</span><a class="btn sm primary" href="${esc(url)}" target="_blank" rel="noopener">Download ${esc(v)}</a><button class="btn sm" data-act="shell-later" data-v="${esc(rel.tag)}">Later</button>`;
+    document.body.appendChild(el);
+  } catch (e){ console.warn('release check', e); }
+}
+if (window.desktop?.appInfo){ setTimeout(shellNudge, 12000); setInterval(shellNudge, 6 * HOUR); }
 if (window.RECALL_HOSTED){
   if (/[?&]v=\d+/.test(location.search)) history.replaceState(null, '', location.pathname + location.hash);
   setTimeout(() => updCheck(false), 8000); setInterval(() => updCheck(false), 30 * 60e3);
