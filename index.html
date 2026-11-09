@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261110002648";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261110005741";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -8351,8 +8351,8 @@ const PP_SUBJ = [
   { k: 'software', name: 'Software Engineering', rx: /software/i, courses: ['sw'] },
 ];
 const PP_COURSE = {
-  std: { s: 'maths', name: 'Maths Standard', short: 'Standard', trial: 'Maths/trialpapers_general', at: 'Maths/assessment-tasks_general', nesa: 'mathematics-standard', arch: 2018 },
-  adv: { s: 'maths', name: 'Maths Advanced', short: 'Advanced', trial: 'Maths/trialpapers_advanced', at: 'Maths/assessment-tasks_advanced', nesa: 'mathematics-advanced', arch: 2019 },
+  std: { s: 'maths', name: 'Maths Standard', short: 'Standard', trial: 'Maths/trialpapers_general', at: 'Maths/assessment-tasks_general', nesa: 'mathematics-standard', narch: 'mathematics-general-archive', arch: 2018 },
+  adv: { s: 'maths', name: 'Maths Advanced', short: 'Advanced', trial: 'Maths/trialpapers_advanced', at: 'Maths/assessment-tasks_advanced', nesa: 'mathematics-advanced', narch: 'mathematics-archive', arch: 2019 },
   x1: { s: 'maths', name: 'Maths Extension 1', short: 'Extension 1', trial: 'Maths/trialpapers_extension1', at: 'Maths/assessment-tasks_extension1', nesa: 'mathematics-extension-1', arch: 2019 },
   x2: { s: 'maths', name: 'Maths Extension 2', short: 'Extension 2', trial: 'Maths/trialpapers_extension2', at: 'Maths/assessment-tasks_extension2', nesa: 'mathematics-extension-2', arch: 2019 },
   phy: { s: 'physics', name: 'Physics', short: 'Physics', trial: 'Physics/trialpapers', at: 'Physics/assessment-tasks', nesa: 'physics', arch: 2018 },
@@ -8370,7 +8370,7 @@ const PP_COURSE = {
 const PP_SECS = [['hsc', 'HSC papers', 'HSC paper'], ['trial', 'Trial papers', 'Trial paper'], ['hy', 'Half-yearly exams', 'Half-yearly exam'], ['ct1', 'CT1 Nov–Dec assessments', 'CT1 Nov–Dec assessment'], ['ct2', 'CT2 Feb–Mar assessments', 'CT2 Feb–Mar assessment'], ['ct3', 'CT3 May–Jun assessments', 'CT3 May–Jun assessment'], ['ct4', 'CT4 Aug–Sep assessments', 'CT4 Aug–Sep assessment'], ['other', 'Other assessment tasks', 'Assessment task']];
 const ppSecName = (k, one) => (PP_SECS.find(s => s[0] === k) || PP_SECS[7])[one ? 2 : 1];
 const PP_ALIAS = { nsb: 'north sydney boys', nsbhs: 'north sydney boys', nsg: 'north sydney girls', nsghs: 'north sydney girls', sbhs: 'sydney boys', sghs: 'sydney girls', ruse: 'james ruse', jr: 'james ruse', jrahs: 'james ruse', sgs: 'sydney grammar', bhhs: 'baulkham hills', nbhs: 'normanhurst boys', hgs: 'hornsby girls', sghs2: 'st george girls', sths: 'sydney tech', cths: 'cherrybrook tech', fsh: 'fort st', fshs: 'fort st', hurl: 'hurlstone', ghs: 'girraween' };
-let ppIdx = ls.get('md-pp-idx', null), ppIdxP = null, ppIdxErr = '';
+let ppIdx = ls.get('md-pp-idx', null), ppIdxP = null, ppIdxErr = '', ppIdxFail = 0;
 if (ppIdx && !ppIdx.t){ ppIdx.t = Object.fromEntries(Object.keys(ppIdx.c || {}).map(k => [k, ppIdx.at || 0])); }
 let pp = { s: 'maths', c: { maths: 'adv', english: 'en1' }, school: '', y: '', sol: false, todo: false, ...ls.get('md-pp', {}) };
 let ppQ = '', ppMore = new Set(), ppCol = new Set(ls.get('md-pp-col', ['hy', 'ct1', 'ct2', 'ct3', 'ct4', 'other']));
@@ -8392,6 +8392,7 @@ function ppParse(html, kind){
 /* the THSC lists for the courses on show (or the ones asked for), each refreshed after 12 hours */
 function ppLoad(force, want){
   if (ppIdxP) return ppIdxP;
+  if (!force && Date.now() - ppIdxFail < 2 * MIN) return Promise.resolve(ppIdx); /* after a failed load, wait before trying again (each load re-renders the page) */
   const t = ppIdx?.t || {}, cs = (want || ppShownCourses()).filter(c => PP_COURSE[c] && (force || !t[c] || Date.now() - t[c] > 12 * HOUR));
   if (!cs.length) return Promise.resolve(ppIdx);
   const jobs = []; cs.forEach(c => ['trial', 'at'].forEach(kind => { if (PP_COURSE[c][kind]) jobs.push({ c, kind, url: PP_RAW + PP_COURSE[c][kind] + '.html' }); }));
@@ -8401,9 +8402,9 @@ function ppLoad(force, want){
       const idx = { at: Date.now(), c: { ...(ppIdx?.c || {}) }, t: { ...(ppIdx?.t || {}) } }, fresh = {};
       ok.forEach(j => { (fresh[j.c] = fresh[j.c] || []).push(...j.rows); });
       Object.entries(fresh).forEach(([c, rows]) => { idx.c[c] = rows; idx.t[c] = Date.now(); });
-      ppIdx = idx; ppIdxErr = ok.length < jobs.length ? 'part' : ''; ls.set('md-pp-idx', ppIdx); return ppIdx;
+      ppIdx = idx; ppIdxErr = ok.length < jobs.length ? 'part' : ''; ppIdxFail = ppIdxErr ? Date.now() : 0; ls.set('md-pp-idx', ppIdx); return ppIdx;
     })
-    .catch(e => { console.warn('THSC list', e); ppIdxErr = navigator.onLine === false ? 'offline' : 'error'; return ppIdx; })
+    .catch(e => { console.warn('THSC list', e); ppIdxFail = Date.now(); ppIdxErr = navigator.onLine === false ? 'offline' : 'error'; return ppIdx; })
     .finally(() => { ppIdxP = null; if (view.name === 'papers') renderPapers(); });
   return ppIdxP;
 }
@@ -8416,13 +8417,15 @@ function ppShown(){
 const ppShownCourses = () => ppShown().flatMap(x => x.courses);
 const ppLoaded = c => !!ppIdx?.t?.[c];
 const ppKeyT = (no, t) => 't' + no + ':' + t;
-const ppHscYears = () => { const now = new Date(), last = now.getFullYear() - (now.getMonth() < 11 ? 1 : 0); const out = []; for (let y = last; y >= PP_FROM; y--) out.push(y); return out; };
+const ppHscYears = c => { const now = new Date(), yr = now.getFullYear(), last = now.getMonth() < 11 && !(c && ppNesaIdx[PP_COURSE[c]?.nesa]?.y?.[yr]) ? yr - 1 : yr; const out = []; for (let y = last; y >= PP_FROM; y--) out.push(y); return out; };
 function ppThscUrl(no, t){ const x = String(t).replace(/\(Adv\.\)/g, '__ADV__').replace(/\(Std\.\)/g, '__STD__').replace(/[^A-Za-z0-9._\- ]/g, '').replace(/__ADV__/g, '(Adv.)').replace(/__STD__/g, '(Std.)'); return 'https://thsconline.github.io/s/v/' + encodeURIComponent(no) + '/' + encodeURIComponent(x); }
-const ppNesaUrl = (c, y) => `https://www.nsw.gov.au/education-and-training/nesa/curriculum/hsc-exam-papers/${PP_COURSE[c].nesa}${y && y <= PP_COURSE[c].arch ? '-archive' : ''}`;
+const PP_NESA = 'https://www.nsw.gov.au/education-and-training/nesa/curriculum/hsc-exam-papers/';
+const ppNesaUrl = (c, y) => { const k = PP_COURSE[c], old = y && y <= k.arch; return ppNesaIdx[k.nesa]?.y?.[y] || PP_NESA + (old ? k.narch || k.nesa + '-archive' : k.nesa) + (y ? '/' + y : ''); };
+let ppNesaIdx = ls.get('md-nesa-idx', null) || {};
 /* every paper for a course: THSC's list, the NESA HSC years, and anything you uploaded yourself */
 function ppItems(c){
   const lib = Object.values(ppPapers()).filter(p => p.c === c), byKey = new Map(lib.filter(p => p.key).map(p => [p.key, p])), out = [];
-  if (PP_COURSE[c].nesa) for (const y of ppHscYears()){ const key = 'n:' + c + ':' + y; out.push({ key, c, sec: 'hsc', school: 'NSW HSC', year: y, sol: 1, src: 'nesa', paper: byKey.get(key) || null }); }
+  if (PP_COURSE[c].nesa) for (const y of ppHscYears(c)){ const key = 'n:' + c + ':' + y; out.push({ key, c, sec: 'hsc', school: 'NSW HSC', year: y, sol: 1, src: 'nesa', paper: byKey.get(key) || null }); }
   for (const [sec, school, year, no, title, sol] of (ppIdx?.c?.[c] || [])){ const key = ppKeyT(no, title); out.push({ key, c, sec, school, year, sol, src: 'thsc', no, title, paper: byKey.get(key) || null }); }
   const seen = new Set(out.map(i => i.key));
   for (const p of lib) if (!p.key || !seen.has(p.key)) out.push({ key: 'p:' + p.id, c, sec: p.sec, school: p.school, year: p.year, sol: p.sol ? 1 : 0, src: 'up', paper: p });
@@ -8556,6 +8559,7 @@ function ppSearch(q){
 function renderPapers(){
   if (!ppIdxP) ppLoad();
   const s = ppSubjCur(), c = ppCourseCur(), all = ppItems(c), items = ppFilter(all);
+  ppNesaWarm(c);
   const tabs = ppShown().map(x => { const n = x.courses.every(ppLoaded) ? x.courses.reduce((a, k) => a + ppItems(k).length, 0) : 0; return `<button class="stab" role="tab" aria-selected="${x.k === s.k}" data-act="pp-subj" data-v="${x.k}" style="--sc:${ppDot(x.k)}"><span class="sdot2"></span>${esc(x.name)}${n ? `<span class="stabn">${n}</span>` : ''}</button>`; }).join('');
   const courseSeg = s.courses.length > 1 ? `<div class="seg ppcourse" role="group" aria-label="Course">${s.courses.map(k => `<button type="button" data-act="pp-course" data-v="${k}" aria-pressed="${k === c}">${esc(PP_COURSE[k].short)}</button>`).join('')}</div>` : '';
   const schools = [...new Set(all.filter(i => i.sec !== 'hsc').map(i => i.school))].sort((a, b) => a.localeCompare(b)), years = [...new Set(all.map(i => i.year))].sort((a, b) => b - a);
@@ -8633,17 +8637,64 @@ async function ppGetPaper(no, title){
   return { name: decodeURIComponent(r.headers.get('x-file-name') || '') || title + '.pdf', bytes: new Uint8Array(await r.arrayBuffer()) };
 }
 async function ppFetchOpen(item){
-  const name = `${item.school} ${item.year}`;
-  openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="ppfh" style="max-width:420px"><header><h2 id="ppfh">${esc(name)}</h2></header><div class="body"><p class="sub" style="margin:0" aria-live="polite">Getting the paper from THSC…</p></div></div>`);
+  const nesa = item.src === 'nesa', where = nesa ? 'NESA' : 'THSC', name = nesa ? `${item.year} HSC` : `${item.school} ${item.year}`;
+  openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="ppfh" style="max-width:420px"><header><h2 id="ppfh">${esc(name)}</h2></header><div class="body"><p class="sub" style="margin:0" aria-live="polite">Getting the ${nesa ? 'paper and marking guidelines' : 'paper'} from ${where}…</p></div></div>`);
   try {
+    if (nesa){ const r = await ppNesaGet(item.c, item.year); if (!$('#ppfh')) return; return ppAddPdf(item, r.exam, { solFile: r.mg }); }
     const r = await ppGetPaper(item.no, item.title);
     if (!$('#ppfh')) return;
     const file = new File([r.bytes], r.name || name + '.pdf', { type: 'application/pdf' });
     return ppAddPdf(item, file);
   } catch (e){
-    console.warn('THSC download', e); if (!$('#ppfh')) return;
-    closeDialog(); ppGetDialog(item, e?.quiet ? '' : `Couldn't get it inside Recall (${String(e?.message || 'no connection').replace(/^Error invoking remote method '[^']*': (Error: )?/, '')}), so open it on THSC instead.`);
+    console.warn(where + ' download', e); if (!$('#ppfh')) return;
+    closeDialog(); ppGetDialog(item, e?.quiet ? '' : `Couldn't get it inside Recall (${String(e?.message || 'no connection').replace(/^Error invoking remote method '[^']*': (Error: )?/, '')}), so open it on ${where} instead.`);
   }
+}
+/* 1.29: the Mac and Windows apps fetch NESA's exam pages and PDFs for the page (nsw.gov.au sends no CORS header,
+   so the web app and older apps can't). The page reads NESA's own links, so a change to NESA's site is a page update. */
+const ppCanNesa = () => !!window.desktop?.nesaGet;
+function ppNesaLinks(html, base){
+  const d = new DOMParser().parseFromString(html, 'text/html'), root = d.querySelector('main') || d.body;
+  return [...root.querySelectorAll('a[href]')].map(a => { let u = null; try { u = new URL(a.getAttribute('href'), base); } catch {} return u && /nsw\.gov\.au$/.test(u.hostname) ? { t: a.textContent.replace(/\s+/g, ' ').trim(), u: u.href, path: u.pathname } : null; }).filter(Boolean);
+}
+async function ppNesaPage(url){ const r = await window.desktop.nesaGet(url); if (!r?.html) throw new Error('NESA sent something odd'); return ppNesaLinks(r.html, r.url || url); }
+/* year -> exam pack page, read from the course page and its archive page (old syllabuses), kept for a week */
+async function ppNesaYears(c, y){
+  const slug = PP_COURSE[c].nesa, hit = ppNesaIdx[slug];
+  if (hit && Date.now() - hit.at < 7 * 864e5 && (!y || hit.y[y])) return hit.y;
+  const ys = {}, add = ls2 => { for (const l of ls2){ const m = /\/hsc-exam-papers\/[a-z0-9-]+\/(20\d\d)\/?$/.exec(l.path); if (m && !ys[m[1]]) ys[m[1]] = l.u; } };
+  const top = await ppNesaPage(PP_NESA + slug); add(top);
+  const arch = top.find(l => /\/hsc-exam-papers\/[a-z0-9-]+-archive\/?$/.test(l.path));
+  if (arch && (!y || !ys[y])){ try { add(await ppNesaPage(arch.u)); } catch (e){ console.warn('NESA archive', e); } }
+  ppNesaIdx = { ...ppNesaIdx, [slug]: { at: Date.now(), y: ys } }; ls.set('md-nesa-idx', ppNesaIdx);
+  return ys;
+}
+/* the desktop app reads a course's NESA list in the background (once a week), so this year's HSC shows up once NESA has it */
+const ppNesaBusy = new Set();
+function ppNesaWarm(c){
+  const slug = PP_COURSE[c]?.nesa, hit = slug && ppNesaIdx[slug];
+  if (!slug || !ppCanNesa() || ppNesaBusy.has(slug) || (hit && Date.now() - hit.at < 7 * 864e5)) return;
+  ppNesaBusy.add(slug);
+  ppNesaYears(c).then(() => { if (view.name === 'papers' && ppCourseCur() === c) renderPapers(); }).catch(e => console.warn('NESA list', e));
+}
+/* on a year's page: the exam and its marking guidelines (courses sharing a page pick theirs by name) */
+const PP_NESA_PICK = { std: t => !/\b(standard|general) 1\b/i.test(t), en1: t => /\bpaper 1\b/i.test(t), en2: t => /\bpaper 2\b/i.test(t), en2s: t => /\bpaper 2\b/i.test(t) };
+function ppNesaPick(c, links){
+  const pdf = links.filter(l => /\.pdf$/i.test(l.path)), f = PP_NESA_PICK[c], ok = l => !f || f(l.t);
+  return {
+    exam: pdf.find(l => ok(l) && /\bexam/i.test(l.t) && !/marking|feedback|guideline|notes|report|transcript|audio|sample|stimulus|insert|booklet|data sheet|formula|reference/i.test(l.t)) || null,
+    mg: pdf.find(l => ok(l) && /marking guidelines?/i.test(l.t)) || null
+  };
+}
+async function ppNesaGet(c, y, want = { exam: true, mg: true }){
+  const ys = await ppNesaYears(c, y), url = ys[y];
+  if (!url) throw new Error(`NESA hasn’t put up the ${y} exam`);
+  const pick = ppNesaPick(c, await ppNesaPage(url));
+  if (want.exam && !pick.exam) throw new Error(`couldn’t find the ${y} exam on NESA’s page`);
+  const dl = async l => { const r = await window.desktop.nesaGet(l.u); if (!r?.bytes) throw new Error('NESA didn’t send a PDF'); return new File([r.bytes], r.name || 'paper.pdf', { type: 'application/pdf' }); };
+  const exam = want.exam ? await dl(pick.exam) : null;
+  const mg = want.mg && pick.mg ? await dl(pick.mg).catch(e => { console.warn('NESA marking guidelines', e); return null; }) : null;
+  return { exam, mg, page: url };
 }
 /* get a paper you haven't added yet: open it on THSC or NESA, then drop the PDF in */
 let ppGetItem = null;
@@ -8656,7 +8707,7 @@ function ppGetDialog(item, why){
       <ol class="ppsteps"><li><span>Open it on ${where}${item.src === 'nesa' ? ` and download the ${item.year} exam pack` : ''}.</span><a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Open on ${where}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3 7 9M11 9.5V13H3V5h3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
       <li><span>Drop the PDF here, or choose it.</span><div class="zone ppzone" id="ppzone"><button class="btn primary" data-act="pp-pick">Choose PDF</button><span class="hint">or drag it in</span></div></li></ol>
       ${item.src === 'thsc' && !why ? (window.desktop ? '<p class="hint" style="margin:12px 0 0">Recall 1.28 for Mac and Windows opens THSC papers straight in the app. <a href="https://whisz12.github.io/Recall/download.html" target="_blank" rel="noopener">Get it</a></p>' : (cloudOn() ? '' : '<p class="hint" style="margin:12px 0 0">Turn on sync (sidebar) and Recall gets THSC papers straight into the app on this device too.</p>')) : ''}
-      ${item.src === 'nesa' ? '<p class="hint" style="margin:12px 0 0">NESA puts the marking guidelines in a separate PDF, so Recall won’t find solutions inside the exam paper. You can still mark it and flag questions.</p>' : ''}
+      ${item.src === 'nesa' ? `<p class="hint" style="margin:12px 0 0">NESA puts the marking guidelines in a separate PDF. Download that too and add it with Add a solutions PDF.${ppCanNesa() ? '' : ` Recall ${window.desktop ? '1.29 ' : ''}for Mac and Windows gets the paper and its marking guidelines straight into the app. <a href="https://whisz12.github.io/Recall/download.html" target="_blank" rel="noopener">Get it</a>`}</p>` : ''}
     </div></div>`, d => ppZone(d.querySelector('#ppzone'), f => ppAddPdf(ppGetItem, f)));
 }
 function ppZone(z, cb, multi){
@@ -8765,7 +8816,7 @@ function ppMenu(key, at){
   const todo = todoAll().find(x => x.pp === it.key && !x.done);
   const k = esc(it.key), b = (act, label, extra = '') => `<button data-act="${act}" data-k="${k}" ${extra}>${label}</button>`;
   menuAt(`<div class="mhead">${esc(ppName(it))}<small>${esc(PP_COURSE[it.c].name)} · ${esc(ppSecName(it.sec, true))}${done ? ` · ${s.pct}%` : ''}</small></div>
-    ${p ? b('pp-open', done ? 'Open' : hasQs ? 'Carry on marking' : 'Start marking') : b('pp-open', it.src === 'thsc' && ppCanFetch() ? 'Get it and start marking' : 'Add the PDF and start…')}
+    ${p ? b('pp-open', done ? 'Open' : hasQs ? 'Carry on marking' : 'Start marking') : b('pp-open', (it.src === 'thsc' && ppCanFetch()) || (it.src === 'nesa' && ppCanNesa()) ? 'Get it and start marking' : 'Add the PDF and start…')}
     ${where ? b('pp-m-web', `Open on ${where}`) : ''}
     ${cards.length ? b('pp-m-review', `Review its mistakes (${cards.length})`) : ''}<hr>
     ${todo ? b('pp-m-todogo', `On your to-do list (${esc(TODO_TABS.find(t => t[0] === todoL(todo))?.[1] || 'Revision')})`) : b('pp-m-todo', 'Add to to-do list…')}
@@ -8860,6 +8911,7 @@ function ppTodoTicked(x, nowDone){
 
 /* ---------- marking a paper: pages in the middle, questions on the left, the card for the picked question on the right ---------- */
 let ppm = null;
+const ppNesaTried = new Set();
 const ppmP = () => ppPapers()[ppm?.pid];
 function renderPPMark(){
   const p = ppPapers()[view.node]; if (!p){ view = { name: 'papers', node: null }; return renderPapers(); }
@@ -8878,7 +8930,18 @@ async function ppmLoad(p){
     let got = m.buf ? { buf: m.buf, name: p.name } : await ppPdfOf(p);
     if (ppm !== m) return;
     if (!got && p.src === 'thsc' && ppCanFetch()){ const it = ppFind(p.key); if (it?.no){ try { m.busy = 'Getting the paper from THSC…'; ppmSide(); const r = await ppGetPaper(it.no, it.title); const buf = r.bytes.buffer.slice(r.bytes.byteOffset, r.bytes.byteOffset + r.bytes.byteLength); ppPutPdf(p.id, buf, r.name).catch(() => {}); got = { buf, name: r.name }; } catch (e){ console.warn(e); } if (ppm !== m) return; } }
+    if (!got && p.src === 'nesa' && ppCanNesa()){ try { m.busy = 'Getting the paper from NESA…'; ppmSide(); const r = await ppNesaGet(p.c, p.year, { exam: true, mg: false }); const buf = await r.exam.arrayBuffer(); ppPutPdf(p.id, buf, r.exam.name).catch(() => {}); got = { buf, name: r.exam.name }; } catch (e){ console.warn(e); } if (ppm !== m) return; }
     if (!got){ m.busy = ''; m.need = true; return ppmSide(); }
+    if (p.src === 'nesa' && ppCanNesa() && !ppNesaTried.has(p.id) && (!p.solSep || !(await ppSolOf(p)))){
+      ppNesaTried.add(p.id);
+      try {
+        m.busy = 'Getting the marking guidelines from NESA…'; ppmSide();
+        const r = await ppNesaGet(p.c, p.year, { exam: false, mg: true }); if (ppm !== m) return;
+        if (r.mg && p.solSep) await ppPutPdf(ppSolKey(p.id), await r.mg.arrayBuffer(), p.solName || r.mg.name);
+        else if (r.mg){ const q = await ppSolStore(p, r.mg); if (q){ await ppSavePaper(q, 'add marking guidelines'); p = q; } }
+      } catch (e){ console.warn('NESA marking guidelines', e); }
+      if (ppm !== m) return;
+    }
     const file = new File([got.buf.slice(0)], got.name || 'paper.pdf', { type: 'application/pdf' });
     const R = await pxRead(file, msg => { if (ppm === m){ m.busy = msg; ppmSide(); } }, { noOcr: true });
     if (ppm !== m) return;
@@ -9392,7 +9455,7 @@ async function ppAction(act, a, e){
     case 'pp-col': ppCol.has(v) ? ppCol.delete(v) : ppCol.add(v); ls.set('md-pp-col', [...ppCol]); return renderPapers();
     case 'pp-more': ppMore.add(v); return renderPapers();
     case 'pp-reload': ppLoad(true); return renderPapers();
-    case 'pp-open': { closeMenu(); const it = ppItemOf(a.dataset.k); if (!it) return toast('That paper isn’t in the list any more.'); if (it.paper){ study = null; return go('ppmark', it.paper.id); } return it.src === 'thsc' && ppCanFetch() ? ppFetchOpen(it) : ppGetDialog(it); }
+    case 'pp-open': { closeMenu(); const it = ppItemOf(a.dataset.k); if (!it) return toast('That paper isn’t in the list any more.'); if (it.paper){ study = null; return go('ppmark', it.paper.id); } return (it.src === 'thsc' && ppCanFetch()) || (it.src === 'nesa' && ppCanNesa()) ? ppFetchOpen(it) : ppGetDialog(it); }
     case 'pp-subjects': return ppSubjectsDialog();
     case 'pp-go': study = null; return go('ppmark', a.dataset.id);
     case 'pp-pick': return ppPickFile(f => ppAddPdf(ppGetItem, f));
