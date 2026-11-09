@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261109234756";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261110002648";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -1360,8 +1360,8 @@ html.hosted body.desktop .appbar{top:0;height:calc(var(--appbar) + env(safe-area
 .abcount{font:600 13px var(--ui);color:var(--fg);font-variant-numeric:tabular-nums;white-space:nowrap}
 .abcount span{font-weight:500;color:var(--fg-3)}
 .abprog{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--accent-btn);transform-origin:left;transition:transform .45s var(--ease)}
-.abseg{display:flex}
-.abseg button{height:28px;padding:0 10px;font-size:12px}
+.abseg{display:flex;flex:none;flex-wrap:nowrap !important}
+.abseg button{height:28px;padding:0 10px;font-size:12px;white-space:nowrap}
 .appbar #rflash{margin-right:4px}
 body.desktop .page,html.lh body.desktop .page{padding-top:calc(var(--appbar) + 28px)}
 body.desktop.sidebar-hidden .page{padding-top:calc(var(--appbar) + 28px)}
@@ -1934,6 +1934,8 @@ html.lh body.desktop .page.v-overview{padding-top:0}
 .thn small{font:400 12px var(--ui);color:var(--fg-3)}
 .thedit{font:500 12px var(--ui);color:var(--fg-2);padding:4px 8px;border-radius:6px;border:1px solid var(--border-2)}
 .thedit:hover{color:var(--fg);background:var(--hover)}
+.thdel{margin-left:-4px}
+.thdel:hover{color:color-mix(in srgb, var(--again) 75%, var(--fg))}
 .thradio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border-2);display:grid;place-items:center;flex:none}
 .throw[aria-pressed="true"] .thradio{border-color:var(--accent-btn)}
 .throw[aria-pressed="true"] .thradio::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent-btn)}
@@ -2612,6 +2614,20 @@ html.lh body.desktop .page.v-ppmark,.page.v-ppmark{padding:0;max-width:none}
 .ppzbar .ppzv{min-width:52px}
 .ppzsep{width:1px;height:18px;margin:0 4px;background:var(--border-2)}
 .ppzd{padding:0 10px 0 8px}
+/* separate solutions: a divider before their pages, and a cover over solutions while the exam timer runs */
+.ppsoldiv{display:flex;flex-direction:column;align-items:center;gap:2px;padding:20px 0 4px;font:600 15px var(--ui);color:var(--fg);letter-spacing:-.01em}
+.ppsoldiv small{font:400 12px var(--ui);color:var(--fg-3);max-width:60ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pplock{position:absolute;left:0;right:0;bottom:0;z-index:2;display:grid;place-items:center;background:var(--surface-2);border-top:1px solid transparent;pointer-events:auto}
+.pplock.part{border-top-color:var(--border-2)}
+.pplock > div{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px;text-align:center;color:var(--fg-2);font:400 13px var(--ui)}
+.pplock svg{width:20px;height:20px;color:var(--fg-3)}
+.pplock b{font:600 14px var(--ui);color:var(--fg)}
+.pplock span{font-variant-numeric:tabular-nums}
+.pppage.locked{background:var(--surface-2)}
+.ppsolln{margin:10px 0 14px}
+.ppisolf{grid-column:1 / -1;display:flex;align-items:center;gap:8px;min-width:0;padding:0 0 2px;font:400 12px var(--ui);color:var(--fg-3)}
+.ppisoln{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ppisoln.need{color:color-mix(in srgb, var(--hard) 75%, var(--fg))}
 /* exam timer in the paper bar, and its popover */
 .ppzbar .pptm{padding:0 8px 0 6px;font-variant-numeric:tabular-nums}
 .ppzbar .pptm.run{color:var(--fg)}
@@ -2676,7 +2692,7 @@ html.lh body.desktop .page.v-ppmark,.page.v-ppmark{padding:0;max-width:none}
 .pphome .stabadd{color:var(--fg-2)}
 .pphome .stabadd svg{width:15px;height:15px}
 .ppimp .body{max-height:min(70vh,640px);overflow:auto}
-.ppirow{display:grid;grid-template-columns:minmax(0,1.3fr) 150px 150px minmax(0,1.1fr) 82px 34px 30px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)}
+.ppirow{display:grid;grid-template-columns:minmax(0,1.3fr) 150px 150px minmax(0,1.1fr) 82px 128px 30px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)}
 .ppirow.pphdr{font-size:12px;color:var(--fg-3);padding-top:0}
 .ppirow .in{height:32px;padding:0 8px;font:400 13px var(--ui);min-width:0}
 .ppirow .in.need{border-color:color-mix(in srgb, var(--hard) 70%, var(--border-2))}
@@ -2790,6 +2806,74 @@ body.tddragging .tdl > .tdr:not(.tddrag) .tdmore2{opacity:0 !important}
 @media (hover:none){ .tdmore2{opacity:.35} .tdgap .tdmore2{opacity:.18} .tdo.calm .tdtime:not(.set){display:none} }
 @media (max-width:700px){ .tdaddx .tdtimebtn:not(.on) span,.tdaddx .tdrepbtn:not(.on) span{display:none} .tdaddx .tdtimebtn,.tdaddx .tdrepbtn{padding:0 8px;margin:0} }
 @media (max-width:560px){ .tdo.calm .tdsubn{display:none} .tdo.calm .tdoh{padding:16px 12px 4px 16px} .tdtabs{padding:0 6px} .tdo.calm .tdr{padding-left:12px} .tdo.calm .tdadd{padding-left:16px} }
+/* a task's subject is a button: click to change it (an empty one shows on hover, like the clock) */
+.tdo.calm button.tdsub{height:28px;padding:0 8px;margin:0 -2px;border:0;border-radius:var(--r-sm);background:none;cursor:pointer;transition:background var(--t-fast),color var(--t-fast),opacity var(--t-fast)}
+.tdo.calm button.tdsub:hover,.tdo.calm button.tdsub[aria-expanded="true"]{background:rgba(var(--ovr),.07);color:var(--fg)}
+.tdo.calm button.tdsub.empty{opacity:0}
+.tdo.calm .tdr:hover button.tdsub.empty,.tdo.calm button.tdsub.empty:focus-visible{opacity:1}
+@media (hover:none){ .tdo.calm button.tdsub.empty{display:none} }
+/* ---------- the To-do page (its own tab): wider spacing, bigger type ---------- */
+.tdpage{max-width:880px;margin:0 auto;padding:12px 8px 64px}
+.tdph{padding:8px 4px 18px}
+.tdph h1{margin:0;font:600 30px/1.15 var(--ui);letter-spacing:-.02em;color:var(--fg)}
+.tdph p{margin:6px 0 0;font:400 15px var(--ui);color:var(--fg-3)}
+.tdo.tdpg{margin:0}
+.tdo.tdpg .tdbox{background:transparent;border:0;border-radius:0;overflow:visible;box-shadow:none !important}
+.tdo.tdpg .tdoh{padding:0 4px 6px}
+.tdo.tdpg .tdoc{font-size:15px}
+.tdo.tdpg .tdtabs{padding:0;margin:0 0 6px}
+.tdo.tdpg .tdtabs button{height:46px;font-size:15px;padding:0 12px}
+.tdo.tdpg .tdtabs button:first-child{padding-left:4px}
+.tdo.tdpg .tdtabs button:first-child[aria-selected="true"]::after{left:4px}
+.tdo.tdpg .tdl{padding:6px 0}
+.tdo.tdpg .tdr{min-height:58px;padding:9px 8px 9px 4px;gap:14px}
+.tdo.tdpg .tdt{font-size:17px}
+.tdo.tdpg .tdck svg{width:24px;height:24px}
+.tdo.tdpg .tdl > .tdr.tdh{min-height:52px;padding:30px 8px 8px 4px}
+.tdo.tdpg .tdl > .tdr.tdh:first-child{padding-top:14px}
+.tdo.tdpg .tdh .tdt{font-size:20px}
+.tdo.tdpg .tdl > .tdr.tdgap{min-height:36px}
+.tdo.tdpg .tdadd{height:56px;padding-left:10px;border-top-color:transparent}
+.tdo.tdpg #tdoin{font-size:17px}
+.tdo.tdpg .tdclear{padding-left:4px;border-top-color:transparent}
+.tdo.tdpg .tdrepdays{padding-left:40px}
+/* selecting several: a small square box on the left of each row, shown on hover or while selecting */
+.tdselb{flex:none;width:20px;height:20px;margin-right:-4px;display:grid;place-items:center;padding:0;border:1.5px solid color-mix(in srgb, var(--fg) 30%, transparent);border-radius:5px;background:transparent;color:var(--btn-fg, #111);cursor:pointer;opacity:0;transition:opacity var(--t-fast),background var(--t-fast),border-color var(--t-fast)}
+.tdselb svg{width:13px;height:13px;opacity:0}
+.tdselb.ghost{border-color:transparent;cursor:default}
+.tdr:hover .tdselb:not(.ghost),.tdo.selmode .tdselb:not(.ghost),.tdselb:focus-visible{opacity:1}
+.tdr.tdsel .tdselb{background:var(--accent-btn);border-color:var(--accent-btn)}
+.tdr.tdsel .tdselb svg{opacity:1}
+.tdo.calm .tdl > .tdr.tdsel{background:color-mix(in srgb, var(--accent-btn) 9%, transparent)}
+.tdo.selmode .tdl > .tdr:not(.tdon){cursor:pointer}
+@media (hover:none){ .tdselb{display:none} .tdo.selmode .tdselb{display:grid} }
+.tdselbar{position:sticky;top:calc(var(--appbar, 0px) + 8px);z-index:4;display:flex;align-items:center;gap:4px;margin:4px 0 6px;padding:6px 6px 6px 14px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-2);box-shadow:0 1px 2px rgba(0,0,0,.12),0 6px 18px rgba(0,0,0,.16)}
+.tdselbar b{font:600 14px var(--ui);color:var(--fg);margin-right:8px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tdselbar button{height:32px;padding:0 10px;border:0;border-radius:var(--r-sm);background:none;color:var(--fg-2);font:500 13px var(--ui);cursor:pointer;white-space:nowrap}
+.tdselbar button:hover{background:rgba(var(--ovr),.08);color:var(--fg)}
+.tdselbar button.danger{color:color-mix(in srgb, var(--again) 80%, var(--fg))}
+.tdselbar button svg{width:12px;height:12px}
+.tdselbar .grow{flex:1}
+.tdselhint{font:400 12px var(--ui);color:var(--fg-3);white-space:nowrap;margin-right:4px}
+@media (max-width:700px){ .tdselhint{display:none} .tdselbar{flex-wrap:wrap;padding-left:10px} }
+.tdr.tdcarry{display:none !important}
+.tdr.tdmulti::after{content:attr(data-n);position:absolute;top:-8px;right:-8px;min-width:22px;height:22px;padding:0 6px;box-sizing:border-box;display:grid;place-items:center;border-radius:11px;background:var(--accent-btn);color:var(--btn-fg, #111);font:600 12px var(--ui);font-variant-numeric:tabular-nums}
+/* subtopics in the "Show tasks for" menu, and their dialog */
+.menu .tdcatm{padding-left:28px}
+.tdcated{margin-left:8px;padding:2px 6px;border-radius:var(--r-sm);font:500 12px var(--ui);color:var(--fg-3);opacity:0}
+.tdsubm:hover .tdcated,.tdsubm:focus-visible .tdcated{opacity:1}
+.tdcated:hover{background:rgba(var(--ovr),.1);color:var(--fg)}
+@media (hover:none){ .tdcated{opacity:1} }
+.tdcatnew{color:var(--fg-2)}
+.tdcatplus{width:14px;display:inline-grid;place-items:center;font:500 16px var(--ui);color:var(--fg-3)}
+.tdcatcols{display:flex;flex-wrap:wrap;gap:8px}
+.tdcatsw{position:relative;width:28px;height:28px;padding:0;border:0;border-radius:50%;background:var(--c);cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.tdcatsw[aria-checked="true"]{box-shadow:0 0 0 2px var(--surface-2),0 0 0 4px var(--fg)}
+.tdcatown{display:grid;place-items:center;border:0;box-shadow:inset 0 0 0 1.5px var(--border-2);color:var(--fg-3);font:500 15px var(--ui);overflow:hidden}
+.tdcatown[aria-checked="true"] span{display:none}
+.tdcatown input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.tdcatprev{display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:var(--r-md);background:var(--bg);font:500 14px var(--ui);color:var(--fg)}
+.tdcatprev .sdot2{width:9px;height:9px;border-radius:50%;background:var(--sc)}
 /* study on a phone: the bottom bar keeps Back (to the previous card or un-showing the answer), big enough for a thumb */
 .lhback svg{display:none}
 @media (max-width:760px){
@@ -2819,6 +2903,7 @@ html.hosted body{-webkit-tap-highlight-color:transparent}
   <button class="brand" data-nav="decks" aria-label="Recall home"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lgbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c2c2c"/><stop offset="1" stop-color="#121212"/></linearGradient></defs><rect width="32" height="32" rx="7.5" fill="url(#lgbg)"/><rect x=".5" y=".5" width="31" height="31" rx="7" fill="none" stroke="rgba(255,255,255,.12)"/><path transform="translate(5.35 22.10) scale(0.01778 -0.01778)" d="M858 95C858 117 844 117 834 117C813 117 812 107 811 94C806 47 777 25 747 25C687 25 678 96 673 138C671 149 663 218 662 223C648 293 593 324 550 340C666 370 717 435 717 501C717 602 607 686 419 686H39V639H147V47H39V0C75 3 173 3 215 3C257 3 355 3 391 0V47H283V325H400C414 325 458 325 489 291C521 256 521 237 521 164C521 98 521 49 591 15C635 -7 697 -11 738 -11C845 -11 858 79 858 95ZM564 500C564 444 564 361 399 361H283V639H401C562 639 564 561 564 500Z" fill="#ececec"/><rect class="cur" x="21.69" y="20.44" width="4.27" height="1.60" rx=".4" style="fill:var(--accent-btn)"/></svg><span class="wordmark">Recall</span></button>
   <nav aria-label="Main">
     <button data-nav="decks"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5.5" width="11" height="11" rx="2.5"/><path d="M6.5 3.5h8a2.5 2.5 0 0 1 2.5 2.5v8"/></svg><span>Decks</span></button>
+    <button data-nav="todo"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5.5 5 7l2.5-3M3.5 12.5 5 14l2.5-3M10.5 5.5h6M10.5 12.5h6"/></svg><span>To-do</span></button>
     <button data-nav="add" class="navadd">Add</button>
     <button data-nav="browse"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M7 5h10M7 10h10M7 15h10"/><circle cx="3.6" cy="5" r=".9" fill="currentColor"/><circle cx="3.6" cy="10" r=".9" fill="currentColor"/><circle cx="3.6" cy="15" r=".9" fill="currentColor"/></svg><span>Browse</span></button>
     <button data-nav="papers"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5 2.8h6.6L15.5 6.7V17.2H5z"/><path d="M11.4 2.8v4h4M7.8 10.5h4.8M7.8 13.6h4.8"/></svg><span>Past papers</span></button>
@@ -3136,6 +3221,7 @@ function render(){
   else if (view.name === 'themes') renderThemes();
   else if (view.name === 'papers') renderPapers();
   else if (view.name === 'ppmark') renderPPMark();
+  else if (view.name === 'todo') renderTodo();
   if (view.name !== 'study'){ $('#answerbar')?.remove(); $('#lhmap')?.remove(); }
   renderAppbar();
   typeset(root);
@@ -3268,7 +3354,6 @@ function renderDecks(){
       </div>`}
       ${topics.length ? `<div class="tcols">${[...full, ...empty].map(tcard).join('')}</div>` : ''}
       ${cdOn() ? cdCard(subj.id) : ''}
-      ${todoSection(subj.id)}
       ${recent.length || forgot.length ? `<div class="dklower">
         ${recent.length ? `<section><div class="glhead"><h2>Pick up where you left off</h2></div>${recentHtml}</section>` : ''}
         ${forgot.length ? `<section><div class="glhead"><h2>You keep forgetting</h2><button class="link acc" data-act="practise-forgot" data-id="${subj.id}">Practise ${forgot.length}</button></div>${forgotHtml}</section>` : ''}
@@ -3328,7 +3413,8 @@ function renderAppbar(){
   else if (view.name === 'browse') title = '<b>Browse</b>';
   else if (view.name === 'papers' || view.name === 'ppmark'){ const r = ppAppbar(); title = r.title; act = r.act; }
   else if (view.name === 'stats') title = '<b>Stats</b>';
-  else if (view.name === 'themes'){ const m = themeSettings().mode || 'fixed'; title = '<b>Themes</b>'; act = `<div class="seg abseg" role="group" aria-label="Appearance">${[['system', 'Match system'], ['dark', 'Always dark'], ['light', 'Always light']].map(([k, l]) => `<button type="button" data-act="th-mode" data-m="${k}" aria-pressed="${m === k || (m === 'fixed' && k === (lum(themeColours(themeSettings()).bg) < .3 ? 'dark' : 'light'))}">${l}</button>`).join('')}</div>`; }
+  else if (view.name === 'todo') title = '<b>To-do</b>';
+  else if (view.name === 'themes'){ const m = themeSettings().mode || 'fixed'; title = '<b>Themes</b>'; act = `<div class="seg abseg" role="group" aria-label="Appearance">${[['system', 'System', 'Match your computer’s light or dark setting'], ['dark', 'Dark', 'Always dark'], ['light', 'Light', 'Always light']].map(([k, l, tt]) => `<button type="button" data-act="th-mode" data-m="${k}" title="${tt}" aria-pressed="${m === k || (m === 'fixed' && k === (lum(themeColours(themeSettings()).bg) < .3 ? 'dark' : 'light'))}">${l}</button>`).join('')}</div>`; }
   else if (view.name === 'study' && study){
     const c = study.cur ? S.cards[study.cur] : null, ps = c ? pathOf(c.nodeId) : (study.node ? pathOf(study.node) : []);
     title = (study.tag ? `<button class="abcr" data-act="pp-back">${esc(study.tag)}</button><i>›</i>` : '') + (ps.length ? ps.map((n, i) => i < ps.length - 1 ? `<span>${esc(n.name)}</span><i>›</i>` : `<b>${esc(n.name)}</b>`).join('') : '<b>All cards</b>');
@@ -5142,7 +5228,7 @@ function themeRow(id, th, cur){
   return `<button class="throw" data-act="th-pick" data-th="${id}" aria-pressed="${cur === id}">
     <span class="thsw3" aria-hidden="true">${(th.pal || [th.bg, th.fg, th.btn]).map(c => `<i style="background:${c}"></i>`).join('')}</span>
     <span class="thn"><span>${esc(th.name)}</span><small>${esc(th.tag || '')}</small></span>
-    ${th.custom ? `<span class="thedit" role="button" tabindex="0" data-act="th-edit" data-th="${id}">Edit</span>` : ''}<span class="thradio" aria-hidden="true"></span></button>`;
+    ${th.custom ? `<span class="thedit" role="button" tabindex="0" data-act="th-edit" data-th="${id}">Edit</span><span class="thedit thdel" role="button" tabindex="0" data-act="th-cdel" data-th="${id}" title="Delete this theme" aria-label="Delete ${esc(th.name)}">Delete</span>` : ''}<span class="thradio" aria-hidden="true"></span></button>`;
 }
 function themeMini(){
   return `<div class="mini" aria-hidden="true">
@@ -5208,10 +5294,12 @@ function customNew(){
   thEdit = id; themePick(id, null, null);
 }
 function customDelete(id){
+  const name = S.settings.customThemes?.[id]?.name || 'Theme';
+  undoTx = null; undoLabel = 'delete theme'; undoRecordSettings();
   const all = { ...(S.settings.customThemes || {}) }; delete all[id];
   S.settings = { ...S.settings, customThemes: all }; const ts = { ...themeSettings() };
   ['base', 'dark', 'light'].forEach(k => { if (ts[k] === id) ts[k] = k === 'light' ? 'applelight' : 'harness'; });
-  loadCustomThemes(); thEdit = null; saveTheme(ts); renderThemes(); toast('Theme deleted');
+  loadCustomThemes(); thEdit = null; saveTheme(ts); renderThemes(); toast(`${name} deleted · ⌘Z to undo`, 2400);
 }
 document.addEventListener('input', e => {
   if (view.name !== 'themes' || !thEdit) return;
@@ -7093,7 +7181,15 @@ const TODO_TABS = [['today', 'Today'], ['doing', 'In progress'], ['hw', 'Homewor
 let todoShowDone = false, todoTab = TODO_KEYS.includes(ls.get('md-todo-tab', 'today')) ? ls.get('md-todo-tab', 'today') : 'today';
 /* which subject's tasks the list shows: this page's subject unless you pick another (or All) in the panel */
 let todoF = { at: null, v: '' };
-function todoEff(subj){ const v = todoF.at === (subj || null) ? todoF.v : ''; if (v === 'all') return null; if (v && S.nodes[v]) return v; return subj || null; }
+function todoEff(subj){ const v = todoF.at === (subj || null) ? todoF.v : ''; if (v === 'all') return null; if (v && (S.nodes[v] || (v.startsWith('tc:') && todoCat(v.slice(3))))) return v; return subj || null; }
+/* to-do subtopics ("3U Maths", "4U Maths"): your own name and colour, under a subject or on their own. A task in one has tc = its id and s = its subject,
+   so it shows under the subject too. A filter value is a subject id or "tc:<id>". Kept in S.settings.todoCats (synced). */
+const todoCats = () => Array.isArray(S.settings?.todoCats) ? S.settings.todoCats : [];
+const todoCat = id => todoCats().find(c => c.id === id) || null;
+const todoMatch = (x, f) => !f ? true : f.startsWith('tc:') ? x.tc === f.slice(3) : x.s === f;
+const todoFCol = f => !f ? 'var(--accent)' : f.startsWith('tc:') ? (todoCat(f.slice(3))?.color || 'var(--fg-3)') : scol(f);
+const todoFName = f => !f ? '' : f.startsWith('tc:') ? (todoCat(f.slice(3))?.name || 'Subtopic') : (nodeOf(f)?.name || 'Subject');
+const todoXCol = x => (x.tc && todoCat(x.tc)?.color) || (x.s ? scol(x.s) : 'var(--accent)');
 const todoL = x => x.l === 'today' || x.l === 'hw' || x.l === 'doing' || x.l === 'later' ? x.l : 'all';
 /* in progress: how many things you're actively working on, across every subject, against a limit you set */
 const todoWip = () => { const n = S.settings?.todoWip; return n === 0 ? 0 : Number.isFinite(n) && n > 0 ? n : 3; };
@@ -7135,7 +7231,7 @@ function todoSetTime(id, n){
 const todoOrd = x => x.o ?? x.at;
 /* headings (k: 'h') and blank spaces (k: 'gap') sit in the list like tasks, with no subject; they never count as tasks */
 function todoList(subj, tab = todoTab){
-  const f = todoEff(subj), l = todoAll().filter(x => !x.done && todoIn(x, tab) && (x.k || !f || x.s === f)).sort((a, b) => todoOrd(a) - todoOrd(b));
+  const f = todoEff(subj), l = todoAll().filter(x => !x.done && todoIn(x, tab) && (x.k || todoMatch(x, f))).sort((a, b) => todoOrd(a) - todoOrd(b));
   return f ? todoTidy(l) : l;
 }
 /* showing one subject: leave out headings with none of its tasks under them, and spaces at the ends or doubled up */
@@ -7147,7 +7243,7 @@ function todoTidy(l){
 }
 const todoTasks = l => l.filter(x => !x.k);
 function todoDoneList(subj, tab = todoTab){
-  const f = todoEff(subj); return todoAll().filter(x => x.done && todoIn(x, tab) && (!f || x.s === f)).sort((a, b) => a.done - b.done);
+  const f = todoEff(subj); return todoAll().filter(x => x.done && todoIn(x, tab) && todoMatch(x, f)).sort((a, b) => a.done - b.done);
 }
 const todoDoneLog = () => Array.isArray(S.settings?.todoDone) ? S.settings.todoDone : [];
 /* ---------- to-do rows, calm layout (Nov 2026): big plain rows like a Notion list. Subject and time are quiet text on the right;
@@ -7156,20 +7252,22 @@ const TD_MORE_IC = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5"
 const TD_FOLD_IC = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6 8 9.8 11.5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const tdMoreBtn = (x, what) => `<button class="tdmore2" data-act="todo-move" data-id="${x.id}" title="More" aria-label="More for ${esc(what)}" aria-haspopup="true">${TD_MORE_IC}</button>`;
 function todoRow(x, i){
-  if (x.k === 'gap') return `<div class="tdr tdgap" data-tid="${x.id}" title="Blank space · drag to move" style="--i:${Math.min(i || 0, 12)}">${tdMoreBtn(x, 'blank space')}</div>`;
-  if (x.k === 'h') return `<div class="tdr tdh ${x.c ? 'folded' : ''}" data-tid="${x.id}" title="Drag to reorder" style="--i:${Math.min(i || 0, 12)}">
-    <button class="tdfold" data-act="todo-fold" data-id="${x.id}" aria-expanded="${!x.c}" aria-label="${x.c ? 'Show' : 'Hide'} the tasks under ${esc(x.t)}">${TD_FOLD_IC}</button>
+  const sel = todoSel.has(x.id) ? 'tdsel' : '';
+  if (x.k === 'gap') return `<div class="tdr tdgap ${sel}" data-tid="${x.id}" title="Blank space · drag to move" style="--i:${Math.min(i || 0, 12)}"><button class="tdselb" data-act="todo-sel" data-id="${x.id}" role="checkbox" aria-checked="${todoSel.has(x.id)}" aria-label="Select ${esc(x.t || 'blank space')}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8.3 6.8 11 12 5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="grow"></span>${tdMoreBtn(x, 'blank space')}</div>`;
+  if (x.k === 'h') return `<div class="tdr tdh ${x.c ? 'folded' : ''} ${sel}" data-tid="${x.id}" title="Drag to reorder" style="--i:${Math.min(i || 0, 12)}">
+    <button class="tdselb" data-act="todo-sel" data-id="${x.id}" role="checkbox" aria-checked="${todoSel.has(x.id)}" aria-label="Select ${esc(x.t || 'blank space')}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8.3 6.8 11 12 5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="tdfold" data-act="todo-fold" data-id="${x.id}" aria-expanded="${!x.c}" aria-label="${x.c ? 'Show' : 'Hide'} the tasks under ${esc(x.t)}">${TD_FOLD_IC}</button>
     <span class="tdt" data-tedit="${x.id}" title="Click to rename"><span class="tdtx">${esc(x.t)}</span></span>
     ${x._n ? `<span class="tdhn">${x._n}</span>` : ''}<span class="grow"></span>${x._m ? `<span class="tdhm" title="Time estimated for the tasks under this heading">${fmtMin(x._m)}</span>` : ''}
     ${tdMoreBtn(x, x.t)}
   </div>`;
-  const sn = x.s && nodeOf(x.s), late = todoLate(x), showSub = !todoEff($('#tdo')?.dataset.subj || todoRowSubj || null);
-  return `<div class="tdr ${x.done ? 'tdon' : ''}" data-tid="${x.id}" ${x.done ? '' : 'title="Drag to reorder"'} style="--sc:${x.s ? scol(x.s) : 'var(--accent)'};--i:${Math.min(i || 0, 12)}">
-    <button class="tdck" data-act="todo-tick" data-id="${x.id}" role="checkbox" aria-checked="${!!x.done}" aria-label="${x.done ? 'Untick' : 'Tick off'}: ${esc(x.t)}"><svg viewBox="0 0 22 22" aria-hidden="true"><circle class="tdcr" cx="11" cy="11" r="9"/><path class="tdcv" d="M6.6 11.4 9.6 14.3 15.6 8"/></svg><span class="tdburst" aria-hidden="true">${'<i></i>'.repeat(8)}</span></button>
+  const sn = x.s && nodeOf(x.s), late = todoLate(x), fNow = todoEff($('#tdo')?.dataset.subj || todoRowSubj || null), cat = x.tc && todoCat(x.tc);
+  const tag = cat && fNow !== 'tc:' + cat.id ? { c: cat.color, n: cat.name } : !fNow && sn ? { c: scol(x.s), n: sn.name } : null;
+  return `<div class="tdr ${x.done ? 'tdon' : ''} ${sel}" data-tid="${x.id}" ${x.done ? '' : 'title="Drag to reorder"'} style="--sc:${todoXCol(x)};--i:${Math.min(i || 0, 12)}">
+    ${x.done ? '<span class="tdselb ghost" aria-hidden="true"></span>' : `<button class="tdselb" data-act="todo-sel" data-id="${x.id}" role="checkbox" aria-checked="${todoSel.has(x.id)}" aria-label="Select ${esc(x.t || 'blank space')}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8.3 6.8 11 12 5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}<button class="tdck" data-act="todo-tick" data-id="${x.id}" role="checkbox" aria-checked="${!!x.done}" aria-label="${x.done ? 'Untick' : 'Tick off'}: ${esc(x.t)}"><svg viewBox="0 0 22 22" aria-hidden="true"><circle class="tdcr" cx="11" cy="11" r="9"/><path class="tdcv" d="M6.6 11.4 9.6 14.3 15.6 8"/></svg><span class="tdburst" aria-hidden="true">${'<i></i>'.repeat(8)}</span></button>
     <span class="tdt" data-tedit="${x.id}" title="Click to edit"><span class="tdtx">${esc(x.t)}</span></span>${x.pp ? `<button class="tdpp" data-act="pp-open" data-k="${esc(x.pp)}" title="Open the paper" aria-label="Open the paper"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5h5.2L12 5.3v8.2H4z M9.2 2.5v2.8H12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>` : ''}
     ${x.r && todoRule(x.r) ? `<span class="tdrep" title="Repeats every ${esc(repWords(todoRule(x.r).days))}">${REP_IC}${esc(repShort(todoRule(x.r).days))}</span>` : ''}
     ${late ? `<span class="tdodue late">From ${todoDay(x.due).toLowerCase()}</span>` : ''}
-    <span class="tdmeta">${showSub && sn ? `<span class="tdsub"><span class="sdot2" style="--sc:${scol(x.s)}"></span><span class="tdsubn">${esc(sn.name)}</span></span>` : ''}<button class="tdtime ${x.m ? 'set' : ''}" data-act="todo-time" data-id="${x.id}" title="${x.m ? 'About ' + fmtMin(x.m) + ' · change' : 'Set how long it will take'}" aria-label="${x.m ? 'Time: about ' + fmtMin(x.m) : 'Set time'}" aria-haspopup="true">${x.m ? fmtMin(x.m) : CLOCK_IC}</button></span>
+    <span class="tdmeta">${x.done ? (tag ? `<span class="tdsub"><span class="sdot2" style="--sc:${tag.c}"></span><span class="tdsubn">${esc(tag.n)}</span></span>` : '') : `<button class="tdsub ${tag ? '' : 'empty'}" data-act="todo-subjmenu" data-id="${x.id}" title="Change the subject" aria-haspopup="true" aria-label="${tag ? 'Subject: ' + esc(tag.n) + ', change' : 'Set a subject'}">${tag ? `<span class="sdot2" style="--sc:${tag.c}"></span><span class="tdsubn">${esc(tag.n)}</span>` : `<span class="sdot2" style="--sc:var(--fg-3)"></span><span class="tdsubn">Subject</span>`}</button>`}<button class="tdtime ${x.m ? 'set' : ''}" data-act="todo-time" data-id="${x.id}" title="${x.m ? 'About ' + fmtMin(x.m) + ' · change' : 'Set how long it will take'}" aria-label="${x.m ? 'Time: about ' + fmtMin(x.m) : 'Set time'}" aria-haspopup="true">${x.m ? fmtMin(x.m) : CLOCK_IC}</button></span>
     ${x.done ? '' : tdMoreBtn(x, x.t)}
   </div>`;
 }
@@ -7185,25 +7283,30 @@ function todoShown(open){
   }
   return out;
 }
-function todoSection(subj){
+function todoSection(subj, page){
   todoSpawn(); todoRowSubj = subj || null;
-  const f = todoEff(subj), fn = f && nodeOf(f), addTo = f || subj, an = addTo && nodeOf(addTo);
-  const nr = todoRules().filter(r => !f || r.s === f).length;
+  const f = todoEff(subj), addTo = f || subj, anName = todoFName(addTo);
+  const nr = todoRules().filter(r => todoMatch(r, f)).length;
   const open = todoList(subj), done = todoDoneList(subj), today = done.length, nTask = todoTasks(open).length, shown = todoShown(open);
   const nOf = k => todoTasks(todoList(subj, k)).length, w = todoWip(), nd = todoDoing(), over = w && nd > w, mins = todoMins(open), minsDone = todoMins(done);
   const tm = mins ? ` · <span class="tdtot" title="Time estimated for the tasks left${minsDone ? ', ' + fmtMin(minsDone) + ' done' : ''}">${fmtMin(mins)}</span>` : '';
   const cap = todoTab === 'doing'
-    ? `${w ? `${nd} of ${w} at once` : `${nd} in progress`}${f && nd !== nTask ? ` · ${nTask} in ${esc(fn.name)}` : ''}${tm}${today ? ` · ${today} done` : ''} · <button class="tdrepl" data-act="todo-wip">${w ? 'Change limit' : 'Set a limit'}</button>${over ? `<span class="tdover">Over your limit</span>` : ''}`
+    ? `${w ? `${nd} of ${w} at once` : `${nd} in progress`}${f && nd !== nTask ? ` · ${nTask} in ${esc(todoFName(f))}` : ''}${tm}${today ? ` · ${today} done` : ''} · <button class="tdrepl" data-act="todo-wip">${w ? 'Change limit' : 'Set a limit'}</button>${over ? `<span class="tdover">Over your limit</span>` : ''}`
     : `${nTask ? `${nTask} left` : today ? 'All done' : todoTab === 'today' ? 'Nothing for today yet' : todoTab === 'hw' ? 'No homework to hand in' : todoTab === 'later' ? 'Nothing waiting' : 'Nothing to revise yet'}${tm}${today ? ` · ${today} done` : ''}${nr ? ` · <button class="tdrepl" data-act="todo-reps">${nr} repeating</button>` : ''}`;
-  const subs = kids(null), fl = f ? esc(fn?.name || 'Subject') : 'All subjects';
+  const subs = kids(null), fl = f ? esc(todoFName(f)) : 'All subjects';
   const act = todoNewKind || todoNewMin || todoRepDays.size || todoRepOpen;
-  return `<section class="tdo calm" id="tdo" data-subj="${subj || ''}" style="--sc:${addTo ? scol(addTo) : 'var(--accent)'}">
+  /* selection: only rows you can see stay selected */
+  { const vis = new Set(shown.map(x => x.id)); for (const id of [...todoSel]) if (!vis.has(id)) todoSel.delete(id); }
+  const nSel = todoSel.size, selOn = todoSelMode || nSel > 0;
+  return `<section class="tdo calm ${page ? 'tdpg' : ''} ${selOn ? 'selmode' : ''}" id="tdo" data-subj="${subj || ''}" data-page="${page ? 1 : ''}" style="--sc:${todoFCol(addTo)}">
     <div class="tdbox">
-      <div class="tdoh"><h2>To-do</h2><span class="tdoc">${cap}</span><span class="grow"></span>
-        ${subs.length > 1 ? `<button type="button" class="tdfbtn" data-act="todo-fmenu" aria-haspopup="true" title="Which subject's tasks to show">${f ? `<span class="sdot2" style="--sc:${scol(f)}"></span>` : ''}${fl}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6.5 8 10l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ''}</div>
+      <div class="tdoh">${page ? '' : '<h2>To-do</h2>'}<span class="tdoc">${cap}</span><span class="grow"></span>
+        ${shown.length ? `<button type="button" class="tdfbtn" data-act="todo-selmode" aria-pressed="${selOn}" title="Select several tasks to move, tick or delete together (or Shift-click / ⌘-click rows)">${selOn ? 'Done' : 'Select'}</button>` : ''}
+        ${subs.length > 1 ? `<button type="button" class="tdfbtn" data-act="todo-fmenu" aria-haspopup="true" title="Which subject's tasks to show">${f ? `<span class="sdot2" style="--sc:${todoFCol(f)}"></span>` : ''}${fl}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6.5 8 10l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ''}</div>
       <div class="tdtabs" role="tablist" aria-label="Which list">${TODO_TABS.map(([k, l]) => { const n = nOf(k); return `<button type="button" role="tab" data-act="todo-tab" data-v="${k}" aria-selected="${todoTab === k}" class="${k === 'doing' && over ? 'over' : ''}">${l}${n ? `<b>${n}</b>` : ''}</button>`; }).join('')}</div>
+      ${nSel ? `<div class="tdselbar" role="toolbar" aria-label="Selected tasks"><b>${nSel} selected</b><button type="button" data-act="todo-bmove" aria-haspopup="true">Move to…</button><button type="button" data-act="todo-bsubj" aria-haspopup="true">Subject…</button><button type="button" data-act="todo-btick">Tick off</button><button type="button" class="danger" data-act="todo-bdel">Delete</button><span class="grow"></span><span class="tdselhint">Drag any of them to move them all</span><button type="button" data-act="todo-selclear" aria-label="Clear the selection">${I.x}</button></div>` : ''}
       ${shown.length + today ? `<div class="tdl">${[...shown, ...done].map(todoRow).join('')}</div>` : ''}
-      <label class="tdadd ${act ? 'act' : ''}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" class="${todoNewKind === 'h' ? 'hmode' : ''}" placeholder="${todoNewKind === 'h' ? 'New heading, like At school' : todoRepDays.size ? `Every ${repWords([...todoRepDays])}…` : todoTab === 'doing' ? 'Something you’re working on now' : todoTab === 'hw' ? 'New homework' : 'New task'}${an && todoNewKind !== 'h' && todoTab !== 'doing' ? ' in ' + esc(an.name) : ''}" aria-label="${todoNewKind === 'h' ? 'New heading' : 'New task'}"><span class="tdaddx">${todoNewKind === 'h' ? '' : `<button type="button" class="tdtimebtn ${todoNewMin ? 'on' : ''}" data-act="todo-time" data-id="__new" aria-haspopup="true" title="How long it will take">${CLOCK_IC}<span>${todoNewMin ? fmtMin(todoNewMin) : 'Time'}</span></button><button type="button" class="tdrepbtn ${todoRepDays.size ? 'on' : ''}" data-act="todo-repopen" aria-expanded="${todoRepOpen}" title="Repeat on certain days">${REP_IC}<span>${todoRepDays.size ? esc(repShort([...todoRepDays])) : 'Repeat'}</span></button>`}<button type="button" class="tdrepbtn tdkbtn ${todoNewKind === 'h' ? 'on' : ''}" data-act="todo-hmode" aria-pressed="${todoNewKind === 'h'}" title="${todoNewKind === 'h' ? 'Back to adding tasks' : 'Add a heading, like At school'}">${TD_H_IC}<span>Heading</span></button><button type="button" class="tdrepbtn tdkbtn" data-act="todo-gap" title="Add a blank space to separate things">${TD_GAP_IC}<span>Space</span></button></span></label>
+      <label class="tdadd ${act ? 'act' : ''}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" class="${todoNewKind === 'h' ? 'hmode' : ''}" placeholder="${todoNewKind === 'h' ? 'New heading, like At school' : todoRepDays.size ? `Every ${repWords([...todoRepDays])}…` : todoTab === 'doing' ? 'Something you’re working on now' : todoTab === 'hw' ? 'New homework' : 'New task'}${anName && todoNewKind !== 'h' && todoTab !== 'doing' ? ' in ' + esc(anName) : ''}" aria-label="${todoNewKind === 'h' ? 'New heading' : 'New task'}"><span class="tdaddx">${todoNewKind === 'h' ? '' : `<button type="button" class="tdtimebtn ${todoNewMin ? 'on' : ''}" data-act="todo-time" data-id="__new" aria-haspopup="true" title="How long it will take">${CLOCK_IC}<span>${todoNewMin ? fmtMin(todoNewMin) : 'Time'}</span></button><button type="button" class="tdrepbtn ${todoRepDays.size ? 'on' : ''}" data-act="todo-repopen" aria-expanded="${todoRepOpen}" title="Repeat on certain days">${REP_IC}<span>${todoRepDays.size ? esc(repShort([...todoRepDays])) : 'Repeat'}</span></button>`}<button type="button" class="tdrepbtn tdkbtn ${todoNewKind === 'h' ? 'on' : ''}" data-act="todo-hmode" aria-pressed="${todoNewKind === 'h'}" title="${todoNewKind === 'h' ? 'Back to adding tasks' : 'Add a heading, like At school'}">${TD_H_IC}<span>Heading</span></button><button type="button" class="tdrepbtn tdkbtn" data-act="todo-gap" title="Add a blank space to separate things">${TD_GAP_IC}<span>Space</span></button></span></label>
       ${todoRepOpen && todoNewKind !== 'h' ? `<div class="tdrepdays" role="group" aria-label="Repeat on"><span>Every</span>${REP_DAYS.map(([d, l]) => `<button type="button" data-act="todo-repday" data-d="${d}" aria-pressed="${todoRepDays.has(d)}" title="${REP_NAMES[d]}">${l}</button>`).join('')}<span class="grow"></span><span class="tdrephint">${todoRepDays.size ? 'It shows up in Today on those days' : 'Pick the days it should show up'}</span></div>` : ''}
       ${today ? `<button class="tdclear" data-act="todo-clear">Clear ${today} done</button>` : ''}
     </div>
@@ -7212,13 +7315,71 @@ function todoSection(subj){
 /* subject filter: one quiet button instead of a row of chips */
 function todoFMenu(anchor){
   closeMenu(); const page = $('#tdo')?.dataset.subj || null, f = todoEff(page), subs = kids(null);
-  const n = id => todoAll().filter(x => !x.done && !x.k && todoIn(x, todoTab) && (!id || x.s === id)).length;
-  const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
+  const n = v => todoAll().filter(x => !x.done && !x.k && todoIn(x, todoTab) && todoMatch(x, v)).length;
+  const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu tdfmenu'; m.setAttribute('role', 'menu');
+  const item = (v, name, col, sub) => `<button class="tdsubm ${sub ? 'tdcatm' : ''}" data-act="todo-f" data-v="${v}" role="menuitemradio" aria-checked="${f === v}"><span class="sdot2" style="--sc:${col}"></span>${esc(name)}<span class="grow"></span>${sub ? `<span class="tdcated" role="button" tabindex="0" data-act="todo-catedit" data-c="${v.slice(3)}" title="Edit ${esc(name)}">Edit</span>` : ''}<small>${n(v) || ''}</small>${f === v ? ' ✓' : ''}</button>`;
+  const catsOf = pid => todoCats().filter(c => (c.parent || null) === pid).map(c => item('tc:' + c.id, c.name, c.color, true)).join('');
   m.innerHTML = `<div class="mlabel">Show tasks for</div><button class="tdsubm" data-act="todo-f" data-v="all" role="menuitemradio" aria-checked="${!f}">All subjects<span class="grow"></span><small>${n(null) || ''}</small>${!f ? ' ✓' : ''}</button>`
-    + subs.map(s => `<button class="tdsubm" data-act="todo-f" data-v="${s.id}" role="menuitemradio" aria-checked="${f === s.id}"><span class="sdot2" style="--sc:${scol(s.id)}"></span>${esc(s.name)}<span class="grow"></span><small>${n(s.id) || ''}</small>${f === s.id ? ' ✓' : ''}</button>`).join('');
+    + subs.map(sn => item(sn.id, sn.name, scol(sn.id)) + catsOf(sn.id)).join('') + catsOf(null)
+    + `<hr><button class="tdsubm tdcatnew" data-act="todo-catnew"><span class="tdcatplus">+</span>New subtopic, like 3U Maths</button>`;
   document.body.appendChild(m); const r = anchor.getBoundingClientRect(), wd = m.offsetWidth;
   m.style.left = Math.max(8, Math.min(innerWidth - wd - 8, r.right - wd)) + 'px'; m.style.top = Math.min(innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px'; m.querySelector('[aria-checked="true"]')?.focus();
 }
+/* ---------- the To-do page: the list on its own, with room to breathe ---------- */
+function renderTodo(){
+  const d = new Date();
+  $('#root').innerHTML = `<div class="tdpage"><header class="tdph"><h1>To-do</h1><p>${d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}</p></header>${todoSection(null, true)}</div>`;
+}
+/* ---------- selecting several tasks: the square box on the left, Shift-click for a range, ⌘/Ctrl-click to add one;
+   then move, tick, delete them together, or drag one of them and the rest come along ---------- */
+let todoSel = new Set(), todoSelMode = false, todoSelAnchor = null;
+const tdVisRows = () => [...document.querySelectorAll('#tdo .tdl > .tdr:not(.tdon)')];
+function todoSelToggle(id, range){
+  const rows = tdVisRows().map(r => r.dataset.tid);
+  if (range && todoSelAnchor && rows.includes(todoSelAnchor)){ const a = rows.indexOf(todoSelAnchor), b = rows.indexOf(id); rows.slice(Math.min(a, b), Math.max(a, b) + 1).forEach(x => todoSel.add(x)); }
+  else { todoSel.has(id) ? todoSel.delete(id) : todoSel.add(id); todoSelAnchor = id; }
+  todoRefresh();
+}
+function todoSelClear(){ todoSel.clear(); todoSelMode = false; todoSelAnchor = null; todoRefresh(); }
+/* clicks on a row while selecting (or with Shift / ⌘ / Ctrl) select instead of editing */
+document.addEventListener('click', e => {
+  if (e.defaultPrevented) return;
+  const row = e.target.closest?.('#tdo .tdl > .tdr'); if (!row || row.classList.contains('tdon') || e.target.closest('input, .tdck, .tdmore2, .tdtime, .tdfold, .tdpp, .tdselb')) return;
+  const mod = e.shiftKey || e.metaKey || e.ctrlKey, selOn = todoSelMode || todoSel.size;
+  if (!mod && !selOn) return;
+  e.preventDefault(); e.stopPropagation(); getSelection()?.removeAllRanges();
+  todoSelToggle(row.dataset.tid, e.shiftKey);
+}, true);
+function todoBMenu(kind, anchor){
+  closeMenu(); const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
+  m.innerHTML = kind === 'move' ? `<div class="mlabel">Move ${todoSel.size} to</div>` + TODO_TABS.map(([k, l]) => `<button data-act="todo-bmoveto" data-l="${k}">${l}</button>`).join('')
+    : `<div class="mlabel">Subject for ${todoSel.size}</div>` + todoSubjOpts(null, 'data-act="todo-bsubjto"') + `<button class="tdsubm" data-act="todo-bsubjto" data-s=""><span class="sdot2" style="--sc:var(--fg-3)"></span>No subject</button>`;
+  document.body.appendChild(m); const r = anchor.getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(innerWidth - m.offsetWidth - 8, r.left)) + 'px'; m.style.top = Math.min(innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px'; m.querySelector('button')?.focus();
+}
+function todoBatchAct(act, a){
+  const ids = new Set(todoSel), n = ids.size; if (!n) return;
+  if (act === 'todo-bmove') return $('#menu') ? closeMenu() : todoBMenu('move', a);
+  if (act === 'todo-bsubj') return $('#menu') ? closeMenu() : todoBMenu('subj', a);
+  closeMenu();
+  if (act === 'todo-bmoveto'){ const l = a.dataset.l; todoSave(todoAll().map(z => { if (!ids.has(z.id)) return z; const y = { ...z }; if (l === 'all') delete y.l; else y.l = l; return y; }), 'move tasks'); todoSel.clear(); todoRefresh(); toast(`Moved ${n} to ${TODO_TABS.find(t => t[0] === l)?.[1] || 'Revision'}`, 1600); if (l === 'doing') todoWipWarn(); return; }
+  if (act === 'todo-bsubjto'){ const sv = a.dataset.s || ''; todoSave(todoAll().map(z => ids.has(z.id) && !z.k ? todoSubjApply(z, sv) : z), 'change subject'); todoRefresh(); return toast(sv ? `Now in ${todoFName(sv)}` : 'No subject now', 1400); }
+  if (act === 'todo-btick'){
+    const now = Date.now(), xs = todoAll().filter(z => ids.has(z.id) && !z.k && !z.done); if (!xs.length) return toast('Headings and spaces can’t be ticked', 1600);
+    undoTx = null; undoLabel = 'tick off tasks'; undoRecordSettings(); const xi = new Set(xs.map(x => x.id));
+    S.settings = { ...S.settings, todos: todoAll().map(z => xi.has(z.id) ? { ...z, done: now } : z), todoDone: [...todoDoneLog(), ...xs.map(x => ({ id: x.id, s: x.s || null, t: now, l: todoL(x) }))].slice(-500) }; saveSettings();
+    xs.forEach(x => { if (x.pp) ppTodoTicked(x, true); });
+    todoSel.clear(); todoSelMode = false; todoRefresh(); return toast(`Ticked off ${xs.length} · ⌘Z to undo`, 1800);
+  }
+  if (act === 'todo-bdel'){ todoSave(todoAll().filter(z => !ids.has(z.id)), 'delete tasks'); todoSel.clear(); todoRefresh(); return toast(`Deleted ${n} · ⌘Z to undo`, 1800); }
+}
+/* Esc clears the selection, Delete removes it, ⌘A selects everything showing */
+document.addEventListener('keydown', e => {
+  if (!$('#tdo') || dialogOpen() || $('#menu') || isTyping(document.activeElement)) return;
+  if (e.key === 'Escape' && (todoSel.size || todoSelMode)){ e.preventDefault(); e.stopPropagation(); return todoSelClear(); }
+  if ((e.key === 'Backspace' || e.key === 'Delete') && todoSel.size){ e.preventDefault(); e.stopPropagation(); return todoBatchAct('todo-bdel'); }
+  if ((e.metaKey || e.ctrlKey) && (e.key === 'a' || e.key === 'A') && view.name === 'todo'){ e.preventDefault(); e.stopPropagation(); tdVisRows().forEach(r => todoSel.add(r.dataset.tid)); return todoRefresh(); }
+}, true);
 /* the add row stays a quiet "+ New task" line; its options appear once you're in it */
 document.addEventListener('focusin', e => { if (e.target.id === 'tdoin') e.target.closest('.tdadd')?.classList.add('act'); });
 document.addEventListener('focusout', e => {
@@ -7233,12 +7394,20 @@ function tdDragBegin(row, y){
   const l = row.parentElement; if (!l) return;
   clearTimeout(lpress?.t); lpress = null;
   tdDrag = { row, l, y0: y, on: true, flip: !reducedMotion() };
+  /* dragging one of several selected rows takes them all: the others fold into it until you let go */
+  if (todoSel.has(row.dataset.tid) && todoSel.size > 1){
+    const all = tdOpenRows(l).filter(r => todoSel.has(r.dataset.tid));
+    tdDrag.carry = all.map(r => r.dataset.tid);
+    all.forEach(r => { if (r !== row) r.classList.add('tdcarry'); });
+    row.dataset.n = all.length; row.classList.add('tdmulti');
+    tdDrag.y0 = y; row.style.transform = '';
+  }
   row.classList.add('tddrag'); document.body.classList.add('tddragging');
 }
 function tdDragMove(y){
   const d = tdDrag; if (!d?.on) return;
   let dy = y - d.y0; d.row.style.transform = `translateY(${dy}px)`;
-  const rows = tdOpenRows(d.l), others = rows.filter(r => r !== d.row);
+  const rows = tdOpenRows(d.l).filter(r => !r.classList.contains('tdcarry')), others = rows.filter(r => r !== d.row);
   const r0 = d.row.getBoundingClientRect(), mid = r0.top + r0.height / 2;
   let idx = others.findIndex(o => { const b = o.getBoundingClientRect(); return mid < b.top + b.height / 2; }); if (idx < 0) idx = others.length;
   if (rows.indexOf(d.row) === idx) return;
@@ -7249,19 +7418,24 @@ function tdDragMove(y){
 }
 function tdDragEnd(){
   const d = tdDrag; tdDrag = null; if (!d) return;
-  document.body.classList.remove('tddragging'); d.row.classList.remove('tddrag'); d.row.style.transform = ''; d.row.style.transition = '';
+  document.body.classList.remove('tddragging'); d.row.classList.remove('tddrag', 'tdmulti'); d.row.style.transform = ''; d.row.style.transition = '';
   if (!d.on) return;
+  const carried = d.carry && d.carry.length > 1;
   tdDragEndAt = Date.now();
-  const ids = tdOpenRows(d.l).map(r => r.dataset.tid), all = todoAll(), byId = new Map(all.map(x => [x.id, x]));
+  let ids = tdOpenRows(d.l).filter(r => !r.classList.contains('tdcarry')).map(r => r.dataset.tid);
+  if (carried){ const at = ids.indexOf(d.row.dataset.tid); ids.splice(at, 1, ...d.carry); }
+  d.l.querySelectorAll('.tdcarry').forEach(r => r.classList.remove('tdcarry'));
+  const all = todoAll(), byId = new Map(all.map(x => [x.id, x]));
   /* a folded heading takes the tasks hidden under it along with it */
   const kidsOf = new Map(); { let h = null; for (const x of todoList(d.l.closest('#tdo')?.dataset.subj || null)){ if (x.k === 'h'){ h = x.c ? x : null; if (h) kidsOf.set(h.id, []); continue; } if (h) kidsOf.get(h.id).push(x); } }
   const shown = ids.flatMap(id => { const x = byId.get(id); return x ? [x, ...(kidsOf.get(id) || [])] : []; });
   /* the tasks you can see swap places among the spots they already held, so tasks hidden by the subject filter keep theirs */
   const slots = shown.map(todoOrd).sort((a, b) => a - b);
-  if (shown.every((x, i) => todoOrd(x) === slots[i])) return;
+  if (shown.every((x, i) => todoOrd(x) === slots[i])){ if (carried) todoRefresh(); return; }
   const ord = new Map(shown.map((x, i) => [x.id, slots[i]]));
   for (let i = 1; i < slots.length; i++) if (slots[i] <= slots[i - 1]){ ord.clear(); shown.forEach((x, k) => ord.set(x.id, slots[0] + k)); break; }
-  todoSave(all.map(x => ord.has(x.id) ? { ...x, o: ord.get(x.id) } : x), 'reorder tasks');
+  todoSave(all.map(x => ord.has(x.id) ? { ...x, o: ord.get(x.id) } : x), carried ? `move ${d.carry.length} tasks` : 'reorder tasks');
+  if (carried) todoRefresh();
 }
 const tdDragOk = (t) => { const row = t.closest?.('#tdo .tdl > .tdr'); return row && !row.classList.contains('tdon') && !row.classList.contains('ticking') && !t.closest('button, input, .tdrep') && !row.querySelector('input') ? row : null; };
 /* mouse and Pencil */
@@ -7294,22 +7468,23 @@ document.addEventListener('contextmenu', e => { if (tdDrag?.on || (tdHold && e.t
 
 function todoRefresh(focus){
   const el = $('#tdo'); if (!el) return;
-  const subj = el.dataset.subj || null; el.outerHTML = todoSection(subj);
+  const subj = el.dataset.subj || null; el.outerHTML = todoSection(subj, el.dataset.page === '1');
   if (focus) $('#tdoin')?.focus();
 }
 function todoAdd(){
   const inp = $('#tdoin'), t = (inp?.value || '').replace(/\s+/g, ' ').trim(); if (!t) return;
   if (todoNewKind === 'h'){ todoNewKind = ''; return todoAddMark('h', t.replace(/:\s*$/, '')); }
   const est = todoNewMin; todoNewMin = 0;
-  const page = $('#tdo')?.dataset.subj || null, subj = todoEff(page) || page;
+  const page = $('#tdo')?.dataset.subj || null, fv = todoEff(page) || page, cat = fv?.startsWith('tc:') ? todoCat(fv.slice(3)) : null;
+  const subj = cat ? cat.parent || null : fv, tcx = cat ? { tc: cat.id } : {};
   if (todoRepDays.size){
-    const days = [...todoRepDays].sort(), r = { id: uid('r'), t: t.slice(0, 200), s: subj, days, at: Date.now(), ...(est ? { m: est } : {}) };
+    const days = [...todoRepDays].sort(), r = { id: uid('r'), t: t.slice(0, 200), s: subj, ...tcx, days, at: Date.now(), ...(est ? { m: est } : {}) };
     undoTx = null; undoLabel = 'add repeating task'; undoRecordSettings();
     S.settings = { ...S.settings, todoRepeat: [...todoRules(), r] }; saveSettings();
     todoRepDays = new Set(); todoRepOpen = false; todoRefresh(true);
     return toast(`Repeats every ${repWords(days)}${days.includes(new Date().getDay()) ? ' · added to Today' : ' · it will show up in Today'}`, 2600);
   }
-  const x = { id: uid('t'), t: t.slice(0, 200), s: subj, done: 0, at: Date.now(), ...(est ? { m: est } : {}) }; if (todoTab !== 'all') x.l = todoTab;
+  const x = { id: uid('t'), t: t.slice(0, 200), s: subj, ...tcx, done: 0, at: Date.now(), ...(est ? { m: est } : {}) }; if (todoTab !== 'all') x.l = todoTab;
   todoSave([...todoAll(), x], 'add task'); todoRefresh(true); if (x.l === 'doing') todoWipWarn();
   const row = document.querySelector(`.tdr[data-tid="${x.id}"]`); row?.classList.add('tdnew');
 }
@@ -7384,16 +7559,85 @@ function todoMoveMenu(id, anchor){
   else {
   const kinds = x.k === 'h' ? `<hr><button data-act="todo-kind" data-id="${id}" data-k="">Turn into a task</button>` : `<hr><button data-act="todo-time" data-id="${id}" aria-haspopup="true">${x.m ? `Time: about ${fmtMin(x.m)}` : 'Set a time…'}</button><div class="mlabel">Turn into</div><button data-act="todo-kind" data-id="${id}" data-k="h">A heading</button><button data-act="todo-kind" data-id="${id}" data-k="gap">A blank space</button>`;
   m.innerHTML = `<div class="mlabel">List</div>` + TODO_TABS.filter(([k]) => k !== todoL(x)).map(([k, l]) => `<button data-act="todo-moveto" data-id="${id}" data-l="${k}">Move to ${l}</button>`).join('')
-    + (x.k === 'h' ? kinds + del : kinds + `<hr><div class="mlabel">Subject</div>` + subs.map(s => `<button class="tdsubm" data-act="todo-subj" data-id="${id}" data-s="${s.id}" aria-checked="${x.s === s.id}" role="menuitemradio"><span class="sdot2" style="--sc:${scol(s.id)}"></span>${esc(s.name)}${x.s === s.id ? '<span class="grow"></span>✓' : ''}</button>`).join('')
-    + `<button class="tdsubm" data-act="todo-subj" data-id="${id}" data-s="" role="menuitemradio" aria-checked="${!x.s}"><span class="sdot2" style="--sc:var(--fg-3)"></span>No subject${!x.s ? '<span class="grow"></span>✓' : ''}</button>` + del);
+    + (x.k === 'h' ? kinds + del : kinds + `<hr><div class="mlabel">Subject</div>` + todoSubjOpts(x, `data-act="todo-subj" data-id="${id}"`)
+    + `<button class="tdsubm" data-act="todo-subj" data-id="${id}" data-s="" role="menuitemradio" aria-checked="${!x.s && !x.tc}"><span class="sdot2" style="--sc:var(--fg-3)"></span>No subject${!x.s && !x.tc ? '<span class="grow"></span>✓' : ''}</button>` + del);
   }
   document.body.appendChild(m); const r = anchor.getBoundingClientRect(), w = m.offsetWidth;
   m.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px'; m.style.top = Math.min(innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px'; m.querySelector('button').focus();
 }
+/* subjects with their subtopics under them, for the ⋯ menu and the selection's Subject… menu */
+function todoSubjOpts(x, attrs){
+  const on = v => x ? (v.startsWith('tc:') ? x.tc === v.slice(3) : !x.tc && x.s === v) : false;
+  const b = (v, name, col, sub) => `<button class="tdsubm ${sub ? 'tdcatm' : ''}" ${attrs} data-s="${v}" role="menuitemradio" aria-checked="${on(v)}"><span class="sdot2" style="--sc:${col}"></span>${esc(name)}${on(v) ? '<span class="grow"></span>✓' : ''}</button>`;
+  const catsOf = pid => todoCats().filter(c => (c.parent || null) === pid).map(c => b('tc:' + c.id, c.name, c.color, true)).join('');
+  return kids(null).map(sn => b(sn.id, sn.name, scol(sn.id)) + catsOf(sn.id)).join('') + catsOf(null);
+}
+/* what a task becomes when you pick v (a subject id, "tc:<id>" or "") */
+function todoSubjApply(z, v){ const y = { ...z }; delete y.tc; if (v?.startsWith('tc:')){ const c = todoCat(v.slice(3)); y.s = c?.parent || null; if (c) y.tc = c.id; } else y.s = v || null; return y; }
+/* click a task's subject to change it, like its time */
+function todoSubjMenu(id, anchor){
+  closeMenu(); const x = todoAll().find(z => z.id === id); if (!x) return;
+  const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu tdfmenu'; m.setAttribute('role', 'menu');
+  m.innerHTML = `<div class="mlabel">Subject</div>` + todoSubjOpts(x, `data-act="todo-subj" data-id="${id}"`)
+    + `<button class="tdsubm" data-act="todo-subj" data-id="${id}" data-s="" role="menuitemradio" aria-checked="${!x.s && !x.tc}"><span class="sdot2" style="--sc:var(--fg-3)"></span>No subject${!x.s && !x.tc ? '<span class="grow"></span>✓' : ''}</button>`
+    + `<hr><button class="tdsubm tdcatnew" data-act="todo-catnew"><span class="tdcatplus">+</span>New subtopic…</button>`;
+  document.body.appendChild(m); const r = anchor.getBoundingClientRect(), w = m.offsetWidth;
+  m.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px'; m.style.top = (r.bottom + 6 + m.offsetHeight > innerHeight - 8 ? Math.max(8, r.top - m.offsetHeight - 6) : r.bottom + 6) + 'px';
+  (m.querySelector('[aria-checked="true"]') || m.querySelector('button'))?.focus();
+}
 function todoSetSubj(id, s){
-  const x = todoAll().find(z => z.id === id); if (!x || (x.s || '') === s) return closeMenu();
-  todoSave(todoAll().map(z => z.id === id ? { ...z, s: s || null } : z), 'change subject'); closeMenu(); todoRefresh();
-  toast(s ? 'Now in ' + (nodeOf(s)?.name || 'that subject') : 'No subject now', 1400);
+  const x = todoAll().find(z => z.id === id); if (!x) return closeMenu();
+  todoSave(todoAll().map(z => z.id === id ? todoSubjApply(z, s) : z), 'change subject'); closeMenu(); todoRefresh();
+  toast(s ? 'Now in ' + todoFName(s) : 'No subject now', 1400);
+}
+/* ---------- new / edit a to-do subtopic: name, colour, which subject it sits under ---------- */
+const TD_CAT_COLS = ['#e5534b', '#f0883e', '#d4a72c', '#57ab5a', '#2fb5a6', '#39a0e5', '#6c7ff2', '#a371f7', '#e275ad', '#8b949e'];
+let tdCat = null;
+function todoCatDialog(id){
+  closeMenu(); const old = id ? todoCat(id) : null, page = $('#tdo')?.dataset.subj || null, f = todoEff(page);
+  const parent = old ? old.parent || '' : (f && !f.startsWith('tc:') ? f : f?.startsWith('tc:') ? todoCat(f.slice(3))?.parent || '' : '');
+  tdCat = { id: old?.id || null, color: old?.color || TD_CAT_COLS[6] };
+  openDialog(`<div class="dialog tdcatd" role="dialog" aria-modal="true" aria-labelledby="tdcath" style="max-width:440px"><header><h2 id="tdcath">${old ? 'Edit subtopic' : 'New subtopic'}</h2><button class="icon" data-act="close" aria-label="Close">${I.x}</button></header>
+    <div class="body">
+      <div class="field"><label for="tdcatn">Name</label><input class="in" id="tdcatn" maxlength="40" autocomplete="off" placeholder="3U Maths" value="${esc(old?.name || '')}"></div>
+      <div class="field"><label for="tdcatp">Under</label><select class="in" id="tdcatp"><option value="">No subject</option>${kids(null).map(sn => `<option value="${sn.id}" ${sn.id === parent ? 'selected' : ''}>${esc(sn.name)}</option>`).join('')}</select><span class="hint">Its tasks also show when you pick that subject.</span></div>
+      <div class="field"><span class="lbl">Colour</span><div class="tdcatcols" role="radiogroup" aria-label="Colour">${TD_CAT_COLS.map(c => `<button type="button" class="tdcatsw" data-act="todo-catcol" data-c="${c}" style="--c:${c}" role="radio" aria-checked="${c === tdCat.color}" aria-label="${c}"></button>`).join('')}<label class="tdcatsw tdcatown" title="Pick any colour" style="--c:${TD_CAT_COLS.includes(tdCat.color) ? 'transparent' : tdCat.color}" aria-checked="${!TD_CAT_COLS.includes(tdCat.color)}"><input type="color" id="tdcatc" value="${tdCat.color}" aria-label="Pick any colour"><span>+</span></label></div></div>
+      <div class="tdcatprev"><span class="sdot2" id="tdcatdot" style="--sc:${tdCat.color}"></span><span id="tdcatpn">${esc(old?.name || '3U Maths')}</span></div>
+    </div>
+    <footer>${old ? `<button class="btn danger" data-act="todo-catdel">Delete</button>` : ''}<span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="todo-catsave">${old ? 'Save' : 'Add subtopic'}</button></footer></div>`, d => {
+      const nm = d.querySelector('#tdcatn'); nm.focus();
+      nm.addEventListener('input', () => { d.querySelector('#tdcatpn').textContent = nm.value.trim() || '3U Maths'; });
+      nm.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); e.stopPropagation(); todoCatSave(); } });
+      d.querySelector('#tdcatc').addEventListener('input', e => todoCatColour(e.target.value));
+    });
+}
+function todoCatColour(c){
+  if (!tdCat) return; tdCat.color = c;
+  document.querySelectorAll('.tdcatsw[data-c]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.c === c)));
+  const own = $('.tdcatown'); if (own){ const mine = !TD_CAT_COLS.includes(c); own.setAttribute('aria-checked', String(mine)); own.style.setProperty('--c', mine ? c : 'transparent'); }
+  $('#tdcatdot')?.style.setProperty('--sc', c);
+}
+function todoCatSave(){
+  const name = ($('#tdcatn')?.value || '').replace(/\s+/g, ' ').trim(); if (!name){ toast('Give it a name'); return $('#tdcatn')?.focus(); }
+  const parent = $('#tdcatp')?.value || null, cats = [...todoCats()];
+  undoTx = null; undoLabel = tdCat.id ? 'edit subtopic' : 'add subtopic'; undoRecordSettings();
+  let id = tdCat.id;
+  if (id){ const i = cats.findIndex(c => c.id === id); if (i >= 0) cats[i] = { ...cats[i], name, parent, color: tdCat.color }; }
+  else { id = uid('tc'); cats.push({ id, name, parent, color: tdCat.color, at: Date.now() }); }
+  /* tasks in it follow it if it moves to another subject */
+  const todos = todoAll().map(z => z.tc === id ? { ...z, s: parent } : z);
+  S.settings = { ...S.settings, todoCats: cats, todos }; saveSettings();
+  const wasNew = !tdCat.id; tdCat = null; closeDialog();
+  if (wasNew){ const page = $('#tdo')?.dataset.subj || null; todoF = { at: page, v: 'tc:' + id }; }
+  todoRefresh(); toast(wasNew ? `${name} added · new tasks here go in it` : `${name} saved`, 2200);
+}
+function todoCatDel(){
+  const id = tdCat?.id, c = id && todoCat(id); if (!c) return closeDialog();
+  undoTx = null; undoLabel = 'delete subtopic'; undoRecordSettings();
+  const strip = z => { if (z.tc !== id) return z; const { tc, ...y } = z; return y; };
+  S.settings = { ...S.settings, todoCats: todoCats().filter(x => x.id !== id), todos: todoAll().map(strip), todoRepeat: todoRules().map(strip) }; saveSettings();
+  if (todoF.v === 'tc:' + id) todoF = { at: todoF.at, v: '' };
+  tdCat = null; closeDialog(); todoRefresh(); toast(`${c.name} deleted · its tasks stay under ${c.parent ? nodeOf(c.parent)?.name || 'their subject' : 'no subject'} · ⌘Z to undo`, 3000);
 }
 function todoMoveTo(id, l){
   const name = TODO_TABS.find(([k]) => k === l)?.[1] || 'Revision';
@@ -7430,7 +7674,7 @@ function todoSpawn(){
   const next = rules.map(r => {
     if (!r.days?.includes(wd) || r.last === dk) return r;
     list = list.filter(x => !(x.r === r.id && x.done));
-    if (!list.some(x => x.r === r.id && !x.done)) list = [...list, { id: uid('t'), t: r.t, s: r.s || null, l: 'today', r: r.id, done: 0, at: Date.now(), ...(r.m ? { m: r.m } : {}) }];
+    if (!list.some(x => x.r === r.id && !x.done)) list = [...list, { id: uid('t'), t: r.t, s: r.s || null, ...(r.tc ? { tc: r.tc } : {}), l: 'today', r: r.id, done: 0, at: Date.now(), ...(r.m ? { m: r.m } : {}) }];
     changed = true; return { ...r, last: dk };
   });
   if (changed){ S.settings = { ...S.settings, todos: list, todoRepeat: next }; saveSettings(); }
@@ -7710,6 +7954,17 @@ document.addEventListener('click', async e => {
     case 'bm-domove': { const ref = [...brMoveSel][0]; if (!ref) return toast('Pick a deck to move them to.'); const ids = [...brMulti].filter(x => S.cards[x]); $('#layer').innerHTML = ''; undoTx = null; undoLabel = 'move cards'; for (const x of ids) await moveCardFrom(x, browse.node, ref); brMulti.clear(); brPick = false; render(); return toast(`Moved ${ids.length} card${ids.length === 1 ? '' : 's'} to ${refName(ref)} · ⌘Z to undo`, 3000); }
     case 'todo-tick': return todoTick(id);
     case 'todo-fmenu': e.stopPropagation(); return $('#menu') ? closeMenu() : todoFMenu(a);
+    case 'todo-sel': return todoSelToggle(id, e.shiftKey);
+    case 'todo-catnew': return todoCatDialog(null);
+    case 'todo-subjmenu': e.stopPropagation(); return $('#menu') ? closeMenu() : todoSubjMenu(id, a);
+    case 'todo-catedit': e.stopPropagation(); return todoCatDialog(a.dataset.c);
+    case 'todo-catcol': return todoCatColour(a.dataset.c);
+    case 'todo-catsave': return todoCatSave();
+    case 'todo-catdel': return todoCatDel();
+    case 'todo-selmode': if (todoSelMode || todoSel.size) return todoSelClear(); todoSelMode = true; return todoRefresh();
+    case 'todo-selclear': return todoSelClear();
+    case 'todo-bmove': case 'todo-bsubj': e.stopPropagation(); return todoBatchAct(act, a);
+    case 'todo-bmoveto': case 'todo-bsubjto': case 'todo-btick': case 'todo-bdel': return todoBatchAct(act, a);
     case 'todo-fold': { const x = todoAll().find(z => z.id === id); if (!x) return; todoSave(todoAll().map(z => z.id === id ? (z.c ? (({ c, ...y }) => y)(z) : { ...z, c: 1 }) : z), x.c ? 'expand' : 'collapse'); return todoRefresh(); }
     case 'todo-del': { closeMenu(); const k = todoAll().find(z => z.id === id)?.k; todoSave(todoAll().filter(z => z.id !== id), k === 'h' ? 'delete heading' : k === 'gap' ? 'remove blank space' : 'delete task'); todoRefresh(); return toast(`${k === 'h' ? 'Heading deleted' : k === 'gap' ? 'Blank space removed' : 'Task deleted'} · ⌘Z to undo`, 1800); }
     case 'todo-hmode': { const v = $('#tdoin')?.value || ''; todoNewKind = todoNewKind === 'h' ? '' : 'h'; todoRefresh(true); const i = $('#tdoin'); if (i){ i.value = v; i.setSelectionRange(v.length, v.length); } return; }
@@ -7741,7 +7996,7 @@ document.addEventListener('click', async e => {
     case 'stat-scope': statScope = id || ''; return renderStats();
     case 'th-new': return customNew();
     case 'th-edit': { e.stopPropagation(); thEdit = a.dataset.th; return themePick(a.dataset.th, null, null); }
-    case 'th-cdel': return customDelete(a.dataset.th);
+    case 'th-cdel': e.stopPropagation(); return customDelete(a.dataset.th);
     case 'th-cdone': thEdit = null; return renderThemes();
     case 'th-pattern': { const ts0 = themeSettings(), ts = { ...ts0, patterns: { ...(ts0.patterns || {}), [activeBase(ts0)]: a.dataset.p } }; return themeReveal(() => { saveTheme(ts); renderThemes(); }, e.clientX || null, e.clientY || null); }
     case 'hist-fwd': return histGo(1);
@@ -8010,6 +8265,7 @@ document.addEventListener('keydown', e => {
     /* on a deck page, B opens Browse showing just that deck (like "See all … in Browse") */
     if (e.key === 'b' && view.name === 'overview' && nodeOf(view.node)){ browse.node = view.node; browse.q = ''; browse.status = 'all'; browse.rate = 0; return go('browse'); }
     if (e.key === 'b') return go('browse');
+    if (e.key === 't' && view.name !== 'todo') return go('todo');
     if (e.key === 's' && view.name === 'overview') return startStudy(view.node);
   }
 });
@@ -8202,6 +8458,30 @@ async function ppPdfOf(p){
   if (p.file && cloudOn()){ try { const { data, error } = await cloud.sb.storage.from('images').download(cloudPath(p.file)); if (!error && data){ const buf = await data.arrayBuffer(); ppPutPdf(p.id, buf, p.name).catch(() => {}); return { buf, name: p.name }; } } catch (e){ console.warn(e); } }
   return null;
 }
+/* a separate solutions PDF: stored next to the paper's (key "<id>:sol", cloud copy p.solFile); p.solSep marks it */
+const ppSolKey = id => id + ':sol';
+async function ppSolOf(p){
+  if (!p?.solSep) return null;
+  const got = await ppGetPdf(ppSolKey(p.id)); if (got?.buf) return got;
+  if (p.solFile && cloudOn()){ try { const { data, error } = await cloud.sb.storage.from('images').download(cloudPath(p.solFile)); if (!error && data){ const buf = await data.arrayBuffer(); ppPutPdf(ppSolKey(p.id), buf, p.solName).catch(() => {}); return { buf, name: p.solName }; } } catch (e){ console.warn(e); } }
+  return null;
+}
+async function ppSolStore(p, file){
+  if (!isPdf(file)){ toast('That isn’t a PDF.'); return null; }
+  const buf = await file.arrayBuffer(), q = { ...p, solSep: true, solName: file.name || 'solutions.pdf', sol: 1 };
+  try { await ppPutPdf(ppSolKey(p.id), buf, q.solName); } catch (e){ console.warn(e); toast('Couldn’t keep the solutions PDF on this device.', 4000); }
+  delete q.solFile; if (cloudOn()){ try { const r = await cloudUploadBlob(new Blob([buf], { type: 'application/pdf' }), 'pdf'); q.solFile = r.file; } catch (e){ console.warn('sol pdf upload', e); } }
+  return q;
+}
+/* add (or replace) the solutions PDF of a paper you already have, then reopen it */
+function ppAddSolPick(pid){
+  ppPickFile(async f => {
+    const p = ppPapers()[pid]; if (!p || !f) return;
+    const q = await ppSolStore(p, f); if (!q) return;
+    await ppSavePaper(q, 'add solutions'); toast('Solutions added · they open when your time’s up', 2600);
+    if (view.name === 'ppmark' && view.node === pid){ ppm = null; renderPPMark(); } else ppRefresh();
+  });
+}
 async function ppSavePaper(p, label){ undoTx = null; undoLabel = label || 'past paper'; S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings(); }
 /* make (or reuse) the paper record for a listing, store its PDF, then open it for marking */
 async function ppAddPdf(item, file, opt = {}){
@@ -8212,6 +8492,7 @@ async function ppAddPdf(item, file, opt = {}){
   const buf = await file.arrayBuffer();
   try { await ppPutPdf(p.id, buf, p.name); } catch (e){ console.warn(e); toast('Couldn’t keep the PDF on this device, so it will need adding again next time.', 4500); ppm = { pid: p.id, buf }; }
   if (cloudOn()){ try { const r = await cloudUploadBlob(new Blob([buf], { type: 'application/pdf' }), 'pdf'); p.file = r.file; } catch (e){ console.warn('pdf upload', e); } }
+  if (opt.solFile){ const q = await ppSolStore(p, opt.solFile); if (q) Object.assign(p, q); }
   await ppSavePaper(p, 'add paper');
   if (opt.open === false) return p;
   closeDialog(); study = null;
@@ -8399,12 +8680,20 @@ function ppImportDialog(files){
   if (files && !add.length) return toast('Recall can only import PDFs here.');
   const fresh = !$('#layer .ppimp');
   if (fresh) ppImp = [];
-  for (const f of add){
-    const g = ppGuess(f.name), row = { id: uid('i'), file: f, c: g.c || ppCourseCur(), sec: g.sec || 'trial', school: g.school || '', year: g.year || '', sol: true, touched: {}, reading: true };
+  /* a solutions file dropped with its paper ("… Trial.pdf" and "… Trial Solutions.pdf") joins that paper as its separate solutions */
+  const isSolName = f => PP_SOLNAME.test(f.name.replace(/\.pdf$/i, '').replace(/[_\-.]+/g, ' '));
+  const papersFirst = [...add.filter(f => !isSolName(f)), ...add.filter(isSolName)];
+  for (const f of papersFirst){
+    if (isSolName(f)){
+      const b = ppBaseName(f.name), g0 = ppGuess(f.name);
+      const to = ppImp.find(r => !r.solFile && ppBaseName(r.file.name) === b) || ppImp.find(r => !r.solFile && g0.year && g0.school && r.year === g0.year && r.school.toLowerCase() === g0.school.toLowerCase() && (!g0.c || r.c === g0.c));
+      if (to){ to.solFile = f; to.solm = 'sep'; to.touched.solm = true; continue; }
+    }
+    const g = ppGuess(f.name), row = { id: uid('i'), file: f, c: g.c || ppCourseCur(), sec: g.sec || 'trial', school: g.school || '', year: g.year || '', solm: 'in', solFile: null, touched: {}, reading: true };
     ppImp.push(row);
     ppCoverText(f).then(t => { const g2 = ppGuess(f.name + ' ' + t); row.reading = false; ['c', 'sec', 'school', 'year'].forEach(k => { if (!row.touched[k] && g2[k] && !g[k]) row[k] = g2[k]; }); ppImpDraw(); });
   }
-  if (fresh) openDialog(`<div class="dialog ppimp" role="dialog" aria-modal="true" aria-labelledby="ppih" style="max-width:820px"><header><h2 id="ppih">Import past papers</h2><button class="icon" data-act="close" aria-label="Close">${I.x}</button></header>
+  if (fresh) openDialog(`<div class="dialog ppimp" role="dialog" aria-modal="true" aria-labelledby="ppih" style="max-width:920px"><header><h2 id="ppih">Import past papers</h2><button class="icon" data-act="close" aria-label="Close">${I.x}</button></header>
     <div class="body"><p class="hint" style="margin:0 0 12px">Add your own papers. Recall reads each cover page to fill in the school, year and section; check them, and they sort themselves into the right section and school.</p><div id="ppirows"></div>
       <div class="zone ppzone" id="ppizone"><button class="btn" data-act="pp-ipick">Choose PDFs</button><span class="hint">or drag them in, as many as you like</span></div>
       <datalist id="ppischl">${ppSchools().map(x => `<option value="${esc(x)}"></option>`).join('')}</datalist></div>
@@ -8414,11 +8703,14 @@ function ppImportDialog(files){
     });
   ppImpDraw();
 }
+const PP_SOLNAME = /\b(solutions?|sols?|answers?|ans|marking|guidelines?|criteria|worked|suggested|mg)\b/i;
+const ppBaseName = n => String(n || '').toLowerCase().replace(/\.pdf$/, '').replace(/[_\-.]+/g, ' ').replace(/\b(solutions?|sols?|answers?|ans|marking|guidelines?|criteria|scheme|guide|worked|suggested|mg|and|with)\b/g, ' ').replace(/[^a-z0-9]+/g, '');
 const ppSchools = () => [...new Set([...Object.values(ppIdx?.c || {}).flat().map(r => r[1]), ...Object.values(ppPapers()).map(p => p.school).filter(s => s && s !== 'NSW HSC')])].sort((a, b) => a.localeCompare(b));
 function ppImpRead(e){
   const r = e.target.closest('[data-irow]'), row = r && ppImp.find(x => x.id === r.dataset.irow); if (!row) return;
   const k = e.target.dataset.f; if (!k) return;
-  row[k] = k === 'year' ? +e.target.value || '' : k === 'sol' ? e.target.checked : e.target.value; row.touched[k] = true;
+  row[k] = k === 'year' ? +e.target.value || '' : e.target.value; row.touched[k] = true;
+  if (k === 'solm'){ if (row.solm === 'sep' && !row.solFile) ppPickFile(f => { if (f && isPdf(f)){ row.solFile = f; } else if (!row.solFile) row.solm = 'in'; ppImpDraw(); }); return ppImpDraw(); }
   if (k === 'sec' && row.sec === 'hsc') { row.school = 'NSW HSC'; const s = r.querySelector('[data-f="school"]'); if (s) s.value = 'NSW HSC'; }
   ppImpFoot();
 }
@@ -8430,27 +8722,29 @@ function ppImpDraw(){
       <select class="in" data-f="sec" aria-label="Section">${PP_SECS.map(([k, , one]) => `<option value="${k}" ${k === r.sec ? 'selected' : ''}>${esc(one)}</option>`).join('')}</select>
       <input class="in ${r.school ? '' : 'need'}" data-f="school" list="ppischl" value="${esc(r.school)}" placeholder="School" aria-label="School" autocomplete="off">
       <input class="in ${r.year ? '' : 'need'}" data-f="year" type="number" min="1990" max="2099" value="${esc(r.year)}" placeholder="Year" aria-label="Year">
-      <label class="ppisol"><input type="checkbox" data-f="sol" ${r.sol ? 'checked' : ''}><span class="sr">Includes solutions</span></label>
-      <button class="icon" data-act="pp-irm" data-id="${r.id}" aria-label="Remove ${esc(r.file.name)}">${I.x}</button></div>`).join('') : '';
+      <select class="in" data-f="solm" aria-label="Solutions">${[['in', 'In this PDF'], ['sep', 'Separate PDF'], ['none', 'None']].map(([k, l]) => `<option value="${k}" ${r.solm === k ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <button class="icon" data-act="pp-irm" data-id="${r.id}" aria-label="Remove ${esc(r.file.name)}">${I.x}</button>
+      ${r.solm === 'sep' ? `<div class="ppisolf">${r.solFile ? `<span class="ppisoln" title="${esc(r.solFile.name)}">Solutions: ${esc(r.solFile.name)}</span><button class="link sm" data-act="pp-isol" data-id="${r.id}">Change</button>` : `<span class="ppisoln need">Choose the solutions PDF</span><button class="link sm" data-act="pp-isol" data-id="${r.id}">Choose…</button>`}</div>` : ''}</div>`).join('') : '';
   ppImpFoot();
 }
 function ppImpFoot(){
-  const f = $('#ppifoot'); if (!f) return; const n = ppImp.length, bad = ppImp.filter(r => !r.school || !(r.year > 1990)).length;
+  const f = $('#ppifoot'); if (!f) return; const n = ppImp.length, bad = ppImp.filter(r => !r.school || !(r.year > 1990) || (r.solm === 'sep' && !r.solFile)).length;
   // update in place when only the counts change, so a click that blurs a field still lands on the button
-  if (f.dataset.n === String(n) && f.firstElementChild){ f.querySelector('.hint').textContent = n ? (bad ? `${bad} still need${bad === 1 ? 's' : ''} a school or year` : `${n} ready`) : 'No papers yet'; f.querySelectorAll('[data-act="pp-igo"]').forEach(b => { b.disabled = !n || !!bad; }); return; }
+  if (f.dataset.n === String(n) && f.firstElementChild){ f.querySelector('.hint').textContent = n ? (bad ? `${bad} still need${bad === 1 ? 's' : ''} a school, year or solutions PDF` : `${n} ready`) : 'No papers yet'; f.querySelectorAll('[data-act="pp-igo"]').forEach(b => { b.disabled = !n || !!bad; }); return; }
   f.dataset.n = n;
-  f.innerHTML = `<span class="hint">${n ? (bad ? `${bad} still need${bad === 1 ? 's' : ''} a school or year` : `${n} ready`) : 'No papers yet'}</span><span class="grow"></span><button class="btn" data-act="close">Cancel</button>${n === 1 ? `<button class="btn" data-act="pp-igo" data-open="1" ${bad ? 'disabled' : ''}>Add and start marking</button>` : ''}<button class="btn primary" data-act="pp-igo" ${!n || bad ? 'disabled' : ''}>${n > 1 ? `Add ${n} papers` : 'Add paper'}</button>`;
+  f.innerHTML = `<span class="hint">${n ? (bad ? `${bad} still need${bad === 1 ? 's' : ''} a school, year or solutions PDF` : `${n} ready`) : 'No papers yet'}</span><span class="grow"></span><button class="btn" data-act="close">Cancel</button>${n === 1 ? `<button class="btn" data-act="pp-igo" data-open="1" ${bad ? 'disabled' : ''}>Add and start marking</button>` : ''}<button class="btn primary" data-act="pp-igo" ${!n || bad ? 'disabled' : ''}>${n > 1 ? `Add ${n} papers` : 'Add paper'}</button>`;
 }
 async function ppImpGo(open){
-  const rows = ppImp.filter(r => r.school && r.year > 1990); if (!rows.length) return;
+  const rows = ppImp.filter(r => r.school && r.year > 1990 && !(r.solm === 'sep' && !r.solFile)); if (!rows.length) return;
   const b = $('#ppifoot .btn.primary'); if (b){ b.disabled = true; b.textContent = 'Adding…'; }
   let last = null;
   for (const r of rows){
     const hsc = r.sec === 'hsc', lo = r.school.trim().toLowerCase();
     const match = ppItems(r.c).find(i => i.sec === r.sec && i.year === r.year && (hsc || i.school.toLowerCase() === lo) && i.src !== 'up');
-    const item = match || { key: null, c: r.c, sec: r.sec, school: hsc ? 'NSW HSC' : ppTidySchool(r.school), year: r.year, sol: r.sol ? 1 : 0, src: 'up', paper: null };
-    if (match && !match.paper) item.sol = r.sol ? 1 : match.sol;
-    last = await ppAddPdf(item, r.file, { open: false });
+    const hasSol = r.solm !== 'none';
+    const item = match || { key: null, c: r.c, sec: r.sec, school: hsc ? 'NSW HSC' : ppTidySchool(r.school), year: r.year, sol: hasSol ? 1 : 0, src: 'up', paper: null };
+    if (match && !match.paper) item.sol = hasSol ? 1 : match.sol;
+    last = await ppAddPdf(item, r.file, { open: false, solFile: r.solm === 'sep' ? r.solFile : null });
   }
   ppImp = []; closeDialog();
   if (open && last) { study = null; return go('ppmark', last.id); }
@@ -8477,6 +8771,7 @@ function ppMenu(key, at){
     ${todo ? b('pp-m-todogo', `On your to-do list (${esc(TODO_TABS.find(t => t[0] === todoL(todo))?.[1] || 'Revision')})`) : b('pp-m-todo', 'Add to to-do list…')}
     ${done ? b('pp-m-undone', 'Mark as not done') : b('pp-m-done', 'Mark as done')}
     ${b('pp-m-score', p?.score || done ? 'Change the score…' : 'Enter a score…')}<hr>
+    ${p ? b('pp-m-addsol', p.solSep ? 'Replace the solutions PDF…' : 'Add a solutions PDF…') : ''}
     ${p?.name ? b('pp-m-save', 'Save the PDF…') : ''}
     ${b('pp-m-copy', 'Copy the name')}
     ${p && p.src === 'up' ? b('pp-m-edit', 'Edit details…') : ''}
@@ -8540,12 +8835,13 @@ async function ppMenuAct(act, a){
     case 'pp-m-save': { const got = await ppPdfOf(p); if (!got) return toast('The PDF isn’t on this device. Open the paper to add it.'); const r = await saveBytes((got.name || ppName(it) + '.pdf').replace(/[\\/:]/g, '-'), new Uint8Array(got.buf), 'application/pdf'); if (r === 'saved') toast('Saved'); return; }
     case 'pp-m-copy': { const t = `${ppName(it)} ${ppSecName(it.sec, true)} · ${PP_COURSE[it.c].name}`; try { await navigator.clipboard.writeText(t); toast('Copied'); } catch { toast(t, 4000); } return; }
     case 'pp-m-edit': return ppEditDialog(key);
+    case 'pp-m-addsol': return ppAddSolPick(p.id);
     case 'pp-m-editsave': { const sch = ($('#ppesch').value || '').trim(), y = +$('#ppey').value; if (!sch || !(y > 1990)) return toast('Fill in the school and year.'); const sec = $('#ppes').value; undoTx = null; undoLabel = 'edit paper'; S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: { ...p, c: $('#ppec').value, sec, school: sec === 'hsc' ? 'NSW HSC' : ppTidySchool(sch), year: y, sol: $('#ppesol').checked } } }; await saveSettings(); closeDialog(); return ppRefresh(); }
     case 'pp-m-remove': {
       openDialog(`<div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="pprmh" style="max-width:440px"><header><h2 id="pprmh">Remove ${esc(ppName(it))}?</h2></header><div class="body"><p style="margin:0;color:var(--fg-2)">Your marking and score for this paper are removed. Cards you made from it stay in your decks. You can undo with ⌘Z.</p></div>
         <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn danger" data-act="pp-m-removego" data-k="${esc(key)}">Remove</button></footer></div>`, d => d.querySelector('.btn.danger').focus()); return;
     }
-    case 'pp-m-removego': { const ps = { ...ppPapers() }; delete ps[p.id]; undoTx = null; undoLabel = 'remove paper'; S.settings = { ...S.settings, papers: ps }; await saveSettings(); ppDelPdf(p.id); if (ppm?.pid === p.id) ppm = null; closeDialog(); toast('Paper removed · ⌘Z to undo'); return view.name === 'ppmark' ? go('papers') : ppRefresh(); }
+    case 'pp-m-removego': { const ps = { ...ppPapers() }; delete ps[p.id]; undoTx = null; undoLabel = 'remove paper'; S.settings = { ...S.settings, papers: ps }; await saveSettings(); ppDelPdf(p.id); ppDelPdf(ppSolKey(p.id)); if (ppm?.pid === p.id) ppm = null; closeDialog(); toast('Paper removed · ⌘Z to undo'); return view.name === 'ppmark' ? go('papers') : ppRefresh(); }
   }
 }
 function ppRefresh(){ if (view.name === 'papers') renderPapers(); else if (view.name === 'ppmark') ppmSide(); else if (view.name === 'decks' || view.name === 'overview') todoRefresh(); renderAppbar(); }
@@ -8586,8 +8882,21 @@ async function ppmLoad(p){
     const file = new File([got.buf.slice(0)], got.name || 'paper.pdf', { type: 'application/pdf' });
     const R = await pxRead(file, msg => { if (ppm === m){ m.busy = msg; ppmSide(); } }, { noOcr: true });
     if (ppm !== m) return;
+    /* separate solutions PDF: its pages follow the paper's, numbered on from them, and everything from there on counts as solutions */
+    m.solFrom = 0; m.solMissing = false;
+    if (p.solSep){
+      const sg = await ppSolOf(p); if (ppm !== m) return;
+      if (sg){
+        m.busy = 'Reading the solutions…'; ppmSide();
+        const S2 = await pxRead(new File([sg.buf.slice(0)], sg.name || 'solutions.pdf', { type: 'application/pdf' }), null, { noOcr: true }); if (ppm !== m) return;
+        const off = R.pages.length; m.solFrom = off + 1;
+        R.pages = [...R.pages, ...S2.pages.map(pg => ({ ...pg, n: pg.n + off, sol: true }))]; R.textLines += S2.textLines; R.total += S2.total;
+      } else m.solMissing = true;
+    }
     m.R = R; m.busy = 'Finding the questions…'; ppmSide();
-    const cut = R.textLines ? pxSplit(R) : null, Q = cut ? pxSlice(R, 0, cut) : R;
+    const cut = m.solFrom ? pxAt(m.solFrom, 0) : R.textLines ? pxSplit(R) : null, Q = cut ? pxSlice(R, 0, cut) : R;
+    m.cutP = cut ? (m.solFrom || Math.floor(cut / 100000)) : null; m.cutY = cut && !m.solFrom ? cut - m.cutP * 100000 : 0;
+    m.locked = ppSolLocked(p.id);
     let items = R.textLines ? pxPlan(Q, 'question') : [];
     if (cut){ const A = pxPlan(pxSlice(R, cut, Infinity), 'question'), by = new Map(A.map(a => [a.key, a])); items.forEach(it => { if (!it.sol){ const a = by.get(it.key) || A.find(z => z.q === it.q); if (a) it.sol = a.segs; } }); }
     const seen = new Set(); items = items.filter(it => !seen.has(it.key) && seen.add(it.key));
@@ -8689,10 +8998,26 @@ function ppmObserve(){
   ppmFar = new IntersectionObserver(es => es.forEach(e => { const el = e.target; if (!e.isIntersecting && el._sc && !el._busy){ const c = el.querySelector('canvas'); if (c){ c.width = 0; c.height = 0; } el._sc = 0; } }), { root, rootMargin: '2400px 1600px' });
   host.querySelectorAll('.pppage').forEach(el => { ppmNear.observe(el); ppmFar.observe(el); });
 }
+/* solutions stay shut while the exam timer for this paper is running (reading or writing time); they open when time runs out or you stop the timer */
+const ppSolLocked = pid => { const t = ppTmOf(pid); return !!t && ppTmState(t).ph !== 'over'; };
+/* how much of page n is solutions that are still shut: null = none, 0 = the whole page, 0..1 = from that far down */
+function ppmLockOf(n){
+  const m = ppm; if (!m?.locked || !m.cutP || n < m.cutP) return null;
+  if (n > m.cutP || !m.cutY) return 0;
+  const pg = m.R.pages[n - 1]; return pg ? Math.max(0, Math.min(1, (m.cutY - 6) / pg.h)) : 0;
+}
+const ppmLockLeft = () => { const t = ppTmOf(ppm?.pid); if (!t) return ''; const st = ppTmState(t); return st.ph === 'read' ? fmtHMS(st.left + t.dur) : fmtHMS(st.left); };
+function ppmLockCheck(){
+  const m = ppm; if (!m?.R || !m.cutP) return;
+  const L = ppSolLocked(m.pid);
+  if (L !== !!m.locked){ m.locked = L; ppmPages(); ppmSide(); return; }
+  if (L) document.querySelectorAll('.pplockt').forEach(x => { x.textContent = ppmLockLeft(); });
+}
 function ppmPages(){
   const m = ppm, host = $('#pppages'); if (!m?.R || !host) return;
   ppmApplyZoom();
-  host.innerHTML = m.R.pages.map(pg => `<div class="pppage" data-p="${pg.n}" style="aspect-ratio:${pg.w} / ${pg.h}"><canvas aria-hidden="true"></canvas><div class="ppov" data-p="${pg.n}"></div><span class="pppn">${pg.n}</span></div>`).join('');
+  const lockHtml = n => { const f = ppmLockOf(n); return f == null ? '' : `<div class="pplock ${f ? 'part' : ''}" style="top:${(f * 100).toFixed(2)}%"><div><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><b>Solutions open when your time’s up</b><span><span class="pplockt">${ppmLockLeft()}</span> left</span></div></div>`; };
+  host.innerHTML = m.R.pages.map(pg => `${m.solFrom && pg.n === m.solFrom ? `<div class="ppsoldiv" role="separator">Solutions<small>${esc(ppmP()?.solName || '')}</small></div>` : ''}<div class="pppage ${ppmLockOf(pg.n) === 0 ? 'locked' : ''}" data-p="${pg.n}" style="aspect-ratio:${pg.w} / ${pg.h}"><canvas aria-hidden="true"></canvas><div class="ppov" data-p="${pg.n}"></div>${lockHtml(pg.n)}<span class="pppn">${m.solFrom && pg.n >= m.solFrom ? 'S' + (pg.n - m.solFrom + 1) : pg.n}</span></div>`).join('');
   ppmObserve();
   const bar = $('#ppzbar'); if (bar) bar.hidden = false;
   ppTmPaint();
@@ -8705,6 +9030,7 @@ function ppmWantSc(el, pg){
 }
 async function ppmDrawPage(n){
   const m = ppm, el = document.querySelector(`.pppage[data-p="${n}"]`), pg = m?.R?.pages[n - 1]; if (!el || !pg) return;
+  if (ppmLockOf(n) === 0) return;
   const want = ppmWantSc(el, pg);
   if (el._sc && Math.abs(el._sc - want) / want < .15) return;
   if (el._busy){ el._again = true; return; }
@@ -8778,7 +9104,7 @@ function ppTmLoop(){
   ppTmTick();
 }
 function ppTmTick(){
-  if (view.name === 'ppmark') ppTmPaint();
+  if (view.name === 'ppmark'){ ppTmPaint(); ppmLockCheck(); }
   if (!S.ready) return;
   const a = ppTmAll(); let ch = false;
   for (const [pid, t] of Object.entries(a)){
@@ -8857,7 +9183,7 @@ function ppmBoxes(){
     if (i === m.sel && g === (sol ? it.sol[0] : it.segs[0])) b.innerHTML = `<span class="pptag">${esc(it.label)}${sol ? ' · solution' : it.marks ? ` · ${it.marks} mark${it.marks === 1 ? '' : 's'}` : ''}</span>`;
     o.appendChild(b);
   };
-  m.items.forEach((it, i) => { (it.segs || []).forEach(g => put(it, i, g, false)); if (i === m.sel) (it.sol || []).forEach(g => put(it, i, g, true)); });
+  m.items.forEach((it, i) => { (it.segs || []).forEach(g => put(it, i, g, false)); if (i === m.sel && !m.locked) (it.sol || []).forEach(g => put(it, i, g, true)); });
   if (m.drawBox){ const d = m.drawBox, o = document.querySelector(`.ppov[data-p="${d.p}"]`), pg = m.R.pages[d.p - 1]; if (o && pg){ const b = document.createElement('div'); b.className = 'ppbox drawing'; b.style.cssText = `left:${Math.min(d.x0, d.x1) / pg.w * 100}%;top:${Math.min(d.y0, d.y1) / pg.h * 100}%;width:${Math.abs(d.x1 - d.x0) / pg.w * 100}%;height:${Math.abs(d.y1 - d.y0) / pg.h * 100}%`; o.appendChild(b); } }
   $('#ppstage')?.classList.toggle('drawmode', !!m.draw);
 }
@@ -8893,6 +9219,14 @@ function ppmPanel(){
   const h = ppmPanel0(); if (document.body.classList.contains('desktop')) return h;
   return `<div class="ppmob ppmobm"><button class="btn sm ppback" data-nav="papers" aria-label="Back to Past papers"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Past papers</button><span class="grow"></span>${ppm?.items?.length ? ppAppbar().act : ''}</div>` + h;
 }
+function ppmSolLine(p){
+  const m = ppm, found = m.items.some(it => it.sol?.length);
+  if (m.solMissing) return `<p class="ppnote ppsolln">The solutions PDF (${esc(p.solName || 'solutions')}) isn’t on this device. <button class="link sm" data-act="pp-addsol">Add it again</button></p>`;
+  if (m.locked && m.cutP) return `<p class="ppnote ppsolln"><b>Solutions open when your time’s up</b> · <span class="pplockt">${ppmLockLeft()}</span> left. Stopping the timer opens them too.</p>`;
+  if (m.solFrom) return `<p class="ppnote ppsolln">Solutions: ${esc(p.solName || 'separate PDF')}, after the paper (pages S1–S${m.R.pages.length - m.solFrom + 1}). <button class="link sm" data-act="pp-addsol">Replace</button></p>`;
+  if (!found) return `<p class="ppnote ppsolln">Solutions in a separate PDF? <button class="link sm" data-act="pp-addsol">Add the solutions PDF</button></p>`;
+  return '';
+}
 function ppmPanel0(){
   const m = ppm, p = ppmP(), s = ppScore(p);
   if (m.err) return `<div class="pppad"><h2>That didn’t work</h2><p class="ppnote">${esc(m.err)}</p></div>`;
@@ -8900,6 +9234,7 @@ function ppmPanel0(){
   const it = m.items[m.sel];
   if (!it) return `<div class="pppad"><h2>${esc(ppTitle(p))}</h2><p class="ppnote">${esc(PP_COURSE[p.c].name)} · ${esc(ppSecName(p.sec, true))}</p>
     ${m.items.length ? `<div class="ppsum"><div><b>${s.got}</b> / ${s.of}</div><span>${s.marked} of ${m.items.length} marked · ${s.flagged} flagged</span>${p.took ? `<span>Took ${fmtHMS(p.took, true)} of ${fmtHMS(p.lim || 0, true)}${p.lim && p.took > p.lim ? ` · ${fmtHMS(p.took - p.lim, true)} over` : ''}</span>` : ''}</div>` : ''}
+    ${ppmSolLine(p)}
     <p class="ppnote">Pick a question on the left (or on the page) and mark it Right, Part or Wrong. The ones you get wrong become cards in your decks and in Paper mistakes.${m.items.length ? ' Questions you don’t mark count as right.' : ''}</p>
     <p class="hint">Keys: ↑ ↓ move between questions · 1 right · 2 part · 3 wrong · B draws a box · + − zoom · F full screen · Esc goes back</p></div>`;
   const q = p.q?.[it.key] || {}, r = m.res ?? q.r ?? '', of = m.of ?? q.of ?? (it.marks || 1), got = m.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)), card = q.card && S.cards[q.card];
@@ -8912,7 +9247,7 @@ function ppmPanel0(){
     <div class="ppmarks"><span class="ppstep" role="group" aria-label="Marks you got"><button type="button" data-act="pp-got" data-d="-1" aria-label="One mark less" ${got <= 0 ? 'disabled' : ''}>−</button><b>${got}</b><button type="button" data-act="pp-got" data-d="1" aria-label="One mark more" ${got >= of ? 'disabled' : ''}>+</button></span><span class="ppof">out of</span><span class="ppstep" role="group" aria-label="Marks the question is worth"><button type="button" data-act="pp-of" data-d="-1" aria-label="Worth one mark less" ${of <= 1 ? 'disabled' : ''}>−</button><b>${of}</b><button type="button" data-act="pp-of" data-d="1" aria-label="Worth one mark more">+</button></span></div>
     ${flag ? `<label class="pprl" for="ppwhy">Why I got it wrong</label><textarea class="in" id="ppwhy" rows="3" placeholder="What went wrong, in a line or two">${esc(m.why ?? card?.mistake ?? '')}</textarea>
     <div class="pprl">Correct solution</div>
-    <div class="ppsol">${it.sol?.length ? `<span>Found ${it.sol.length > 1 ? 'on pages ' + [...new Set(it.sol.map(g => g.p))].join(', ') : 'on page ' + it.sol[0].p}</span><button class="link sm" data-act="pp-solgo">Show</button><button class="link sm" data-act="pp-draw" data-v="s">Redraw</button>` : `<span>${p.sol ? 'Not matched yet.' : 'This paper has no solutions.'}</span><button class="link sm" data-act="pp-draw" data-v="s">${m.draw === 's' ? 'Drag across the page…' : 'Draw it on the page'}</button>`}</div>
+    <div class="ppsol">${m.locked ? `<span>${it.sol?.length ? 'Found. ' : ''}Opens when your time’s up (<span class="pplockt">${ppmLockLeft()}</span> left).</span>` : it.sol?.length ? `<span>Found ${it.sol.length > 1 ? 'on pages ' + [...new Set(it.sol.map(g => ppmPageName(g.p)))].join(', ') : 'on page ' + ppmPageName(it.sol[0].p)}</span><button class="link sm" data-act="pp-solgo">Show</button><button class="link sm" data-act="pp-draw" data-v="s">Redraw</button>` : `<span>${m.solMissing ? 'The solutions PDF isn’t on this device.' : p.sol ? 'Not matched yet.' : 'This paper has no solutions.'}</span><button class="link sm" data-act="pp-draw" data-v="s">${m.draw === 's' ? 'Drag across the page…' : 'Draw it on the page'}</button>${!p.solSep || m.solMissing ? `<button class="link sm" data-act="pp-addsol">${m.solMissing ? 'Add it again' : 'Add a solutions PDF'}</button>` : ''}`}</div>
     <div class="pprl">Deck</div>
     <div class="field ppdeckf"><button type="button" class="brdeck pickbtn ${deck ? 'on' : ''}" id="ppdeck" aria-haspopup="true" aria-expanded="false">${deck ? `<span class="sdot2" style="--sc:${scol(deck)}"></span>${esc(pathOf(deck).map(n => n.name).join(' › '))}` : 'Choose a deck'}<span class="pkcar">▾</span></button></div>
     <p class="hint" style="margin:6px 0 0">It also goes in Paper mistakes.</p>` : ''}
@@ -8921,6 +9256,7 @@ function ppmPanel0(){
     ${it.man ? '<button class="link sm danger-link" data-act="pp-qdel" style="margin-top:12px">Remove this box</button>' : ''}
   </div>`;
 }
+const ppmPageName = n => ppm?.solFrom && n >= ppm.solFrom ? 'S' + (n - ppm.solFrom + 1) : n;
 function ppmPick(i){
   const m = ppm; if (!m || i == null || !m.items[i]) return;
   if (m.sel !== i){ m.sel = i; m.res = m.got = m.of = m.why = undefined; m.node = undefined; m.draw = m.draw === 's' ? null : m.draw; }
@@ -9046,6 +9382,8 @@ async function ppAction(act, a, e){
   switch (act){
     case 'pp-ipick': return ppPickFiles(fs => ppImportDialog(fs));
     case 'pp-irm': ppImp = ppImp.filter(r => r.id !== a.dataset.id); return ppImpDraw();
+    case 'pp-isol': { const row = ppImp.find(r => r.id === a.dataset.id); if (!row) return; return ppPickFile(f => { if (f && isPdf(f)){ row.solFile = f; row.solm = 'sep'; } ppImpDraw(); }); }
+    case 'pp-addsol': return ppAddSolPick(ppm?.pid);
     case 'pp-igo': return ppImpGo(!!a.dataset.open);
     case 'pp-subj': { if (pp.s === v) return; const on = $('.pphome .stab[aria-selected="true"]'); ppTabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; pp.s = v; ppSave(); return renderPapers(); }
     case 'pp-course': pp.c = { ...(pp.c || {}), [ppSubjCur().k]: v }; ppSave(); return renderPapers();
@@ -9067,7 +9405,7 @@ async function ppAction(act, a, e){
     case 'pp-of': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}; ppm.of = Math.max(1, Math.min(40, (ppm.of ?? q.of ?? (it.marks || 1)) + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (ppm.got != null) ppm.got = Math.min(ppm.got, ppm.of); return ppmSide(); }
     case 'pp-save': return ppmSaveQ();
     case 'pp-draw': if (!ppm?.R) return; ppm.why = $('#ppwhy')?.value ?? ppm.why; ppm.draw = ppm.draw === v ? null : v; ppmSide(); if (ppm.draw) toast(v === 's' ? 'Drag across the page round the solution' : 'Drag across the page round the question', 1800); return;
-    case 'pp-solgo': { const g = ppm?.items[ppm.sel]?.sol?.[0]; if (g) ppmReveal(g); return; }
+    case 'pp-solgo': { if (ppm?.locked) return toast('The solutions open when your time’s up', 1800); const g = ppm?.items[ppm.sel]?.sol?.[0]; if (g) ppmReveal(g); return; }
     case 'pp-zoom': return ppmZoomStep(+a.dataset.d);
     case 'pp-dl': return ppmDownload();
     case 'pp-full': return ppFullSet(!ppFull);
@@ -9077,7 +9415,7 @@ async function ppAction(act, a, e){
     case 'pp-reopen': { const p0 = ppmP(); if (!p0) return; await ppSavePaper({ ...p0, st: 'marking' }, 'reopen paper'); return ppmSide(); }
     case 'pp-remove': {
       if (a.dataset.confirm !== '1'){ a.dataset.confirm = '1'; a.textContent = 'Click again to remove it (its cards stay)'; return; }
-      const p0 = ppmP(); if (!p0) return; const ps = { ...ppPapers() }; delete ps[p0.id]; undoTx = null; undoLabel = 'remove paper'; S.settings = { ...S.settings, papers: ps }; await saveSettings(); ppDelPdf(p0.id); ppm = null; toast('Paper removed. Its cards are still in your decks · ⌘Z to undo', 3500); return go('papers');
+      const p0 = ppmP(); if (!p0) return; const ps = { ...ppPapers() }; delete ps[p0.id]; undoTx = null; undoLabel = 'remove paper'; S.settings = { ...S.settings, papers: ps }; await saveSettings(); ppDelPdf(p0.id); ppDelPdf(ppSolKey(p0.id)); ppm = null; toast('Paper removed. Its cards are still in your decks · ⌘Z to undo', 3500); return go('papers');
     }
     case 'pp-goq': { const c = S.cards[a.dataset.id]; if (!c?.paper || !ppPapers()[c.paper.id]) return; ppm = ppm?.pid === c.paper.id ? ppm : null; if (ppm){ const i = ppm.items.findIndex(x => x.key === c.paper.q); if (i >= 0) ppm.sel = i; } else ppm = { pid: c.paper.id, want: c.paper.q }; ppm.want = c.paper.q; study = null; go('ppmark', c.paper.id); if (ppm?.R){ const i = ppm.items.findIndex(x => x.key === c.paper.q); if (i >= 0) ppmPick(i); } return; }
   }
