@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261109121338";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261109141454";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -2589,6 +2589,8 @@ html.lh body.desktop .page.v-ppmark,.page.v-ppmark{padding:0;max-width:none}
 /* paper view bar: zoom and download, floating at the bottom of the paper */
 .ppzbar{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.2),0 6px 18px rgba(0,0,0,.22)}
 .ppzbar[hidden]{display:none}
+.ppzbar{width:max-content;max-width:calc(100% - 24px);white-space:nowrap}
+.ppzbar svg{flex:none}
 .ppzbar button{height:28px;min-width:28px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:var(--r-sm);background:transparent;color:var(--fg-2);font:500 13px var(--ui);font-variant-numeric:tabular-nums;cursor:pointer;transition:background var(--t-fast),color var(--t-fast)}
 .ppzbar button:hover:not(:disabled){background:rgba(var(--ovr),.08);color:var(--fg)}
 .ppzbar button:disabled{opacity:.4;cursor:default}
@@ -2596,6 +2598,22 @@ html.lh body.desktop .page.v-ppmark,.page.v-ppmark{padding:0;max-width:none}
 .ppzbar .ppzv{min-width:52px}
 .ppzsep{width:1px;height:18px;margin:0 4px;background:var(--border-2)}
 .ppzd{padding:0 10px 0 8px}
+/* exam timer in the paper bar, and its popover */
+.ppzbar .pptm{padding:0 8px 0 6px;font-variant-numeric:tabular-nums}
+.ppzbar .pptm.run{color:var(--fg)}
+.ppzbar .pptm.warn{color:color-mix(in srgb, var(--hard) 75%, var(--fg))}
+.ppzbar .pptm.over{color:color-mix(in srgb, var(--again) 75%, var(--fg))}
+.ppzbar .pptm.paused{color:var(--fg-3)}
+.pptmpop{width:320px}
+.pptmpop .ppnote{margin:0;font-size:12px;color:var(--fg-3);font-variant-numeric:tabular-nums}
+.pptmbig{font:600 15px var(--ui);color:var(--fg)}
+.pptmbig.over{color:color-mix(in srgb, var(--again) 75%, var(--fg))}
+.pptmrow{display:flex;align-items:center;gap:8px}
+.pptmrow .tstep b{min-width:92px}
+.pptmact{display:flex;gap:8px}
+.pptmact .btn{flex:1}
+.pptmgo{width:100%}
+@media (max-width:480px){ .ppzd span,.pptm:not(.run) span{display:none} }
 .abback{margin-left:-4px}
 .ppback{gap:4px;padding-left:6px}
 .ppback svg{width:14px;height:14px}
@@ -7489,7 +7507,7 @@ document.addEventListener('click', async e => {
   const z = e.target.closest('[data-zoom]');
   if (z){ openGallery([{ src: z.getAttribute('src'), label: z.alt || '' }], 0); return; }
   if (!e.target.closest('#menu') && !e.target.closest('[data-act="gear"]')) closeMenu();
-  if ($('#tpop') && !e.target.closest('#tpop') && !e.target.closest('[data-act="timer-menu"]')) $('#tpop').remove();
+  if ($('#tpop') && !e.target.closest('#tpop') && !e.target.closest('[data-act="timer-menu"], [data-act="pp-tm"]')) $('#tpop').remove();
   if (document.body.classList.contains('desktop') && $('#sidesres') && !$('#sidesres').hidden && (!e.target.closest('#abmid') || e.target.closest('.siderec'))){ $('#sidesres').hidden = true; if (e.target.closest('.siderec')){ const q = $('#sidesq'); if (q) q.value = ''; } }
   const nav = e.target.closest('[data-nav]');
   if (nav){ const t = nav.dataset.nav; if (t === 'add') return editor(null, nodeOf(view.node) ? view.node : browse.node); if (t === 'browse') browse.node = view.node || browse.node; study = null; return go(t); }
@@ -8432,6 +8450,8 @@ const ppmOwnScroll = () => ppFull || matchMedia('(min-width: 901px)').matches;
 function ppmZoomBar(){
   const ic = d => `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   return `<div class="ppzbar" id="ppzbar" role="toolbar" aria-label="Paper view" hidden>
+    <button type="button" class="pptm" id="pptm" data-act="pp-tm" title="Exam timer (T)" aria-label="Exam timer" aria-haspopup="dialog">${IC.clock}<span>Timer</span></button>
+    <span class="ppzsep" aria-hidden="true"></span>
     <button type="button" class="ppzb" data-act="pp-zoom" data-d="-1" title="Zoom out (−)" aria-label="Zoom out">${ic('M3.5 8h9')}</button>
     <button type="button" class="ppzv" data-act="pp-zoom" data-d="0" title="Fit the page to the width (0)" aria-label="Zoom level, press to fit the width"><span id="ppzl">${Math.round(ppz * 100)}%</span></button>
     <button type="button" class="ppzb" data-act="pp-zoom" data-d="1" title="Zoom in (+)" aria-label="Zoom in">${ic('M3.5 8h9M8 3.5v9')}</button>
@@ -8510,6 +8530,7 @@ function ppmPages(){
   host.innerHTML = m.R.pages.map(pg => `<div class="pppage" data-p="${pg.n}" style="aspect-ratio:${pg.w} / ${pg.h}"><canvas aria-hidden="true"></canvas><div class="ppov" data-p="${pg.n}"></div><span class="pppn">${pg.n}</span></div>`).join('');
   ppmObserve();
   const bar = $('#ppzbar'); if (bar) bar.hidden = false;
+  ppTmPaint();
   ppmBoxes();
 }
 function ppmWantSc(el, pg){
@@ -8550,6 +8571,107 @@ document.addEventListener('touchcancel', () => { ppPinch = null; });
 document.addEventListener('gesturestart', e => { if (!ppInStage(e)) return; e.preventDefault(); ppGest = ppPinch ? null : { z0: ppz }; });
 document.addEventListener('gesturechange', e => { if (view.name !== 'ppmark' || !(ppGest || ppPinch)) return; e.preventDefault(); if (ppGest) ppmZoom(ppGest.z0 * e.scale, e.clientX, e.clientY); });
 document.addEventListener('gestureend', () => { ppGest = null; });
+/* ---------- exam timer for a past paper: reading time, then a countdown, then overtime. Kept per device (md-pp-tm), keeps going when you leave the page;
+   Stop saves how long you took on the paper (p.took / p.lim). Times are NESA's for HSC and trial papers, shorter defaults for other tasks. ---------- */
+const PP_TIME = { std: [150, 10], adv: [180, 10], x1: [120, 10], x2: [180, 10], phy: [180, 5], chem: [180, 5], bio: [180, 5], eco: [180, 5], en1: [90, 10], en2: [120, 5], en2s: [120, 5], pdh: [180, 5], agr: [180, 5], ipt: [180, 5], sw: [120, 5] };
+function ppTmDef(p){
+  const mine = ls.get('md-pp-tmdef', {})[(p?.c || '') + ':' + (p?.sec || '')]; if (mine) return mine;
+  const [w, r] = PP_TIME[p?.c] || [180, 5];
+  return p?.sec === 'hsc' || p?.sec === 'trial' ? [w, r] : p?.sec === 'hy' ? [Math.min(w, 120), r] : [60, 5];
+}
+const ppTmAll = () => ls.get('md-pp-tm', {});
+const ppTmOf = pid => ppTmAll()[pid] || null;
+function ppTmPut(pid, t){ const a = ppTmAll(); if (t) a[pid] = t; else delete a[pid]; ls.set('md-pp-tm', a); ppTmLoop(); }
+function ppTmState(t, now = Date.now()){
+  const e = Math.max(0, now - t.t0 - (t.pm || 0) - (t.pa ? now - t.pa : 0));
+  if (e < t.read) return { ph: 'read', left: t.read - e, e, worked: 0 };
+  const left = t.read + t.dur - e; return { ph: left > 0 ? 'work' : 'over', left, e, worked: e - t.read };
+}
+const fmtHMS = (ms, up) => { const s = up ? Math.floor(Math.abs(ms) / 1000) : Math.ceil(Math.max(0, ms) / 1000), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, x = String(s % 60).padStart(2, '0'); return h ? `${h}:${String(m).padStart(2, '0')}:${x}` : `${m}:${x}`; };
+const fmtMins = m => m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ` ${m % 60} min` : ''}` : `${m} min`;
+const fmtClock = ms => new Date(ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+const IC_PAUSE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 3.5v9M10.5 3.5v9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+function ppTmPaint(){
+  const b = $('#pptm'); if (!b) return; const p = ppmP(), t = p && ppTmOf(p.id);
+  if (!t){ b.className = 'pptm'; b.innerHTML = `${IC.clock}<span>Timer</span>`; b.setAttribute('aria-label', 'Exam timer'); return; }
+  const st = ppTmState(t), txt = st.ph === 'read' ? `Reading ${fmtHMS(st.left)}` : st.ph === 'over' ? `+${fmtHMS(-st.left, true)} over` : fmtHMS(st.left);
+  b.className = `pptm run ${t.pa ? 'paused' : ''} ${st.ph === 'over' ? 'over' : st.ph === 'work' && st.left <= 5 * 60000 ? 'warn' : ''}`;
+  b.innerHTML = `${t.pa ? IC_PAUSE : IC.clock}<span>${txt}</span>`;
+  b.setAttribute('aria-label', `Exam timer, ${t.pa ? 'paused, ' : ''}${txt}`);
+  const pop = $('#tpop.pptmpop'); if (pop){ const r = pop.querySelector('.pptmends'); if (r) r.textContent = ppTmEnds(t); }
+}
+function ppTmEnds(t){
+  const st = ppTmState(t), now = Date.now();
+  if (st.ph === 'over') return `Time ran out ${fmtHMS(-st.left, true)} ago`;
+  return `${t.pa ? 'Paused · would finish' : 'Finishes'} at ${fmtClock(now + (st.ph === 'read' ? st.left + t.dur : st.left))}`;
+}
+/* toasts at the end of reading time, 30 and 5 minutes left, and time up; each once per timer */
+let ppTmIv = null;
+function ppTmLoop(){
+  const run = Object.values(ppTmAll()).some(t => !t.pa);
+  if (run && !ppTmIv) ppTmIv = setInterval(ppTmTick, 1000); else if (!run && ppTmIv){ clearInterval(ppTmIv); ppTmIv = null; }
+  ppTmTick();
+}
+function ppTmTick(){
+  if (view.name === 'ppmark') ppTmPaint();
+  if (!S.ready) return;
+  const a = ppTmAll(); let ch = false;
+  for (const [pid, t] of Object.entries(a)){
+    if (t.pa) continue; const st = ppTmState(t), al = t.al || (t.al = {}), p = ppPapers()[pid], who = view.name === 'ppmark' && view.node === pid ? '' : (p ? ppTitle(p) + ': ' : '');
+    const say = (k, msg, ms) => { if (al[k]) return; al[k] = 1; ch = true; toast(who + msg, ms); };
+    if (t.read && st.ph !== 'read') say('read', 'Reading time is over. Start writing.', 4000);
+    if (st.ph === 'work' && t.dur > 45 * 60000 && st.left <= 30 * 60000 && st.left > 5 * 60000) say('30', '30 minutes left', 4000);
+    if (st.ph === 'work' && st.left <= 5 * 60000) say('5', '5 minutes left', 4000);
+    if (st.ph === 'over') say('end', 'Time’s up. The timer keeps counting overtime.', 6000);
+    if (st.ph !== 'read'){ al.read = 1; } if (st.left <= 30 * 60000 || st.ph === 'over') al['30'] = 1;
+  }
+  if (ch) ls.set('md-pp-tm', a);
+}
+setTimeout(ppTmLoop, 1500);
+let ppTmDraft = null;
+function ppTmMenu(anchor){
+  $('#tpop')?.remove(); const p = ppmP(); if (!p || !anchor) return;
+  const t = ppTmOf(p.id), pop = document.createElement('div'); pop.id = 'tpop'; pop.className = 'tpop pptmpop'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Exam timer');
+  if (t){
+    const st = ppTmState(t);
+    pop.innerHTML = `<div class="tpsec"><div class="tplbl">Exam timer</div><div class="pptmbig ${st.ph === 'over' ? 'over' : ''}">${st.ph === 'read' ? 'Reading time' : st.ph === 'over' ? 'Overtime' : 'Time left'}</div><div class="ppnote pptmends">${esc(ppTmEnds(t))}</div><div class="ppnote">${fmtMins(Math.round(t.dur / 60000))} writing${t.read ? ` + ${Math.round(t.read / 60000)} min reading` : ''} · started ${fmtClock(t.t0)}</div></div>
+      <div class="pptmact"><button class="btn" data-act="pp-tm-pause">${t.pa ? 'Carry on' : 'Pause'}</button><button class="btn primary" data-act="pp-tm-stop">Stop and save my time</button></div>
+      <div class="tpfoot"><span>Stopping keeps how long you took with the paper.</span><span class="grow"></span><button class="link sm danger-link" data-act="pp-tm-reset">Reset</button></div>`;
+  } else {
+    const [w, r] = ppTmDraft?.pid === p.id ? [ppTmDraft.w, ppTmDraft.r] : ppTmDef(p); ppTmDraft = { pid: p.id, w, r };
+    const [dw, dr] = PP_TIME[p.c] || [180, 5], official = p.sec === 'hsc' || p.sec === 'trial';
+    pop.innerHTML = `<div class="tpsec"><div class="tplbl">Writing time</div><div class="pptmrow"><span class="tstep"><button type="button" data-act="pp-tm-step" data-d="-15" aria-label="15 minutes less">−</button><b id="pptmw">${fmtMins(w)}</b><button type="button" data-act="pp-tm-step" data-d="15" aria-label="15 minutes more">+</button></span><span class="ppnote">15 min steps</span></div></div>
+      <div class="tpsec"><div class="tplbl">Reading time</div><div class="seg tseg">${[[0, 'None'], [5, '5 min'], [10, '10 min']].map(([v, l]) => `<button type="button" data-act="pp-tm-read" data-v="${v}" aria-pressed="${r === v}">${l}</button>`).join('')}</div></div>
+      ${official ? `<p class="hint" style="margin:0">The HSC gives ${esc(PP_COURSE[p.c]?.name || 'this course')} ${fmtMins(dw)} writing and ${dr} min reading.</p>` : ''}
+      <button class="btn primary pptmgo" data-act="pp-tm-start">Start timer</button>`;
+  }
+  document.body.appendChild(pop);
+  const rc = anchor.getBoundingClientRect(), wd = pop.offsetWidth, h = pop.offsetHeight;
+  pop.style.left = Math.round(Math.max(12, Math.min(innerWidth - wd - 12, rc.left + rc.width / 2 - wd / 2))) + 'px';
+  pop.style.top = Math.round(rc.top - h - 10 > 8 ? rc.top - h - 10 : Math.min(innerHeight - h - 8, rc.bottom + 10)) + 'px';
+}
+async function ppTmStop(pid, quiet){
+  const t = ppTmOf(pid), p = ppPapers()[pid]; if (!t){ return; }
+  const st = ppTmState(t); ppTmPut(pid, null);
+  if (p && st.worked > 0) await ppSavePaper({ ...p, took: Math.round(st.worked), lim: t.dur }, 'exam time');
+  if (!quiet) toast(st.worked > 0 ? `Time saved · you took ${fmtHMS(st.worked, true)} of ${fmtHMS(t.dur, true)}` : 'Timer stopped', 3200);
+  ppTmPaint(); if (view.name === 'ppmark') ppmSide();
+}
+function ppTmAct(act, a){
+  const p = ppmP(); if (!p) return;
+  if (act === 'pp-tm'){ if ($('#tpop')){ $('#tpop').remove(); return; } return ppTmMenu($('#pptm')); }
+  if (act === 'pp-tm-step'){ ppTmDraft.w = Math.max(5, Math.min(300, ppTmDraft.w + +a.dataset.d)); const b = $('#pptmw'); if (b) b.textContent = fmtMins(ppTmDraft.w); return; }
+  if (act === 'pp-tm-read'){ ppTmDraft.r = +a.dataset.v; document.querySelectorAll('[data-act="pp-tm-read"]').forEach(x => x.setAttribute('aria-pressed', String(x === a))); return; }
+  if (act === 'pp-tm-start'){
+    const { w, r } = ppTmDraft; const d = ls.get('md-pp-tmdef', {}); d[p.c + ':' + p.sec] = [w, r]; ls.set('md-pp-tmdef', d);
+    ppTmPut(p.id, { t0: Date.now(), dur: w * 60000, read: r * 60000, pm: 0, pa: 0, al: {} }); $('#tpop')?.remove();
+    return toast(r ? `Reading time: ${r} min, then ${fmtMins(w)} writing` : `Timer started · ${fmtMins(w)}`, 2400);
+  }
+  const t = ppTmOf(p.id); if (!t) return;
+  if (act === 'pp-tm-pause'){ const now = Date.now(); if (t.pa){ t.pm = (t.pm || 0) + now - t.pa; t.pa = 0; } else t.pa = now; ppTmPut(p.id, t); toast(t.pa ? 'Timer paused · T to carry on' : 'Timer running', 1600); ppTmPaint(); if ($('#tpop.pptmpop')) ppTmMenu($('#pptm')); return; }
+  if (act === 'pp-tm-stop'){ $('#tpop')?.remove(); return ppTmStop(p.id); }
+  if (act === 'pp-tm-reset'){ $('#tpop')?.remove(); ppTmPut(p.id, null); ppTmPaint(); return toast('Timer reset', 1400); }
+}
 async function ppmDownload(){
   const p = ppmP(); if (!p) return;
   const got = ppm?.buf ? { buf: ppm.buf, name: p.name } : await ppPdfOf(p);
@@ -8612,7 +8734,7 @@ function ppmPanel0(){
   if (m.need) return `<div class="pppad"><h2>Add the PDF</h2><p class="ppnote">This paper’s PDF isn’t on this device yet. ${p.key && p.src === 'thsc' ? 'Open it on THSC, download it, then drop it here.' : p.src === 'nesa' ? 'Open it on NESA, download it, then drop it here.' : 'Drop the same PDF here.'}</p>${p.src === 'thsc' || p.src === 'nesa' ? `<p><a class="btn" href="${esc(p.src === 'nesa' ? ppNesaUrl(p.c, p.year) : (() => { const it = ppFind(p.key); return it?.no ? ppThscUrl(it.no, it.title) : 'https://thsconline.github.io/s/'; })())}" target="_blank" rel="noopener">Open on ${p.src === 'nesa' ? 'NESA' : 'THSC'}</a></p>` : ''}<div class="zone ppzone" id="ppmzone"><button class="btn primary" data-act="pp-repick">Choose PDF</button></div></div>`;
   const it = m.items[m.sel];
   if (!it) return `<div class="pppad"><h2>${esc(ppTitle(p))}</h2><p class="ppnote">${esc(PP_COURSE[p.c].name)} · ${esc(ppSecName(p.sec, true))}</p>
-    ${m.items.length ? `<div class="ppsum"><div><b>${s.got}</b> / ${s.of}</div><span>${s.marked} of ${m.items.length} marked · ${s.flagged} flagged</span></div>` : ''}
+    ${m.items.length ? `<div class="ppsum"><div><b>${s.got}</b> / ${s.of}</div><span>${s.marked} of ${m.items.length} marked · ${s.flagged} flagged</span>${p.took ? `<span>Took ${fmtHMS(p.took, true)} of ${fmtHMS(p.lim || 0, true)}${p.lim && p.took > p.lim ? ` · ${fmtHMS(p.took - p.lim, true)} over` : ''}</span>` : ''}</div>` : ''}
     <p class="ppnote">Pick a question on the left (or on the page) and mark it Right, Part or Wrong. The ones you get wrong become cards in your decks and in Paper mistakes.${m.items.length ? ' Questions you don’t mark count as right.' : ''}</p>
     <p class="hint">Keys: ↑ ↓ move between questions · 1 right · 2 part · 3 wrong · B draws a box · + − zoom · F full screen · Esc goes back</p></div>`;
   const q = p.q?.[it.key] || {}, r = m.res ?? q.r ?? '', of = m.of ?? q.of ?? (it.marks || 1), got = m.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)), card = q.card && S.cards[q.card];
@@ -8676,6 +8798,7 @@ async function ppmSaveQ(){
   if (next >= 0) ppmPick(next); else { m.res = m.got = m.of = m.why = undefined; ppmSide(); }
 }
 async function ppmFinish(){
+  if (ppm?.pid && ppTmOf(ppm.pid)) await ppTmStop(ppm.pid, true);
   const p0 = ppmP(); if (!p0) return; const s = ppScore(p0);
   undoTx = null; undoLabel = 'finish paper';
   await ppSavePaper({ ...p0, st: 'done', done: Date.now() }, 'finish paper');
@@ -8721,6 +8844,7 @@ function ppKey(e){
   if (k === 'b' || k === 'B'){ e.preventDefault(); m.draw = m.draw === 'q' ? null : 'q'; ppmSide(); if (m.draw) toast('Drag across the page round the question', 1800); return true; }
   if (k === 'Escape' && m.draw){ e.preventDefault(); m.draw = null; ppmSide(); return true; }
   if ((k === 'f' || k === 'F') && m.R){ e.preventDefault(); ppFullSet(!ppFull); return true; }
+  if (k === 't' || k === 'T'){ e.preventDefault(); const p = ppmP(); if (p && ppTmOf(p.id)) ppTmAct('pp-tm-pause', null); else ppTmMenu($('#pptm')); return true; }
   if ((k === '=' || k === '+' || k === '-' || k === '_' || k === '0') && m.R){ e.preventDefault(); ppmZoomStep(k === '0' ? 0 : k === '-' || k === '_' ? -1 : 1); return true; }
   return false;
 }
@@ -8782,6 +8906,7 @@ async function ppAction(act, a, e){
     case 'pp-zoom': return ppmZoomStep(+a.dataset.d);
     case 'pp-dl': return ppmDownload();
     case 'pp-full': return ppFullSet(!ppFull);
+    case 'pp-tm': case 'pp-tm-step': case 'pp-tm-read': case 'pp-tm-start': case 'pp-tm-pause': case 'pp-tm-stop': case 'pp-tm-reset': return ppTmAct(act, a);
     case 'pp-qdel': { const p0 = ppmP(), it = ppm?.items[ppm.sel]; if (!p0 || !it?.man) return; const p = { ...p0, man: (p0.man || []).filter(b => b.key !== it.key) }; if (p.q?.[it.key]){ p.q = { ...p.q }; delete p.q[it.key]; } ppm.items.splice(ppm.sel, 1); ppm.sel = null; undoTx = null; undoLabel = 'remove box'; S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings(); return ppmSide(); }
     case 'pp-finish': return ppmFinish();
     case 'pp-reopen': { const p0 = ppmP(); if (!p0) return; await ppSavePaper({ ...p0, st: 'marking' }, 'reopen paper'); return ppmSide(); }
