@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261108204911";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261109114635";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -2582,9 +2582,29 @@ html.lh body.desktop .page.v-ppmark,.page.v-ppmark{padding:0;max-width:none}
 .pplg span{display:inline-flex;align-items:center;gap:5px}
 .pplg i,.ppres .d{width:7px;height:7px;border-radius:50%;display:inline-block}
 .pplg .ok,.ppres .d.ok{background:var(--good)}.pplg .part,.ppres .d.part{background:var(--hard)}.pplg .bad,.ppres .d.bad{background:var(--again)}
-.ppstage{flex:999 1 480px;min-width:0;padding:24px;box-sizing:border-box;background:color-mix(in srgb, var(--bg) 70%, #000)}
-.pppages{display:flex;flex-direction:column;align-items:center;gap:20px}
-.pppage{position:relative;width:100%;max-width:820px;background:#fff;border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.25)}
+.ppstage{flex:999 1 480px;min-width:0;box-sizing:border-box;background:color-mix(in srgb, var(--bg) 70%, #000);position:relative;display:flex;flex-direction:column}
+.ppscroll{padding:24px 24px 72px;box-sizing:border-box;overflow-x:auto;touch-action:pan-x pan-y}
+.pppages{display:flex;flex-direction:column;align-items:center;gap:20px;min-width:100%;width:max-content}
+.pppage{position:relative;flex:none;width:var(--ppw, 820px);background:#fff;border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.25)}
+/* paper view bar: zoom and download, floating at the bottom of the paper */
+.ppzbar{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.2),0 6px 18px rgba(0,0,0,.22)}
+.ppzbar[hidden]{display:none}
+.ppzbar button{height:28px;min-width:28px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:var(--r-sm);background:transparent;color:var(--fg-2);font:500 13px var(--ui);font-variant-numeric:tabular-nums;cursor:pointer;transition:background var(--t-fast),color var(--t-fast)}
+.ppzbar button:hover:not(:disabled){background:rgba(var(--ovr),.08);color:var(--fg)}
+.ppzbar button:disabled{opacity:.4;cursor:default}
+.ppzbar svg{width:16px;height:16px}
+.ppzbar .ppzv{min-width:52px}
+.ppzsep{width:1px;height:18px;margin:0 4px;background:var(--border-2)}
+.ppzd{padding:0 10px 0 8px}
+.abback{margin-left:-4px}
+.ppback{gap:4px;padding-left:6px}
+.ppback svg{width:14px;height:14px}
+@media (min-width:901px){
+  /* the paper scrolls in its own pane, so zooming in can scroll both ways and the bar stays put */
+  .ppstage{position:sticky;top:calc(var(--appbar) + 8px);height:calc(100vh - var(--appbar) - 16px);align-self:flex-start}
+  .ppscroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+  html.lh body.desktop:has(.page.v-ppmark){overflow:hidden}
+}
 .pppage canvas{display:block;width:100%;height:100%;border-radius:2px}
 .pppn{position:absolute;right:8px;bottom:6px;font-size:11px;color:#767676;font-variant-numeric:tabular-nums;pointer-events:none}
 .ppov{position:absolute;inset:0}
@@ -2662,7 +2682,9 @@ html.lh body.desktop .page.v-ppmark,.page.v-ppmark{padding:0;max-width:none}
   .ppm{flex-wrap:wrap}
   .pprail,.pppanel{position:static;max-height:none;min-height:0;flex:1 1 100%;border:0;border-bottom:1px solid var(--border)}
   .pppanel{order:-1}
-  .ppstage{padding:12px}
+  .ppscroll{padding:12px}
+  .ppzbar{position:static;order:-1;align-self:center;transform:none;margin:12px 0 0;box-shadow:none}
+  .ppzbar button{height:36px;min-width:36px}
   .pppn{display:none}
 }
 @media (prefers-reduced-motion: reduce){ .ppcar,.ppyr,.ppbox{transition:none} }
@@ -7768,7 +7790,7 @@ document.addEventListener('keydown', e => {
   if ($('.lightbox') && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')){ e.preventDefault(); return stepGallery(e.key === 'ArrowRight' ? 1 : -1); }
   if (e.key === 'Escape' && $('#tpop')){ e.preventDefault(); return $('#tpop').remove(); }
   if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && (e.key === '[' || e.key === ']') && !dialogOpen() && !isTyping(document.activeElement)){ e.preventDefault(); return histGo(e.key === '[' ? -1 : 1); }
-  if (e.key === 'Escape'){ const lb = $('.lightbox'); if (lb){ gallery = null; return lb.remove(); } if ($('#menu')) return closeMenu(); if (dialogOpen()) return closeDialog(); if ($('#padwrap.full')) return padAction('full'); if (view.name === 'study'){ const n = study?.node; study = null; return n ? go('overview', n) : go('decks'); } return; }
+  if (e.key === 'Escape'){ const lb = $('.lightbox'); if (lb){ gallery = null; return lb.remove(); } if ($('#menu')) return closeMenu(); if (dialogOpen()) return closeDialog(); if ($('#padwrap.full')) return padAction('full'); if (view.name === 'study'){ const n = study?.node; study = null; return n ? go('overview', n) : go('decks'); } if (view.name === 'ppmark' && ppm){ if (ppm.draw){ ppm.draw = null; return ppmSide(); } if (!isTyping(document.activeElement) && !$('.pickpop') && !$('#tpop')) return go('papers'); } return; }
   if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 's' && document.body.classList.contains('desktop')){ e.preventDefault(); return toggleSidebar(); }
   if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && (e.key.toLowerCase() === 'k' || (e.key.toLowerCase() === 'f' && view.name !== 'browse')) && $('#sidesq') && view.name !== 'study' && !dialogOpen()){ e.preventDefault(); if (!document.body.classList.contains('desktop') && getComputedStyle($('.sidesearch')).display === 'none') return; const q = $('#sidesq'); q.focus(); q.select(); return; }
   if (ed && (e.metaKey || e.ctrlKey) && e.key === 'Enter'){ e.preventDefault(); return saveCard(); }
@@ -8355,7 +8377,8 @@ function renderPPMark(){
   if (ppm?.pid !== p.id || (!ppm.R && !ppm.busy && !ppm.need && !ppm.err)){ const keep = ppm?.pid === p.id ? ppm : null; ppm = { pid: p.id, items: [], sel: null, busy: 'Opening the paper…', want: keep?.want || ppm?.want || null, buf: keep?.buf || null }; ppmLoad(p); }
   const host = $('#ppm');
   if (!host || host.dataset.pid !== p.id){
-    $('#root').innerHTML = `<div class="ppm" id="ppm" data-pid="${esc(p.id)}"><aside class="pprail" id="pprail" aria-label="Questions"></aside><section class="ppstage" id="ppstage" aria-label="Paper"><div class="pppages" id="pppages"></div></section><aside class="pppanel" id="pppanel" aria-label="Question"></aside></div>`;
+    $('#root').innerHTML = `<div class="ppm" id="ppm" data-pid="${esc(p.id)}"><aside class="pprail" id="pprail" aria-label="Questions"></aside><section class="ppstage" id="ppstage" aria-label="Paper"><div class="ppscroll" id="ppscroll"><div class="pppages" id="pppages"></div></div>${ppmZoomBar()}</section><aside class="pppanel" id="pppanel" aria-label="Question"></aside></div>`;
+    ppmWatch();
     if (ppm.R) ppmPages();
   }
   ppmSide();
@@ -8389,24 +8412,106 @@ async function ppmLoad(p){
   } catch (e){ console.error(e); if (ppm === m){ m.busy = ''; m.err = e.message || 'Couldn’t open that PDF.'; ppmSide(); } }
 }
 const ppmAt = it => { const g = it.segs?.[0]; return g ? g.p * 100000 + g.y0 : 1e9; };
-/* the pages: drawn when they scroll into view, with the question boxes over them */
-let ppmObs = null;
+/* the pages: drawn when they come near the view (sharp at the current zoom), freed again when far away, with the question boxes over them.
+   Wide windows: the paper scrolls in its own pane (#ppscroll); narrow ones: the window scrolls and the pane only scrolls sideways when zoomed. */
+let ppmNear = null, ppmFar = null, ppmRO = null, ppmRedrawT = 0;
+const PP_ZOOMS = [.5, .67, .75, .9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3];
+let ppz = Math.max(.5, Math.min(3, +ls.get('md-pp-zoom', 1) || 1));
+const ppmOwnScroll = () => matchMedia('(min-width: 901px)').matches;
+function ppmZoomBar(){
+  const ic = d => `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  return `<div class="ppzbar" id="ppzbar" role="toolbar" aria-label="Paper view" hidden>
+    <button type="button" class="ppzb" data-act="pp-zoom" data-d="-1" title="Zoom out (−)" aria-label="Zoom out">${ic('M3.5 8h9')}</button>
+    <button type="button" class="ppzv" data-act="pp-zoom" data-d="0" title="Fit the page to the width (0)" aria-label="Zoom level, press to fit the width"><span id="ppzl">${Math.round(ppz * 100)}%</span></button>
+    <button type="button" class="ppzb" data-act="pp-zoom" data-d="1" title="Zoom in (+)" aria-label="Zoom in">${ic('M3.5 8h9M8 3.5v9')}</button>
+    <span class="ppzsep" aria-hidden="true"></span>
+    <button type="button" class="ppzd" data-act="pp-dl" title="Download the PDF">${ic('M8 2.5v7.5M4.8 7 8 10.2 11.2 7M3 12.5v1h10v-1')}<span>Download</span></button>
+  </div>`;
+}
+function ppmBaseW(){ const sc = $('#ppscroll'); if (!sc) return 820; const cs = getComputedStyle(sc); return Math.max(200, Math.min(820, sc.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight))); }
+function ppmApplyZoom(){
+  const host = $('#pppages'); if (host) host.style.setProperty('--ppw', Math.round(ppmBaseW() * ppz) + 'px');
+  const l = $('#ppzl'); if (l) l.textContent = Math.round(ppz * 100) + '%';
+  const bar = $('#ppzbar'); if (bar){ bar.querySelector('[data-d="-1"]').disabled = ppz <= PP_ZOOMS[0]; bar.querySelector('[data-d="1"]').disabled = ppz >= PP_ZOOMS[PP_ZOOMS.length - 1]; }
+}
+/* zoom to z, keeping the point (ax, ay) on the page where it is (the middle of the view if none) */
+function ppmZoom(z, ax, ay){
+  const sc = $('#ppscroll'), host = $('#pppages'); if (!sc || !host || !ppm?.R) return;
+  z = Math.max(PP_ZOOMS[0], Math.min(PP_ZOOMS[PP_ZOOMS.length - 1], Math.round(z * 100) / 100));
+  const s = sc.getBoundingClientRect();
+  if (ax == null){ ax = s.left + s.width / 2; ay = (Math.max(s.top, 0) + Math.min(s.bottom, innerHeight)) / 2; }
+  let el = null, best = Infinity;
+  for (const pgEl of host.children){ const r = pgEl.getBoundingClientRect(), d = ay < r.top ? r.top - ay : ay > r.bottom ? ay - r.bottom : 0; if (d < best){ best = d; el = pgEl; } if (!d) break; }
+  const r0 = el?.getBoundingClientRect(), fx = r0 ? (ax - r0.left) / r0.width : 0, fy = r0 ? (ay - r0.top) / r0.height : 0;
+  ppz = z; ls.set('md-pp-zoom', z); ppmApplyZoom();
+  if (el){ const r = el.getBoundingClientRect(), dx = r.left + fx * r.width - ax, dy = r.top + fy * r.height - ay; sc.scrollLeft += dx; if (ppmOwnScroll()) sc.scrollTop += dy; else window.scrollBy(0, dy); }
+  ppmRedrawSoon();
+}
+function ppmZoomStep(d){ if (!d) return ppmZoom(1); const z = d > 0 ? PP_ZOOMS.find(s => s > ppz + .001) : [...PP_ZOOMS].reverse().find(s => s < ppz - .001); if (z) ppmZoom(z); }
+function ppmRedrawSoon(){ clearTimeout(ppmRedrawT); ppmRedrawT = setTimeout(() => document.querySelectorAll('.pppage').forEach(el => { if (el._near) ppmDrawPage(+el.dataset.p); }), 180); }
+/* the pane resizing (window, sidebar, iPad turning round) keeps the zoom and redraws sharp */
+function ppmWatch(){
+  ppmRO?.disconnect(); const sc = $('#ppscroll'); if (!sc || !window.ResizeObserver) return;
+  let w0 = 0; ppmRO = new ResizeObserver(() => { const w = sc.clientWidth; if (Math.abs(w - w0) < 2) return; w0 = w; ppmApplyZoom(); ppmRedrawSoon(); }); ppmRO.observe(sc);
+}
+matchMedia('(min-width: 901px)').addEventListener?.('change', () => { if (view.name === 'ppmark' && ppm?.R) ppmPages(); });
 function ppmPages(){
   const m = ppm, host = $('#pppages'); if (!m?.R || !host) return;
-  ppmObs?.disconnect();
+  ppmNear?.disconnect(); ppmFar?.disconnect();
+  ppmApplyZoom();
   host.innerHTML = m.R.pages.map(pg => `<div class="pppage" data-p="${pg.n}" style="aspect-ratio:${pg.w} / ${pg.h}"><canvas aria-hidden="true"></canvas><div class="ppov" data-p="${pg.n}"></div><span class="pppn">${pg.n}</span></div>`).join('');
-  ppmObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ ppmDrawPage(+e.target.dataset.p); ppmObs.unobserve(e.target); } }), { root: null, rootMargin: '800px 0px' });
-  host.querySelectorAll('.pppage').forEach(el => ppmObs.observe(el));
+  const root = ppmOwnScroll() ? $('#ppscroll') : null;
+  ppmNear = new IntersectionObserver(es => es.forEach(e => { e.target._near = e.isIntersecting; if (e.isIntersecting) ppmDrawPage(+e.target.dataset.p); }), { root, rootMargin: '800px 600px' });
+  ppmFar = new IntersectionObserver(es => es.forEach(e => { const el = e.target; if (!e.isIntersecting && el._sc && !el._busy){ const c = el.querySelector('canvas'); if (c){ c.width = 0; c.height = 0; } el._sc = 0; } }), { root, rootMargin: '2400px 1600px' });
+  host.querySelectorAll('.pppage').forEach(el => { ppmNear.observe(el); ppmFar.observe(el); });
+  const bar = $('#ppzbar'); if (bar) bar.hidden = false;
   ppmBoxes();
 }
+function ppmWantSc(el, pg){
+  /* sharp for the screen, but no canvas over ~9 million pixels (iPad memory) */
+  const sc = (el.clientWidth || 760) * (window.devicePixelRatio || 1) / pg.w;
+  return Math.max(.5, Math.min(sc, 4, Math.sqrt(9e6 / (pg.w * pg.h))));
+}
 async function ppmDrawPage(n){
-  const m = ppm, el = document.querySelector(`.pppage[data-p="${n}"]`), pg = m?.R?.pages[n - 1]; if (!el || !pg || el.dataset.drawn) return; el.dataset.drawn = '1';
+  const m = ppm, el = document.querySelector(`.pppage[data-p="${n}"]`), pg = m?.R?.pages[n - 1]; if (!el || !pg) return;
+  const want = ppmWantSc(el, pg);
+  if (el._sc && Math.abs(el._sc - want) / want < .15) return;
+  if (el._busy){ el._again = true; return; }
+  el._busy = true;
   try {
-    const cv = el.querySelector('canvas'), w = el.clientWidth || 760, sc = Math.min(3, w / pg.w * (window.devicePixelRatio || 1)), vp = pg.pg.getViewport({ scale: sc });
-    cv.width = Math.ceil(vp.width); cv.height = Math.ceil(vp.height);
+    /* drawn off to the side, then swapped in, so the old (stretched) picture stays until the sharp one is ready */
+    const vp = pg.pg.getViewport({ scale: want }), cv = document.createElement('canvas');
+    cv.setAttribute('aria-hidden', 'true'); cv.width = Math.ceil(vp.width); cv.height = Math.ceil(vp.height);
     const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
     await pg.pg.render({ canvasContext: cx, viewport: vp }).promise;
-  } catch (e){ console.warn(e); delete el.dataset.drawn; }
+    if (ppm !== m || !el.isConnected){ cv.width = cv.height = 0; return; }
+    const old = el.querySelector('canvas'); if (old){ old.width = old.height = 0; old.replaceWith(cv); } else el.prepend(cv);
+    el._sc = want;
+  } catch (e){ console.warn(e); }
+  finally { el._busy = false; if (el._again){ el._again = false; if (el._near) ppmDrawPage(n); } }
+}
+/* pinch to zoom: two fingers on a touch screen, a trackpad pinch (ctrl + wheel in Chrome/Electron, gesture events in Safari) */
+let ppPinch = null, ppGest = null;
+const ppInStage = e => view.name === 'ppmark' && ppm?.R && e.target.closest?.('#ppscroll') && !dialogOpen();
+document.addEventListener('wheel', e => {
+  if (!e.ctrlKey || !ppInStage(e)) return;
+  e.preventDefault(); ppmZoom(ppz * Math.exp(-Math.max(-50, Math.min(50, e.deltaY)) * .01), e.clientX, e.clientY);
+}, { passive: false });
+const ppTouchMid = t => ({ x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2, d: Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY) || 1 });
+document.addEventListener('touchstart', e => { if (e.touches.length === 2 && ppInStage(e)){ e.preventDefault(); ppPinch = { z0: ppz, d0: ppTouchMid(e.touches).d }; } }, { passive: false });
+document.addEventListener('touchmove', e => { if (!ppPinch || e.touches.length !== 2) return; e.preventDefault(); const t = ppTouchMid(e.touches); ppmZoom(ppPinch.z0 * t.d / ppPinch.d0, t.x, t.y); }, { passive: false });
+document.addEventListener('touchend', e => { if (ppPinch && e.touches.length < 2) ppPinch = null; });
+document.addEventListener('touchcancel', () => { ppPinch = null; });
+document.addEventListener('gesturestart', e => { if (!ppInStage(e)) return; e.preventDefault(); ppGest = ppPinch ? null : { z0: ppz }; });
+document.addEventListener('gesturechange', e => { if (view.name !== 'ppmark' || !(ppGest || ppPinch)) return; e.preventDefault(); if (ppGest) ppmZoom(ppGest.z0 * e.scale, e.clientX, e.clientY); });
+document.addEventListener('gestureend', () => { ppGest = null; });
+async function ppmDownload(){
+  const p = ppmP(); if (!p) return;
+  const got = ppm?.buf ? { buf: ppm.buf, name: p.name } : await ppPdfOf(p);
+  if (!got) return toast('The PDF isn’t on this device yet.');
+  const nice = `${ppTitle(p)} ${PP_COURSE[p.c]?.name || ''}`.trim() + '.pdf', name = (!got.name || /^paper\.pdf$/i.test(got.name) ? nice : got.name).replace(/[\\/:]/g, '-');
+  const r = await saveBytes(name, new Uint8Array(got.buf.slice(0)), 'application/pdf');
+  if (r === 'saved') toast(window.desktop?.saveFile ? `Saved ${name}` : `Downloaded ${name} · it’s in your Downloads`, 3200);
 }
 function ppmBoxes(){
   const m = ppm, p = ppmP(); if (!m?.R) return;
@@ -8424,7 +8529,15 @@ function ppmBoxes(){
   if (m.drawBox){ const d = m.drawBox, o = document.querySelector(`.ppov[data-p="${d.p}"]`), pg = m.R.pages[d.p - 1]; if (o && pg){ const b = document.createElement('div'); b.className = 'ppbox drawing'; b.style.cssText = `left:${Math.min(d.x0, d.x1) / pg.w * 100}%;top:${Math.min(d.y0, d.y1) / pg.h * 100}%;width:${Math.abs(d.x1 - d.x0) / pg.w * 100}%;height:${Math.abs(d.y1 - d.y0) / pg.h * 100}%`; o.appendChild(b); } }
   $('#ppstage')?.classList.toggle('drawmode', !!m.draw);
 }
-function ppmScrollTo(i){ const it = ppm?.items[i], g = it?.segs?.[0]; if (!g) return; const el = document.querySelector(`.pppage[data-p="${g.p}"]`), pg = ppm.R.pages[g.p - 1]; if (!el) return; const y = el.getBoundingClientRect().top + scrollY + el.clientHeight * (g.y0 / pg.h) - 120; window.scrollTo({ top: Math.max(0, y), behavior: reducedMotion() ? 'auto' : 'smooth' }); }
+function ppmScrollTo(i){ const g = ppm?.items[i]?.segs?.[0]; if (g) ppmReveal(g); }
+/* scroll so a box on a page is in view: its top near the top, and (when zoomed in) its left edge in view too */
+function ppmReveal(g){
+  const el = document.querySelector(`.pppage[data-p="${g.p}"]`), pg = ppm?.R?.pages[g.p - 1], sc = $('#ppscroll'); if (!el || !pg || !sc) return;
+  const r = el.getBoundingClientRect(), s = sc.getBoundingClientRect(), behavior = reducedMotion() ? 'auto' : 'smooth';
+  const left = r.width > s.width + 2 ? Math.max(0, sc.scrollLeft + r.left - s.left + r.width * ((g.x0 ?? pg.w * .03) / pg.w) - 32) : sc.scrollLeft;
+  if (ppmOwnScroll()) sc.scrollTo({ top: Math.max(0, sc.scrollTop + r.top - s.top + r.height * (g.y0 / pg.h) - 56), left, behavior });
+  else { if (left !== sc.scrollLeft) sc.scrollTo({ left, behavior }); window.scrollTo({ top: Math.max(0, r.top + scrollY + r.height * (g.y0 / pg.h) - 120), behavior }); }
+}
 /* the rail of questions and the panel for the picked one */
 function ppmSide(){
   const m = ppm, p = ppmP(), rail = $('#pprail'), panel = $('#pppanel'); if (!m || !p || !rail || !panel){ renderAppbar(); return; }
@@ -8445,8 +8558,8 @@ function ppmSide(){
 }
 function ppmDeck(){ const p = ppmP(); if (!p) return null; const sel = ppm.items[ppm.sel], c = sel && p.q?.[sel.key]?.card && S.cards[p.q[sel.key].card]; if (c && ppm.node === undefined) return homeRef(c); const v = ppm.node ?? ls.get('md-pp-node-' + PP_COURSE[p.c].s, null); if (v && nodeOf(v)) return v; return ppNode(PP_COURSE[p.c].s)?.id || null; }
 function ppmPanel(){
-  const h = ppmPanel0(); if (document.body.classList.contains('desktop') || !ppm?.items?.length) return h;
-  const p = ppmP(); return `<div class="ppmob ppmobm"><button class="link sm" data-nav="papers">‹ Past papers</button><span class="grow"></span>${ppAppbar().act}</div>` + h;
+  const h = ppmPanel0(); if (document.body.classList.contains('desktop')) return h;
+  return `<div class="ppmob ppmobm"><button class="btn sm ppback" data-nav="papers" aria-label="Back to Past papers"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Past papers</button><span class="grow"></span>${ppm?.items?.length ? ppAppbar().act : ''}</div>` + h;
 }
 function ppmPanel0(){
   const m = ppm, p = ppmP(), s = ppScore(p);
@@ -8456,7 +8569,7 @@ function ppmPanel0(){
   if (!it) return `<div class="pppad"><h2>${esc(ppTitle(p))}</h2><p class="ppnote">${esc(PP_COURSE[p.c].name)} · ${esc(ppSecName(p.sec, true))}</p>
     ${m.items.length ? `<div class="ppsum"><div><b>${s.got}</b> / ${s.of}</div><span>${s.marked} of ${m.items.length} marked · ${s.flagged} flagged</span></div>` : ''}
     <p class="ppnote">Pick a question on the left (or on the page) and mark it Right, Part or Wrong. The ones you get wrong become cards in your decks and in Paper mistakes.${m.items.length ? ' Questions you don’t mark count as right.' : ''}</p>
-    <p class="hint">Keys: ↑ ↓ move between questions · 1 right · 2 part · 3 wrong · B draws a box</p></div>`;
+    <p class="hint">Keys: ↑ ↓ move between questions · 1 right · 2 part · 3 wrong · B draws a box · + − zoom · Esc goes back</p></div>`;
   const q = p.q?.[it.key] || {}, r = m.res ?? q.r ?? '', of = m.of ?? q.of ?? (it.marks || 1), got = m.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)), card = q.card && S.cards[q.card];
   const deck = ppmDeck(), flag = r === 'part' || r === 'bad';
   return `<div class="pppad">
@@ -8560,6 +8673,7 @@ function ppKey(e){
   if (k === 'Enter' && m.sel != null && !document.activeElement?.closest?.('button, a, select')){ e.preventDefault(); ppmSaveQ(); return true; }
   if (k === 'b' || k === 'B'){ e.preventDefault(); m.draw = m.draw === 'q' ? null : 'q'; ppmSide(); if (m.draw) toast('Drag across the page round the question', 1800); return true; }
   if (k === 'Escape' && m.draw){ e.preventDefault(); m.draw = null; ppmSide(); return true; }
+  if ((k === '=' || k === '+' || k === '-' || k === '_' || k === '0') && m.R){ e.preventDefault(); ppmZoomStep(k === '0' ? 0 : k === '-' || k === '_' ? -1 : 1); return true; }
   return false;
 }
 document.addEventListener('keydown', e => {
@@ -8576,7 +8690,7 @@ function ppAppbar(){
   }
   const p = ppPapers()[view.node]; if (!p) return { title: '<b>Past papers</b>', act: '' };
   const s = ppScore(p), m = ppm;
-  return { title: `<button class="abcr" data-nav="papers">Past papers</button><i>›</i><span>${esc(PP_COURSE[p.c].name)}</span><i>›</i><b>${esc(ppTitle(p))}</b>`,
+  return { title: `<button class="abi abback" data-nav="papers" title="Back to Past papers (Esc)" aria-label="Back to Past papers"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="abcr" data-nav="papers">Past papers</button><i>›</i><span>${esc(PP_COURSE[p.c].name)}</span><i>›</i><b>${esc(ppTitle(p))}</b>`,
     act: m?.items?.length ? `<span class="abmeta ppabs">${s.got} / ${s.of}${p.st === 'done' ? ` · ${s.pct}%` : ' so far'}</span><button class="abi ${m.draw === 'q' ? 'on' : ''}" data-act="pp-draw" data-v="q" title="Box a question (B)" aria-label="Box a question" aria-pressed="${m.draw === 'q'}"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.2 1.6"/></svg></button>${p.st === 'done' ? `<button class="btn" data-act="pp-reopen">Mark again</button>` : `<button class="btn primary" data-act="pp-finish">Finish marking</button>`}` : '' };
 }
 /* the paper a card came from, above the question while studying */
@@ -8616,7 +8730,9 @@ async function ppAction(act, a, e){
     case 'pp-of': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}; ppm.of = Math.max(1, Math.min(40, (ppm.of ?? q.of ?? (it.marks || 1)) + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (ppm.got != null) ppm.got = Math.min(ppm.got, ppm.of); return ppmSide(); }
     case 'pp-save': return ppmSaveQ();
     case 'pp-draw': if (!ppm?.R) return; ppm.why = $('#ppwhy')?.value ?? ppm.why; ppm.draw = ppm.draw === v ? null : v; ppmSide(); if (ppm.draw) toast(v === 's' ? 'Drag across the page round the solution' : 'Drag across the page round the question', 1800); return;
-    case 'pp-solgo': { const it = ppm?.items[ppm.sel], g = it?.sol?.[0]; if (!g) return; const el = document.querySelector(`.pppage[data-p="${g.p}"]`), pg = ppm.R.pages[g.p - 1]; if (el) window.scrollTo({ top: el.getBoundingClientRect().top + scrollY + el.clientHeight * (g.y0 / pg.h) - 120, behavior: reducedMotion() ? 'auto' : 'smooth' }); return; }
+    case 'pp-solgo': { const g = ppm?.items[ppm.sel]?.sol?.[0]; if (g) ppmReveal(g); return; }
+    case 'pp-zoom': return ppmZoomStep(+a.dataset.d);
+    case 'pp-dl': return ppmDownload();
     case 'pp-qdel': { const p0 = ppmP(), it = ppm?.items[ppm.sel]; if (!p0 || !it?.man) return; const p = { ...p0, man: (p0.man || []).filter(b => b.key !== it.key) }; if (p.q?.[it.key]){ p.q = { ...p.q }; delete p.q[it.key]; } ppm.items.splice(ppm.sel, 1); ppm.sel = null; undoTx = null; undoLabel = 'remove box'; S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings(); return ppmSide(); }
     case 'pp-finish': return ppmFinish();
     case 'pp-reopen': { const p0 = ppmP(); if (!p0) return; await ppSavePaper({ ...p0, st: 'marking' }, 'reopen paper'); return ppmSide(); }
