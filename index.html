@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261110160836";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261110174405";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -2687,6 +2687,11 @@ html.ppfull .ppzshow{position:absolute;order:0;margin:0;transform:translateX(-50
 .ppbox.sel{outline:2px solid var(--accent-btn);background:color-mix(in srgb, var(--accent-btn) 7%, transparent)}
 .ppbox.sel.sol{outline-style:dashed}
 .ppbox.drawing{outline:2px solid var(--accent-btn);background:color-mix(in srgb, var(--accent-btn) 10%, transparent);pointer-events:none}
+.ppx{position:absolute;z-index:2;width:26px;height:26px;margin:-31px 0 0 -21px;padding:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--border-2);border-radius:var(--r-sm);background:var(--surface);color:var(--fg-2);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.ppx svg{width:14px;height:14px}
+.ppx:hover{background:var(--surface-2);color:var(--again)}
+.ppx:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (pointer:coarse){.ppx{width:36px;height:36px;margin:-41px 0 0 -31px}.ppx svg{width:16px;height:16px}}
 .pptag{position:absolute;left:-5px;top:-30px;padding:4px 7px;border-radius:4px;background:var(--accent-btn);color:var(--btn-fg);font:600 12px var(--ui);white-space:nowrap;pointer-events:none}
 .ppstage.drawmode .ppov{cursor:crosshair}
 .ppstage.drawmode .ppbox{pointer-events:none}
@@ -2819,6 +2824,9 @@ body.tddragging .tdl > .tdr:not(.tddrag) .tdmore2{opacity:0 !important}
 .tdo.calm .tdl > .tdr.tdh:first-child{padding-top:12px}
 .tdo.calm .tdl > .tdr.tdh + .tdr{border-top-color:transparent}
 .tdo.calm .tdh .tdt{flex:0 1 auto;font:600 17px/1.35 var(--ui);letter-spacing:-.01em}
+.tdr.tddh{cursor:default}
+.tdr.tddh .tdt{color:var(--fg)}
+.tdr.tddh .tdfold{visibility:hidden}
 .tdhn{font:400 14px var(--ui);color:var(--fg-3);font-variant-numeric:tabular-nums}
 .tdh .grow{flex:1}
 .tdo.calm .tdhm{padding-right:6px;font:400 13px var(--ui);color:var(--fg-3);font-variant-numeric:tabular-nums}
@@ -3096,7 +3104,8 @@ async function appUndo(){
   if (view.name === 'study' && study) return goBack();
   const tx = undoStack.pop(); if (!tx) return toast('Nothing to undo');
   redoStack.push(await applyTx(tx));
-  if (view.node && !nodeOf(view.node)) view = { name: 'decks', node: null };
+  if (view.name === 'ppmark') ppmResync();
+  if (view.name !== 'ppmark' && view.node && !nodeOf(view.node)) view = { name: 'decks', node: null };
   if (browse.node && !nodeOf(browse.node)) browse.node = null;
   if (view.name === 'overview' && view.node && !nodeOf(view.node)) view = { name: 'decks', node: null };
   render(); renderSideSubjects(); toast('Undid ' + tx.label + ' · ⇧⌘Z to redo');
@@ -3105,7 +3114,8 @@ async function appRedo(){
   if (view.name === 'study' && study && padCanRedo()) return padRedo();
   const tx = redoStack.pop(); if (!tx) return toast('Nothing to redo');
   const back = await applyTx(tx); undoStack.push(back);
-  if (view.node && !nodeOf(view.node)) view = { name: 'decks', node: null };
+  if (view.name === 'ppmark') ppmResync();
+  if (view.name !== 'ppmark' && view.node && !nodeOf(view.node)) view = { name: 'decks', node: null };
   render(); renderSideSubjects(); toast('Redid ' + tx.label);
 }
 const UNDO_LABELS = { 'gexam-save': 'countdown', 'gexam-del': 'remove countdown', 'recent-rm': 'recent', 'recent-clear': 'clear recent', 'th-layout': 'layout change', 'th-pick': 'theme change', 'th-reset1': 'colour reset', 'th-resetall': 'colour reset', 'th-bg': 'background image', 'th-bgclear': 'background removal', 'font-pick': 'font change', 'font-reset': 'font reset', 'subj-auto': 'subject colour', 'layout-reset': 'tidy up', 'toggle': 'collapse', 'collapse-all': 'collapse all', 'expand-all': 'expand all', 'bexp': 'expand', 'bcollapse': 'collapse all', 'bexpand': 'expand all', 'shuffle-toggle': 'shuffle', 'toggle-sidebar': 'sidebar', 'do-del-deck': 'delete', 'do-del-keep': 'delete', 'del-card': 'delete card', 'do-del-card': 'delete card', 'save-card': 'card change', 'do-move': 'move', 'do-cmove': 'move', 'do-link': 'add to decks', 'do-calso': 'deck ticks', 'save-custom': 'rename', 'msub-del': 'delete', 'msub-done': 'rename', 'msub-add': 'add subtopic', 'mtype-del': 'remove bubble', 'mtype-add': 'add bubble', 'mtype-quick': 'add bubble', 'do-del-type': 'remove bubble', 'save-bubble': 'add bubble', 'save-deck': 'new deck', 'unlink-here': 'remove from deck', 'cm-unlink': 'remove from deck', 'do-reset': 'reset', 'reset-srs': 'reset' };
@@ -7309,6 +7319,8 @@ function todoRow(x, i){
   </div>`;
 }
 let todoRowSubj = null;
+/* finished tasks sit under their own heading; it's always there when something's ticked off and can't be moved or renamed */
+const todoDoneHead = n => `<div class="tdr tdh tdon tddh" role="heading" aria-level="3"><span class="tdselb ghost" aria-hidden="true"></span><span class="tdfold" aria-hidden="true"></span><span class="tdt">Finished</span><span class="tdhn">${n}</span></div>`;
 /* what shows: tasks under a folded heading stay hidden until you open it again */
 function todoShown(open){
   let h = null; const out = [];
@@ -7342,7 +7354,7 @@ function todoSection(subj, page){
         ${subs.length > 1 ? `<button type="button" class="tdfbtn" data-act="todo-fmenu" aria-haspopup="true" title="Which subject's tasks to show">${f ? `<span class="sdot2" style="--sc:${todoFCol(f)}"></span>` : ''}${fl}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6.5 8 10l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ''}</div>
       <div class="tdtabs" role="tablist" aria-label="Which list">${TODO_TABS.map(([k, l]) => { const n = nOf(k); return `<button type="button" role="tab" data-act="todo-tab" data-v="${k}" aria-selected="${todoTab === k}" class="${k === 'doing' && over ? 'over' : ''}">${l}${n ? `<b>${n}</b>` : ''}</button>`; }).join('')}</div>
       ${nSel ? `<div class="tdselbar" role="toolbar" aria-label="Selected tasks"><b>${nSel} selected</b><button type="button" data-act="todo-bmove" aria-haspopup="true">Move to…</button><button type="button" data-act="todo-bsubj" aria-haspopup="true">Subject…</button><button type="button" data-act="todo-btick">Tick off</button><button type="button" class="danger" data-act="todo-bdel">Delete</button><span class="grow"></span><span class="tdselhint">Drag any of them to move them all</span><button type="button" data-act="todo-selclear" aria-label="Clear the selection">${I.x}</button></div>` : ''}
-      ${shown.length + today ? `<div class="tdl">${[...shown, ...done].map(todoRow).join('')}</div>` : ''}
+      ${shown.length + today ? `<div class="tdl">${shown.map(todoRow).join('')}${today ? todoDoneHead(today) + done.map((x, i) => todoRow(x, shown.length + 1 + i)).join('') : ''}</div>` : ''}
       <label class="tdadd ${act ? 'act' : ''}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" class="${todoNewKind === 'h' ? 'hmode' : ''}" placeholder="${todoNewKind === 'h' ? 'New heading, like At school' : todoRepDays.size ? `Every ${repWords([...todoRepDays])}…` : todoTab === 'doing' ? 'Something you’re working on now' : todoTab === 'hw' ? 'New homework' : 'New task'}${anName && todoNewKind !== 'h' && todoTab !== 'doing' ? ' in ' + esc(anName) : ''}" aria-label="${todoNewKind === 'h' ? 'New heading' : 'New task'}"><span class="tdaddx">${todoNewKind === 'h' ? '' : `<button type="button" class="tdtimebtn ${todoNewMin ? 'on' : ''}" data-act="todo-time" data-id="__new" aria-haspopup="true" title="How long it will take">${CLOCK_IC}<span>${todoNewMin ? fmtMin(todoNewMin) : 'Time'}</span></button><button type="button" class="tdrepbtn ${todoRepDays.size ? 'on' : ''}" data-act="todo-repopen" aria-expanded="${todoRepOpen}" title="Repeat on certain days">${REP_IC}<span>${todoRepDays.size ? esc(repShort([...todoRepDays])) : 'Repeat'}</span></button>`}<button type="button" class="tdrepbtn tdkbtn ${todoNewKind === 'h' ? 'on' : ''}" data-act="todo-hmode" aria-pressed="${todoNewKind === 'h'}" title="${todoNewKind === 'h' ? 'Back to adding tasks' : 'Add a heading, like At school'}">${TD_H_IC}<span>Heading</span></button><button type="button" class="tdrepbtn tdkbtn" data-act="todo-gap" title="Add a blank space to separate things">${TD_GAP_IC}<span>Space</span></button></span></label>
       ${todoRepOpen && todoNewKind !== 'h' ? `<div class="tdrepdays" role="group" aria-label="Repeat on"><span>Every</span>${REP_DAYS.map(([d, l]) => `<button type="button" data-act="todo-repday" data-d="${d}" aria-pressed="${todoRepDays.has(d)}" title="${REP_NAMES[d]}">${l}</button>`).join('')}<span class="grow"></span><span class="tdrephint">${todoRepDays.size ? 'It shows up in Today on those days' : 'Pick the days it should show up'}</span></div>` : ''}
       ${today ? `<button class="tdclear" data-act="todo-clear">Clear ${today} done</button>` : ''}
@@ -7950,7 +7962,11 @@ document.addEventListener('click', async e => {
   if (document.body.classList.contains('desktop') && $('#sidesres') && !$('#sidesres').hidden && (!e.target.closest('#abmid') || e.target.closest('.siderec'))){ $('#sidesres').hidden = true; if (e.target.closest('.siderec')){ const q = $('#sidesq'); if (q) q.value = ''; } }
   const nav = e.target.closest('[data-nav]');
   if (nav){ const t = nav.dataset.nav; if (t === 'add') return editor(null, nodeOf(view.node) ? view.node : browse.node); if (t === 'browse') browse.node = view.node || browse.node; study = null; return go(t); }
-  const a = e.target.closest('[data-act]'); if (!a) return;
+  const a = e.target.closest('[data-act]');
+  if (!a){
+    if (view.name === 'ppmark' && ppm?.sel != null && !ppm.draw && Date.now() - ppmDrew > 400 && e.target.closest('#ppstage, #pprail') && !e.target.closest('button, a, input, textarea, select, label, #ppzbar, .pickpop, #tpop, #menu') && !String(getSelection?.() || '')) ppmUnpick();
+    return;
+  }
   const act = a.dataset.act, id = a.dataset.id || null;
   if (a.closest('#menu')) closeMenu();
   if (act.startsWith('cl-')) return clAction(act, a);
@@ -9001,6 +9017,7 @@ async function ppmLoad(p){
     if (cut){ const A = pxPlan(pxSlice(R, cut, Infinity), 'question'), by = new Map(A.map(a => [a.key, a])); items.forEach(it => { if (!it.sol){ const a = by.get(it.key) || A.find(z => z.q === it.q); if (a) it.sol = a.segs; } }); }
     const seen = new Set(); items = items.filter(it => !seen.has(it.key) && seen.add(it.key));
     items.forEach(it => { it.auto = true; it.mc = (it.marks || 0) <= 1 && /^\d+$/.test(it.key); });
+    const hid = new Set(p.hid || []); m.gone = items.filter(it => hid.has(it.key)); items = items.filter(it => !hid.has(it.key));
     for (const b of p.man || []) items.push({ key: b.key, q: 0, label: b.label, marks: b.marks || 1, segs: b.segs.map(g => ({ ...g, hand: true })), sol: null, man: true });
     for (const [k, segs] of Object.entries(p.msol || {})){ const it = items.find(x => x.key === k); if (it) it.sol = segs.map(g => ({ ...g, hand: true })); }
     for (const [k, mk] of Object.entries(p.mk || {})){ const it = items.find(x => x.key === k); if (it) it.marks = mk; }
@@ -9342,6 +9359,7 @@ function ppmBoxes(){
     const b = document.createElement('button'); b.type = 'button'; b.className = `ppbox ${sol ? 'sol' : ''} ${i === m.sel ? 'sel' : ''} ${r ? 'r-' + r : ''}`; b.dataset.act = 'pp-q'; b.dataset.i = i;
     b.style.cssText = `left:${x0 / pg.w * 100}%;top:${g.y0 / pg.h * 100}%;width:${(x1 - x0) / pg.w * 100}%;height:${(g.y1 - g.y0) / pg.h * 100}%`;
     b.setAttribute('aria-label', `${it.label}${sol ? ' solution' : ''}`);
+    if (i === m.sel && !sol && g === it.segs[0] && !m.draw){ const x = document.createElement('button'); x.type = 'button'; x.className = 'ppx'; x.dataset.act = 'pp-qdel'; x.dataset.i = i; x.setAttribute('aria-label', 'Remove box ' + it.label); x.title = 'Remove this box (⌫)'; x.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'; x.style.cssText = `left:${x1 / pg.w * 100}%;top:${g.y0 / pg.h * 100}%`; o.appendChild(x); }
     if (i === m.sel && g === (sol ? it.sol[0] : it.segs[0])) b.innerHTML = `<span class="pptag">${esc(it.label)}${sol ? ' · solution' : it.marks ? ` · ${it.marks} mark${it.marks === 1 ? '' : 's'}` : ''}</span>`;
     o.appendChild(b);
   };
@@ -9446,13 +9464,51 @@ function ppmPanel0(){
     <p class="hint" style="margin:6px 0 0">It also goes in Paper mistakes.</p>` : ''}
     <button class="btn ppsave" data-act="pp-save" ${r ? '' : 'disabled'}>${flag ? (card ? 'Update card' : 'Save card') : 'Save'} and next<kbd>↩</kbd></button>
     ${card ? `<p class="hint" style="margin:8px 0 0">Card saved in ${esc(pathOf(card.nodeId).map(n => n.name).join(' › '))}. <button class="link sm" data-act="edit" data-id="${card.id}">Edit card</button></p>` : ''}
-    ${it.man ? '<button class="link sm danger-link" data-act="pp-qdel" style="margin-top:12px">Remove this box</button>' : ''}
+    <button class="link sm danger-link" data-act="pp-qdel" style="margin-top:12px">Remove this box<kbd>⌫</kbd></button>
   </div>`;
 }
 const ppmPageName = n => ppm?.solFrom && n >= ppm.solFrom ? 'S' + (n - ppm.solFrom + 1) : n;
+/* what you've filled in for a question stays put when you leave it (click off, another question) and come back */
+function ppmStash(){
+  const m = ppm, it = m?.items[m.sel]; if (!it) return;
+  const why = $('#ppwhy')?.value ?? m.why, d = { res: m.res, got: m.got, of: m.of, why };
+  m.drafts = m.drafts || {};
+  if (d.res !== undefined || d.got !== undefined || d.of !== undefined || (why != null && why !== (S.cards[ppmP()?.q?.[it.key]?.card]?.mistake ?? ''))) m.drafts[it.key] = d; else delete m.drafts[it.key];
+}
+function ppmDraft(i){ const m = ppm, d = m.drafts?.[m.items[i]?.key]; m.res = d?.res; m.got = d?.got; m.of = d?.of; m.why = d?.why; }
+/* clicking the picked question again, or clicking off it, unpicks it */
+function ppmUnpick(){
+  const m = ppm; if (!m || m.sel == null) return;
+  ppmStash(); m.sel = null; m.res = m.got = m.of = m.why = undefined; m.node = undefined; m.draw = m.draw === 's' ? null : m.draw;
+  if (document.activeElement && $('#pppanel')?.contains(document.activeElement)) document.activeElement.blur();
+  ppmSide();
+}
+async function ppmRemoveQ(i){
+  const m = ppm, p0 = ppmP(), it = m?.items[i]; if (!p0 || !it) return;
+  const p = { ...p0 }, card = p0.q?.[it.key]?.card && S.cards[p0.q[it.key].card];
+  if (it.man) p.man = (p0.man || []).filter(b => b.key !== it.key); else p.hid = [...new Set([...(p0.hid || []), it.key])];
+  if (p.q?.[it.key]){ p.q = { ...p.q }; delete p.q[it.key]; }
+  if (m.drafts) delete m.drafts[it.key];
+  m.gone = [...(m.gone || []).filter(x => x.key !== it.key), it];
+  m.items.splice(i, 1); if (m.sel === i){ m.sel = null; m.res = m.got = m.of = m.why = undefined; m.draw = m.draw === 's' ? null : m.draw; } else if (m.sel != null && m.sel > i) m.sel--;
+  p.qs = m.items.map(x => ({ key: x.key, label: x.label, marks: x.marks || 1 }));
+  undoTx = null; undoBaseSettings = clone(S.settings); undoLabel = 'remove ' + it.label;
+  S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings();
+  ppmSide();
+  toast(`Removed ${it.label}${card ? ' · its card stays in your deck' : ''}${matchMedia('(pointer: fine)').matches ? ' · ⌘Z to undo' : ''}`, 3200);
+}
+/* after undo/redo: bring the question list back in line with the saved paper */
+function ppmResync(){
+  const m = ppm, p = ppmP(); if (!m?.R || !p) return;
+  const hid = new Set(p.hid || []), man = new Set((p.man || []).map(b => b.key)), cur = m.items[m.sel]?.key;
+  const all = [...m.items, ...(m.gone || [])].filter((x, i, a) => a.findIndex(y => y.key === x.key) === i);
+  const keep = all.filter(it => it.man ? man.has(it.key) : !hid.has(it.key)).sort((a, b) => ppmAt(a) - ppmAt(b));
+  m.gone = all.filter(it => !keep.includes(it)); m.items = keep;
+  const i = keep.findIndex(x => x.key === cur); m.sel = i >= 0 ? i : null;
+}
 function ppmPick(i){
   const m = ppm; if (!m || i == null || !m.items[i]) return;
-  if (m.sel !== i){ m.sel = i; m.res = m.got = m.of = m.why = undefined; m.node = undefined; m.draw = m.draw === 's' ? null : m.draw; }
+  if (m.sel !== i){ ppmStash(); m.sel = i; ppmDraft(i); m.node = undefined; m.draw = m.draw === 's' ? null : m.draw; }
   ppmSide(); ppmScrollTo(i);
   const rail = $('#pprail'), b = rail?.querySelector(`[data-i="${i}"]`); if (rail && b){ const r = rail.getBoundingClientRect(), q = b.getBoundingClientRect(); if (q.top < r.top + 8) rail.scrollTop -= r.top + 8 - q.top; else if (q.bottom > r.bottom - 8) rail.scrollTop += q.bottom - r.bottom + 8; }
 }
@@ -9482,6 +9538,7 @@ async function ppmSaveQ(){
       } catch (e){ console.error(e); return toast('Couldn’t make the card for ' + label + '.', 4000); }
     }
   }
+  if (m.drafts) delete m.drafts[it.key];
   const p = { ...ppPapers()[p0.id] }; p.q = { ...(p.q || {}), [it.key]: q }; if (p.st !== 'done') p.st = 'marking';
   if (it.man){ p.man = (p.man || []).map(b => b.key === it.key ? { ...b, label, marks: of } : b); it.label = label; }
   if (of !== (it.marks || 1)){ p.mk = { ...(p.mk || {}), [it.key]: of }; it.marks = of; }
@@ -9521,7 +9578,7 @@ document.addEventListener('pointerup', async e => {
     const n = ppm.items.filter(x => x.man).length + 1, key = 'm' + Date.now().toString(36), label = 'Question ' + (ppm.items.length + 1);
     p.man = [...(p.man || []), { key, label, marks: 1, segs: [g] }];
     ppm.items.push({ key, q: 0, label, marks: 1, segs: [{ ...g, hand: true }], sol: null, man: true }); ppm.items.sort((a, b) => ppmAt(a) - ppmAt(b));
-    ppm.draw = null; ppm.sel = ppm.items.findIndex(x => x.key === key); ppm.res = ppm.got = ppm.of = ppm.why = undefined; void n;
+    ppm.draw = null; ppmStash(); ppm.sel = ppm.items.findIndex(x => x.key === key); ppm.res = ppm.got = ppm.of = ppm.why = undefined; void n;
   }
   S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings(); ppmSide();
   setTimeout(() => $('#pplabel')?.select(), 30);
@@ -9537,6 +9594,7 @@ function ppKey(e){
   if (k === 'Enter' && m.sel != null && !document.activeElement?.closest?.('button, a, select')){ e.preventDefault(); ppmSaveQ(); return true; }
   if (k === 'b' || k === 'B'){ e.preventDefault(); m.draw = m.draw === 'q' ? null : 'q'; ppmSide(); if (m.draw) toast('Drag across the page round the question', 1800); return true; }
   if (k === 'Escape' && m.draw){ e.preventDefault(); m.draw = null; ppmSide(); return true; }
+  if ((k === 'Backspace' || k === 'Delete') && m.sel != null && !ppFull){ e.preventDefault(); ppmRemoveQ(m.sel); return true; }
   if ((k === 'f' || k === 'F') && m.R){ e.preventDefault(); ppFullSet(!ppFull); return true; }
   if (k === 'h' || k === 'H'){ e.preventDefault(); ppSidesSet(!ppSides); return true; }
   if (k === '.' && m.R){ e.preventDefault(); ppBarSet(!ppBar); return true; }
@@ -9595,7 +9653,7 @@ async function ppAction(act, a, e){
     case 'pp-upload': return ppImportDialog(null);
     case 'pp-repick': return ppPickFile(f => ppDropFile([f]));
     case 'pp-review': return ppReview(null);
-    case 'pp-q': { if ((ppm?.draw && e?.target?.closest?.('.ppov')) || Date.now() - ppmDrew < 400) return; return ppmPick(+a.dataset.i); }
+    case 'pp-q': { if ((ppm?.draw && e?.target?.closest?.('.ppov')) || Date.now() - ppmDrew < 400) return; const i = +a.dataset.i; return ppm?.sel === i ? ppmUnpick() : ppmPick(i); }
     case 'pp-res': if (!ppm) return; ppm.res = v; if (v === 'ok'){ ppm.got = undefined; } ppmSide(); if (v !== 'ok') setTimeout(() => $('#ppwhy')?.focus(), 20); return;
     case 'pp-got': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}, of = ppm.of ?? q.of ?? (it.marks || 1), r = ppm.res ?? q.r; const g0 = ppm.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)); ppm.got = Math.max(0, Math.min(of, g0 + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (!r || r === 'ok') ppm.res = ppm.got >= of ? 'ok' : ppm.got ? 'part' : 'bad'; else if (ppm.got >= of) ppm.res = 'ok'; else if (r === 'bad' && ppm.got) ppm.res = 'part'; else if (r === 'part' && !ppm.got) ppm.res = 'bad'; return ppmSide(); }
     case 'pp-of': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}; ppm.of = Math.max(1, Math.min(40, (ppm.of ?? q.of ?? (it.marks || 1)) + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (ppm.got != null) ppm.got = Math.min(ppm.got, ppm.of); return ppmSide(); }
@@ -9605,13 +9663,13 @@ async function ppAction(act, a, e){
     case 'pp-split': ppSplitSet(!ppSplitOn()); return;
     case 'pp-sides': ppSidesSet(!ppSides); return;
     case 'pp-bar': ppBarSet(!ppBar); return;
-    case 'pp-mark': { if (!ppm) return; ppm.sel = null; ppm.res = ppm.got = ppm.of = ppm.why = undefined; ppmSide(); setTimeout(() => { const g = $('#ppmkg'); g?.focus(); g?.select?.(); }, 30); return; }
+    case 'pp-mark': { if (!ppm) return; ppmStash(); ppm.sel = null; ppm.res = ppm.got = ppm.of = ppm.why = undefined; ppmSide(); setTimeout(() => { const g = $('#ppmkg'); g?.focus(); g?.select?.(); }, 30); return; }
     case 'pp-mkclr': { const p0 = ppmP(); if (!p0?.score) return; const q = { ...p0 }; delete q.score; await ppSavePaper(q, 'paper mark'); return ppmSide(); }
     case 'pp-zoom': return ppmZoomStep(+a.dataset.d);
     case 'pp-dl': return ppmDownload();
     case 'pp-full': return ppFullSet(!ppFull);
     case 'pp-tm': case 'pp-tm-step': case 'pp-tm-rstep': case 'pp-tm-start': case 'pp-tm-pause': case 'pp-tm-stop': case 'pp-tm-reset': return ppTmAct(act, a);
-    case 'pp-qdel': { const p0 = ppmP(), it = ppm?.items[ppm.sel]; if (!p0 || !it?.man) return; const p = { ...p0, man: (p0.man || []).filter(b => b.key !== it.key) }; if (p.q?.[it.key]){ p.q = { ...p.q }; delete p.q[it.key]; } ppm.items.splice(ppm.sel, 1); ppm.sel = null; undoTx = null; undoLabel = 'remove box'; S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings(); return ppmSide(); }
+    case 'pp-qdel': { if (!ppm) return; const i = a.dataset.i != null ? +a.dataset.i : ppm.sel; if (i == null) return; return ppmRemoveQ(i); }
     case 'pp-finish': return ppmFinish();
     case 'pp-reopen': { const p0 = ppmP(); if (!p0) return; await ppSavePaper({ ...p0, st: 'marking' }, 'reopen paper'); return ppmSide(); }
     case 'pp-remove': {
