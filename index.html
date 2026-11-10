@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261110201747";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261110234116";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -1265,6 +1265,8 @@ html.lh .cbar b,html.lh .cb small,html.lh .cb em{font-family:var(--ui)}
 
 /* ---------- page changes: a short rise, nothing on scroll ---------- */
 #root.pagein > *{animation:pagein .2s var(--ease) both}
+/* the marking page lets go of the slide-in once it's done, so its floating card is placed against the window */
+#root.pagein > .ppm{animation-fill-mode:backwards}
 @keyframes pagein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .subj.opening .topics,.topic.opening .tbody{animation:unfold .2s var(--ease) both;transform-origin:top}
 @keyframes unfold{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
@@ -2608,11 +2610,55 @@ html.lh body.desktop .page.v-ppmark,.page.v-ppmark{padding:0;max-width:none}
 .ppzbar .ppzsplit{padding:0 8px 0 6px}
 .ppzbar .ppzsplit.on{background:rgba(var(--ovr),.12);color:var(--fg)}
 .ppstage.split{flex-direction:row}
-.ppm.nosides > .pprail,.ppm.nosides > .pppanel{display:none}
+.ppm.nosides > .pprail{display:none}
 .ppzbar .ppzb.on{background:rgba(var(--ovr),.12);color:var(--fg)}
 .ppstage.split > .ppscroll{flex:1 1 0;min-width:0}
-.ppsolscroll[hidden]{display:none}
-.ppsolscroll{border-left:1px solid var(--border-2)}
+.ppstage.split > #ppscroll{flex:0 0 calc(var(--ppsw, .5) * 100% - 4px)}
+.ppstage.split.solonly > #ppscroll{display:none}
+.ppsolscroll[hidden],.ppsplitter[hidden]{display:none}
+/* the line between paper and solutions: drag it */
+.ppsplitter{flex:0 0 8px;position:sticky;top:0;align-self:stretch;cursor:col-resize;touch-action:none;display:flex;justify-content:center;z-index:2;outline:none}
+.ppsplitter::before{content:"";width:1px;height:100%;background:var(--border-2);transition:width var(--t-fast),background var(--t-fast)}
+.ppsplitter::after{content:"";position:absolute;top:50%;left:50%;width:4px;height:36px;margin:-18px 0 0 -2px;border-radius:2px;background:var(--fg-3);opacity:.55}
+.ppsplitter:hover::before,.ppsplitter.drag::before,.ppsplitter:focus-visible::before{width:3px;background:var(--accent)}
+body.ppcolres,body.ppcolres *{cursor:col-resize!important;user-select:none}
+.ppzview{display:inline-flex;gap:2px;padding:0 2px}
+.ppzview button{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 9px;border:0;border-radius:var(--r-sm);background:transparent;color:var(--fg-2);font:500 13px var(--ui);cursor:pointer}
+.ppzview button svg{width:15px;height:15px}
+.ppzview button:hover{background:rgba(var(--ovr),.07);color:var(--fg)}
+.ppzview button.on{background:rgba(var(--ovr),.12);color:var(--fg)}
+.ppzview[hidden]{display:none}
+.ppnum{width:2.6em;height:24px;padding:0;border:0;border-radius:4px;background:transparent;color:var(--fg);font:600 14px var(--ui);font-variant-numeric:tabular-nums;text-align:center}
+.ppnum:focus{outline:2px solid var(--accent);outline-offset:0;background:var(--surface)}
+.pprfl{display:flex;gap:16px;align-items:center}
+.ppkeys{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0;font-size:13px}
+.ppkeys dt{margin:0;text-align:right}.ppkeys dd{margin:0;color:var(--fg-2)}
+.ppkeyspop{width:300px}
+.ppmkpop{width:340px}
+.ppmkpop .ppsum{margin:0;padding:0;border:0;background:none}
+.pphd .ppminst,.pphd .ppcardbtns{display:none}
+@media (min-width:901px){
+  .pppanel{position:fixed;z-index:46;top:calc(var(--appbar) + 16px);right:24px;left:auto;width:340px;max-height:calc(100vh - var(--appbar) - 32px);min-height:0;flex:none;align-self:auto;border:1px solid var(--border-2);border-radius:12px;background:var(--surface-2);box-shadow:0 1px 2px rgba(0,0,0,.18),0 14px 40px rgba(0,0,0,.28);animation:pprise .18s cubic-bezier(.2,.7,.2,1)}
+  .pppanel:not(.show){display:none}
+  .pppanel.card .pphd{cursor:grab;align-items:center;gap:8px;margin:-6px -6px 0 0}
+  .pppanel.moving{animation:none;transition:none}.pppanel.moving .pphd{cursor:grabbing}
+  .pppanel.card .pphd .ppcardbtns{display:inline-flex;gap:2px;margin-left:auto}
+  .pppanel.card .pphd .ppnote{margin-left:auto}
+  .pppanel.card .pphd .ppnote + .ppminst + .ppcardbtns{margin-left:4px}
+  .ppcb{width:28px;height:28px;padding:0;display:grid;place-items:center;border:0;border-radius:var(--r-sm);background:transparent;color:var(--fg-3);cursor:pointer}
+  .ppcb:hover{background:rgba(var(--ovr),.08);color:var(--fg)}
+  .ppcb svg{width:14px;height:14px}
+  .pppanel.min{width:auto;min-width:220px;max-width:340px}
+  .pppanel.min .pppad > :not(.pphd){display:none}
+  .pppanel.min .pphd{margin-bottom:-6px}
+  .pppanel.min .pphd .ppminst{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--fg-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .pppanel.min .pphd .ppnote{display:none}
+  .pppanel.min .pphd .ppcardbtns{margin-left:8px}
+  .ppminst .d{width:7px;height:7px;border-radius:50%;display:inline-block}.ppminst .d.ok{background:var(--good)}.ppminst .d.part{background:var(--hard)}.ppminst .d.bad{background:var(--again)}
+  html.ppfull .pppanel{top:16px}
+}
+@keyframes pprise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){ .pppanel{animation:none} }
 .ppsolhd{display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 0 4px;font:600 15px var(--ui);color:var(--fg);letter-spacing:-.01em}
 .ppsolhd small{font:400 12px var(--ui);color:var(--fg-3);max-width:40ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ppzbar{width:max-content;max-width:calc(100% - 24px);white-space:nowrap}
@@ -2698,6 +2744,15 @@ html.ppfull .ppzshow{position:absolute;order:0;margin:0;transform:translateX(-50
 .ppx:hover{background:var(--surface-2);color:var(--again)}
 .ppx:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (pointer:coarse){.ppx{width:36px;height:36px;margin:-41px 0 0 -31px}.ppx svg{width:16px;height:16px}}
+.ppsimgs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0}
+.ppsimg{position:relative;width:72px;height:56px;border:1px solid var(--border-2);border-radius:var(--r-sm);overflow:hidden;background:var(--surface-2)}
+.ppsimg img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block}
+.ppsimg button{position:absolute;top:2px;right:2px;width:20px;height:20px;padding:0;display:grid;place-items:center;border:0;border-radius:4px;background:rgba(0,0,0,.55);color:#fff;cursor:pointer}
+.ppsimg button svg{width:12px;height:12px}
+@media (pointer:coarse){ .ppsimg button{width:28px;height:28px} }
+.ppdrophint{margin:6px 0 0}
+#pppanel.drophi{outline:2px solid var(--accent);outline-offset:-6px;border-radius:var(--r-lg, 12px)}
+#dropcue{position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:9999;padding:8px 14px;border-radius:var(--r-sm);background:var(--fg);color:var(--bg);font:500 13px var(--ui);box-shadow:0 6px 24px rgba(0,0,0,.2);pointer-events:none}
 .pptag{position:absolute;left:-5px;top:-30px;padding:4px 7px;border-radius:4px;background:var(--accent-btn);color:var(--btn-fg);font:600 12px var(--ui);white-space:nowrap;pointer-events:none}
 .ppstage.drawmode .ppov{cursor:crosshair}
 .ppstage.drawmode .ppbox{pointer-events:none}
@@ -6228,7 +6283,39 @@ function pickImportFile(){
 }
 /* drop a deck file anywhere to import it */
 document.addEventListener('dragover', e => { if ([...(e.dataTransfer?.items || [])].some(i => i.kind === 'file') && (!e.target.closest?.('.drop, .zone, #layer .dialog') || $('.pdfx'))) e.preventDefault(); });
+/* pictures dropped anywhere: on a past paper they're the picked question's correct solution; in the card builder they go in
+   the box you're on; anywhere else they open Add card with the picture as the question */
+const dropPics = dt => [...(dt?.files || [])].filter(f => f.type?.startsWith('image/') || isHeic(f));
+const dropHasFiles = dt => [...(dt?.items || [])].some(i => i.kind === 'file') || [...(dt?.types || [])].includes('Files');
+function dropWhere(t){
+  if (!S.ready || cleanerOpen() || t?.closest?.('#zq, #zs, #tq, #ts, .drop, .zone, .ppaddz')) return null;
+  if (ed) return 'ed';
+  if (dialogOpen() || view.name === 'study') return null;
+  if (view.name === 'ppmark' && ppm?.R) return 'pp';
+  return 'card';
+}
+let dropDepth = 0;
+function dropCue(on, t){
+  document.body.classList.toggle('filedrag', !!on); const w = on ? dropWhere(t) : null, it = ppm?.items?.[ppm?.sel];
+  $('#pppanel')?.classList.toggle('drophi', w === 'pp');
+  let c = $('#dropcue'); if (!on || !w || w === 'ed'){ c?.remove(); return; }
+  if (!c){ c = document.createElement('div'); c.id = 'dropcue'; c.setAttribute('aria-hidden', 'true'); document.body.appendChild(c); }
+  c.textContent = w === 'pp' ? (it ? `Drop to add it to ${it.label}’s correct solution` : 'Pick a question first, then drop the screenshot') : 'Drop to make a card with this picture';
+}
+document.addEventListener('dragenter', e => { if (dragCard || dragId || !dropHasFiles(e.dataTransfer)) return; dropDepth++; dropCue(true, e.target); });
+document.addEventListener('dragover', e => { if (document.body.classList.contains('filedrag')) dropCue(true, e.target); });
+document.addEventListener('dragleave', e => { if (!document.body.classList.contains('filedrag')) return; if (--dropDepth <= 0 || !e.relatedTarget){ dropDepth = 0; dropCue(false); } });
+document.addEventListener('drop', () => { dropDepth = 0; dropCue(false); });
 document.addEventListener('drop', e => {
+  const pics = dropPics(e.dataTransfer), w = pics.length ? dropWhere(e.target) : null;
+  if (w){
+    e.preventDefault(); e.stopPropagation(); dropDepth = 0; dropCue(false);
+    if (w === 'pp') return ppmAddSolPics(pics);
+    if (w === 'ed') return addFiles(pics, ed.zone);
+    editor(null, view.node || browse.node, pics[0]);
+    if (pics.length > 1) setTimeout(() => ed && addFiles(pics.slice(1), 'q'), 60);
+    return;
+  }
   const f = e.dataTransfer?.files?.[0]; if (f && isPdf(f) && (view.name === 'papers' || view.name === 'ppmark') && !$('#layer .scrim')){ e.preventDefault(); e.stopPropagation(); return ppDropFile([...e.dataTransfer.files]); }
   if (f && isPdf(f) && $('.pdfx')){ e.preventDefault(); e.stopPropagation(); return pdfx?.items.length ? pxAnswers(f) : null; }
   if (!f || !IMPORT_EXT.test(f.name) || e.target.closest?.('.drop, .zone, #layer .dialog')) return;
@@ -7967,7 +8054,7 @@ document.addEventListener('click', async e => {
   const z = e.target.closest('[data-zoom]');
   if (z){ openGallery([{ src: z.getAttribute('src'), label: z.alt || '' }], 0); return; }
   if (!e.target.closest('#menu') && !e.target.closest('[data-act="gear"]')) closeMenu();
-  if ($('#tpop') && !e.target.closest('#tpop') && !e.target.closest('[data-act="timer-menu"], [data-act="pp-tm"]')) $('#tpop').remove();
+  if ($('#tpop') && !e.target.closest('#tpop') && !e.target.closest('[data-act="timer-menu"], [data-act="pp-tm"], [data-act="pp-mark"], [data-act="pp-keys"]')) $('#tpop').remove();
   if (document.body.classList.contains('desktop') && $('#sidesres') && !$('#sidesres').hidden && (!e.target.closest('#abmid') || e.target.closest('.siderec'))){ $('#sidesres').hidden = true; if (e.target.closest('.siderec')){ const q = $('#sidesq'); if (q) q.value = ''; } }
   const nav = e.target.closest('[data-nav]');
   if (nav){ const t = nav.dataset.nav; if (t === 'add') return editor(null, nodeOf(view.node) ? view.node : browse.node); if (t === 'browse') browse.node = view.node || browse.node; study = null; return go(t); }
@@ -8227,6 +8314,7 @@ document.addEventListener('paste', e => {
   if (!files.length) return;
   if (cleanerOpen()){ e.preventDefault(); return clLoad(files[0]); }
   if (ed){ e.preventDefault(); return addFiles(files, ed.zone); }
+  if (!dialogOpen() && S.ready && view.name === 'ppmark' && ppm?.R){ e.preventDefault(); return ppmAddSolPics(files); }
   if (!dialogOpen() && S.ready && view.name !== 'study'){ e.preventDefault(); editor(null, view.node || browse.node, files[0]); }
 });
 function cardMenu(id, at){
@@ -8980,7 +9068,7 @@ function renderPPMark(){
   if (ppm?.pid !== p.id || (!ppm.R && !ppm.busy && !ppm.need && !ppm.err)){ const keep = ppm?.pid === p.id ? ppm : null; ppm = { pid: p.id, items: [], sel: null, busy: 'Opening the paper…', want: keep?.want || ppm?.want || null, buf: keep?.buf || null }; ppmLoad(p); }
   const host = $('#ppm');
   if (!host || host.dataset.pid !== p.id){
-    $('#root').innerHTML = `<div class="ppm ${ppSides ? '' : 'nosides'}" id="ppm" data-pid="${esc(p.id)}"><aside class="pprail" id="pprail" aria-label="Questions"></aside><section class="ppstage${ppBar ? '' : ' nobar'}" id="ppstage" aria-label="Paper"><div class="ppscroll" id="ppscroll"><div class="pppages" id="pppages"></div></div><div class="ppscroll ppsolscroll" id="ppsolscroll" aria-label="Solutions" hidden><div class="pppages" id="ppsolpages"></div></div>${ppmZoomBar()}</section><aside class="pppanel" id="pppanel" aria-label="Question"></aside></div>`;
+    $('#root').innerHTML = `<div class="ppm ${ppSides ? '' : 'nosides'}" id="ppm" data-pid="${esc(p.id)}"><aside class="pprail" id="pprail" aria-label="Questions"></aside><section class="ppstage${ppBar ? '' : ' nobar'}" id="ppstage" aria-label="Paper"><div class="ppscroll" id="ppscroll"><div class="pppages" id="pppages"></div></div><div class="ppsplitter" id="ppsplitter" role="separator" aria-orientation="vertical" aria-label="Drag to give the paper or the solutions more room" tabindex="0" hidden></div><div class="ppscroll ppsolscroll" id="ppsolscroll" aria-label="Solutions" hidden><div class="pppages" id="ppsolpages"></div></div>${ppmZoomBar()}</section><aside class="pppanel" id="pppanel" aria-label="Question"></aside></div>`;
     ppmWatch();
     if (ppm.R) ppmPages();
   }
@@ -9288,7 +9376,7 @@ const PP_ZOOMS = [.5, .67, .75, .9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3];
 let ppz = Math.max(.5, Math.min(3, +ls.get('md-pp-zoom', 1) || 1));
 /* side by side, the solutions have a zoom of their own (md-pp-zoom-sol); the bar's zoom works on whichever side you last touched */
 let ppzS = Math.max(.5, Math.min(3, +ls.get('md-pp-zoom-sol', ppz) || 1)), ppzOn = 'q';
-const ppzSide = () => ppSplitOn() && ppzOn === 's' ? 's' : 'q';
+const ppzSide = () => ppSplitOn() && (ppzOn === 's' || ppSolOnly) ? 's' : 'q';
 const ppzOf = side => side === 's' ? ppzS : ppz;
 const ppzSideOf = t => t?.closest?.('#ppsolscroll') ? 's' : 'q';
 function ppzPick(side){ if (side === ppzOn) return; ppzOn = side; ppmZoomLabel(); }
@@ -9310,18 +9398,42 @@ function ppSidesSet(on){
   on = !!on; if (on === ppSides && $('#ppm')?.classList.contains('nosides') === !on) return;
   ppmKeepPlace(() => { ppSides = on; ls.set('md-pp-sides', on); $('#ppm')?.classList.toggle('nosides', !on); ppmApplyZoom(); });
   ppmRedrawSoon();
-  const b = $('#ppzsides'); if (b){ b.setAttribute('aria-pressed', String(!on)); b.classList.toggle('on', !on); b.title = on ? 'Hide the side panels (H)' : 'Show the side panels (H)'; b.setAttribute('aria-label', on ? 'Hide the side panels' : 'Show the side panels'); }
-  if (!on) toast('Side panels hidden · H brings them back', 1600);
+  const b = $('#ppzsides'); if (b){ b.setAttribute('aria-pressed', String(!on)); b.classList.toggle('on', !on); b.title = on ? 'Hide the questions list (H)' : 'Show the questions list (H)'; b.setAttribute('aria-label', on ? 'Hide the questions list' : 'Show the questions list'); }
+  if (!on) toast('Questions list hidden · H brings it back', 1600);
 }
 const ppSplitOk = () => !!ppm?.R && !!ppm.cutP && !ppm.locked && ppmOwnScroll();
 const ppSplitOn = () => ppSplit && ppSplitOk();
-function ppSplitSet(on){
+/* what the stage shows when there are solutions: the paper, both side by side, or only the solutions (md-pp-solonly) */
+let ppSolOnly = !!ls.get('md-pp-solonly', false);
+const ppSolOnlyOn = () => ppSolOnly && ppSplitOn();
+const ppView = () => !ppSplitOn() ? 'paper' : ppSolOnly ? 'sol' : 'both';
+function ppViewSet(v){
+  if (v !== 'paper' && !ppSplitOk()) return toast(ppm?.cutP ? 'Side by side needs a wider window' : 'This paper has no solutions yet', 1800);
+  ppSolOnly = v === 'sol'; ls.set('md-pp-solonly', ppSolOnly);
+  ppSplitSet(v !== 'paper', true);
+}
+function ppSplitSet(on, keepSolOnly){
   if (on && !ppSplitOk()) return toast(ppm?.cutP ? 'Side by side needs a wider window' : 'This paper has no solutions yet', 1800);
+  if (!keepSolOnly && !on){ ppSolOnly = false; ls.set('md-pp-solonly', false); }
   ppSplit = !!on; ls.set('md-pp-split', ppSplit);
   ppmKeepPlace(() => ppmPages());
   ppmSide();
   const it = ppm?.items[ppm.sel]; if (ppSplitOn() && it?.sol?.[0]) setTimeout(() => ppmReveal(it.sol[0], true), 60);
 }
+/* how much of the stage the paper gets beside the solutions (md-pp-splitw, 0.2–0.8); drag the line between them, or ← → on it */
+let ppSplitW = Math.max(.2, Math.min(.8, +ls.get('md-pp-splitw', .5) || .5));
+function ppSplitWSet(w, save){ ppSplitW = Math.max(.2, Math.min(.8, w)); $('#ppstage')?.style.setProperty('--ppsw', ppSplitW); const d = $('#ppsplitter'); if (d) d.setAttribute('aria-valuenow', Math.round(ppSplitW * 100)); if (save){ ls.set('md-pp-splitw', ppSplitW); ppmApplyZoom(); ppmRedrawSoon(); } }
+document.addEventListener('pointerdown', e => {
+  const d = e.target.closest?.('#ppsplitter'); if (!d || e.button > 0) return;
+  e.preventDefault(); const st = $('#ppstage'), r = st.getBoundingClientRect(); d.setPointerCapture?.(e.pointerId); d.classList.add('drag'); document.body.classList.add('ppcolres');
+  // both sides keep the same bit of paper in view while they get wider or narrower
+  const mv = ev => { const keep = ['#ppscroll', '#ppsolscroll'].map(q => $(q)).filter(Boolean).map(el => [el, el.scrollTop / Math.max(1, el.scrollHeight)]);
+    ppSplitWSet((ev.clientX - r.left) / r.width); ppmApplyZoom(); keep.forEach(([el, f]) => { el.scrollTop = f * el.scrollHeight; }); };
+  const up = () => { d.removeEventListener('pointermove', mv); d.removeEventListener('pointerup', up); d.removeEventListener('pointercancel', up); d.classList.remove('drag'); document.body.classList.remove('ppcolres'); ppSplitWSet(ppSplitW, true); };
+  d.addEventListener('pointermove', mv); d.addEventListener('pointerup', up); d.addEventListener('pointercancel', up);
+});
+document.addEventListener('dblclick', e => { if (e.target.closest?.('#ppsplitter')) ppSplitWSet(.5, true); });
+document.addEventListener('keydown', e => { if (!e.target.closest?.('#ppsplitter')) return; const d = e.key === 'ArrowLeft' ? -.05 : e.key === 'ArrowRight' ? .05 : 0; if (d){ e.preventDefault(); e.stopPropagation(); ppSplitWSet(ppSplitW + d, true); } else if (e.key === 'Home' || e.key === 'End'){ e.preventDefault(); ppSplitWSet(e.key === 'Home' ? .2 : .8, true); } }, true);
 const ppmOwnScroll = () => ppFull || matchMedia('(min-width: 901px)').matches;
 const PP_UP_IC = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 9.5 8 5.5 12 9.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function ppmZoomBar(){
@@ -9333,8 +9445,8 @@ function ppmZoomBar(){
     <button type="button" class="ppzv" data-act="pp-zoom" data-d="0" title="Fit the page to the width (0)" aria-label="Zoom level, press to fit the width"><span id="ppzl">${Math.round(ppz * 100)}%</span></button>
     <button type="button" class="ppzb" data-act="pp-zoom" data-d="1" title="Zoom in (+)" aria-label="Zoom in">${ic('M3.5 8h9M8 3.5v9')}</button>
     <span class="ppzsep" aria-hidden="true"></span>
-    <button type="button" class="ppzb ${ppSides ? '' : 'on'}" id="ppzsides" data-act="pp-sides" title="${ppSides ? 'Hide' : 'Show'} the side panels (H)" aria-label="${ppSides ? 'Hide' : 'Show'} the side panels" aria-pressed="${!ppSides}">${ic('M2.5 3.5h11v9h-11zM5.5 3.5v9M10.5 3.5v9')}</button>
-    <button type="button" class="ppzb ppzsplit" id="ppzsplit" data-act="pp-split" title="Solutions side by side (S)" aria-label="Solutions side by side" aria-pressed="false" hidden>${ic('M2.5 3.5h11v9h-11zM8 3.5v9')}<span>Solutions</span></button>
+    <button type="button" class="ppzb ${ppSides ? '' : 'on'}" id="ppzsides" data-act="pp-sides" title="${ppSides ? 'Hide' : 'Show'} the questions list (H)" aria-label="${ppSides ? 'Hide' : 'Show'} the questions list" aria-pressed="${!ppSides}">${ic('M2.5 3.5h11v9h-11zM5.5 3.5v9M10.5 3.5v9')}</button>
+    <span class="ppzview" id="ppzview" role="group" aria-label="Show" hidden><button type="button" data-act="pp-view" data-v="paper" title="Just the paper (S)">Paper</button><button type="button" data-act="pp-view" data-v="both" title="Paper and solutions side by side (S)">${ic('M2.5 3.5h11v9h-11zM8 3.5v9')}<span>Both</span></button><button type="button" data-act="pp-view" data-v="sol" title="Just the solutions (S)">Solutions</button></span>
     <button type="button" class="ppzb" id="ppzfs" data-act="pp-full" title="Full screen (F)" aria-label="Full screen" aria-pressed="${ppFull}">${ppFullIcon()}</button>
     <button type="button" class="ppzd" data-act="pp-dl" title="Download the PDF">${ic('M8 2.5v7.5M4.8 7 8 10.2 11.2 7M3 12.5v1h10v-1')}<span>Download</span></button>
     <span class="ppzsep" aria-hidden="true"></span>
@@ -9437,9 +9549,11 @@ function ppmPages(){
   const pgHtml = pg => `<div class="pppage ${ppmLockOf(pg.n) === 0 ? 'locked' : ''}" data-p="${pg.n}" style="aspect-ratio:${pg.w} / ${pg.h}"><canvas aria-hidden="true"></canvas><div class="ppov" data-p="${pg.n}"></div>${lockHtml(pg.n)}<span class="pppn">${m.solFrom && pg.n >= m.solFrom ? 'S' + (pg.n - m.solFrom + 1) : pg.n}</span></div>`;
   const left = m.R.pages.filter(pg => !split || pg.n < m.cutP || (pg.n === m.cutP && m.cutY));
   host.innerHTML = (split ? `<div class="ppsolhd">Paper<small>${esc(ppmP()?.name || '')}</small></div>` : '') + left.map(pg => `${!split && m.solFrom && pg.n === m.solFrom ? `<div class="ppsoldiv" role="separator">Solutions<small>${esc(ppmP()?.solName || '')}</small></div>` : ''}${pgHtml(pg)}`).join('');
-  stage?.classList.toggle('split', split); if (sol) sol.hidden = !split;
+  stage?.classList.toggle('split', split); stage?.classList.toggle('solonly', split && ppSolOnly); if (sol) sol.hidden = !split;
+  const dv = $('#ppsplitter'); if (dv){ dv.hidden = !split || ppSolOnly; dv.setAttribute('aria-valuemin', 20); dv.setAttribute('aria-valuemax', 80); dv.setAttribute('aria-valuenow', Math.round(ppSplitW * 100)); }
+  stage?.style.setProperty('--ppsw', ppSplitW);
   const sh = $('#ppsolpages'); if (sh) sh.innerHTML = split ? `<div class="ppsolhd">Solutions${m.solFrom ? `<small>${esc(ppmP()?.solName || '')}</small>` : ''}</div>` + m.R.pages.filter(pg => pg.n >= m.cutP).map(pgHtml).join('') : '';
-  const sb = $('#ppzsplit'); if (sb){ sb.hidden = !ppSplitOk(); sb.setAttribute('aria-pressed', String(split)); sb.classList.toggle('on', split); }
+  const vw = $('#ppzview'); if (vw){ vw.hidden = !ppSplitOk(); const v = ppView(); vw.querySelectorAll('button').forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.v === v)); b.classList.toggle('on', b.dataset.v === v); }); }
   ppmObserve();
   const bar = $('#ppzbar'); if (bar) bar.hidden = false;
   ppTmPaint();
@@ -9642,7 +9756,9 @@ function ppmReveal(g, sol){
   const inSol = sol && ppSplitOn(), el = (inSol ? document.querySelector(`#ppsolpages .pppage[data-p="${g.p}"]`) : document.querySelector(`#pppages .pppage[data-p="${g.p}"]`)) || document.querySelector(`.pppage[data-p="${g.p}"]`), pg = ppm?.R?.pages[g.p - 1], sc = el?.closest('.ppscroll'); if (!el || !pg || !sc) return;
   const r = el.getBoundingClientRect(), s = sc.getBoundingClientRect(), behavior = reducedMotion() ? 'auto' : 'smooth';
   const left = r.width > s.width + 2 ? Math.max(0, sc.scrollLeft + r.left - s.left + r.width * ((g.x0 ?? pg.w * .03) / pg.w) - 32) : sc.scrollLeft;
-  if (ppmOwnScroll()) sc.scrollTo({ top: Math.max(0, sc.scrollTop + r.top - s.top + r.height * (g.y0 / pg.h) - 56), left, behavior });
+  // the marking card floats over the top right: land the box below it when it's over this side
+  let pad = 56; const cd = $('#pppanel.card.show'); if (cd && ppmOwnScroll()){ const c = cd.getBoundingClientRect(); if (c.left < s.right && c.right > s.left && c.top < s.top + s.height * .5){ const want = c.bottom - s.top + 16; if (want < s.height * .6) pad = Math.max(pad, want); } }
+  if (ppmOwnScroll()) sc.scrollTo({ top: Math.max(0, sc.scrollTop + r.top - s.top + r.height * (g.y0 / pg.h) - pad), left, behavior });
   else { if (left !== sc.scrollLeft) sc.scrollTo({ left, behavior }); window.scrollTo({ top: Math.max(0, r.top + scrollY + r.height * (g.y0 / pg.h) - 120), behavior }); }
 }
 /* the rail of questions and the panel for the picked one */
@@ -9657,20 +9773,49 @@ function ppmSide(){
     ${!m.items.length && !m.need && !m.err ? `<p class="ppnote">${m.scanned ? 'This PDF is scanned, so Recall can’t find the questions by itself.' : 'Recall couldn’t find numbered questions.'} Draw a box round each question you got wrong.</p>` : ''}
     <div class="pprfoot"><button class="btn sm ${m.draw === 'q' ? 'on' : ''}" data-act="pp-draw" data-v="q" aria-pressed="${m.draw === 'q'}">Box a question<kbd>B</kbd></button>
       <div class="pplg"><span><i class="ok"></i>Right</span><span><i class="part"></i>Part</span><span><i class="bad"></i>Wrong</span></div>
-      <button class="link sm danger-link" data-act="pp-remove">Remove this paper</button></div>`;
-  panel.innerHTML = ppmPanel();
+      <span class="pprfl"><button class="link sm" data-act="pp-keys" aria-haspopup="dialog">Keys</button><button class="link sm danger-link" data-act="pp-remove">Remove this paper</button></span></div>`;
+  const ph = ppmPanel(), card = ppWide() && !!ph.trim();
+  panel.innerHTML = ph; panel.classList.toggle('show', !ppWide() || card); panel.classList.toggle('card', card); panel.classList.toggle('min', card && ppCardMin && m.sel != null);
+  if (card) ppCardPlace(panel);
   const db = $('#ppdeck'); if (db) db.addEventListener('click', ev => { ev.stopPropagation(); openPicker(db, { multi: false, bubbles: true, keepOpen: true, sel: new Set([ppmDeck() || '']), onPick: (id, on, leaf) => { ppm.node = id || null; ls.set('md-pp-node-' + PP_COURSE[p.c].s, ppm.node); if (leaf) closePicker(); }, onClose: () => ppmSide() }); });
-  const mkr = $('.ppmkrow'); if (mkr){
-    mkr.addEventListener('focusout', e => { if (!mkr.contains(e.relatedTarget)) ppmMarkSave(); });
-    mkr.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); e.target.blur(); } });
-  }
+  ppmMarkWire(panel);
   const why = $('#ppwhy'); if (why){ why.addEventListener('input', () => { if (ppm) ppm.why = why.value; }); }
+  ['ppgot', 'ppof'].forEach(id => { const n = $('#' + id); if (!n) return;
+    const commit = () => { const v = n.value.replace(/\D/g, ''); if (v === '') return; ppAction(id === 'ppgot' ? 'pp-got' : 'pp-of', { dataset: { set: v, d: 0 } }); };
+    n.addEventListener('input', () => { if (/\D/.test(n.value)) n.value = n.value.replace(/\D/g, ''); });
+    let fresh = false;
+    n.addEventListener('focus', () => { fresh = true; n.select(); setTimeout(() => { if (document.activeElement === n) n.select(); }, 0); });
+    n.addEventListener('mouseup', e => { if (fresh){ e.preventDefault(); n.select(); } fresh = false; });
+    n.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); commit(); setTimeout(() => $('#' + id)?.focus(), 0); } else if (e.key === 'Escape'){ n.value = n.defaultValue; n.blur(); } });
+    n.addEventListener('change', commit); });
   const lab = $('#pplabel'); if (lab){ lab.addEventListener('input', () => { if (ppm) ppm.label = lab.value; }); lab.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); lab.blur(); } }); }
   ppmBoxes(); renderAppbar();
 }
 function ppmDeck(){ const p = ppmP(); if (!p) return null; const sel = ppm.items[ppm.sel], c = sel && p.q?.[sel.key]?.card && S.cards[p.q[sel.key].card]; if (c && ppm.node === undefined) return homeRef(c); const v = ppm.node ?? ls.get('md-pp-node-' + PP_COURSE[p.c].s, null); if (v && nodeOf(v)) return v; return ppNode(PP_COURSE[p.c].s)?.id || null; }
+const ppWide = () => ppFull || matchMedia('(min-width: 901px)').matches;
+let ppCardMin = !!ls.get('md-pp-cardmin', false);
+/* the card sits top right of the stage; drag its top to move it (md-pp-cardpos, from the window's top right), double-click to put it back */
+function ppCardPlace(panel){
+  const pos = ls.get('md-pp-cardpos', null);
+  if (!pos){ panel.style.left = panel.style.top = panel.style.right = ''; return; }
+  panel.style.right = 'auto';
+  const w = panel.offsetWidth || 340, h = Math.min(panel.offsetHeight || 200, innerHeight - 16);
+  panel.style.left = Math.round(Math.max(8, Math.min(innerWidth - w - 8, innerWidth - pos.r - w))) + 'px';
+  panel.style.top = Math.round(Math.max(8, Math.min(innerHeight - h - 8, pos.t))) + 'px';   // all of it on screen, even after it grows
+}
+document.addEventListener('pointerdown', e => {
+  const hd = e.target.closest?.('#pppanel.card .pphd'); if (!hd || e.button > 0 || e.target.closest('button, input, textarea, a')) return;
+  const panel = $('#pppanel'), r0 = panel.getBoundingClientRect(), x0 = e.clientX, y0 = e.clientY; let moved = false;
+  const mv = ev => { const dx = ev.clientX - x0, dy = ev.clientY - y0; if (!moved && Math.hypot(dx, dy) < 4) return; moved = true; panel.classList.add('moving'); panel.style.right = 'auto';
+    panel.style.left = Math.round(Math.max(8, Math.min(innerWidth - r0.width - 8, r0.left + dx))) + 'px'; panel.style.top = Math.round(Math.max(8, Math.min(innerHeight - 60, r0.top + dy))) + 'px'; };
+  const up = () => { document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', up); panel.classList.remove('moving');
+    if (moved){ const r = panel.getBoundingClientRect(); ls.set('md-pp-cardpos', { r: Math.round(innerWidth - r.right), t: Math.round(r.top) }); } };
+  document.addEventListener('pointermove', mv); document.addEventListener('pointerup', up);
+});
+document.addEventListener('dblclick', e => { if (!e.target.closest?.('#pppanel.card .pphd') || e.target.closest('input')) return; ls.set('md-pp-cardpos', null); ppCardPlace($('#pppanel')); });
+addEventListener('resize', () => { const pn = $('#pppanel.card'); if (pn) ppCardPlace(pn); });
 function ppmPanel(){
-  const h = ppmPanel0(); if (document.body.classList.contains('desktop')) return h;
+  const h = ppmPanel0(); if (document.body.classList.contains('desktop') || ppWide()) return h;
   return `<div class="ppmob ppmobm"><button class="btn sm ppback" data-nav="papers" aria-label="Back to Past papers"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Past papers</button><span class="grow"></span>${ppm?.items?.length ? ppAppbar().act : ''}</div>` + h;
 }
 /* your mark: typed in (p.score, used everywhere a score shows) or, left empty, counted from the questions you've marked */
@@ -9685,6 +9830,19 @@ function ppmMarkNote(p, s, warn){
   if (warn) return esc(warn);
   if (p.score?.of) return `Your own mark.${ppm.items.length ? ` <button class="link sm" data-act="pp-mkclr">Count it from the questions</button>` : ''}`;
   return ppm.items.length ? `From the questions: ${s.marked} of ${ppm.items.length} marked · ${s.flagged} flagged. Type a mark to use your own.` : 'Type the mark you got and the total.';
+}
+function ppMarkPop(anchor){
+  $('#tpop')?.remove(); const p = ppmP(); if (!p) return;
+  const pop = document.createElement('div'); pop.id = 'tpop'; pop.className = 'tpop ppmkpop'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Your mark');
+  pop.innerHTML = `${ppmMarkBox(p, ppScore(p))}${ppmSolLine(p)}<p class="ppnote" style="margin:0">Pick a question on the left or on the page to mark it.${ppm.items.length ? ' Ones you don’t mark count as right.' : ''}</p>`;
+  document.body.appendChild(pop); ppmMarkWire(pop);
+  const rc = anchor.getBoundingClientRect(); pop.style.left = Math.round(Math.max(12, Math.min(innerWidth - pop.offsetWidth - 12, rc.right - pop.offsetWidth))) + 'px'; pop.style.top = Math.round(rc.bottom + 8) + 'px';
+  setTimeout(() => { const g = $('#ppmkg'); g?.focus(); g?.select?.(); }, 30);
+}
+function ppmMarkWire(root){
+  const mkr = root?.querySelector('.ppmkrow'); if (!mkr) return;
+  mkr.addEventListener('focusout', e => { if (!mkr.contains(e.relatedTarget)) ppmMarkSave(); });
+  mkr.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); e.target.blur(); } });
 }
 async function ppmMarkSave(){
   const gi = $('#ppmkg'), oi = $('#ppmko'), p0 = ppmP(); if (!gi || !oi || !p0) return;
@@ -9713,6 +9871,7 @@ function ppmPanel0(){
   if (m.err) return `<div class="pppad"><h2>That didn’t work</h2><p class="ppnote">${esc(m.err)}</p></div>`;
   if (m.need) return `<div class="pppad"><h2>Add the PDF</h2><p class="ppnote">This paper’s PDF isn’t on this device yet. ${p.key && p.src === 'thsc' ? 'Open it on THSC, download it, then drop it here.' : p.src === 'nesa' ? 'Open it on NESA, download it, then drop it here.' : 'Drop the same PDF here.'}</p>${p.src === 'thsc' || p.src === 'nesa' ? `<p><a class="btn" href="${esc(p.src === 'nesa' ? ppNesaUrl(p.c, p.year) : (() => { const it = ppFind(p.key); return it?.no ? ppThscUrl(it.no, it.title) : 'https://thsconline.github.io/s/'; })())}" target="_blank" rel="noopener">Open on ${p.src === 'nesa' ? 'NESA' : 'THSC'}</a></p>` : ''}<div class="zone ppzone" id="ppmzone"><button class="btn primary" data-act="pp-repick">Choose PDF</button></div></div>`;
   const it = m.items[m.sel];
+  if (!it && ppWide()) return '';
   if (!it) return `<div class="pppad"><h2>${esc(ppTitle(p))}</h2><p class="ppnote">${esc(PP_COURSE[p.c].name)} · ${esc(ppSecName(p.sec, true))}</p>
     ${ppmMarkBox(p, s)}
     ${ppmSolLine(p)}
@@ -9721,14 +9880,17 @@ function ppmPanel0(){
   const q = p.q?.[it.key] || {}, r = m.res ?? q.r ?? '', of = m.of ?? q.of ?? (it.marks || 1), got = m.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)), card = q.card && S.cards[q.card];
   const deck = ppmDeck(), flag = r === 'part' || r === 'bad';
   return `<div class="pppad">
-    <div class="pphd"><h2>${it.man ? `<input class="pplabel" id="pplabel" value="${esc(m.label ?? it.label)}" aria-label="Question name" maxlength="60" autocomplete="off">` : esc(it.label)}</h2><span class="ppnote">${it.segs?.[0] ? 'page ' + it.segs[0].p : ''}</span></div>
+    <div class="pphd" title="${ppWide() ? 'Drag to move · double-click to put it back' : ''}"><h2>${it.man ? `<input class="pplabel" id="pplabel" value="${esc(m.label ?? it.label)}" aria-label="Question name" maxlength="60" autocomplete="off">` : esc(it.label)}</h2><span class="ppnote">${it.segs?.[0] ? 'page ' + it.segs[0].p : ''}</span>
+      <span class="ppminst">${r ? `<i class="d ${r}"></i>${got} / ${of}` : `${of} mark${of === 1 ? '' : 's'}`}</span>
+      ${ppWide() ? `<span class="ppcardbtns"><button type="button" class="ppcb" data-act="pp-card-min" title="${ppCardMin ? 'Show all of it' : 'Make it small'}" aria-label="${ppCardMin ? 'Expand' : 'Minimise'}" aria-expanded="${!ppCardMin}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="${ppCardMin ? 'M4 9.5 8 5.5 12 9.5' : 'M4 6.5 8 10.5 12 6.5'}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="ppcb" data-act="pp-card-x" title="Close (click off the question)" aria-label="Close">${I.x}</button></span>` : ''}</div>
     <div class="pprl">Result</div>
     <div class="seg ppres" role="group" aria-label="Result">${[['ok', 'Right', '1'], ['part', 'Part', '2'], ['bad', 'Wrong', '3']].map(([k, l, kb]) => `<button type="button" data-act="pp-res" data-v="${k}" aria-pressed="${r === k}"><i class="d ${k}"></i>${l}<kbd>${kb}</kbd></button>`).join('')}</div>
     <div class="pprl">Marks</div>
-    <div class="ppmarks"><span class="ppstep" role="group" aria-label="Marks you got"><button type="button" data-act="pp-got" data-d="-1" aria-label="One mark less" ${got <= 0 ? 'disabled' : ''}>−</button><b>${got}</b><button type="button" data-act="pp-got" data-d="1" aria-label="One mark more" ${got >= of ? 'disabled' : ''}>+</button></span><span class="ppof">out of</span><span class="ppstep" role="group" aria-label="Marks the question is worth"><button type="button" data-act="pp-of" data-d="-1" aria-label="Worth one mark less" ${of <= 1 ? 'disabled' : ''}>−</button><b>${of}</b><button type="button" data-act="pp-of" data-d="1" aria-label="Worth one mark more">+</button></span></div>
+    <div class="ppmarks"><span class="ppstep" role="group" aria-label="Marks you got"><button type="button" data-act="pp-got" data-d="-1" aria-label="One mark less" ${got <= 0 ? 'disabled' : ''}>−</button><input class="ppnum" id="ppgot" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="2" value="${got}" aria-label="Marks you got"><button type="button" data-act="pp-got" data-d="1" aria-label="One mark more" ${got >= of ? 'disabled' : ''}>+</button></span><span class="ppof">out of</span><span class="ppstep" role="group" aria-label="Marks the question is worth"><button type="button" data-act="pp-of" data-d="-1" aria-label="Worth one mark less" ${of <= 1 ? 'disabled' : ''}>−</button><input class="ppnum" id="ppof" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="2" value="${of}" aria-label="Marks it's worth"><button type="button" data-act="pp-of" data-d="1" aria-label="Worth one mark more">+</button></span></div>
     ${flag ? `<label class="pprl" for="ppwhy">Why I got it wrong</label><textarea class="in" id="ppwhy" rows="3" placeholder="What went wrong, in a line or two">${esc(m.why ?? card?.mistake ?? '')}</textarea>
     <div class="pprl">Correct solution</div>
     <div class="ppsol">${m.locked ? `<span>${it.sol?.length ? 'Found. ' : ''}Opens when your time’s up (<span class="pplockt">${ppmLockLeft()}</span> left).</span>` : it.sol?.length ? `<span>Found ${it.sol.length > 1 ? 'on pages ' + [...new Set(it.sol.map(g => ppmPageName(g.p)))].join(', ') : 'on page ' + ppmPageName(it.sol[0].p)}</span><button class="link sm" data-act="pp-solgo">Show</button><button class="link sm" data-act="pp-draw" data-v="s">Redraw</button>` : `<span>${m.solMissing ? 'The solutions PDF isn’t on this device.' : p.sol ? 'Not matched yet.' : 'This paper has no solutions.'}</span><button class="link sm" data-act="pp-draw" data-v="s">${m.draw === 's' ? 'Drag across the page…' : 'Draw it on the page'}</button>${!p.solSep || m.solMissing ? `<button class="link sm" data-act="pp-addsol">${m.solMissing ? 'Add it again' : 'Add a solutions PDF'}</button>` : ''}`}</div>
+    ${ppmSolPics(p, it)}
     <div class="pprl">Deck</div>
     <div class="field ppdeckf"><button type="button" class="brdeck pickbtn ${deck ? 'on' : ''}" id="ppdeck" aria-haspopup="true" aria-expanded="false">${deck ? `<span class="sdot2" style="--sc:${scol(deck)}"></span>${esc(pathOf(deck).map(n => n.name).join(' › '))}` : 'Choose a deck'}<span class="pkcar">▾</span></button></div>
     <p class="hint" style="margin:6px 0 0">It also goes in Paper mistakes.</p>` : ''}
@@ -9738,6 +9900,39 @@ function ppmPanel0(){
   </div>`;
 }
 const ppmPageName = n => ppm?.solFrom && n >= ppm.solFrom ? 'S' + (n - ppm.solFrom + 1) : n;
+/* screenshots of a question's solution, dropped or pasted onto the paper (kept on the paper as p.simg[key], and on its card) */
+const ppSimg = (p, key) => p?.simg?.[key] || [];
+function ppmSolPics(p, it){
+  const pics = ppSimg(p, it.key);
+  return `${pics.length ? `<div class="ppsimgs">${pics.map((im, i) => `<span class="ppsimg"><img src="${esc(imgSrc(im))}" alt="Solution screenshot ${i + 1}" data-zoom><button type="button" data-act="pp-simg-del" data-i="${i}" aria-label="Remove this screenshot">${I.x}</button></span>`).join('')}</div>` : ''}
+    <p class="hint ppdrophint">${pics.length ? 'Drop or paste more screenshots here' : 'Or drop or paste a screenshot of it here'}</p>`;
+}
+async function ppmAddSolPics(files){
+  const m = ppm, p0 = ppmP(), it = m?.items[m.sel];
+  files = (files || []).filter(f => f && (f.type?.startsWith('image/') || isHeic(f))); if (!files.length) return;
+  if (!p0 || !it) return toast('Pick a question first, then drop the screenshot', 2200);
+  m.why = $('#ppwhy')?.value ?? m.why; m.label = $('#pplabel')?.value ?? m.label;
+  const add = []; for (const f of files){ try { add.push(await storeImage(f)); } catch (e){ console.warn(e); } }
+  if (!add.length) return toast('Couldn’t read that picture.');
+  const p = { ...ppPapers()[p0.id] }; p.simg = { ...(p.simg || {}), [it.key]: [...ppSimg(p, it.key), ...add] };
+  undoTx = null; undoBaseSettings = clone(S.settings); undoLabel = 'add solution screenshot';
+  const c = p.q?.[it.key]?.card && S.cards[p.q[it.key].card];
+  if (c) await put('cards', { ...c, solImgs: [...(c.solImgs || []), ...add] });
+  S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings();
+  if (ppm === m) ppmSide();
+  const r = m.res ?? p.q?.[it.key]?.r;
+  toast(r === 'bad' || r === 'part' ? `Added to ${it.label}’s solution${c ? ' and its card' : ''}` : `Kept for ${it.label}’s solution · mark it Part or Wrong to make the card`, 2600);
+}
+async function ppmDelSolPic(i){
+  const m = ppm, p0 = ppmP(), it = m?.items[m.sel]; if (!p0 || !it) return;
+  const pics = ppSimg(p0, it.key), im = pics[i]; if (!im) return;
+  m.why = $('#ppwhy')?.value ?? m.why; m.label = $('#pplabel')?.value ?? m.label;
+  const p = { ...p0, simg: { ...(p0.simg || {}), [it.key]: pics.filter((_, j) => j !== i) } };
+  undoTx = null; undoBaseSettings = clone(S.settings); undoLabel = 'remove solution screenshot';
+  const c = p.q?.[it.key]?.card && S.cards[p.q[it.key].card];
+  if (c){ const sol = [...(c.solImgs || [])], j = sol.map(imgKey).lastIndexOf(imgKey(im)); if (j >= 0){ sol.splice(j, 1); await put('cards', { ...c, solImgs: sol }); } }
+  S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings(); ppmSide();
+}
 /* what you've filled in for a question stays put when you leave it (click off, another question) and come back */
 function ppmStash(){
   const m = ppm, it = m?.items[m.sel]; if (!it) return;
@@ -9793,14 +9988,14 @@ async function ppmSaveQ(){
     const ref = ppmDeck(); if (!ref) return toast('Pick a deck for the card first.');
     const [nodeId, qtype] = String(ref).split('::'), old = q.card && S.cards[q.card];
     const src = `${ppTitle(p0)} · ${label} · ${of} mark${of === 1 ? '' : 's'}`;
-    if (old){ const nc = { ...old, nodeId, mistake: why || old.mistake, marks: of, label, source: src, paper: { id: p0.id, q: it.key, got, of } }; if (qtype) nc.qtype = qtype; else delete nc.qtype; await put('cards', nc); }
+    if (old){ const have = new Set((old.solImgs || []).map(imgKey)), nc = { ...old, nodeId, mistake: why || old.mistake, marks: of, label, source: src, paper: { id: p0.id, q: it.key, got, of }, solImgs: [...(old.solImgs || []), ...ppSimg(p0, it.key).filter(x => !have.has(imgKey(x)))] }; if (qtype) nc.qtype = qtype; else delete nc.qtype; await put('cards', nc); }
     else {
       const btn = $('.ppsave'); if (btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
       try {
         const copy = { ...it, segs: [...(it.stem || []), ...(it.segs || [])].map(g => ({ ...g, blob: null, url: null, skip: false })), sol: it.sol ? it.sol.map(g => ({ ...g, blob: null, url: null, skip: false })) : null };
         const [cut] = await pxCrop(m.R, [copy]);
         const imgs = async segs => { const out = []; for (const g of segs || []){ out.push(await storeImage(new File([g.blob], 'cleaned-paper.png', { type: 'image/png' }))); if (g.url) URL.revokeObjectURL(g.url); } return out; };
-        const now = Date.now(), c = { id: uid('c'), nodeId, label, qText: '', qImg: null, mistake: why, solText: '', solImgs: cut ? await imgs(cut.sol) : [], marks: of, source: src, paper: { id: p0.id, q: it.key, got, of }, createdAt: now, order: now, srs: freshSrs() };
+        const now = Date.now(), c = { id: uid('c'), nodeId, label, qText: '', qImg: null, mistake: why, solText: '', solImgs: [...(cut ? await imgs(cut.sol) : []), ...ppSimg(p0, it.key)], marks: of, source: src, paper: { id: p0.id, q: it.key, got, of }, createdAt: now, order: now, srs: freshSrs() };
         if (qtype) c.qtype = qtype;
         setQImgs(c, cut ? await imgs(cut.segs) : []);
         if (await put('cards', c) === false) throw new Error('save');
@@ -9860,7 +10055,7 @@ function ppKey(e){
   /* full screen is for reading the paper: marking keys wait until you come back */
   if (ppFull && ['1', '2', '3', 'Enter', 'b', 'B'].includes(k)) return true;
   if (k === 'ArrowDown' || k === 'ArrowUp' || k === 'j' || k === 'k'){ if (!m.items.length) return false; e.preventDefault(); const d = k === 'ArrowDown' || k === 'j' ? 1 : -1; ppmPick(m.sel == null ? 0 : Math.max(0, Math.min(m.items.length - 1, m.sel + d))); return true; }
-  if (['1', '2', '3'].includes(k) && m.sel != null){ e.preventDefault(); m.res = ({ 1: 'ok', 2: 'part', 3: 'bad' })[k]; ppmSide(); if (m.res !== 'ok') setTimeout(() => $('#ppwhy')?.focus(), 20); return true; }
+  if (['1', '2', '3'].includes(k) && m.sel != null){ e.preventDefault(); m.res = ({ 1: 'ok', 2: 'part', 3: 'bad' })[k]; ppmSide(); if (m.res === 'part') setTimeout(() => { const g = $('#ppgot'); g?.focus(); g?.select(); }, 20); else if (m.res !== 'ok') setTimeout(() => $('#ppwhy')?.focus(), 20); return true; }
   if (k === 'Enter' && m.sel != null && !document.activeElement?.closest?.('button, a, select')){ e.preventDefault(); ppmSaveQ(); return true; }
   if (k === 'b' || k === 'B'){ e.preventDefault(); m.draw = m.draw === 'q' ? null : 'q'; ppmSide(); if (m.draw) toast('Drag across the page round the question', 1800); return true; }
   if (k === 'Escape' && m.draw){ e.preventDefault(); m.draw = null; ppmSide(); return true; }
@@ -9868,7 +10063,7 @@ function ppKey(e){
   if ((k === 'f' || k === 'F') && m.R){ e.preventDefault(); ppFullSet(!ppFull); return true; }
   if (k === 'h' || k === 'H'){ e.preventDefault(); ppSidesSet(!ppSides); return true; }
   if (k === '.' && m.R){ e.preventDefault(); ppBarSet(!ppBar); return true; }
-  if ((k === 's' || k === 'S') && m.R && m.cutP){ e.preventDefault(); ppSplitSet(!ppSplitOn()); return true; }
+  if ((k === 's' || k === 'S') && m.R && m.cutP){ e.preventDefault(); const v = ppView(); ppViewSet(v === 'paper' ? 'both' : v === 'both' ? 'sol' : 'paper'); return true; }
   if (k === 't' || k === 'T'){ e.preventDefault(); const p = ppmP(); if (p && ppTmOf(p.id)) ppTmAct('pp-tm-pause', null); else ppTmMenu(ppTmAnchor()); return true; }
   if ((k === '=' || k === '+' || k === '-' || k === '_' || k === '0') && m.R){ e.preventDefault(); ppmZoomStep(k === '0' ? 0 : k === '-' || k === '_' ? -1 : 1); return true; }
   return false;
@@ -9924,21 +10119,30 @@ async function ppAction(act, a, e){
     case 'pp-repick': return ppPickFile(f => ppDropFile([f]));
     case 'pp-review': return ppReview(null);
     case 'pp-q': { if ((ppm?.draw && e?.target?.closest?.('.ppov')) || Date.now() - ppmDrew < 400) return; const i = +a.dataset.i; return ppm?.sel === i ? ppmUnpick() : ppmPick(i); }
-    case 'pp-res': if (!ppm) return; ppm.res = v; if (v === 'ok'){ ppm.got = undefined; } ppmSide(); if (v !== 'ok') setTimeout(() => $('#ppwhy')?.focus(), 20); return;
-    case 'pp-got': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}, of = ppm.of ?? q.of ?? (it.marks || 1), r = ppm.res ?? q.r; const g0 = ppm.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)); ppm.got = Math.max(0, Math.min(of, g0 + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (!r || r === 'ok') ppm.res = ppm.got >= of ? 'ok' : ppm.got ? 'part' : 'bad'; else if (ppm.got >= of) ppm.res = 'ok'; else if (r === 'bad' && ppm.got) ppm.res = 'part'; else if (r === 'part' && !ppm.got) ppm.res = 'bad'; return ppmSide(); }
-    case 'pp-of': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}; ppm.of = Math.max(1, Math.min(40, (ppm.of ?? q.of ?? (it.marks || 1)) + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (ppm.got != null) ppm.got = Math.min(ppm.got, ppm.of); return ppmSide(); }
+    case 'pp-res': if (!ppm) return; ppm.res = v; if (v === 'ok'){ ppm.got = undefined; } ppmSide(); if (v === 'part') setTimeout(() => { const g = $('#ppgot'); g?.focus(); g?.select(); }, 20); else if (v !== 'ok') setTimeout(() => $('#ppwhy')?.focus(), 20); return;
+    case 'pp-got': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}, of = ppm.of ?? q.of ?? (it.marks || 1), r = ppm.res ?? q.r; const g0 = ppm.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)); ppm.got = Math.max(0, Math.min(of, a.dataset.set != null ? +a.dataset.set : g0 + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (!r || r === 'ok') ppm.res = ppm.got >= of ? 'ok' : ppm.got ? 'part' : 'bad'; else if (ppm.got >= of) ppm.res = 'ok'; else if (r === 'bad' && ppm.got) ppm.res = 'part'; else if (r === 'part' && !ppm.got) ppm.res = 'bad'; return ppmSide(); }
+    case 'pp-of': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}; ppm.of = Math.max(1, Math.min(40, a.dataset.set != null ? +a.dataset.set : (ppm.of ?? q.of ?? (it.marks || 1)) + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (ppm.got != null) ppm.got = Math.min(ppm.got, ppm.of); return ppmSide(); }
     case 'pp-save': return ppmSaveQ();
     case 'pp-draw': if (!ppm?.R) return; ppm.why = $('#ppwhy')?.value ?? ppm.why; ppm.draw = ppm.draw === v ? null : v; ppmSide(); if (ppm.draw) toast(v === 's' ? 'Drag across the page round the solution' : 'Drag across the page round the question', 1800); return;
     case 'pp-solgo': { const g = ppm?.items[ppm.sel]?.sol?.[0]; if (g) ppmReveal(g, true); return; }
     case 'pp-split': ppSplitSet(!ppSplitOn()); return;
+    case 'pp-view': ppViewSet(v); return;
+    case 'pp-card-min': ppCardMin = !ppCardMin; ls.set('md-pp-cardmin', ppCardMin); return ppmSide();
+    case 'pp-card-x': ppmUnpick(); return;
+    case 'pp-keys': { if ($('#tpop.ppkeyspop')){ $('#tpop').remove(); return; } $('#tpop')?.remove(); const pop = document.createElement('div'); pop.id = 'tpop'; pop.className = 'tpop ppkeyspop'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Keys');
+      pop.innerHTML = `<div class="tplbl">Keys</div><dl class="ppkeys">${[['↑ ↓', 'Next or last question'], ['1 2 3', 'Right, part, wrong'], ['↩', 'Save and next'], ['⌫', 'Remove the box'], ['B', 'Box a question'], ['S', 'Paper, both, solutions'], ['+ − 0', 'Zoom, fit to width'], ['F', 'Full screen'], ['H', 'Hide the questions list'], ['.', 'Hide the bar'], ['Esc', 'Back to Past papers']].map(([k, d]) => `<dt><kbd>${k}</kbd></dt><dd>${d}</dd>`).join('')}</dl>`;
+      document.body.appendChild(pop); const rc = a.getBoundingClientRect(); pop.style.left = Math.round(Math.max(12, Math.min(innerWidth - pop.offsetWidth - 12, rc.left))) + 'px'; pop.style.top = Math.round(Math.max(8, rc.top - pop.offsetHeight - 8)) + 'px'; return; }
     case 'pp-sides': ppSidesSet(!ppSides); return;
     case 'pp-bar': ppBarSet(!ppBar); return;
-    case 'pp-mark': { if (!ppm) return; ppmStash(); ppm.sel = null; ppm.res = ppm.got = ppm.of = ppm.why = ppm.label = undefined; ppmSide(); setTimeout(() => { const g = $('#ppmkg'); g?.focus(); g?.select?.(); }, 30); return; }
+    case 'pp-mark': { if (!ppm) return;
+      if (ppWide()){ if ($('#tpop.ppmkpop')){ $('#tpop').remove(); return; } return ppMarkPop(a); }
+      ppmStash(); ppm.sel = null; ppm.res = ppm.got = ppm.of = ppm.why = ppm.label = undefined; ppmSide(); setTimeout(() => { const g = $('#ppmkg'); g?.focus(); g?.select?.(); }, 30); return; }
     case 'pp-mkclr': { const p0 = ppmP(); if (!p0?.score) return; const q = { ...p0 }; delete q.score; await ppSavePaper(q, 'paper mark'); return ppmSide(); }
     case 'pp-zoom': return ppmZoomStep(+a.dataset.d);
     case 'pp-dl': return ppmDownload();
     case 'pp-full': return ppFullSet(!ppFull);
     case 'pp-tm': case 'pp-tm-step': case 'pp-tm-rstep': case 'pp-tm-start': case 'pp-tm-pause': case 'pp-tm-stop': case 'pp-tm-reset': return ppTmAct(act, a);
+    case 'pp-simg-del': return ppmDelSolPic(+a.dataset.i);
     case 'pp-qdel': { if (!ppm) return; const i = a.dataset.i != null ? +a.dataset.i : ppm.sel; if (i == null) return; return ppmRemoveQ(i); }
     case 'pp-finish': return ppmFinish();
     case 'pp-reopen': { const p0 = ppmP(); if (!p0) return; await ppSavePaper({ ...p0, st: 'marking' }, 'reopen paper'); return ppmSide(); }
