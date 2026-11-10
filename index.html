@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261110174405";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261110184532";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -9396,6 +9396,7 @@ function ppmSide(){
     mkr.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); e.target.blur(); } });
   }
   const why = $('#ppwhy'); if (why){ why.addEventListener('input', () => { if (ppm) ppm.why = why.value; }); }
+  const lab = $('#pplabel'); if (lab){ lab.addEventListener('input', () => { if (ppm) ppm.label = lab.value; }); lab.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); lab.blur(); } }); }
   ppmBoxes(); renderAppbar();
 }
 function ppmDeck(){ const p = ppmP(); if (!p) return null; const sel = ppm.items[ppm.sel], c = sel && p.q?.[sel.key]?.card && S.cards[p.q[sel.key].card]; if (c && ppm.node === undefined) return homeRef(c); const v = ppm.node ?? ls.get('md-pp-node-' + PP_COURSE[p.c].s, null); if (v && nodeOf(v)) return v; return ppNode(PP_COURSE[p.c].s)?.id || null; }
@@ -9451,7 +9452,7 @@ function ppmPanel0(){
   const q = p.q?.[it.key] || {}, r = m.res ?? q.r ?? '', of = m.of ?? q.of ?? (it.marks || 1), got = m.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)), card = q.card && S.cards[q.card];
   const deck = ppmDeck(), flag = r === 'part' || r === 'bad';
   return `<div class="pppad">
-    <div class="pphd"><h2>${it.man ? `<input class="pplabel" id="pplabel" value="${esc(it.label)}" aria-label="Question name">` : esc(it.label)}</h2><span class="ppnote">${it.segs?.[0] ? 'page ' + it.segs[0].p : ''}</span></div>
+    <div class="pphd"><h2>${it.man ? `<input class="pplabel" id="pplabel" value="${esc(m.label ?? it.label)}" aria-label="Question name" maxlength="60" autocomplete="off">` : esc(it.label)}</h2><span class="ppnote">${it.segs?.[0] ? 'page ' + it.segs[0].p : ''}</span></div>
     <div class="pprl">Result</div>
     <div class="seg ppres" role="group" aria-label="Result">${[['ok', 'Right', '1'], ['part', 'Part', '2'], ['bad', 'Wrong', '3']].map(([k, l, kb]) => `<button type="button" data-act="pp-res" data-v="${k}" aria-pressed="${r === k}"><i class="d ${k}"></i>${l}<kbd>${kb}</kbd></button>`).join('')}</div>
     <div class="pprl">Marks</div>
@@ -9471,15 +9472,15 @@ const ppmPageName = n => ppm?.solFrom && n >= ppm.solFrom ? 'S' + (n - ppm.solFr
 /* what you've filled in for a question stays put when you leave it (click off, another question) and come back */
 function ppmStash(){
   const m = ppm, it = m?.items[m.sel]; if (!it) return;
-  const why = $('#ppwhy')?.value ?? m.why, d = { res: m.res, got: m.got, of: m.of, why };
+  const why = $('#ppwhy')?.value ?? m.why, label = $('#pplabel')?.value ?? m.label, d = { res: m.res, got: m.got, of: m.of, why, label: label != null && label !== it.label ? label : undefined };
   m.drafts = m.drafts || {};
-  if (d.res !== undefined || d.got !== undefined || d.of !== undefined || (why != null && why !== (S.cards[ppmP()?.q?.[it.key]?.card]?.mistake ?? ''))) m.drafts[it.key] = d; else delete m.drafts[it.key];
+  if (d.res !== undefined || d.got !== undefined || d.of !== undefined || d.label !== undefined || (why != null && why !== (S.cards[ppmP()?.q?.[it.key]?.card]?.mistake ?? ''))) m.drafts[it.key] = d; else delete m.drafts[it.key];
 }
-function ppmDraft(i){ const m = ppm, d = m.drafts?.[m.items[i]?.key]; m.res = d?.res; m.got = d?.got; m.of = d?.of; m.why = d?.why; }
+function ppmDraft(i){ const m = ppm, d = m.drafts?.[m.items[i]?.key]; m.res = d?.res; m.got = d?.got; m.of = d?.of; m.why = d?.why; m.label = d?.label; }
 /* clicking the picked question again, or clicking off it, unpicks it */
 function ppmUnpick(){
   const m = ppm; if (!m || m.sel == null) return;
-  ppmStash(); m.sel = null; m.res = m.got = m.of = m.why = undefined; m.node = undefined; m.draw = m.draw === 's' ? null : m.draw;
+  ppmStash(); m.sel = null; m.res = m.got = m.of = m.why = m.label = undefined; m.node = undefined; m.draw = m.draw === 's' ? null : m.draw;
   if (document.activeElement && $('#pppanel')?.contains(document.activeElement)) document.activeElement.blur();
   ppmSide();
 }
@@ -9490,7 +9491,7 @@ async function ppmRemoveQ(i){
   if (p.q?.[it.key]){ p.q = { ...p.q }; delete p.q[it.key]; }
   if (m.drafts) delete m.drafts[it.key];
   m.gone = [...(m.gone || []).filter(x => x.key !== it.key), it];
-  m.items.splice(i, 1); if (m.sel === i){ m.sel = null; m.res = m.got = m.of = m.why = undefined; m.draw = m.draw === 's' ? null : m.draw; } else if (m.sel != null && m.sel > i) m.sel--;
+  m.items.splice(i, 1); if (m.sel === i){ m.sel = null; m.res = m.got = m.of = m.why = m.label = undefined; m.draw = m.draw === 's' ? null : m.draw; } else if (m.sel != null && m.sel > i) m.sel--;
   p.qs = m.items.map(x => ({ key: x.key, label: x.label, marks: x.marks || 1 }));
   undoTx = null; undoBaseSettings = clone(S.settings); undoLabel = 'remove ' + it.label;
   S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings();
@@ -9516,7 +9517,7 @@ async function ppmSaveQ(){
   const m = ppm, p0 = ppmP(), it = m?.items[m.sel]; if (!it || !p0) return;
   const q0 = p0.q?.[it.key] || {}, r = m.res ?? q0.r; if (!r) return toast('Pick Right, Part or Wrong.');
   const of = m.of ?? q0.of ?? (it.marks || 1), got = r === 'ok' ? of : Math.min(of, m.got ?? q0.got ?? (r === 'bad' ? 0 : Math.floor(of / 2)));
-  const why = (($('#ppwhy')?.value ?? m.why ?? '') || '').trim(), label = ($('#pplabel')?.value || it.label).trim() || it.label;
+  const why = (($('#ppwhy')?.value ?? m.why ?? '') || '').trim(), label = ($('#pplabel')?.value ?? m.label ?? it.label).trim() || it.label;
   const q = { r, got, of, card: q0.card || null };
   undoTx = null; undoLabel = 'mark question';
   if (r !== 'ok'){
@@ -9546,7 +9547,7 @@ async function ppmSaveQ(){
   S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings();
   if (r !== 'ok') toast(q0.card ? `Updated the card for ${label}` : `${label} saved to ${nodeOf(S.cards[q.card]?.nodeId)?.name || 'your deck'} and Paper mistakes`, 2400);
   const next = m.items.findIndex((x, j) => j > m.sel && !p.q[x.key]);
-  if (next >= 0) ppmPick(next); else { m.res = m.got = m.of = m.why = undefined; ppmSide(); }
+  if (next >= 0) ppmPick(next); else { m.res = m.got = m.of = m.why = m.label = undefined; ppmSide(); }
 }
 async function ppmFinish(){
   if (ppm?.pid && ppTmOf(ppm.pid)) await ppTmStop(ppm.pid, true);
@@ -9578,7 +9579,7 @@ document.addEventListener('pointerup', async e => {
     const n = ppm.items.filter(x => x.man).length + 1, key = 'm' + Date.now().toString(36), label = 'Question ' + (ppm.items.length + 1);
     p.man = [...(p.man || []), { key, label, marks: 1, segs: [g] }];
     ppm.items.push({ key, q: 0, label, marks: 1, segs: [{ ...g, hand: true }], sol: null, man: true }); ppm.items.sort((a, b) => ppmAt(a) - ppmAt(b));
-    ppm.draw = null; ppmStash(); ppm.sel = ppm.items.findIndex(x => x.key === key); ppm.res = ppm.got = ppm.of = ppm.why = undefined; void n;
+    ppm.draw = null; ppmStash(); ppm.sel = ppm.items.findIndex(x => x.key === key); ppm.res = ppm.got = ppm.of = ppm.why = ppm.label = undefined; void n;
   }
   S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings(); ppmSide();
   setTimeout(() => $('#pplabel')?.select(), 30);
@@ -9663,7 +9664,7 @@ async function ppAction(act, a, e){
     case 'pp-split': ppSplitSet(!ppSplitOn()); return;
     case 'pp-sides': ppSidesSet(!ppSides); return;
     case 'pp-bar': ppBarSet(!ppBar); return;
-    case 'pp-mark': { if (!ppm) return; ppmStash(); ppm.sel = null; ppm.res = ppm.got = ppm.of = ppm.why = undefined; ppmSide(); setTimeout(() => { const g = $('#ppmkg'); g?.focus(); g?.select?.(); }, 30); return; }
+    case 'pp-mark': { if (!ppm) return; ppmStash(); ppm.sel = null; ppm.res = ppm.got = ppm.of = ppm.why = ppm.label = undefined; ppmSide(); setTimeout(() => { const g = $('#ppmkg'); g?.focus(); g?.select?.(); }, 30); return; }
     case 'pp-mkclr': { const p0 = ppmP(); if (!p0?.score) return; const q = { ...p0 }; delete q.score; await ppSavePaper(q, 'paper mark'); return ppmSide(); }
     case 'pp-zoom': return ppmZoomStep(+a.dataset.d);
     case 'pp-dl': return ppmDownload();
