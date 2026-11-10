@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261110094451 min-shell:1.27.0 -->
+<!-- recall-build:20261110160836 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -2717,6 +2717,20 @@ html.lh body.desktop .page.v-ppmark,.page.v-ppmark{padding:0;max-width:none}
 .pptmbig.over{color:color-mix(in srgb, var(--again) 75%, var(--fg))}
 .pptmrow{display:flex;align-items:center;gap:8px}
 .pptmrow .tstep b{min-width:92px}
+.pptmin{width:32px;height:26px;padding:0;border:0;border-radius:var(--r-sm);background:transparent;color:var(--fg);font:600 13px var(--ui);font-variant-numeric:tabular-nums;text-align:right}
+.pptmin:focus{outline:none;background:rgba(var(--ovr),.08);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.tstep .u{padding:0 8px 0 3px;font:400 12px var(--ui);color:var(--fg-3)}
+.pptmgo:disabled{opacity:.45;cursor:default}
+@media (pointer:coarse){ .pptmpop .tstep button{width:36px;height:36px} .pptmin{height:36px;width:38px;font-size:16px} }
+/* hidden paper bar: only a small handle in the corner */
+.ppstage.nobar > .ppzbar{display:none}
+.ppzshow{display:none;position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:3;width:44px;height:22px;padding:0;align-items:center;justify-content:center;border:1px solid var(--border-2);border-radius:var(--r-sm);background:var(--surface);color:var(--fg-3);opacity:.55;cursor:pointer;transition:opacity var(--t-fast),color var(--t-fast)}
+.ppzshow svg{width:16px;height:16px}
+.ppzshow:hover,.ppzshow:focus-visible{opacity:1;color:var(--fg)}
+.ppstage.nobar > .ppzbar:not([hidden]) ~ .ppzshow{display:inline-flex}
+@media (pointer:coarse){ .ppzshow{width:56px;height:32px} }
+@media (max-width:900px){ .ppzshow{position:static;order:-1;align-self:center;transform:none;margin:12px 0 0} html:not(.ppfull) .ppzshow svg,html:not(.ppfull) .ppzbar [data-act="pp-bar"] svg{transform:rotate(180deg)} }
+html.ppfull .ppzshow{position:absolute;order:0;margin:0;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px))}
 .pptmact{display:flex;gap:8px}
 .pptmact .btn{flex:1}
 .pptmgo{width:100%}
@@ -9022,7 +9036,7 @@ function renderPPMark(){
   if (ppm?.pid !== p.id || (!ppm.R && !ppm.busy && !ppm.need && !ppm.err)){ const keep = ppm?.pid === p.id ? ppm : null; ppm = { pid: p.id, items: [], sel: null, busy: 'Opening the paper…', want: keep?.want || ppm?.want || null, buf: keep?.buf || null }; ppmLoad(p); }
   const host = $('#ppm');
   if (!host || host.dataset.pid !== p.id){
-    $('#root').innerHTML = `<div class="ppm ${ppSides ? '' : 'nosides'}" id="ppm" data-pid="${esc(p.id)}"><aside class="pprail" id="pprail" aria-label="Questions"></aside><section class="ppstage" id="ppstage" aria-label="Paper"><div class="ppscroll" id="ppscroll"><div class="pppages" id="pppages"></div></div><div class="ppscroll ppsolscroll" id="ppsolscroll" aria-label="Solutions" hidden><div class="pppages" id="ppsolpages"></div></div>${ppmZoomBar()}</section><aside class="pppanel" id="pppanel" aria-label="Question"></aside></div>`;
+    $('#root').innerHTML = `<div class="ppm ${ppSides ? '' : 'nosides'}" id="ppm" data-pid="${esc(p.id)}"><aside class="pprail" id="pprail" aria-label="Questions"></aside><section class="ppstage${ppBar ? '' : ' nobar'}" id="ppstage" aria-label="Paper"><div class="ppscroll" id="ppscroll"><div class="pppages" id="pppages"></div></div><div class="ppscroll ppsolscroll" id="ppsolscroll" aria-label="Solutions" hidden><div class="pppages" id="ppsolpages"></div></div>${ppmZoomBar()}</section><aside class="pppanel" id="pppanel" aria-label="Question"></aside></div>`;
     ppmWatch();
     if (ppm.R) ppmPages();
   }
@@ -9091,6 +9105,15 @@ let ppFull = false;
 let ppSplit = !!ls.get('md-pp-split', false);
 /* the questions list and the right-hand panel can be hidden, so it's just the paper (H) */
 let ppSides = ls.get('md-pp-sides', true) !== false;
+/* the floating paper bar (timer, zoom, full screen…) can be tucked away while you sit a paper; a small handle brings it back. Kept per device (md-pp-bar). */
+let ppBar = ls.get('md-pp-bar', true) !== false;
+function ppBarSet(on){
+  ppBar = !!on; ls.set('md-pp-bar', ppBar); $('#tpop.pptmpop')?.remove();
+  $('#ppstage')?.classList.toggle('nobar', !ppBar);
+  const where = ppmOwnScroll() ? 'at the bottom' : 'above the paper';
+  if (!ppBar) toast(matchMedia('(pointer: coarse)').matches ? `Bar hidden · tap the arrow ${where} to bring it back` : `Bar hidden · press . or the arrow ${where} to bring it back`, 2200);
+}
+const ppTmAnchor = () => ppBar ? $('#pptm') : $('#ppzshow');
 function ppSidesSet(on){
   on = !!on; if (on === ppSides && $('#ppm')?.classList.contains('nosides') === !on) return;
   ppmKeepPlace(() => { ppSides = on; ls.set('md-pp-sides', on); $('#ppm')?.classList.toggle('nosides', !on); ppmApplyZoom(); });
@@ -9121,7 +9144,9 @@ function ppmZoomBar(){
     <button type="button" class="ppzb ppzsplit" id="ppzsplit" data-act="pp-split" title="Solutions side by side (S)" aria-label="Solutions side by side" aria-pressed="false" hidden>${ic('M2.5 3.5h11v9h-11zM8 3.5v9')}<span>Solutions</span></button>
     <button type="button" class="ppzb" id="ppzfs" data-act="pp-full" title="Full screen (F)" aria-label="Full screen" aria-pressed="${ppFull}">${ppFullIcon()}</button>
     <button type="button" class="ppzd" data-act="pp-dl" title="Download the PDF">${ic('M8 2.5v7.5M4.8 7 8 10.2 11.2 7M3 12.5v1h10v-1')}<span>Download</span></button>
-  </div>`;
+    <span class="ppzsep" aria-hidden="true"></span>
+    <button type="button" class="ppzb" data-act="pp-bar" title="Hide this bar (.)" aria-label="Hide this bar">${ic('M4 6.5 8 10.5 12 6.5')}</button>
+  </div><button type="button" class="ppzshow" id="ppzshow" data-act="pp-bar" title="Show the bar (.)" aria-label="Show the paper bar">${ic('M4 9.5 8 5.5 12 9.5')}</button>`;
 }
 function ppmBaseW(){ const sc = $('#ppscroll'); if (!sc) return 820; const cs = getComputedStyle(sc); return Math.max(200, Math.min(820, sc.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight))); }
 function ppmApplyZoom(){
@@ -9317,6 +9342,18 @@ function ppTmTick(){
 }
 setTimeout(ppTmLoop, 1500);
 let ppTmDraft = null;
+const PP_TM_MAXW = 600, PP_TM_MAXR = 60;
+/* read the typed hours / minutes into the draft (the fields are only tidied when you leave them, so typing isn't fought) */
+function ppTmRead(){
+  const n = id => { const v = parseInt(($('#' + id)?.value || '').replace(/\D/g, ''), 10); return isNaN(v) ? 0 : v; };
+  ppTmDraft.w = Math.min(PP_TM_MAXW, n('pptmh') * 60 + n('pptmm')); ppTmDraft.r = Math.min(PP_TM_MAXR, n('pptmr'));
+  const go = $('#tpop .pptmgo'); if (go) go.disabled = ppTmDraft.w < 1;
+}
+function ppTmFill(){
+  const set = (id, v) => { const el = $('#' + id); if (el && document.activeElement !== el) el.value = v; };
+  set('pptmh', Math.floor(ppTmDraft.w / 60)); set('pptmm', ppTmDraft.w % 60); set('pptmr', ppTmDraft.r);
+  const go = $('#tpop .pptmgo'); if (go) go.disabled = ppTmDraft.w < 1;
+}
 function ppTmMenu(anchor){
   $('#tpop')?.remove(); const p = ppmP(); if (!p || !anchor) return;
   const t = ppTmOf(p.id), pop = document.createElement('div'); pop.id = 'tpop'; pop.className = 'tpop pptmpop'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Exam timer');
@@ -9328,10 +9365,19 @@ function ppTmMenu(anchor){
   } else {
     const [w, r] = ppTmDraft?.pid === p.id ? [ppTmDraft.w, ppTmDraft.r] : ppTmDef(p); ppTmDraft = { pid: p.id, w, r };
     const [dw, dr] = PP_TIME[p.c] || [180, 5], official = p.sec === 'hsc' || p.sec === 'trial';
-    pop.innerHTML = `<div class="tpsec"><div class="tplbl">Writing time</div><div class="pptmrow"><span class="tstep"><button type="button" data-act="pp-tm-step" data-d="-15" aria-label="15 minutes less">−</button><b id="pptmw">${fmtMins(w)}</b><button type="button" data-act="pp-tm-step" data-d="15" aria-label="15 minutes more">+</button></span><span class="ppnote">15 min steps</span></div></div>
-      <div class="tpsec"><div class="tplbl">Reading time</div><div class="seg tseg">${[[0, 'None'], [5, '5 min'], [10, '10 min']].map(([v, l]) => `<button type="button" data-act="pp-tm-read" data-v="${v}" aria-pressed="${r === v}">${l}</button>`).join('')}</div></div>
-      ${official ? `<p class="hint" style="margin:0">The HSC gives ${esc(PP_COURSE[p.c]?.name || 'this course')} ${fmtMins(dw)} writing and ${dr} min reading.</p>` : ''}
+    const num = (id, v, lbl, u) => `<input class="pptmin" id="${id}" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="3" value="${v}" aria-label="${lbl}"><span class="u">${u}</span>`;
+    pop.innerHTML = `<div class="tpsec"><div class="tplbl">Writing time</div><div class="pptmrow"><span class="tstep"><button type="button" data-act="pp-tm-step" data-d="-5" aria-label="5 minutes less">−</button>${num('pptmh', Math.floor(w / 60), 'Writing time, hours', 'h')}${num('pptmm', w % 60, 'Writing time, minutes', 'min')}<button type="button" data-act="pp-tm-step" data-d="5" aria-label="5 minutes more">+</button></span></div></div>
+      <div class="tpsec"><div class="tplbl">Reading time</div><div class="pptmrow"><span class="tstep"><button type="button" data-act="pp-tm-rstep" data-d="-1" aria-label="1 minute less">−</button>${num('pptmr', r, 'Reading time, minutes', 'min')}<button type="button" data-act="pp-tm-rstep" data-d="1" aria-label="1 minute more">+</button></span><span class="ppnote">0 for none</span></div></div>
+      <p class="ppnote" style="margin:0">Type any time, or use − and +.${official ? ` The HSC gives ${esc(PP_COURSE[p.c]?.name || 'this course')} ${fmtMins(dw)} writing and ${dr} min reading.` : ''}</p>
       <button class="btn primary pptmgo" data-act="pp-tm-start">Start timer</button>`;
+    /* a box's number is selected when you go into it, so typing replaces it (the mouseup straight after a click would otherwise drop the selection) */
+    const selAll = el => { try { el.setSelectionRange(0, el.value.length); } catch { el.select(); } };
+    let fresh = null;
+    pop.addEventListener('input', e => { const el = e.target; if (!el.matches('.pptmin')) return; if (/\D/.test(el.value)) el.value = el.value.replace(/\D/g, ''); ppTmRead(); });
+    pop.addEventListener('change', e => { if (e.target.matches('.pptmin')) ppTmFill(); });
+    pop.addEventListener('focusin', e => { if (!e.target.matches('.pptmin')) return; fresh = e.target; selAll(e.target); setTimeout(() => { if (document.activeElement === e.target) selAll(e.target); }, 0); });
+    pop.addEventListener('mouseup', e => { if (fresh && e.target === fresh){ e.preventDefault(); selAll(fresh); } fresh = null; });
+    pop.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('.pptmin')){ e.preventDefault(); ppTmRead(); if (ppTmDraft.w >= 1) ppTmAct('pp-tm-start'); } });
   }
   document.body.appendChild(pop);
   const rc = anchor.getBoundingClientRect(), wd = pop.offsetWidth, h = pop.offsetHeight;
@@ -9347,16 +9393,16 @@ async function ppTmStop(pid, quiet){
 }
 function ppTmAct(act, a){
   const p = ppmP(); if (!p) return;
-  if (act === 'pp-tm'){ if ($('#tpop')){ $('#tpop').remove(); return; } return ppTmMenu($('#pptm')); }
-  if (act === 'pp-tm-step'){ ppTmDraft.w = Math.max(5, Math.min(300, ppTmDraft.w + +a.dataset.d)); const b = $('#pptmw'); if (b) b.textContent = fmtMins(ppTmDraft.w); return; }
-  if (act === 'pp-tm-read'){ ppTmDraft.r = +a.dataset.v; document.querySelectorAll('[data-act="pp-tm-read"]').forEach(x => x.setAttribute('aria-pressed', String(x === a))); return; }
+  if (act === 'pp-tm'){ if ($('#tpop')){ $('#tpop').remove(); return; } return ppTmMenu(ppTmAnchor()); }
+  if (act === 'pp-tm-step'){ ppTmRead(); const d = +a.dataset.d, w = ppTmDraft.w; ppTmDraft.w = Math.max(5, Math.min(PP_TM_MAXW, d > 0 ? Math.floor(w / 5) * 5 + 5 : Math.ceil(w / 5) * 5 - 5)); document.activeElement?.blur?.(); ppTmFill(); return; }
+  if (act === 'pp-tm-rstep'){ ppTmRead(); ppTmDraft.r = Math.max(0, Math.min(PP_TM_MAXR, ppTmDraft.r + +a.dataset.d)); document.activeElement?.blur?.(); ppTmFill(); return; }
   if (act === 'pp-tm-start'){
-    const { w, r } = ppTmDraft; const d = ls.get('md-pp-tmdef', {}); d[p.c + ':' + p.sec] = [w, r]; ls.set('md-pp-tmdef', d);
+    if ($('#pptmh')) ppTmRead(); const { w, r } = ppTmDraft; if (w < 1) return; const d = ls.get('md-pp-tmdef', {}); d[p.c + ':' + p.sec] = [w, r]; ls.set('md-pp-tmdef', d);
     ppTmPut(p.id, { t0: Date.now(), dur: w * 60000, read: r * 60000, pm: 0, pa: 0, al: {} }); $('#tpop')?.remove();
-    return toast(r ? `Reading time: ${r} min, then ${fmtMins(w)} writing` : `Timer started · ${fmtMins(w)}`, 2400);
+    return toast(r ? `Reading time: ${fmtMins(r)}, then ${fmtMins(w)} writing` : `Timer started · ${fmtMins(w)}`, 2400);
   }
   const t = ppTmOf(p.id); if (!t) return;
-  if (act === 'pp-tm-pause'){ const now = Date.now(); if (t.pa){ t.pm = (t.pm || 0) + now - t.pa; t.pa = 0; } else t.pa = now; ppTmPut(p.id, t); toast(t.pa ? 'Timer paused · T to carry on' : 'Timer running', 1600); ppTmPaint(); if ($('#tpop.pptmpop')) ppTmMenu($('#pptm')); return; }
+  if (act === 'pp-tm-pause'){ const now = Date.now(); if (t.pa){ t.pm = (t.pm || 0) + now - t.pa; t.pa = 0; } else t.pa = now; ppTmPut(p.id, t); toast(t.pa ? 'Timer paused · T to carry on' : 'Timer running', 1600); ppTmPaint(); if ($('#tpop.pptmpop')) ppTmMenu(ppTmAnchor()); return; }
   if (act === 'pp-tm-stop'){ $('#tpop')?.remove(); return ppTmStop(p.id); }
   if (act === 'pp-tm-reset'){ $('#tpop')?.remove(); ppTmPut(p.id, null); ppTmPaint(); return toast('Timer reset', 1400); }
 }
@@ -9464,7 +9510,7 @@ function ppmPanel0(){
     ${ppmMarkBox(p, s)}
     ${ppmSolLine(p)}
     <p class="ppnote">Pick a question on the left (or on the page) and mark it Right, Part or Wrong. The ones you get wrong become cards in your decks and in Paper mistakes.${m.items.length ? ' Questions you don’t mark count as right.' : ''}</p>
-    <p class="hint">Keys: ↑ ↓ move between questions · 1 right · 2 part · 3 wrong · B draws a box · + − zoom · F full screen · S solutions side by side · H hides the side panels · Esc goes back</p></div>`;
+    <p class="hint">Keys: ↑ ↓ move between questions · 1 right · 2 part · 3 wrong · B draws a box · + − zoom · F full screen · S solutions side by side · H hides the side panels · . hides the bar · Esc goes back</p></div>`;
   const q = p.q?.[it.key] || {}, r = m.res ?? q.r ?? '', of = m.of ?? q.of ?? (it.marks || 1), got = m.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)), card = q.card && S.cards[q.card];
   const deck = ppmDeck(), flag = r === 'part' || r === 'bad';
   return `<div class="pppad">
@@ -9574,8 +9620,9 @@ function ppKey(e){
   if (k === 'Escape' && m.draw){ e.preventDefault(); m.draw = null; ppmSide(); return true; }
   if ((k === 'f' || k === 'F') && m.R){ e.preventDefault(); ppFullSet(!ppFull); return true; }
   if (k === 'h' || k === 'H'){ e.preventDefault(); ppSidesSet(!ppSides); return true; }
+  if (k === '.' && m.R){ e.preventDefault(); ppBarSet(!ppBar); return true; }
   if ((k === 's' || k === 'S') && m.R && m.cutP){ e.preventDefault(); ppSplitSet(!ppSplitOn()); return true; }
-  if (k === 't' || k === 'T'){ e.preventDefault(); const p = ppmP(); if (p && ppTmOf(p.id)) ppTmAct('pp-tm-pause', null); else ppTmMenu($('#pptm')); return true; }
+  if (k === 't' || k === 'T'){ e.preventDefault(); const p = ppmP(); if (p && ppTmOf(p.id)) ppTmAct('pp-tm-pause', null); else ppTmMenu(ppTmAnchor()); return true; }
   if ((k === '=' || k === '+' || k === '-' || k === '_' || k === '0') && m.R){ e.preventDefault(); ppmZoomStep(k === '0' ? 0 : k === '-' || k === '_' ? -1 : 1); return true; }
   return false;
 }
@@ -9638,12 +9685,13 @@ async function ppAction(act, a, e){
     case 'pp-solgo': { const g = ppm?.items[ppm.sel]?.sol?.[0]; if (g) ppmReveal(g, true); return; }
     case 'pp-split': ppSplitSet(!ppSplitOn()); return;
     case 'pp-sides': ppSidesSet(!ppSides); return;
+    case 'pp-bar': ppBarSet(!ppBar); return;
     case 'pp-mark': { if (!ppm) return; ppm.sel = null; ppm.res = ppm.got = ppm.of = ppm.why = undefined; ppmSide(); setTimeout(() => { const g = $('#ppmkg'); g?.focus(); g?.select?.(); }, 30); return; }
     case 'pp-mkclr': { const p0 = ppmP(); if (!p0?.score) return; const q = { ...p0 }; delete q.score; await ppSavePaper(q, 'paper mark'); return ppmSide(); }
     case 'pp-zoom': return ppmZoomStep(+a.dataset.d);
     case 'pp-dl': return ppmDownload();
     case 'pp-full': return ppFullSet(!ppFull);
-    case 'pp-tm': case 'pp-tm-step': case 'pp-tm-read': case 'pp-tm-start': case 'pp-tm-pause': case 'pp-tm-stop': case 'pp-tm-reset': return ppTmAct(act, a);
+    case 'pp-tm': case 'pp-tm-step': case 'pp-tm-rstep': case 'pp-tm-start': case 'pp-tm-pause': case 'pp-tm-stop': case 'pp-tm-reset': return ppTmAct(act, a);
     case 'pp-qdel': { const p0 = ppmP(), it = ppm?.items[ppm.sel]; if (!p0 || !it?.man) return; const p = { ...p0, man: (p0.man || []).filter(b => b.key !== it.key) }; if (p.q?.[it.key]){ p.q = { ...p.q }; delete p.q[it.key]; } ppm.items.splice(ppm.sel, 1); ppm.sel = null; undoTx = null; undoLabel = 'remove box'; S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings(); return ppmSide(); }
     case 'pp-finish': return ppmFinish();
     case 'pp-reopen': { const p0 = ppmP(); if (!p0) return; await ppSavePaper({ ...p0, st: 'marking' }, 'reopen paper'); return ppmSide(); }
