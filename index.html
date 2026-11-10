@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261110234116";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261111001438";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -1753,6 +1753,9 @@ html.lh body.desktop .page.v-browse{padding:0;overflow:hidden;height:calc(100vh 
 .brdeck.on{background:var(--surface-2);border-color:var(--fg-3)}
 .brdeck .pkcar{color:var(--fg-3);font-size:10px}
 .brsel{appearance:none;-webkit-appearance:none;padding-right:10px}
+#brprev > .ppsrcl{max-width:760px;box-sizing:border-box;padding:20px 40px 0;margin:0 0 -16px}
+.brppb{height:30px;padding:0 10px;border:1px solid var(--border-2);border-radius:var(--r-sm);background:var(--surface);color:var(--fg-2);font:500 13px var(--ui);cursor:pointer;white-space:nowrap}
+.brppb:hover{background:var(--hover);color:var(--fg)}
 .brclr{width:24px;height:24px;border:0;border-radius:6px;background:transparent;color:var(--fg-3);display:grid;place-items:center;cursor:pointer}
 .brclr svg{width:10px;height:10px}
 .brclr:hover{background:var(--hover);color:var(--fg)}
@@ -2645,9 +2648,9 @@ body.ppcolres,body.ppcolres *{cursor:col-resize!important;user-select:none}
   .pppanel.card .pphd .ppcardbtns{display:inline-flex;gap:2px;margin-left:auto}
   .pppanel.card .pphd .ppnote{margin-left:auto}
   .pppanel.card .pphd .ppnote + .ppminst + .ppcardbtns{margin-left:4px}
-  .ppcb{width:28px;height:28px;padding:0;display:grid;place-items:center;border:0;border-radius:var(--r-sm);background:transparent;color:var(--fg-3);cursor:pointer}
-  .ppcb:hover{background:rgba(var(--ovr),.08);color:var(--fg)}
-  .ppcb svg{width:14px;height:14px}
+  .ppcardb{width:28px;height:28px;padding:0;display:grid;place-items:center;border:0;border-radius:var(--r-sm);background:transparent;color:var(--fg-3);cursor:pointer}
+  .ppcardb:hover{background:rgba(var(--ovr),.08);color:var(--fg)}
+  .ppcardb svg{width:14px;height:14px}
   .pppanel.min{width:auto;min-width:220px;max-width:340px}
   .pppanel.min .pppad > :not(.pphd){display:none}
   .pppanel.min .pphd{margin-bottom:-6px}
@@ -3167,7 +3170,7 @@ async function appUndo(){
   redoStack.push(await applyTx(tx));
   if (view.name === 'ppmark') ppmResync();
   if (view.name !== 'ppmark' && view.node && !nodeOf(view.node)) view = { name: 'decks', node: null };
-  if (browse.node && !nodeOf(browse.node)) browse.node = null;
+  if (browse.node && !brPP() && !nodeOf(browse.node)) browse.node = null;
   if (view.name === 'overview' && view.node && !nodeOf(view.node)) view = { name: 'decks', node: null };
   render(); renderSideSubjects(); toast('Undid ' + tx.label + ' · ⇧⌘Z to redo');
 }
@@ -3270,6 +3273,10 @@ let view = { name:'decks', node:null };
 let study = null;
 let collapsed = new Set(ls.get('md-collapsed', []));
 let browse = { node:null, q:'', status:'all', rate:0 };
+/* Browse can also show Paper mistakes: browse.node = 'pp:' for all of them, 'pp:<paper id>' for one paper's. brRef() is the real deck, if any */
+const brPP = () => /^pp:/.test(browse.node || '') ? (browse.node.slice(3) || true) : null;
+const brRef = () => brPP() ? null : browse.node;
+function browsePapers(pid){ browse = { ...browse, node: 'pp:' + (pid || ''), q: '', status: 'all', rate: 0 }; study = null; go('browse'); }
 let bexp = new Set(ls.get('md-bexp', []));
 const dialogOpen = () => !!$('#layer .scrim');
 
@@ -4745,7 +4752,7 @@ async function clAction(act, a){
     case 'cl-uncrop': cl.crop = null; return clPreview(true);
     case 'cl-save': { const f = await clOutput(); const u = URL.createObjectURL(f); const link = document.createElement('a'); link.href = u; link.download = 'image-' + new Date().toISOString().slice(0, 10) + '.png'; document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); return; }
     case 'cl-copy': { const f = await clOutput(); try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': f })]); toast('Copied the image'); } catch { toast('Copying isn’t allowed here.'); } return; }
-    case 'cl-use': { const f = await clOutput(); const cb = cl.onUse; closeCleaner(); if (cb) return cb(f); return editor(null, view.node || browse.node, f); }
+    case 'cl-use': { const f = await clOutput(); const cb = cl.onUse; closeCleaner(); if (cb) return cb(f); return editor(null, view.node || brRef(), f); }
   }
 }
 
@@ -4886,7 +4893,7 @@ document.addEventListener('drop', async e => {
     document.querySelectorAll('.dropok, .dragging').forEach(x => x.classList.remove('dropok', 'dragging'));
     if (!ref || !nodeOf(ref) || !S.cards[id]) return; e.preventDefault();
     if (e.altKey){ const n = await linkCards([id], ref); render(); return toast(n ? `Also showing it in ${refName(ref)}` : 'It’s already there'); }
-    await moveCardFrom(id, view.name === 'browse' ? browse.node : null, ref); render(); return toast(`Moved to ${refName(ref)} · ⌘Z to undo`);
+    await moveCardFrom(id, view.name === 'browse' ? brRef() : null, ref); render(); return toast(`Moved to ${refName(ref)} · ⌘Z to undo`);
   }
   if (!dragId) return;
   const el = e.target.closest('[data-drop], .chip[data-id], .tbig[data-id], .deck[data-id], .bbub[data-id], .schip[data-id], .stab[data-id]'), t = moveTargetOf(el), src = dragId;
@@ -4968,7 +4975,8 @@ const brWords = () => browse.q.trim().toLowerCase().split(/\s+/).filter(Boolean)
 const brHay = c => [c.label, plainMd(c.qText), plainMd(c.mistake), plainMd(c.solText), c.source, pathName(c.nodeId)].join(' ').toLowerCase();
 function browseList(){
   const ws = brWords();
-  let cs = sortCards(cardsIn(browse.node));
+  const pp = brPP();
+  let cs = sortCards(pp ? ppCards(pp === true ? undefined : c => c.paper.id === pp) : cardsIn(browse.node));
   if (ws.length) cs = cs.filter(c => { const t = brHay(c) + ' ' + cardOcr(c).toLowerCase(); return ws.every(w => t.includes(w)); });
   const scope = cs;
   if (browse.status === 'done') cs = cs.filter(isDone); else if (browse.status === 'todo') cs = cs.filter(c => !isDone(c)); else if (browse.status === 'leech') cs = cs.filter(isLeech); else if (browse.status === 'due') cs = cs.filter(c => kind(c) !== 'new' && c.srs.due <= Date.now());
@@ -4981,7 +4989,7 @@ function browseRow(c){
   const title = plainMd(c.qText) || (c.qImg ? 'Image question' : 'No question');
   const ms = brMulti.has(c.id), ws = brWords(), hay = ws.length ? brHay(c) : '';
   const pic = ws.length && !ws.every(w => hay.includes(w)) ? ocrSnip(cardOcr(c), ws) : '';
-  return `<button class="brow ${ms ? 'msel' : ''}" data-act="bsel" data-id="${c.id}" data-card="${c.id}" draggable="true" aria-selected="${sel}" title="Double-click to edit · ⌘-click or Shift-click to select several">${brPick || brMulti.size ? `<span class="brck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.6 11 12.2 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>` : ''}${thumb}<span class="brtx"><span class="brt1">${c.label ? `<b>${esc(c.label)}</b>` : `<b>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</b>`}${r ? `<span class="rpill ${RPILL[r]}">${RATES[r][0]}</span>` : isDone(c) ? '' : '<span class="rpill new">New</span>'}</span><span class="brq">${pic ? `<span class="brin">In a picture:</span> ${pic}` : esc(title.length > 110 ? title.slice(0, 109) + '…' : title)}</span><span class="brd"><span class="sdot2" style="--sc:${scol(c.nodeId)}"></span>${esc(deckShort(c.nodeId))}</span></span></button>`;
+  return `<button class="brow ${ms ? 'msel' : ''}" data-act="bsel" data-id="${c.id}" data-card="${c.id}" draggable="true" aria-selected="${sel}" title="Double-click to edit · ⌘-click or Shift-click to select several">${brPick || brMulti.size ? `<span class="brck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.6 11 12.2 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>` : ''}${thumb}<span class="brtx"><span class="brt1">${c.label ? `<b>${esc(c.label)}</b>` : `<b>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</b>`}${r ? `<span class="rpill ${RPILL[r]}">${RATES[r][0]}</span>` : isDone(c) ? '' : '<span class="rpill new">New</span>'}</span><span class="brq">${pic ? `<span class="brin">In a picture:</span> ${pic}` : esc(title.length > 110 ? title.slice(0, 109) + '…' : title)}</span><span class="brd"><span class="sdot2" style="--sc:${scol(c.nodeId)}"></span>${esc(deckShort(c.nodeId))}${brPP() && c.paper && ppPapers()[c.paper.id] ? ` · ${esc(ppTitle(ppPapers()[c.paper.id]))}` : ''}</span></span></button>`;
 }
 function browsePreview(){
   const box = $('#brprev'); if (!box) return;
@@ -4994,6 +5002,7 @@ function browsePreview(){
   box.innerHTML = `<div class="brph"><span class="brcrumb">${esc(pathOf(c.nodeId).map(n => n.name).join(' › '))}</span><span class="grow"></span>
       <button class="btn" data-act="cm-move" data-id="${c.id}">Move</button><button class="btn" data-act="edit" data-id="${c.id}">Edit</button><button class="btn primary" data-act="cm-practise" data-id="${c.id}">Practise</button>
       <button class="icon soft" data-act="brmore" data-id="${c.id}" aria-label="More for this card">${I.gear}</button></div>
+    ${c.paper ? ppSrcLine(c) : ''}
     <article class="qa brqa">
       <div class="label">${c.label ? `<span class="lhtag">${esc(c.label)}</span>` : ''}<span>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</span>${marksOf(c) ? `<span class="qmk">${marksOf(c)} mark${marksOf(c) === 1 ? '' : 's'}</span>` : ''}<span class="brmeta">${added ? 'Added ' + added + ' · ' : ''}${isDone(c) ? `reviewed ${c.srs.reps} time${c.srs.reps === 1 ? '' : 's'}` : 'not reviewed yet'}</span></div>
       ${view2}${tc.qText || !view2 ? front(tc) : ''}
@@ -5019,7 +5028,8 @@ function renderBrowse(){
       <div class="brhead">
         <label class="brsearch"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input id="bsearch" type="search" placeholder="Search cards and text in pictures" value="${esc(browse.q)}" aria-label="Search cards"></label>
         <div class="brfil">
-          <span class="field brdeckf"><button type="button" class="brdeck pickbtn ${browse.node ? 'on' : ''}" id="bdeckbtn" aria-haspopup="true" aria-expanded="false">${browse.node ? `<span class="sdot2" style="--sc:${scol(browse.node)}"></span>${esc(deckShort(browse.node))}` : 'All decks'}<span class="pkcar">▾</span></button></span>
+          <span class="field brdeckf"><button type="button" class="brdeck pickbtn ${browse.node ? 'on' : ''}" id="bdeckbtn" aria-haspopup="true" aria-expanded="false">${brPP() ? `${esc(brPP() === true ? 'Paper mistakes' : 'Paper mistakes · ' + (ppPapers()[brPP()] ? ppTitle(ppPapers()[brPP()]) : 'a paper'))}` : browse.node ? `<span class="sdot2" style="--sc:${scol(browse.node)}"></span>${esc(deckShort(browse.node))}` : 'All decks'}<span class="pkcar">▾</span></button></span>
+          ${!browse.node && ppCards().length ? `<button type="button" class="brppb" data-act="bpp" title="Cards from past papers you marked">Paper mistakes</button>` : ''}
           ${browse.node ? `<button type="button" class="brclr" data-act="bnode" data-id="" aria-label="Show all decks">${I.x}</button>` : ''}
           <select class="brsel" id="bstatus" aria-label="Status">${stOpt.map(([v, l]) => `<option value="${v}" ${browse.status === v ? 'selected' : ''}>${l} · ${cnt(v)}</option>`).join('')}</select>
           <select class="brsel" id="brate" aria-label="Last rating"><option value="0">Any rating</option>${[1, 2, 3, 4].map(r => `<option value="${r}" ${browse.rate === r ? 'selected' : ''}>Last: ${RATES[r][0]}</option>`).join('')}</select>
@@ -5031,7 +5041,7 @@ function renderBrowse(){
     <section class="brprev" id="brprev" aria-label="Selected card"></section>
   </div>`;
   browsePreview();
-  $('#bdeckbtn')?.addEventListener('click', e => { e.stopPropagation(); openPicker($('#bdeckbtn'), { multi: false, bubbles: true, sel: new Set([browse.node || '']), onPick: id => { browse.node = id || null; closePicker(); renderBrowse(); } }); });
+  $('#bdeckbtn')?.addEventListener('click', e => { e.stopPropagation(); openPicker($('#bdeckbtn'), { multi: false, bubbles: true,  sel: new Set([brRef() || '']), onPick: id => { browse.node = id || null; closePicker(); renderBrowse(); } }); });
   $('#brrows .brow[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
 }
 function browseSelect(id, open, key){
@@ -5095,7 +5105,7 @@ let brMoveSel = new Set();
 function brMoveMany(){
   const n = brMulti.size; if (!n) return;
   openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="bmv" style="max-width:480px"><header><h2 id="bmv">Move ${n} card${n === 1 ? '' : 's'}</h2></header>
-    <div class="body"><p class="hint" style="margin:0">They leave ${browse.node ? `<b>${esc(refName(browse.node))}</b>` : 'the deck they live in'} and go to the deck you pick.</p><div class="pkinline" id="bmvtree"></div></div>
+    <div class="body"><p class="hint" style="margin:0">They leave ${brRef() ? `<b>${esc(refName(brRef()))}</b>` : 'the deck they live in'} and go to the deck you pick.</p><div class="pkinline" id="bmvtree"></div></div>
     <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="bm-domove">Move</button></footer></div>`, () => {
       brMoveSel = new Set(); pkMount($('#bmvtree'), { multi: false, bubbles: true, sel: brMoveSel }).focus();
     });
@@ -6312,7 +6322,7 @@ document.addEventListener('drop', e => {
     e.preventDefault(); e.stopPropagation(); dropDepth = 0; dropCue(false);
     if (w === 'pp') return ppmAddSolPics(pics);
     if (w === 'ed') return addFiles(pics, ed.zone);
-    editor(null, view.node || browse.node, pics[0]);
+    editor(null, view.node || brRef(), pics[0]);
     if (pics.length > 1) setTimeout(() => ed && addFiles(pics.slice(1), 'q'), 60);
     return;
   }
@@ -7099,7 +7109,7 @@ function pxTrim(cx, x0, y0, x1, y1){
 async function pdfImport(file, intoId){
   if (!isPdf(file)) return;
   if (file.size > 60 * 1024 * 1024) return toast('That PDF is over 60 MB. Split it into smaller files and try again.', 5000);
-  pdfx = { file, name: (file.name || 'PDF').replace(/\.pdf$/i, ''), mode: 'part', items: [], node: intoId || (view.name === 'overview' && view.node) || (view.name === 'browse' && browse.node) || (view.name === 'decks' && curSubj()?.id) || ls.get('md-last-node', null), busy: 'Opening the PDF…', ans: null };
+  pdfx = { file, name: (file.name || 'PDF').replace(/\.pdf$/i, ''), mode: 'part', items: [], node: intoId || (view.name === 'overview' && view.node) || (view.name === 'browse' && brRef()) || (view.name === 'decks' && curSubj()?.id) || ls.get('md-last-node', null), busy: 'Opening the PDF…', ans: null };
   if (pdfx.node && !nodeOf(pdfx.node)) pdfx.node = null;
   openDialog(`<div class="dialog builder pdfx" role="dialog" aria-modal="true" aria-labelledby="pxh"><header class="bhead"><button class="btn" data-act="close">Cancel</button><h2 id="pxh">Make cards from a PDF</h2><span class="pxfile" id="pxfile"></span><span class="grow"></span><button class="btn primary" data-act="px-add" id="pxgo" disabled>Add cards</button></header><div class="pxbody" id="pxbody"></div></div>`);
   pxDraw();
@@ -8057,7 +8067,7 @@ document.addEventListener('click', async e => {
   if ($('#tpop') && !e.target.closest('#tpop') && !e.target.closest('[data-act="timer-menu"], [data-act="pp-tm"], [data-act="pp-mark"], [data-act="pp-keys"]')) $('#tpop').remove();
   if (document.body.classList.contains('desktop') && $('#sidesres') && !$('#sidesres').hidden && (!e.target.closest('#abmid') || e.target.closest('.siderec'))){ $('#sidesres').hidden = true; if (e.target.closest('.siderec')){ const q = $('#sidesq'); if (q) q.value = ''; } }
   const nav = e.target.closest('[data-nav]');
-  if (nav){ const t = nav.dataset.nav; if (t === 'add') return editor(null, nodeOf(view.node) ? view.node : browse.node); if (t === 'browse') browse.node = view.node || browse.node; study = null; return go(t); }
+  if (nav){ const t = nav.dataset.nav; if (t === 'add') return editor(null, nodeOf(view.node) ? view.node : brRef()); if (t === 'browse') browse.node = view.node || browse.node; study = null; return go(t); }
   const a = e.target.closest('[data-act]');
   if (!a){
     if (view.name === 'ppmark' && ppm?.sel != null && !ppm.draw && Date.now() - ppmDrew > 400 && e.target.closest('#ppstage, #pprail') && !e.target.closest('button, a, input, textarea, select, label, #ppzbar, .pickpop, #tpop, #menu') && !String(getSelection?.() || '')) ppmUnpick();
@@ -8095,7 +8105,7 @@ document.addEventListener('click', async e => {
     case 'bm-start': brPick = true; return brMultiDraw();
     case 'bm-done': return brMultiClear();
     case 'bm-all': { const ids = browse.ids || []; if (brMulti.size === ids.length) brMulti.clear(); else ids.forEach(x => brMulti.add(x)); brPick = true; return brMultiDraw(); }
-    case 'bm-practise': return startStudy(browse.node, true, null, [...brMulti].filter(x => S.cards[x]));
+    case 'bm-practise': return startStudy(brRef(), true, null, [...brMulti].filter(x => S.cards[x]));
     case 'bm-link': return linkDialog([...brMulti].filter(x => S.cards[x]), `Add these ${brMulti.size} cards to…`);
     case 'bm-move': return brMoveMany();
     case 'bm-delete': return brDeleteMany();
@@ -8226,7 +8236,7 @@ document.addEventListener('click', async e => {
     case 'cm-practise': return startStudy(null, true, id);
     case 'cm-move': return cardMoveDialog(id);
     case 'cm-also': return cardAlsoDialog(id);
-    case 'cm-unlink': { const c = S.cards[id], here = browse.node; if (!c || !here) return; const [b, k] = here.split('::'), set = subtree(b); const also = (c.also || []).filter(r => !refIn(r, set, k)); const nc = { ...c }; if (also.length) nc.also = also; else delete nc.also; await put('cards', nc); closeMenu(); render(); return toast('Removed from this deck · ⌘Z to undo'); }
+    case 'cm-unlink': { const c = S.cards[id], here = brRef(); if (!c || !here) return; const [b, k] = here.split('::'), set = subtree(b); const also = (c.also || []).filter(r => !refIn(r, set, k)); const nc = { ...c }; if (also.length) nc.also = also; else delete nc.also; await put('cards', nc); closeMenu(); render(); return toast('Removed from this deck · ⌘Z to undo'); }
     case 'cm-reset': { const c = S.cards[id]; if (!c) return; await put('cards', { ...c, srs: freshSrs() }); closeMenu(); render(); return toast('Progress reset · ⌘Z to undo'); }
     case 'cm-delete': return confirmCardDelete(id);
     case 'do-del-card': { $('#layer').innerHTML = ''; await del('cards', id); render(); return toast('Card deleted · ⌘Z to undo'); }
@@ -8262,10 +8272,11 @@ document.addEventListener('click', async e => {
     case 'add-here': return editor(null, id);
     case 'browse-here': browse.node = id; browse.q = ''; browse.status = 'all'; browse.rate = 0; return go('browse');
     case 'bnode': browse.node = id || null; return renderBrowse();
+    case 'bpp': browse.node = 'pp:'; return renderBrowse();
     case 'bfilter': browse.status = a.dataset.st; browse.rate = +a.dataset.r || 0; return renderBrowse();
     case 'browse-status': e.stopPropagation(); browse = { ...browse, node: id || null, q:'', status: a.dataset.st, rate: 0 }; return go('browse');
     case 'browse-rate': browse = { ...browse, node: id || null, q:'', status: 'all', rate: +a.dataset.r }; return go('browse');
-    case 'practise-list': return startStudy(browse.node, true, null, browse.ids || []);
+    case 'practise-list': return startStudy(brRef(), true, null, browse.ids || []);
     case 'reset-deck': return resetDialog(id);
     case 'reset-all': return fullResetStep1();
     case 'reset-all-2': return fullResetStep2();
@@ -8315,11 +8326,11 @@ document.addEventListener('paste', e => {
   if (cleanerOpen()){ e.preventDefault(); return clLoad(files[0]); }
   if (ed){ e.preventDefault(); return addFiles(files, ed.zone); }
   if (!dialogOpen() && S.ready && view.name === 'ppmark' && ppm?.R){ e.preventDefault(); return ppmAddSolPics(files); }
-  if (!dialogOpen() && S.ready && view.name !== 'study'){ e.preventDefault(); editor(null, view.node || browse.node, files[0]); }
+  if (!dialogOpen() && S.ready && view.name !== 'study'){ e.preventDefault(); editor(null, view.node || brRef(), files[0]); }
 });
 function cardMenu(id, at){
   closeMenu(); const c = S.cards[id]; if (!c) return;
-  const here = view.name === 'browse' ? browse.node : null, linked = linkedHere(c, here);
+  const here = view.name === 'browse' ? brRef() : null, linked = linkedHere(c, here);
   const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
   m.innerHTML = `<button data-act="edit" data-id="${id}">Edit card</button><button data-act="cm-practise" data-id="${id}">Practise this card</button><hr>
     <button data-act="cm-move" data-id="${id}">Move to…</button><button data-act="cm-also" data-id="${id}">Show in decks…</button>
@@ -8331,7 +8342,7 @@ function cardMenu(id, at){
   m.querySelector('button').focus();
 }
 function cardMoveDialog(id){
-  const c = S.cards[id]; if (!c) return; const here = view.name === 'browse' ? browse.node : null;
+  const c = S.cards[id]; if (!c) return; const here = view.name === 'browse' ? brRef() : null;
   const from = here && linkedHere(c, here) ? here : homeRef(c);
   openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="cmv" style="max-width:480px"><header><h2 id="cmv">Move card</h2></header>
     <div class="body"><p class="hint" style="margin:0">It leaves <b>${esc(refName(from))}</b> and goes to the deck you pick. Any other decks it's ticked in stay as they are.</p><div class="pkinline" id="cmvtree"></div></div>
@@ -8410,7 +8421,7 @@ document.addEventListener('keydown', e => {
   if (view.name === 'browse' && e.key === 'Enter' && browse.sel){ e.preventDefault(); return browseSelect(browse.sel, true); }
   if (view.name === 'ppmark' && ppKey(e)) return;
   if (view.name !== 'study'){
-    if (e.key === 'a') { e.preventDefault(); return editor(null, nodeOf(view.node) ? view.node : browse.node); }
+    if (e.key === 'a') { e.preventDefault(); return editor(null, nodeOf(view.node) ? view.node : brRef()); }
     if (e.key === 'd') return go('decks');
     /* on a deck page, B opens Browse showing just that deck (like "See all … in Browse") */
     if (e.key === 'b' && view.name === 'overview' && nodeOf(view.node)){ browse.node = view.node; browse.q = ''; browse.status = 'all'; browse.rate = 0; return go('browse'); }
@@ -8968,7 +8979,7 @@ function ppMenu(key, at){
   menuAt(`<div class="mhead">${esc(ppName(it))}<small>${esc(PP_COURSE[it.c].name)} · ${esc(ppSecName(it.sec, true))}${done ? ` · ${s.pct}%` : ''}</small></div>
     ${p ? b('pp-open', done ? 'Open' : hasQs ? 'Carry on marking' : 'Start marking') : b('pp-open', (it.src === 'thsc' && ppCanFetch()) || (it.src === 'nesa' && ppCanNesa()) ? 'Get it and start marking' : 'Add the PDF and start…')}
     ${where ? b('pp-m-web', `Open on ${where}`) : ''}
-    ${cards.length ? b('pp-m-review', `Review its mistakes (${cards.length})`) : ''}<hr>
+    ${cards.length ? b('pp-m-review', `Review its mistakes (${cards.length})`) + b('pp-m-browse', 'Browse its mistakes') : ''}<hr>
     ${todo ? b('pp-m-todogo', `On your to-do list (${esc(TODO_TABS.find(t => t[0] === todoL(todo))?.[1] || 'Revision')})`) : b('pp-m-todo', 'Add to to-do list…')}
     ${done ? b('pp-m-undone', 'Mark as not done') : b('pp-m-done', 'Mark as done')}
     ${b('pp-m-score', p?.score || done ? 'Change the score…' : 'Enter a score…')}<hr>
@@ -9024,6 +9035,7 @@ async function ppMenuAct(act, a){
   const p = it.paper;
   switch (act){
     case 'pp-m-web': { const url = it.src === 'nesa' ? ppNesaUrl(it.c, it.year) : it.src === 'thsc' && it.no ? ppThscUrl(it.no, it.title) : null; if (url) window.open(url, '_blank', 'noopener'); return; }
+    case 'pp-m-browse': return browsePapers(p.id);
     case 'pp-m-review': { const cs = ppCards(c => c.paper.id === p.id); const keep = new Set(cs.map(c => c.id)); return ppDueOf(cs) ? startStudy(null, false, null, null, null, keep, 'Paper mistakes') : startStudy(null, true, null, sortCards(cs).map(c => c.id), null, keep, 'Paper mistakes'); }
     case 'pp-m-todo': return ppTodoMenu(key, ppMenuPos);
     case 'pp-m-todoadd': return ppTodoAdd(key, a.dataset.v);
@@ -9882,7 +9894,7 @@ function ppmPanel0(){
   return `<div class="pppad">
     <div class="pphd" title="${ppWide() ? 'Drag to move · double-click to put it back' : ''}"><h2>${it.man ? `<input class="pplabel" id="pplabel" value="${esc(m.label ?? it.label)}" aria-label="Question name" maxlength="60" autocomplete="off">` : esc(it.label)}</h2><span class="ppnote">${it.segs?.[0] ? 'page ' + it.segs[0].p : ''}</span>
       <span class="ppminst">${r ? `<i class="d ${r}"></i>${got} / ${of}` : `${of} mark${of === 1 ? '' : 's'}`}</span>
-      ${ppWide() ? `<span class="ppcardbtns"><button type="button" class="ppcb" data-act="pp-card-min" title="${ppCardMin ? 'Show all of it' : 'Make it small'}" aria-label="${ppCardMin ? 'Expand' : 'Minimise'}" aria-expanded="${!ppCardMin}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="${ppCardMin ? 'M4 9.5 8 5.5 12 9.5' : 'M4 6.5 8 10.5 12 6.5'}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="ppcb" data-act="pp-card-x" title="Close (click off the question)" aria-label="Close">${I.x}</button></span>` : ''}</div>
+      ${ppWide() ? `<span class="ppcardbtns"><button type="button" class="ppcardb" data-act="pp-card-min" title="${ppCardMin ? 'Show all of it' : 'Make it small'}" aria-label="${ppCardMin ? 'Expand' : 'Minimise'}" aria-expanded="${!ppCardMin}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="${ppCardMin ? 'M4 9.5 8 5.5 12 9.5' : 'M4 6.5 8 10.5 12 6.5'}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="ppcardb" data-act="pp-card-x" title="Close (click off the question)" aria-label="Close">${I.x}</button></span>` : ''}</div>
     <div class="pprl">Result</div>
     <div class="seg ppres" role="group" aria-label="Result">${[['ok', 'Right', '1'], ['part', 'Part', '2'], ['bad', 'Wrong', '3']].map(([k, l, kb]) => `<button type="button" data-act="pp-res" data-v="${k}" aria-pressed="${r === k}"><i class="d ${k}"></i>${l}<kbd>${kb}</kbd></button>`).join('')}</div>
     <div class="pprl">Marks</div>
@@ -10078,7 +10090,7 @@ document.addEventListener('keydown', e => {
 function ppAppbar(){
   if (view.name === 'papers'){
     const cs = ppCards(), due = ppDueOf(cs);
-    return { title: '<b>Past papers</b><span class="abmeta">Trials, tasks and HSC papers since 2016</span>', act: `<button class="btn" data-act="pp-upload">${IC.card}Import papers</button>${cs.length ? `<button class="btn primary" data-act="pp-review">${due ? `Review paper mistakes<span class="abn">${due}</span>` : `Practise paper mistakes<span class="abn">${cs.length}</span>`}</button>` : ''}` };
+    return { title: '<b>Past papers</b><span class="abmeta">Trials, tasks and HSC papers since 2016</span>', act: `<button class="btn" data-act="pp-upload">${IC.card}Import papers</button>${cs.length ? `<button class="btn" data-act="pp-browse" title="See all your paper mistakes in Browse">Browse mistakes</button>` : ''}${cs.length ? `<button class="btn primary" data-act="pp-review">${due ? `Review paper mistakes<span class="abn">${due}</span>` : `Practise paper mistakes<span class="abn">${cs.length}</span>`}</button>` : ''}` };
   }
   const p = ppPapers()[view.node]; if (!p) return { title: '<b>Past papers</b>', act: '' };
   const s = ppScore(p), m = ppm;
@@ -10118,6 +10130,7 @@ async function ppAction(act, a, e){
     case 'pp-upload': return ppImportDialog(null);
     case 'pp-repick': return ppPickFile(f => ppDropFile([f]));
     case 'pp-review': return ppReview(null);
+    case 'pp-browse': return browsePapers();
     case 'pp-q': { if ((ppm?.draw && e?.target?.closest?.('.ppov')) || Date.now() - ppmDrew < 400) return; const i = +a.dataset.i; return ppm?.sel === i ? ppmUnpick() : ppmPick(i); }
     case 'pp-res': if (!ppm) return; ppm.res = v; if (v === 'ok'){ ppm.got = undefined; } ppmSide(); if (v === 'part') setTimeout(() => { const g = $('#ppgot'); g?.focus(); g?.select(); }, 20); else if (v !== 'ok') setTimeout(() => $('#ppwhy')?.focus(), 20); return;
     case 'pp-got': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}, of = ppm.of ?? q.of ?? (it.marks || 1), r = ppm.res ?? q.r; const g0 = ppm.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)); ppm.got = Math.max(0, Math.min(of, a.dataset.set != null ? +a.dataset.set : g0 + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (!r || r === 'ok') ppm.res = ppm.got >= of ? 'ok' : ppm.got ? 'part' : 'bad'; else if (ppm.got >= of) ppm.res = 'ok'; else if (r === 'bad' && ppm.got) ppm.res = 'part'; else if (r === 'part' && !ppm.got) ppm.res = 'bad'; return ppmSide(); }
