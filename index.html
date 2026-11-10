@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261111001438";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261111010809";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -961,9 +961,9 @@ body.desktop .sidesres .sidelabel{padding-top:2px}
 .pads{width:26px;height:26px;border:0;background:none;border-radius:6px;display:grid;place-items:center;padding:0}
 .pads i{display:block;border-radius:50%;background:var(--fg-2)} .pads.on{background:var(--hover)} .pads.on i{background:var(--fg)}
 .padsep{width:1px;height:18px;background:var(--border-2);margin:0 5px}
-#pad{display:block;width:100%;height:380px;touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;background-color:#fff;background-image:radial-gradient(circle, rgba(0,0,0,.13) 1px, transparent 1.4px);background-size:22px 22px}
+#pad{display:block;width:100%;height:380px;touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;background-color:var(--surface);background-image:radial-gradient(circle, rgba(var(--ovr),.16) 1px, transparent 1.4px);background-size:22px 22px}
 #pad.erasing{cursor:none}
-.padcv{position:relative;background:#fff}
+.padcv{position:relative;background:var(--surface)}
 .padcur{display:none;position:absolute;pointer-events:none;z-index:2;border-radius:50%;transform:translate(-50%,-50%);border:1.5px solid rgba(0,0,0,.6);box-shadow:0 0 0 1px rgba(255,255,255,.95), inset 0 0 0 1px rgba(255,255,255,.8);background:rgba(0,0,0,.05)}
 .padwrap.full{position:fixed;inset:0;z-index:45;margin:0;max-width:none;border:0;border-radius:0;display:flex;flex-direction:column;background:var(--bg);padding-top:env(safe-area-inset-top,0px)}
 .padwrap.full,.padwrap.full *{-webkit-app-region:no-drag}
@@ -4026,9 +4026,12 @@ function occFront(c){
 let padOpen = ls.get('md-pad', false);
 const PAD_STEP = 420;
 const pad = { tool: 'pen', eraser: ls.get('md-pad-eraser', 'stroke'), color: 0, size: 1, penSeen: false, strokes: [], hist: [], redo: [], cur: null, h: 380, full: false, qHide: false, qSize: ls.get('md-padq', 0.36) };
-/* the page is always plain white, so the inks are fixed colours that read well on paper */
+/* the page takes the theme's card colour, so the inks follow it: the first is the theme's text colour (black on light, near white on dark),
+   the others are lighter on dark themes so they still read */
 const PAD_INKS = [['#111111', 'Black'], ['#1d5fd6', 'Blue'], ['#d63a3a', 'Red'], ['#1f8a4c', 'Green'], ['#e07a00', 'Orange']];
-const PAD_COLORS = () => PAD_INKS.map(x => x[0]);
+const PAD_INKS_DARK = ['#f2f2f2', '#6ea8ff', '#ff7a7a', '#4cc38a', '#ffad5c'];
+const padDark = () => getComputedStyle(document.documentElement).getPropertyValue('--ovr').trim().startsWith('255');
+const PAD_COLORS = () => { const fg = getComputedStyle(document.documentElement).getPropertyValue('--fg').trim(), d = padDark(); return PAD_INKS.map((x, i) => i === 0 ? (fg || (d ? PAD_INKS_DARK[0] : x[0])) : d ? PAD_INKS_DARK[i] : x[0]); };
 /* line width in CSS pixels for a pen size on a page this wide (the precise eraser is 6× the pen) */
 const padLw = (size, wCss, tool) => [1.6, 3, 5.5][size] * Math.max(0.8, wCss / 760) * (tool === 'eraser' ? 6 : 1);
 const PAD_ERASE_R = 0.018;   // stroke-eraser reach, in width units
@@ -4045,7 +4048,7 @@ function padHtml(){
       <span class="dlabel">Scratchpad</span><span class="grow"></span>
       <button class="padb ${pad.tool === 'pen' ? 'on' : ''}" data-pad="pen" title="Pen">✎ Pen</button>
       <button class="padb ${pad.tool === 'eraser' ? 'on' : ''}" data-pad="eraser" title="Eraser (click again to switch between stroke and precise). With Apple Pencil: double-tap the page with a finger to swap pen and eraser">⌫ ${pad.eraser === 'stroke' ? 'Stroke eraser' : 'Precise eraser'}</button>
-      <span class="padsep"></span>${PAD_INKS.map(([col, name], i) => `<button class="padc ${pad.color === i && pad.tool === 'pen' ? 'on' : ''}" data-pad="c${i}" style="--c:${col}" title="${name}" aria-label="${name} ink"></button>`).join('')}
+      <span class="padsep"></span>${PAD_COLORS().map((col, i) => [col, i === 0 ? 'Pen' : PAD_INKS[i][1]]).map(([col, name], i) => `<button class="padc ${pad.color === i && pad.tool === 'pen' ? 'on' : ''}" data-pad="c${i}" style="--c:${col}" title="${name}" aria-label="${name} ink"></button>`).join('')}
       <span class="padsep"></span>${[0, 1, 2].map(z => `<button class="pads ${pad.size === z ? 'on' : ''}" data-pad="s${z}" title="${['Fine', 'Medium', 'Thick'][z]}"><i style="width:${3 + z * 3}px;height:${3 + z * 3}px"></i></button>`).join('')}
       <span class="padsep"></span><button class="padb" data-pad="undo" title="Undo (⌘Z)">↶</button><button class="padb" data-pad="redo" title="Redo (⇧⌘Z)">↷</button><button class="padb" data-pad="clear" title="Clear the page">Clear</button><button class="padb" data-pad="save" title="Add this working to the card's solution images">Save to card</button>
       ${full ? `<button class="padb" data-pad="q" title="${pad.qHide ? 'Show the question beside the page' : 'Hide the question to get more room'}">${pad.qHide ? 'Show question' : 'Hide question'}</button>` : ''}
@@ -4250,7 +4253,7 @@ async function padAction(k){
   if (k === 'save'){
     const cv = $('#pad'), c = S.cards[study?.cur]; if (!cv || !c || !pad.strokes.length) return toast('Draw something first.');
     const out = document.createElement('canvas'); out.width = cv.width; out.height = cv.height; const g = out.getContext('2d');
-    g.fillStyle = '#ffffff'; g.fillRect(0, 0, out.width, out.height); g.drawImage(cv, 0, 0);
+    g.fillStyle = getComputedStyle(cv).backgroundColor || '#ffffff'; g.fillRect(0, 0, out.width, out.height); g.drawImage(cv, 0, 0);
     const blob = await new Promise(r => out.toBlob(r, 'image/png')); const im = await storeImage(new File([blob], 'cleaned-scratch.png', { type: 'image/png' }));
     undoTx = null; undoLabel = 'save scratchpad'; await put('cards', { ...c, solImgs: [...(c.solImgs || []), im] });
     return toast('Saved to the card’s solution images');
@@ -5305,6 +5308,7 @@ function applyTheme(ts){
   if (pat === 'contour'){ const pc = mixc(t.bg, t.fg, dark ? .16 : .18), d = ['M600 1000 C 620 820 800 760 900 680 S 1000 540 1000 500', 'M680 1000 C 700 860 860 800 950 730 S 1000 640 1000 610', 'M760 1000 C 780 900 920 850 1000 790', 'M520 1000 C 540 780 740 700 860 610 S 1000 420 1000 380', 'M440 1000 C 460 740 680 640 820 540 S 980 330 1000 270', 'M360 1000 C 380 700 620 580 780 470 S 950 230 1000 160', 'M880 940 a 60 34 0 1 0 1 0 Z', 'M900 940 a 30 16 0 1 0 1 0 Z'];
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><g fill='none' stroke='${pc}' stroke-width='1.6'>${d.map(p => `<path d='${p}'/>`).join('')}</g></svg>`;
     r.setProperty('--pat-contour', `url("data:image/svg+xml,${encodeURIComponent(svg)}")`); }
+  if ($('#padwrap')) padRefresh();
 }
 /* screenshots take on the theme: luminance mapped from the theme's text (ink) to its background (paper) */
 function duoUpdate(ink, paper){
