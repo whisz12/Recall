@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261110195831";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261110201747";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');</script>
 </head>
@@ -9286,6 +9286,12 @@ const ppmAt = it => { const g = it.segs?.[0]; return g ? g.p * 100000 + g.y0 : 1
 let ppmNear = null, ppmFar = null, ppmNear2 = null, ppmFar2 = null, ppmRO = null, ppmRedrawT = 0;
 const PP_ZOOMS = [.5, .67, .75, .9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3];
 let ppz = Math.max(.5, Math.min(3, +ls.get('md-pp-zoom', 1) || 1));
+/* side by side, the solutions have a zoom of their own (md-pp-zoom-sol); the bar's zoom works on whichever side you last touched */
+let ppzS = Math.max(.5, Math.min(3, +ls.get('md-pp-zoom-sol', ppz) || 1)), ppzOn = 'q';
+const ppzSide = () => ppSplitOn() && ppzOn === 's' ? 's' : 'q';
+const ppzOf = side => side === 's' ? ppzS : ppz;
+const ppzSideOf = t => t?.closest?.('#ppsolscroll') ? 's' : 'q';
+function ppzPick(side){ if (side === ppzOn) return; ppzOn = side; ppmZoomLabel(); }
 let ppFull = false;
 /* side by side: the paper on the left, its solutions on the right (wide windows, papers with solutions) */
 let ppSplit = !!ls.get('md-pp-split', false);
@@ -9335,26 +9341,33 @@ function ppmZoomBar(){
     <button type="button" class="ppzb" data-act="pp-bar" title="Hide this bar (.)" aria-label="Hide this bar">${ic('M4 6.5 8 10.5 12 6.5')}</button>
   </div><button type="button" class="ppzshow" id="ppzshow" data-act="pp-bar" title="Show the bar (.)" aria-label="Show the paper bar">${PP_UP_IC}</button>`;
 }
-function ppmBaseW(){ const sc = $('#ppscroll'); if (!sc) return 820; const cs = getComputedStyle(sc); return Math.max(200, Math.min(820, sc.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight))); }
+function ppmBaseW(side){ const sc = (side === 's' && ppSplitOn() && $('#ppsolscroll')) || $('#ppscroll'); if (!sc) return 820; const cs = getComputedStyle(sc); return Math.max(200, Math.min(820, sc.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight))); }
 function ppmApplyZoom(){
-  const w = Math.round(ppmBaseW() * ppz) + 'px'; ['#pppages', '#ppsolpages'].forEach(q => $(q)?.style.setProperty('--ppw', w));
-  const l = $('#ppzl'); if (l) l.textContent = Math.round(ppz * 100) + '%';
-  const bar = $('#ppzbar'); if (bar){ bar.querySelector('[data-d="-1"]').disabled = ppz <= PP_ZOOMS[0]; bar.querySelector('[data-d="1"]').disabled = ppz >= PP_ZOOMS[PP_ZOOMS.length - 1]; }
+  $('#pppages')?.style.setProperty('--ppw', Math.round(ppmBaseW('q') * ppz) + 'px');
+  $('#ppsolpages')?.style.setProperty('--ppw', Math.round(ppmBaseW('s') * (ppSplitOn() ? ppzS : ppz)) + 'px');
+  ppmZoomLabel();
+}
+function ppmZoomLabel(){
+  const side = ppzSide(), z = ppzOf(side), split = ppSplitOn(), l = $('#ppzl');
+  if (l) l.textContent = (split ? (side === 's' ? 'Solutions ' : 'Paper ') : '') + Math.round(z * 100) + '%';
+  const bar = $('#ppzbar'); if (bar){ bar.querySelector('[data-d="-1"]').disabled = z <= PP_ZOOMS[0]; bar.querySelector('[data-d="1"]').disabled = z >= PP_ZOOMS[PP_ZOOMS.length - 1]; }
 }
 /* zoom to z, keeping the point (ax, ay) on the page where it is (the middle of the view if none) */
-function ppmZoom(z, ax, ay){
-  const sc = $('#ppscroll'), host = $('#pppages'); if (!sc || !host || !ppm?.R) return;
+function ppmZoom(z, ax, ay, side = ppzSide()){
+  if (side === 's' && !ppSplitOn()) side = 'q';
+  const sc = $(side === 's' ? '#ppsolscroll' : '#ppscroll'), host = $(side === 's' ? '#ppsolpages' : '#pppages'); if (!sc || !host || !ppm?.R) return;
   z = Math.max(PP_ZOOMS[0], Math.min(PP_ZOOMS[PP_ZOOMS.length - 1], Math.round(z * 100) / 100));
   const s = sc.getBoundingClientRect();
   if (ax == null){ ax = s.left + s.width / 2; ay = (Math.max(s.top, 0) + Math.min(s.bottom, innerHeight)) / 2; }
   let el = null, best = Infinity;
-  for (const pgEl of host.children){ const r = pgEl.getBoundingClientRect(), d = ay < r.top ? r.top - ay : ay > r.bottom ? ay - r.bottom : 0; if (d < best){ best = d; el = pgEl; } if (!d) break; }
+  for (const pgEl of host.querySelectorAll(':scope > .pppage')){ const r = pgEl.getBoundingClientRect(), d = ay < r.top ? r.top - ay : ay > r.bottom ? ay - r.bottom : 0; if (d < best){ best = d; el = pgEl; } if (!d) break; }
   const r0 = el?.getBoundingClientRect(), fx = r0 ? (ax - r0.left) / r0.width : 0, fy = r0 ? (ay - r0.top) / r0.height : 0;
-  ppz = z; ls.set('md-pp-zoom', z); ppmApplyZoom();
+  if (side === 's'){ ppzS = z; ls.set('md-pp-zoom-sol', z); } else { ppz = z; ls.set('md-pp-zoom', z); }
+  ppmApplyZoom();
   if (el){ const r = el.getBoundingClientRect(), dx = r.left + fx * r.width - ax, dy = r.top + fy * r.height - ay; sc.scrollLeft += dx; if (ppmOwnScroll()) sc.scrollTop += dy; else window.scrollBy(0, dy); }
   ppmRedrawSoon();
 }
-function ppmZoomStep(d){ if (!d) return ppmZoom(1); const z = d > 0 ? PP_ZOOMS.find(s => s > ppz + .001) : [...PP_ZOOMS].reverse().find(s => s < ppz - .001); if (z) ppmZoom(z); }
+function ppmZoomStep(d){ const side = ppzSide(), cur = ppzOf(side); if (!d) return ppmZoom(1, null, null, side); const z = d > 0 ? PP_ZOOMS.find(s => s > cur + .001) : [...PP_ZOOMS].reverse().find(s => s < cur - .001); if (z) ppmZoom(z, null, null, side); }
 function ppmRedrawSoon(){ clearTimeout(ppmRedrawT); ppmRedrawT = setTimeout(() => document.querySelectorAll('.pppage').forEach(el => { if (el._near) ppmDrawPage(+el.dataset.p, el); }), 180); }
 /* the pane resizing (window, sidebar, iPad turning round) keeps the zoom and redraws sharp */
 function ppmWatch(){
@@ -9461,16 +9474,18 @@ let ppPinch = null, ppGest = null;
 const ppInStage = e => view.name === 'ppmark' && ppm?.R && e.target.closest?.('#ppscroll, #ppsolscroll') && !dialogOpen();
 document.addEventListener('wheel', e => {
   if (!e.ctrlKey || !ppInStage(e)) return;
-  e.preventDefault(); ppmZoom(ppz * Math.exp(-Math.max(-50, Math.min(50, e.deltaY)) * .01), e.clientX, e.clientY);
+  e.preventDefault(); const side = ppzSideOf(e.target); ppzPick(side); ppmZoom(ppzOf(side) * Math.exp(-Math.max(-50, Math.min(50, e.deltaY)) * .01), e.clientX, e.clientY, side);
 }, { passive: false });
 const ppTouchMid = t => ({ x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2, d: Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY) || 1 });
-document.addEventListener('touchstart', e => { if (e.touches.length === 2 && ppInStage(e)){ e.preventDefault(); ppPinch = { z0: ppz, d0: ppTouchMid(e.touches).d }; } }, { passive: false });
-document.addEventListener('touchmove', e => { if (!ppPinch || e.touches.length !== 2) return; e.preventDefault(); const t = ppTouchMid(e.touches); ppmZoom(ppPinch.z0 * t.d / ppPinch.d0, t.x, t.y); }, { passive: false });
+document.addEventListener('touchstart', e => { if (e.touches.length === 2 && ppInStage(e)){ e.preventDefault(); const side = ppzSideOf(e.target); ppzPick(side); ppPinch = { side, z0: ppzOf(side), d0: ppTouchMid(e.touches).d }; } }, { passive: false });
+document.addEventListener('touchmove', e => { if (!ppPinch || e.touches.length !== 2) return; e.preventDefault(); const t = ppTouchMid(e.touches); ppmZoom(ppPinch.z0 * t.d / ppPinch.d0, t.x, t.y, ppPinch.side); }, { passive: false });
 document.addEventListener('touchend', e => { if (ppPinch && e.touches.length < 2) ppPinch = null; });
 document.addEventListener('touchcancel', () => { ppPinch = null; });
-document.addEventListener('gesturestart', e => { if (!ppInStage(e)) return; e.preventDefault(); ppGest = ppPinch ? null : { z0: ppz }; });
-document.addEventListener('gesturechange', e => { if (view.name !== 'ppmark' || !(ppGest || ppPinch)) return; e.preventDefault(); if (ppGest) ppmZoom(ppGest.z0 * e.scale, e.clientX, e.clientY); });
+document.addEventListener('gesturestart', e => { if (!ppInStage(e)) return; e.preventDefault(); const side = ppzSideOf(e.target); ppzPick(side); ppGest = ppPinch ? null : { side, z0: ppzOf(side) }; });
+document.addEventListener('gesturechange', e => { if (view.name !== 'ppmark' || !(ppGest || ppPinch)) return; e.preventDefault(); if (ppGest) ppmZoom(ppGest.z0 * e.scale, e.clientX, e.clientY, ppGest.side); });
 document.addEventListener('gestureend', () => { ppGest = null; });
+/* touching or clicking a side makes it the one the bar's zoom works on */
+document.addEventListener('pointerdown', e => { if (view.name === 'ppmark' && ppSplitOn() && e.target.closest?.('#ppscroll, #ppsolscroll')) ppzPick(ppzSideOf(e.target)); }, true);
 /* ---------- exam timer for a past paper: reading time, then a countdown, then overtime. Kept per device (md-pp-tm), keeps going when you leave the page;
    Stop saves how long you took on the paper (p.took / p.lim). Times are NESA's for HSC and trial papers, shorter defaults for other tasks. ---------- */
 const PP_TIME = { std: [150, 10], adv: [180, 10], x1: [120, 10], x2: [180, 10], phy: [180, 5], chem: [180, 5], bio: [180, 5], eco: [180, 5], en1: [90, 10], en2: [120, 5], en2s: [120, 5], pdh: [180, 5], agr: [180, 5], ipt: [180, 5], sw: [120, 5] };
