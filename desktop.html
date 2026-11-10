@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261110005741 min-shell:1.27.0 -->
+<!-- recall-build:20261110094451 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -2671,7 +2671,17 @@ html.lh body.desktop .page.v-ppmark,.page.v-ppmark{padding:0;max-width:none}
 .pppage{position:relative;flex:none;width:var(--ppw, 820px);background:#fff;border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.25)}
 /* paper view bar: zoom and download, floating at the bottom of the paper */
 .ppzbar{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.2),0 6px 18px rgba(0,0,0,.22)}
-.ppzbar[hidden]{display:none}
+.ppzbar[hidden],.ppzbar button[hidden]{display:none}
+.ppzbar .ppzsplit{padding:0 8px 0 6px}
+.ppzbar .ppzsplit.on{background:rgba(var(--ovr),.12);color:var(--fg)}
+.ppstage.split{flex-direction:row}
+.ppm.nosides > .pprail,.ppm.nosides > .pppanel{display:none}
+.ppzbar .ppzb.on{background:rgba(var(--ovr),.12);color:var(--fg)}
+.ppstage.split > .ppscroll{flex:1 1 0;min-width:0}
+.ppsolscroll[hidden]{display:none}
+.ppsolscroll{border-left:1px solid var(--border-2)}
+.ppsolhd{display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 0 4px;font:600 15px var(--ui);color:var(--fg);letter-spacing:-.01em}
+.ppsolhd small{font:400 12px var(--ui);color:var(--fg-3);max-width:40ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ppzbar{width:max-content;max-width:calc(100% - 24px);white-space:nowrap}
 .ppzbar svg{flex:none}
 .ppzbar button{height:28px;min-width:28px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:var(--r-sm);background:transparent;color:var(--fg-2);font:500 13px var(--ui);font-variant-numeric:tabular-nums;cursor:pointer;transition:background var(--t-fast),color var(--t-fast)}
@@ -2755,6 +2765,19 @@ html.lh body.desktop .page.v-ppmark,.page.v-ppmark{padding:0;max-width:none}
 .ppsum div{font-size:13px;color:var(--fg-2)}
 .ppsum b{font:600 24px var(--ui);color:var(--fg)}
 .ppsum span{font-size:12px;color:var(--fg-3)}
+.ppmk .pprl{margin:0 0 6px}
+.ppmk .ppmkrow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ppmk input.in{width:72px;flex:none;height:40px;padding:0 8px;text-align:center;font:600 20px var(--ui);font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+.ppmk input.in::-webkit-outer-spin-button,.ppmk input.in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.ppmk input.in::placeholder{color:var(--fg-3);font-weight:500}
+.ppmk .ppof{font-size:13px;color:var(--fg-3);white-space:nowrap}
+.ppmk .pprl{padding:0}
+.ppmk .ppmkn .link{padding:0;margin-left:2px}
+.ppmk .ppmkp{margin-left:auto;font:600 15px var(--ui);color:var(--fg-2);font-variant-numeric:tabular-nums}
+.ppmk .ppmkn{line-height:1.45}
+.ppabsb{border:0;background:none;cursor:pointer;font:inherit;color:inherit;padding:4px 8px;border-radius:var(--r-sm)}
+.ppabsb:hover{background:rgba(var(--ovr),.08);color:var(--fg)}
+.ppabsb:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .ppabs{margin-right:6px;white-space:nowrap}
 .pphome .stabadd{color:var(--fg-2)}
 .pphome .stabadd svg{width:15px;height:15px}
@@ -8402,7 +8425,7 @@ async function shellNudge(){
     const file = window.desktop.platform === 'win32' ? 'Recall-windows.zip' : 'Recall-mac.zip', url = rel.assets.includes(file) ? `https://github.com/whisz12/Recall/releases/latest/download/${file}` : 'https://whisz12.github.io/Recall/download.html';
     if ($('#updbar')) return;
     const v = rel.tag.replace(/^v/, ''), el = document.createElement('div'); el.id = 'updbar'; el.className = 'updbar shellbar'; el.setAttribute('role', 'status');
-    el.innerHTML = `<span><b>Recall ${esc(v)} is out.</b> This app is ${esc(info.shell)}. The new one opens THSC papers straight inside Recall. Download it, unzip it and replace Recall in ${window.desktop.platform === 'win32' ? 'its folder' : 'Applications'}. Your cards stay where they are.</span><a class="btn sm primary" href="${esc(url)}" target="_blank" rel="noopener">Download ${esc(v)}</a><button class="btn sm" data-act="shell-later" data-v="${esc(rel.tag)}">Later</button>`;
+    el.innerHTML = `<span><b>Recall ${esc(v)} is out.</b> This app is ${esc(info.shell)}. The new one ${verNum(rel.tag) >= verNum('1.29.0') ? 'downloads NESA HSC papers and their marking guidelines straight into Recall' : 'opens THSC papers straight inside Recall'}. Download it, unzip it and replace Recall in ${window.desktop.platform === 'win32' ? 'its folder' : 'Applications'}. Your cards stay where they are.</span><a class="btn sm primary" href="${esc(url)}" target="_blank" rel="noopener">Download ${esc(v)}</a><button class="btn sm" data-act="shell-later" data-v="${esc(rel.tag)}">Later</button>`;
     document.body.appendChild(el);
   } catch (e){ console.warn('release check', e); }
 }
@@ -8562,7 +8585,7 @@ function ppAddSolPick(pid){
   ppPickFile(async f => {
     const p = ppPapers()[pid]; if (!p || !f) return;
     const q = await ppSolStore(p, f); if (!q) return;
-    await ppSavePaper(q, 'add solutions'); toast('Solutions added · they open when your time’s up', 2600);
+    await ppSavePaper(q, 'add solutions'); toast('Solutions added', 2000);
     if (view.name === 'ppmark' && view.node === pid){ ppm = null; renderPPMark(); } else ppRefresh();
   });
 }
@@ -8999,7 +9022,7 @@ function renderPPMark(){
   if (ppm?.pid !== p.id || (!ppm.R && !ppm.busy && !ppm.need && !ppm.err)){ const keep = ppm?.pid === p.id ? ppm : null; ppm = { pid: p.id, items: [], sel: null, busy: 'Opening the paper…', want: keep?.want || ppm?.want || null, buf: keep?.buf || null }; ppmLoad(p); }
   const host = $('#ppm');
   if (!host || host.dataset.pid !== p.id){
-    $('#root').innerHTML = `<div class="ppm" id="ppm" data-pid="${esc(p.id)}"><aside class="pprail" id="pprail" aria-label="Questions"></aside><section class="ppstage" id="ppstage" aria-label="Paper"><div class="ppscroll" id="ppscroll"><div class="pppages" id="pppages"></div></div>${ppmZoomBar()}</section><aside class="pppanel" id="pppanel" aria-label="Question"></aside></div>`;
+    $('#root').innerHTML = `<div class="ppm ${ppSides ? '' : 'nosides'}" id="ppm" data-pid="${esc(p.id)}"><aside class="pprail" id="pprail" aria-label="Questions"></aside><section class="ppstage" id="ppstage" aria-label="Paper"><div class="ppscroll" id="ppscroll"><div class="pppages" id="pppages"></div></div><div class="ppscroll ppsolscroll" id="ppsolscroll" aria-label="Solutions" hidden><div class="pppages" id="ppsolpages"></div></div>${ppmZoomBar()}</section><aside class="pppanel" id="pppanel" aria-label="Question"></aside></div>`;
     ppmWatch();
     if (ppm.R) ppmPages();
   }
@@ -9060,10 +9083,30 @@ async function ppmLoad(p){
 const ppmAt = it => { const g = it.segs?.[0]; return g ? g.p * 100000 + g.y0 : 1e9; };
 /* the pages: drawn when they come near the view (sharp at the current zoom), freed again when far away, with the question boxes over them.
    Wide windows: the paper scrolls in its own pane (#ppscroll); narrow ones: the window scrolls and the pane only scrolls sideways when zoomed. */
-let ppmNear = null, ppmFar = null, ppmRO = null, ppmRedrawT = 0;
+let ppmNear = null, ppmFar = null, ppmNear2 = null, ppmFar2 = null, ppmRO = null, ppmRedrawT = 0;
 const PP_ZOOMS = [.5, .67, .75, .9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3];
 let ppz = Math.max(.5, Math.min(3, +ls.get('md-pp-zoom', 1) || 1));
 let ppFull = false;
+/* side by side: the paper on the left, its solutions on the right (wide windows, papers with solutions) */
+let ppSplit = !!ls.get('md-pp-split', false);
+/* the questions list and the right-hand panel can be hidden, so it's just the paper (H) */
+let ppSides = ls.get('md-pp-sides', true) !== false;
+function ppSidesSet(on){
+  on = !!on; if (on === ppSides && $('#ppm')?.classList.contains('nosides') === !on) return;
+  ppmKeepPlace(() => { ppSides = on; ls.set('md-pp-sides', on); $('#ppm')?.classList.toggle('nosides', !on); ppmApplyZoom(); });
+  ppmRedrawSoon();
+  const b = $('#ppzsides'); if (b){ b.setAttribute('aria-pressed', String(!on)); b.classList.toggle('on', !on); b.title = on ? 'Hide the side panels (H)' : 'Show the side panels (H)'; b.setAttribute('aria-label', on ? 'Hide the side panels' : 'Show the side panels'); }
+  if (!on) toast('Side panels hidden · H brings them back', 1600);
+}
+const ppSplitOk = () => !!ppm?.R && !!ppm.cutP && !ppm.locked && ppmOwnScroll();
+const ppSplitOn = () => ppSplit && ppSplitOk();
+function ppSplitSet(on){
+  if (on && !ppSplitOk()) return toast(ppm?.cutP ? 'Side by side needs a wider window' : 'This paper has no solutions yet', 1800);
+  ppSplit = !!on; ls.set('md-pp-split', ppSplit);
+  ppmKeepPlace(() => ppmPages());
+  ppmSide();
+  const it = ppm?.items[ppm.sel]; if (ppSplitOn() && it?.sol?.[0]) setTimeout(() => ppmReveal(it.sol[0], true), 60);
+}
 const ppmOwnScroll = () => ppFull || matchMedia('(min-width: 901px)').matches;
 function ppmZoomBar(){
   const ic = d => `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -9074,13 +9117,15 @@ function ppmZoomBar(){
     <button type="button" class="ppzv" data-act="pp-zoom" data-d="0" title="Fit the page to the width (0)" aria-label="Zoom level, press to fit the width"><span id="ppzl">${Math.round(ppz * 100)}%</span></button>
     <button type="button" class="ppzb" data-act="pp-zoom" data-d="1" title="Zoom in (+)" aria-label="Zoom in">${ic('M3.5 8h9M8 3.5v9')}</button>
     <span class="ppzsep" aria-hidden="true"></span>
+    <button type="button" class="ppzb ${ppSides ? '' : 'on'}" id="ppzsides" data-act="pp-sides" title="${ppSides ? 'Hide' : 'Show'} the side panels (H)" aria-label="${ppSides ? 'Hide' : 'Show'} the side panels" aria-pressed="${!ppSides}">${ic('M2.5 3.5h11v9h-11zM5.5 3.5v9M10.5 3.5v9')}</button>
+    <button type="button" class="ppzb ppzsplit" id="ppzsplit" data-act="pp-split" title="Solutions side by side (S)" aria-label="Solutions side by side" aria-pressed="false" hidden>${ic('M2.5 3.5h11v9h-11zM8 3.5v9')}<span>Solutions</span></button>
     <button type="button" class="ppzb" id="ppzfs" data-act="pp-full" title="Full screen (F)" aria-label="Full screen" aria-pressed="${ppFull}">${ppFullIcon()}</button>
     <button type="button" class="ppzd" data-act="pp-dl" title="Download the PDF">${ic('M8 2.5v7.5M4.8 7 8 10.2 11.2 7M3 12.5v1h10v-1')}<span>Download</span></button>
   </div>`;
 }
 function ppmBaseW(){ const sc = $('#ppscroll'); if (!sc) return 820; const cs = getComputedStyle(sc); return Math.max(200, Math.min(820, sc.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight))); }
 function ppmApplyZoom(){
-  const host = $('#pppages'); if (host) host.style.setProperty('--ppw', Math.round(ppmBaseW() * ppz) + 'px');
+  const w = Math.round(ppmBaseW() * ppz) + 'px'; ['#pppages', '#ppsolpages'].forEach(q => $(q)?.style.setProperty('--ppw', w));
   const l = $('#ppzl'); if (l) l.textContent = Math.round(ppz * 100) + '%';
   const bar = $('#ppzbar'); if (bar){ bar.querySelector('[data-d="-1"]').disabled = ppz <= PP_ZOOMS[0]; bar.querySelector('[data-d="1"]').disabled = ppz >= PP_ZOOMS[PP_ZOOMS.length - 1]; }
 }
@@ -9098,13 +9143,13 @@ function ppmZoom(z, ax, ay){
   ppmRedrawSoon();
 }
 function ppmZoomStep(d){ if (!d) return ppmZoom(1); const z = d > 0 ? PP_ZOOMS.find(s => s > ppz + .001) : [...PP_ZOOMS].reverse().find(s => s < ppz - .001); if (z) ppmZoom(z); }
-function ppmRedrawSoon(){ clearTimeout(ppmRedrawT); ppmRedrawT = setTimeout(() => document.querySelectorAll('.pppage').forEach(el => { if (el._near) ppmDrawPage(+el.dataset.p); }), 180); }
+function ppmRedrawSoon(){ clearTimeout(ppmRedrawT); ppmRedrawT = setTimeout(() => document.querySelectorAll('.pppage').forEach(el => { if (el._near) ppmDrawPage(+el.dataset.p, el); }), 180); }
 /* the pane resizing (window, sidebar, iPad turning round) keeps the zoom and redraws sharp */
 function ppmWatch(){
   ppmRO?.disconnect(); const sc = $('#ppscroll'); if (!sc || !window.ResizeObserver) return;
   let w0 = 0; ppmRO = new ResizeObserver(() => { const w = sc.clientWidth; if (Math.abs(w - w0) < 2) return; w0 = w; ppmApplyZoom(); ppmRedrawSoon(); }); ppmRO.observe(sc);
 }
-matchMedia('(min-width: 901px)').addEventListener?.('change', () => { if (view.name === 'ppmark' && ppm?.R) ppmObserve(); });
+matchMedia('(min-width: 901px)').addEventListener?.('change', () => { if (view.name === 'ppmark' && ppm?.R){ ppmPages(); ppmSide(); } });
 /* full screen: only the paper and its bar. The page fills the window (html.ppfull), and the whole screen too where the browser allows it (Mac/Windows app, iPad, browsers; not iPhone) */
 function ppFullIcon(){ return `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${ppFull ? 'M6 2.5v3.5H2.5M10 2.5v3.5h3.5M6 13.5V10H2.5M10 13.5V10h3.5' : 'M2.5 6V2.5H6M13.5 6V2.5H10M2.5 10v3.5H6M13.5 10v3.5H10'}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
 let ppFullOs = false;
@@ -9136,14 +9181,16 @@ function ppmKeepPlace(fn){
 }
 function ppmObserve(){
   const host = $('#pppages'); if (!host) return;
-  ppmNear?.disconnect(); ppmFar?.disconnect();
-  const root = ppmOwnScroll() ? $('#ppscroll') : null;
-  ppmNear = new IntersectionObserver(es => es.forEach(e => { e.target._near = e.isIntersecting; if (e.isIntersecting) ppmDrawPage(+e.target.dataset.p); }), { root, rootMargin: '800px 600px' });
-  ppmFar = new IntersectionObserver(es => es.forEach(e => { const el = e.target; if (!e.isIntersecting && el._sc && !el._busy){ const c = el.querySelector('canvas'); if (c){ c.width = 0; c.height = 0; } el._sc = 0; } }), { root, rootMargin: '2400px 1600px' });
+  [ppmNear, ppmFar, ppmNear2, ppmFar2].forEach(o => o?.disconnect());
+  const mk = root => [new IntersectionObserver(es => es.forEach(e => { e.target._near = e.isIntersecting; if (e.isIntersecting) ppmDrawPage(+e.target.dataset.p, e.target); }), { root, rootMargin: '800px 600px' }),
+    new IntersectionObserver(es => es.forEach(e => { const el = e.target; if (!e.isIntersecting && el._sc && !el._busy){ const c = el.querySelector('canvas'); if (c){ c.width = 0; c.height = 0; } el._sc = 0; } }), { root, rootMargin: '2400px 1600px' })];
+  [ppmNear, ppmFar] = mk(ppmOwnScroll() ? $('#ppscroll') : null);
   host.querySelectorAll('.pppage').forEach(el => { ppmNear.observe(el); ppmFar.observe(el); });
+  const sh = $('#ppsolpages');
+  if (sh?.children.length){ [ppmNear2, ppmFar2] = mk($('#ppsolscroll')); sh.querySelectorAll('.pppage').forEach(el => { ppmNear2.observe(el); ppmFar2.observe(el); }); }
 }
-/* solutions stay shut while the exam timer for this paper is running (reading or writing time); they open when time runs out or you stop the timer */
-const ppSolLocked = pid => { const t = ppTmOf(pid); return !!t && ppTmState(t).ph !== 'over'; };
+/* solutions used to stay shut while the exam timer ran; since 10 Nov 2026 they open any time (the lock code below stays, unused) */
+const ppSolLocked = () => false;
 /* how much of page n is solutions that are still shut: null = none, 0 = the whole page, 0..1 = from that far down */
 function ppmLockOf(n){
   const m = ppm; if (!m?.locked || !m.cutP || n < m.cutP) return null;
@@ -9161,7 +9208,13 @@ function ppmPages(){
   const m = ppm, host = $('#pppages'); if (!m?.R || !host) return;
   ppmApplyZoom();
   const lockHtml = n => { const f = ppmLockOf(n); return f == null ? '' : `<div class="pplock ${f ? 'part' : ''}" style="top:${(f * 100).toFixed(2)}%"><div><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><b>Solutions open when your time’s up</b><span><span class="pplockt">${ppmLockLeft()}</span> left</span></div></div>`; };
-  host.innerHTML = m.R.pages.map(pg => `${m.solFrom && pg.n === m.solFrom ? `<div class="ppsoldiv" role="separator">Solutions<small>${esc(ppmP()?.solName || '')}</small></div>` : ''}<div class="pppage ${ppmLockOf(pg.n) === 0 ? 'locked' : ''}" data-p="${pg.n}" style="aspect-ratio:${pg.w} / ${pg.h}"><canvas aria-hidden="true"></canvas><div class="ppov" data-p="${pg.n}"></div>${lockHtml(pg.n)}<span class="pppn">${m.solFrom && pg.n >= m.solFrom ? 'S' + (pg.n - m.solFrom + 1) : pg.n}</span></div>`).join('');
+  const split = ppSplitOn(), sol = $('#ppsolscroll'), stage = $('#ppstage');
+  const pgHtml = pg => `<div class="pppage ${ppmLockOf(pg.n) === 0 ? 'locked' : ''}" data-p="${pg.n}" style="aspect-ratio:${pg.w} / ${pg.h}"><canvas aria-hidden="true"></canvas><div class="ppov" data-p="${pg.n}"></div>${lockHtml(pg.n)}<span class="pppn">${m.solFrom && pg.n >= m.solFrom ? 'S' + (pg.n - m.solFrom + 1) : pg.n}</span></div>`;
+  const left = m.R.pages.filter(pg => !split || pg.n < m.cutP || (pg.n === m.cutP && m.cutY));
+  host.innerHTML = (split ? `<div class="ppsolhd">Paper<small>${esc(ppmP()?.name || '')}</small></div>` : '') + left.map(pg => `${!split && m.solFrom && pg.n === m.solFrom ? `<div class="ppsoldiv" role="separator">Solutions<small>${esc(ppmP()?.solName || '')}</small></div>` : ''}${pgHtml(pg)}`).join('');
+  stage?.classList.toggle('split', split); if (sol) sol.hidden = !split;
+  const sh = $('#ppsolpages'); if (sh) sh.innerHTML = split ? `<div class="ppsolhd">Solutions${m.solFrom ? `<small>${esc(ppmP()?.solName || '')}</small>` : ''}</div>` + m.R.pages.filter(pg => pg.n >= m.cutP).map(pgHtml).join('') : '';
+  const sb = $('#ppzsplit'); if (sb){ sb.hidden = !ppSplitOk(); sb.setAttribute('aria-pressed', String(split)); sb.classList.toggle('on', split); }
   ppmObserve();
   const bar = $('#ppzbar'); if (bar) bar.hidden = false;
   ppTmPaint();
@@ -9172,8 +9225,8 @@ function ppmWantSc(el, pg){
   const sc = (el.clientWidth || 760) * (window.devicePixelRatio || 1) / pg.w;
   return Math.max(.5, Math.min(sc, 4, Math.sqrt(9e6 / (pg.w * pg.h))));
 }
-async function ppmDrawPage(n){
-  const m = ppm, el = document.querySelector(`.pppage[data-p="${n}"]`), pg = m?.R?.pages[n - 1]; if (!el || !pg) return;
+async function ppmDrawPage(n, el){
+  const m = ppm, pg = m?.R?.pages[n - 1]; el = el || document.querySelector(`.pppage[data-p="${n}"]`); if (!el || !pg) return;
   if (ppmLockOf(n) === 0) return;
   const want = ppmWantSc(el, pg);
   if (el._sc && Math.abs(el._sc - want) / want < .15) return;
@@ -9189,11 +9242,11 @@ async function ppmDrawPage(n){
     const old = el.querySelector('canvas'); if (old){ old.width = old.height = 0; old.replaceWith(cv); } else el.prepend(cv);
     el._sc = want;
   } catch (e){ console.warn(e); }
-  finally { el._busy = false; if (el._again){ el._again = false; if (el._near) ppmDrawPage(n); } }
+  finally { el._busy = false; if (el._again){ el._again = false; if (el._near) ppmDrawPage(n, el); } }
 }
 /* pinch to zoom: two fingers on a touch screen, a trackpad pinch (ctrl + wheel in Chrome/Electron, gesture events in Safari) */
 let ppPinch = null, ppGest = null;
-const ppInStage = e => view.name === 'ppmark' && ppm?.R && e.target.closest?.('#ppscroll') && !dialogOpen();
+const ppInStage = e => view.name === 'ppmark' && ppm?.R && e.target.closest?.('#ppscroll, #ppsolscroll') && !dialogOpen();
 document.addEventListener('wheel', e => {
   if (!e.ctrlKey || !ppInStage(e)) return;
   e.preventDefault(); ppmZoom(ppz * Math.exp(-Math.max(-50, Math.min(50, e.deltaY)) * .01), e.clientX, e.clientY);
@@ -9319,7 +9372,7 @@ function ppmBoxes(){
   const m = ppm, p = ppmP(); if (!m?.R) return;
   document.querySelectorAll('.ppov').forEach(o => { o.innerHTML = ''; });
   const put = (it, i, g, sol) => {
-    const pg = m.R.pages[g.p - 1], o = document.querySelector(`.ppov[data-p="${g.p}"]`); if (!pg || !o) return;
+    const pg = m.R.pages[g.p - 1], o = (sol && document.querySelector(`#ppsolpages .ppov[data-p="${g.p}"]`)) || document.querySelector(`#pppages .ppov[data-p="${g.p}"]`) || document.querySelector(`.ppov[data-p="${g.p}"]`); if (!pg || !o) return;
     const x0 = g.x0 ?? pg.w * .03, x1 = g.x1 ?? pg.w * .97, r = p?.q?.[it.key]?.r || '';
     const b = document.createElement('button'); b.type = 'button'; b.className = `ppbox ${sol ? 'sol' : ''} ${i === m.sel ? 'sel' : ''} ${r ? 'r-' + r : ''}`; b.dataset.act = 'pp-q'; b.dataset.i = i;
     b.style.cssText = `left:${x0 / pg.w * 100}%;top:${g.y0 / pg.h * 100}%;width:${(x1 - x0) / pg.w * 100}%;height:${(g.y1 - g.y0) / pg.h * 100}%`;
@@ -9331,10 +9384,10 @@ function ppmBoxes(){
   if (m.drawBox){ const d = m.drawBox, o = document.querySelector(`.ppov[data-p="${d.p}"]`), pg = m.R.pages[d.p - 1]; if (o && pg){ const b = document.createElement('div'); b.className = 'ppbox drawing'; b.style.cssText = `left:${Math.min(d.x0, d.x1) / pg.w * 100}%;top:${Math.min(d.y0, d.y1) / pg.h * 100}%;width:${Math.abs(d.x1 - d.x0) / pg.w * 100}%;height:${Math.abs(d.y1 - d.y0) / pg.h * 100}%`; o.appendChild(b); } }
   $('#ppstage')?.classList.toggle('drawmode', !!m.draw);
 }
-function ppmScrollTo(i){ const g = ppm?.items[i]?.segs?.[0]; if (g) ppmReveal(g); }
+function ppmScrollTo(i){ const it = ppm?.items[i], g = it?.segs?.[0]; if (g) ppmReveal(g); if (ppSplitOn() && it?.sol?.[0]) ppmReveal(it.sol[0], true); }
 /* scroll so a box on a page is in view: its top near the top, and (when zoomed in) its left edge in view too */
-function ppmReveal(g){
-  const el = document.querySelector(`.pppage[data-p="${g.p}"]`), pg = ppm?.R?.pages[g.p - 1], sc = $('#ppscroll'); if (!el || !pg || !sc) return;
+function ppmReveal(g, sol){
+  const inSol = sol && ppSplitOn(), el = (inSol ? document.querySelector(`#ppsolpages .pppage[data-p="${g.p}"]`) : document.querySelector(`#pppages .pppage[data-p="${g.p}"]`)) || document.querySelector(`.pppage[data-p="${g.p}"]`), pg = ppm?.R?.pages[g.p - 1], sc = el?.closest('.ppscroll'); if (!el || !pg || !sc) return;
   const r = el.getBoundingClientRect(), s = sc.getBoundingClientRect(), behavior = reducedMotion() ? 'auto' : 'smooth';
   const left = r.width > s.width + 2 ? Math.max(0, sc.scrollLeft + r.left - s.left + r.width * ((g.x0 ?? pg.w * .03) / pg.w) - 32) : sc.scrollLeft;
   if (ppmOwnScroll()) sc.scrollTo({ top: Math.max(0, sc.scrollTop + r.top - s.top + r.height * (g.y0 / pg.h) - 56), left, behavior });
@@ -9355,6 +9408,10 @@ function ppmSide(){
       <button class="link sm danger-link" data-act="pp-remove">Remove this paper</button></div>`;
   panel.innerHTML = ppmPanel();
   const db = $('#ppdeck'); if (db) db.addEventListener('click', ev => { ev.stopPropagation(); openPicker(db, { multi: false, bubbles: true, keepOpen: true, sel: new Set([ppmDeck() || '']), onPick: (id, on, leaf) => { ppm.node = id || null; ls.set('md-pp-node-' + PP_COURSE[p.c].s, ppm.node); if (leaf) closePicker(); }, onClose: () => ppmSide() }); });
+  const mkr = $('.ppmkrow'); if (mkr){
+    mkr.addEventListener('focusout', e => { if (!mkr.contains(e.relatedTarget)) ppmMarkSave(); });
+    mkr.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); e.target.blur(); } });
+  }
   const why = $('#ppwhy'); if (why){ why.addEventListener('input', () => { if (ppm) ppm.why = why.value; }); }
   ppmBoxes(); renderAppbar();
 }
@@ -9363,11 +9420,38 @@ function ppmPanel(){
   const h = ppmPanel0(); if (document.body.classList.contains('desktop')) return h;
   return `<div class="ppmob ppmobm"><button class="btn sm ppback" data-nav="papers" aria-label="Back to Past papers"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Past papers</button><span class="grow"></span>${ppm?.items?.length ? ppAppbar().act : ''}</div>` + h;
 }
+/* your mark: typed in (p.score, used everywhere a score shows) or, left empty, counted from the questions you've marked */
+function ppmMarkBox(p, s){
+  const m = ppm, typed = !!p.score?.of, n = m.items.length;
+  return `<div class="ppsum ppmk"><label class="pprl" for="ppmkg">Your mark</label>
+    <div class="ppmkrow"><input class="in" id="ppmkg" type="number" inputmode="decimal" min="0" step="any" value="${typed ? esc(p.score.got) : ''}" placeholder="${n ? s.got : '–'}" aria-label="Marks you got"><span class="ppof">out of</span><input class="in" id="ppmko" type="number" inputmode="decimal" min="0" step="any" value="${typed ? esc(p.score.of) : ''}" placeholder="${n ? s.of : 'total'}" aria-label="Total marks"><span class="ppmkp" id="ppmkp">${s.of ? s.pct + '%' : ''}</span></div>
+    <span class="ppmkn" id="ppmkn">${ppmMarkNote(p, s)}</span>
+    ${p.took ? `<span>Took ${fmtHMS(p.took, true)} of ${fmtHMS(p.lim || 0, true)}${p.lim && p.took > p.lim ? ` · ${fmtHMS(p.took - p.lim, true)} over` : ''}</span>` : ''}</div>`;
+}
+function ppmMarkNote(p, s, warn){
+  if (warn) return esc(warn);
+  if (p.score?.of) return `Your own mark.${ppm.items.length ? ` <button class="link sm" data-act="pp-mkclr">Count it from the questions</button>` : ''}`;
+  return ppm.items.length ? `From the questions: ${s.marked} of ${ppm.items.length} marked · ${s.flagged} flagged. Type a mark to use your own.` : 'Type the mark you got and the total.';
+}
+async function ppmMarkSave(){
+  const gi = $('#ppmkg'), oi = $('#ppmko'), p0 = ppmP(); if (!gi || !oi || !p0) return;
+  const gv = gi.value.trim(), ov = oi.value.trim(), paint = warn => { const p1 = ppmP(), s1 = ppScore(p1); const pc = $('#ppmkp'); if (pc) pc.textContent = s1.of ? s1.pct + '%' : ''; const nt = $('#ppmkn'); if (nt) nt.innerHTML = ppmMarkNote(p1, s1, warn); renderAppbar(); };
+  if (!gv && !ov){ if (p0.score){ const q = { ...p0 }; delete q.score; await ppSavePaper(q, 'paper mark'); } return paint(); }
+  if (!gv) return paint('Type the marks you got.');
+  const calc = ppScore({ ...p0, score: null }), g = +gv, o = ov ? +ov : (ppm.items.length ? calc.of : 0);
+  if (!(o > 0)) return paint('Type the total too.');
+  if (!(g >= 0) || g > o) return paint('That’s more than the total.');
+  if (!ov) oi.value = o;
+  if (p0.score?.got === g && p0.score?.of === o) return paint();
+  await ppSavePaper({ ...p0, score: { got: g, of: o } }, 'paper mark'); paint();
+}
 function ppmSolLine(p){
   const m = ppm, found = m.items.some(it => it.sol?.length);
   if (m.solMissing) return `<p class="ppnote ppsolln">The solutions PDF (${esc(p.solName || 'solutions')}) isn’t on this device. <button class="link sm" data-act="pp-addsol">Add it again</button></p>`;
   if (m.locked && m.cutP) return `<p class="ppnote ppsolln"><b>Solutions open when your time’s up</b> · <span class="pplockt">${ppmLockLeft()}</span> left. Stopping the timer opens them too.</p>`;
-  if (m.solFrom) return `<p class="ppnote ppsolln">Solutions: ${esc(p.solName || 'separate PDF')}, after the paper (pages S1–S${m.R.pages.length - m.solFrom + 1}). <button class="link sm" data-act="pp-addsol">Replace</button></p>`;
+  const sbs = ppSplitOk() ? `<button class="link sm" data-act="pp-split">${ppSplitOn() ? 'Hide the side view' : 'Show side by side'}</button> ` : '';
+  if (m.solFrom) return `<p class="ppnote ppsolln">Solutions: ${esc(p.solName || 'separate PDF')}${ppSplitOn() ? ', on the right' : ', after the paper'} (pages S1–S${m.R.pages.length - m.solFrom + 1}). ${sbs}<button class="link sm" data-act="pp-addsol">Replace</button></p>`;
+  if (m.cutP && sbs) return `<p class="ppnote ppsolln">Solutions from page ${m.cutP}. ${sbs}</p>`;
   if (!found) return `<p class="ppnote ppsolln">Solutions in a separate PDF? <button class="link sm" data-act="pp-addsol">Add the solutions PDF</button></p>`;
   return '';
 }
@@ -9377,10 +9461,10 @@ function ppmPanel0(){
   if (m.need) return `<div class="pppad"><h2>Add the PDF</h2><p class="ppnote">This paper’s PDF isn’t on this device yet. ${p.key && p.src === 'thsc' ? 'Open it on THSC, download it, then drop it here.' : p.src === 'nesa' ? 'Open it on NESA, download it, then drop it here.' : 'Drop the same PDF here.'}</p>${p.src === 'thsc' || p.src === 'nesa' ? `<p><a class="btn" href="${esc(p.src === 'nesa' ? ppNesaUrl(p.c, p.year) : (() => { const it = ppFind(p.key); return it?.no ? ppThscUrl(it.no, it.title) : 'https://thsconline.github.io/s/'; })())}" target="_blank" rel="noopener">Open on ${p.src === 'nesa' ? 'NESA' : 'THSC'}</a></p>` : ''}<div class="zone ppzone" id="ppmzone"><button class="btn primary" data-act="pp-repick">Choose PDF</button></div></div>`;
   const it = m.items[m.sel];
   if (!it) return `<div class="pppad"><h2>${esc(ppTitle(p))}</h2><p class="ppnote">${esc(PP_COURSE[p.c].name)} · ${esc(ppSecName(p.sec, true))}</p>
-    ${m.items.length ? `<div class="ppsum"><div><b>${s.got}</b> / ${s.of}</div><span>${s.marked} of ${m.items.length} marked · ${s.flagged} flagged</span>${p.took ? `<span>Took ${fmtHMS(p.took, true)} of ${fmtHMS(p.lim || 0, true)}${p.lim && p.took > p.lim ? ` · ${fmtHMS(p.took - p.lim, true)} over` : ''}</span>` : ''}</div>` : ''}
+    ${ppmMarkBox(p, s)}
     ${ppmSolLine(p)}
     <p class="ppnote">Pick a question on the left (or on the page) and mark it Right, Part or Wrong. The ones you get wrong become cards in your decks and in Paper mistakes.${m.items.length ? ' Questions you don’t mark count as right.' : ''}</p>
-    <p class="hint">Keys: ↑ ↓ move between questions · 1 right · 2 part · 3 wrong · B draws a box · + − zoom · F full screen · Esc goes back</p></div>`;
+    <p class="hint">Keys: ↑ ↓ move between questions · 1 right · 2 part · 3 wrong · B draws a box · + − zoom · F full screen · S solutions side by side · H hides the side panels · Esc goes back</p></div>`;
   const q = p.q?.[it.key] || {}, r = m.res ?? q.r ?? '', of = m.of ?? q.of ?? (it.marks || 1), got = m.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)), card = q.card && S.cards[q.card];
   const deck = ppmDeck(), flag = r === 'part' || r === 'bad';
   return `<div class="pppad">
@@ -9489,6 +9573,8 @@ function ppKey(e){
   if (k === 'b' || k === 'B'){ e.preventDefault(); m.draw = m.draw === 'q' ? null : 'q'; ppmSide(); if (m.draw) toast('Drag across the page round the question', 1800); return true; }
   if (k === 'Escape' && m.draw){ e.preventDefault(); m.draw = null; ppmSide(); return true; }
   if ((k === 'f' || k === 'F') && m.R){ e.preventDefault(); ppFullSet(!ppFull); return true; }
+  if (k === 'h' || k === 'H'){ e.preventDefault(); ppSidesSet(!ppSides); return true; }
+  if ((k === 's' || k === 'S') && m.R && m.cutP){ e.preventDefault(); ppSplitSet(!ppSplitOn()); return true; }
   if (k === 't' || k === 'T'){ e.preventDefault(); const p = ppmP(); if (p && ppTmOf(p.id)) ppTmAct('pp-tm-pause', null); else ppTmMenu($('#pptm')); return true; }
   if ((k === '=' || k === '+' || k === '-' || k === '_' || k === '0') && m.R){ e.preventDefault(); ppmZoomStep(k === '0' ? 0 : k === '-' || k === '_' ? -1 : 1); return true; }
   return false;
@@ -9508,7 +9594,7 @@ function ppAppbar(){
   const p = ppPapers()[view.node]; if (!p) return { title: '<b>Past papers</b>', act: '' };
   const s = ppScore(p), m = ppm;
   return { title: `<button class="abi abback" data-nav="papers" title="Back to Past papers (Esc)" aria-label="Back to Past papers"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="abcr" data-nav="papers">Past papers</button><i>›</i><span>${esc(PP_COURSE[p.c].name)}</span><i>›</i><b>${esc(ppTitle(p))}</b>`,
-    act: m?.items?.length ? `<span class="abmeta ppabs">${s.got} / ${s.of}${p.st === 'done' ? ` · ${s.pct}%` : ' so far'}</span><button class="abi ${m.draw === 'q' ? 'on' : ''}" data-act="pp-draw" data-v="q" title="Box a question (B)" aria-label="Box a question" aria-pressed="${m.draw === 'q'}"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.2 1.6"/></svg></button>${p.st === 'done' ? `<button class="btn" data-act="pp-reopen">Mark again</button>` : `<button class="btn primary" data-act="pp-finish">Finish marking</button>`}` : '' };
+    act: m?.items?.length || p.score?.of ? `<button type="button" class="abmeta ppabs ppabsb" data-act="pp-mark" title="Your mark">${s.got} / ${s.of}${p.st === 'done' || p.score?.of ? ` · ${s.pct}%` : ' so far'}</button><button class="abi ${m.draw === 'q' ? 'on' : ''}" data-act="pp-draw" data-v="q" title="Box a question (B)" aria-label="Box a question" aria-pressed="${m.draw === 'q'}"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.2 1.6"/></svg></button>${p.st === 'done' ? `<button class="btn" data-act="pp-reopen">Mark again</button>` : `<button class="btn primary" data-act="pp-finish">Finish marking</button>`}` : '' };
 }
 /* the paper a card came from, above the question while studying */
 function ppSrcLine(c){
@@ -9549,7 +9635,11 @@ async function ppAction(act, a, e){
     case 'pp-of': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}; ppm.of = Math.max(1, Math.min(40, (ppm.of ?? q.of ?? (it.marks || 1)) + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (ppm.got != null) ppm.got = Math.min(ppm.got, ppm.of); return ppmSide(); }
     case 'pp-save': return ppmSaveQ();
     case 'pp-draw': if (!ppm?.R) return; ppm.why = $('#ppwhy')?.value ?? ppm.why; ppm.draw = ppm.draw === v ? null : v; ppmSide(); if (ppm.draw) toast(v === 's' ? 'Drag across the page round the solution' : 'Drag across the page round the question', 1800); return;
-    case 'pp-solgo': { if (ppm?.locked) return toast('The solutions open when your time’s up', 1800); const g = ppm?.items[ppm.sel]?.sol?.[0]; if (g) ppmReveal(g); return; }
+    case 'pp-solgo': { const g = ppm?.items[ppm.sel]?.sol?.[0]; if (g) ppmReveal(g, true); return; }
+    case 'pp-split': ppSplitSet(!ppSplitOn()); return;
+    case 'pp-sides': ppSidesSet(!ppSides); return;
+    case 'pp-mark': { if (!ppm) return; ppm.sel = null; ppm.res = ppm.got = ppm.of = ppm.why = undefined; ppmSide(); setTimeout(() => { const g = $('#ppmkg'); g?.focus(); g?.select?.(); }, 30); return; }
+    case 'pp-mkclr': { const p0 = ppmP(); if (!p0?.score) return; const q = { ...p0 }; delete q.score; await ppSavePaper(q, 'paper mark'); return ppmSide(); }
     case 'pp-zoom': return ppmZoomStep(+a.dataset.d);
     case 'pp-dl': return ppmDownload();
     case 'pp-full': return ppFullSet(!ppFull);
