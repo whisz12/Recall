@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261111010809 min-shell:1.27.0 -->
+<!-- recall-build:20261111131351 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -90,7 +90,7 @@ body.desktop input,body.desktop textarea,body.desktop .qa,body.desktop .stext,bo
 </style>
 <style>
 /* Layout: brand + pill nav; deck screen = quiet summary tiles, then one card per subject holding its topic/subtopic tree; study = question on a card surface, answer slides in below a divider, tinted answer buttons in a bottom bar. Calm slate dark, colour only where it carries meaning. */
-:root{
+:root{--sat:env(safe-area-inset-top,0px);
   color-scheme: dark;
   --bg:#14161b; --surface:#1c1f26; --surface-2:#232731; --hover:#2a2f3a; --inset:#171a20;
   --border:#2a2f39; --border-2:#363c48;
@@ -117,8 +117,8 @@ button{cursor:pointer}
 a{color:var(--accent)}
 
 /* toolbar */
-.toolbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bar);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--bg)}
+.toolbar{position:sticky;top:var(--sat);z-index:20;background:var(--bar);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:var(--sat);z-index:21;background:var(--bg)}
 .toolbar .tin{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:12px;padding-block:13px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.015em;line-height:1;border:0;background:none;padding:2px 0;color:var(--fg)}
 .brand .logo{width:28px;height:28px;flex:none;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.35),inset 0 0 0 1px rgba(var(--ovr),.06)}
@@ -555,7 +555,7 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.45}
 .hrow b{text-align:right;font-weight:500;font-variant-numeric:tabular-nums}
 
 /* dialogs */
-.scrim{position:fixed;inset:0;z-index:50;background:rgba(8,9,12,.6);backdrop-filter:blur(3px);display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;padding:max(24px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 40px max(12px,env(safe-area-inset-left,0px))}
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(8,9,12,.6);backdrop-filter:blur(3px);display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;padding:max(24px,var(--sat)) max(12px,env(safe-area-inset-right,0px)) 40px max(12px,env(safe-area-inset-left,0px))}
 .dialog{width:100%;max-width:720px;background:var(--surface);border:1px solid var(--border-2);border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.5);display:flex;flex-direction:column;animation:pop .16s ease-out}
 @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.99)}to{opacity:1;transform:none}}
 .dialog header{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--border)}
@@ -619,7 +619,7 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.45}
 .lbnav:disabled{opacity:.25;cursor:default}
 .lbnav.prev{left:max(12px,env(safe-area-inset-left,0px))}
 .lbnav.next{right:max(12px,env(safe-area-inset-right,0px))}
-.lbclose{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));width:38px;height:38px;border-radius:50%;border:1px solid var(--border-2);background:rgba(35,39,49,.9);color:var(--fg);display:grid;place-items:center;cursor:pointer}
+.lbclose{position:fixed;top:calc(12px + var(--sat));right:max(12px,env(safe-area-inset-right,0px));width:38px;height:38px;border-radius:50%;border:1px solid var(--border-2);background:rgba(35,39,49,.9);color:var(--fg);display:grid;place-items:center;cursor:pointer}
 .lbclose svg{width:14px;height:14px}
 .bthumb{border:0;padding:0;background:none;border-radius:6px;flex:none;cursor:zoom-in;line-height:0}
 .bthumb:hover img{outline:2px solid var(--accent);outline-offset:1px}
@@ -853,7 +853,7 @@ mark{background:color-mix(in srgb, #ffd43b 42%, transparent);color:inherit;borde
 body.desktop .cloudpill{margin-top:auto;justify-content:center;border-radius:10px;padding:8px 10px;background:transparent;font-family:var(--side-font)}
 body.desktop .cloudpill + .sideadd{margin-top:8px}
 .cloudhero{display:flex}
-@media (max-width:760px){ .cloudpill span{display:none} .cloudpill{padding:6px} body:not(.desktop) .toolbar #cloudpill{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;margin:0} }
+@media (max-width:760px){ .cloudpill span{display:none} .cloudpill{padding:6px} body:not(.desktop) .toolbar #cloudpill{position:absolute;top:calc(var(--sat) + 14px);right:16px;margin:0} }
 /* phones: study pills wrap instead of running off the screen, and never break inside a pill */
 .lhpills{flex-wrap:wrap} .lhpill,.studytop .link,.studytop .tpill{white-space:nowrap} .studytop{flex-wrap:wrap;row-gap:6px}
 
@@ -1018,7 +1018,13 @@ body.desktop .sidesres .sidelabel{padding-top:2px}
 .odel{position:absolute;top:-11px;right:-11px;width:22px;height:22px;border-radius:50%;border:0;background:var(--again);color:#fff;font-size:15px;line-height:1;padding:0;cursor:pointer}
 .tclean.on{border-color:var(--accent);color:var(--accent)}
 /* scratchpad */
-.padwrap{margin:22px auto 0;max-width:780px;border:1px solid var(--border-2);border-radius:12px;background:var(--surface);overflow:hidden}
+.padwrap{margin:22px auto 0;max-width:780px;border:1px solid var(--border-2);border-radius:12px;background:var(--surface);overflow:hidden;overflow:clip}
+/* the tools stay at the top of the screen while you scroll down the page (overflow:clip, unlike hidden, lets sticky work) */
+.padwrap:not(.full) .padbar{position:sticky;top:var(--padtop,0px);z-index:4;background:var(--surface);border-radius:11px 11px 0 0}
+/* the bottom bar (Back, Edit, Exit) on narrow screens would sit over the page while you write: it goes while the scratchpad is open */
+body:has(#padwrap) #answerbar.lhbar{display:none}
+/* home-screen app: start the top bars below the band iOS blurs under the status bar */
+html.iosapp{--sat:calc(env(safe-area-inset-top,0px) + 32px)}
 .reviewer .padwrap{max-width:1040px}
 .padbar{display:flex;align-items:center;gap:4px;padding:7px 10px;border-bottom:1px solid var(--border);flex-wrap:wrap}
 .padb{border:0;background:none;color:var(--fg-2);border-radius:6px;padding:4px 8px;font-size:13px;font-family:var(--chrome);line-height:1.2}
@@ -1030,14 +1036,15 @@ body.desktop .sidesres .sidelabel{padding-top:2px}
 .padsep{width:1px;height:18px;background:var(--border-2);margin:0 5px}
 #pad{display:block;width:100%;height:380px;touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;background-color:var(--surface);background-image:radial-gradient(circle, rgba(var(--ovr),.16) 1px, transparent 1.4px);background-size:22px 22px}
 #pad.erasing{cursor:none}
+#pad.fscroll{touch-action:pan-x pan-y}
 .padcv{position:relative;background:var(--surface)}
 .padcur{display:none;position:absolute;pointer-events:none;z-index:2;border-radius:50%;transform:translate(-50%,-50%);border:1.5px solid rgba(0,0,0,.6);box-shadow:0 0 0 1px rgba(255,255,255,.95), inset 0 0 0 1px rgba(255,255,255,.8);background:rgba(0,0,0,.05)}
-.padwrap.full{position:fixed;inset:0;z-index:45;margin:0;max-width:none;border:0;border-radius:0;display:flex;flex-direction:column;background:var(--bg);padding-top:env(safe-area-inset-top,0px)}
+.padwrap.full{position:fixed;inset:0;z-index:45;margin:0;max-width:none;border:0;border-radius:0;display:flex;flex-direction:column;background:var(--bg)}
 .padwrap.full,.padwrap.full *{-webkit-app-region:no-drag}
-.padwrap.full .padbar{background:var(--surface);padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
+.padwrap.full .padbar{background:var(--surface);padding-top:calc(7px + var(--sat));padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
 body.desktop:not(.win):not(.hosted) .padwrap.full .padbar{padding-left:84px;min-height:46px}
 body.desktop.win:not(.hosted) .padwrap.full .padbar{padding-right:150px;min-height:40px}
-@media (max-width:700px){ .padwrap.full .padbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none} .padwrap.full .padbar::-webkit-scrollbar{display:none} .padwrap.full .padbar > *{flex:none} .padwrap.full .padbar .dlabel,.padwrap.full .padbar .grow,.padwrap.full .hintm{display:none} }
+@media (max-width:700px){ .padwrap .padbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none} .padwrap .padbar::-webkit-scrollbar{display:none} .padwrap .padbar > *{flex:none} .padwrap .padbar .dlabel,.padwrap .padbar .grow,.padwrap.full .hintm{display:none} }
 .padb{white-space:nowrap}
 .padbody{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,var(--pqa)) 12px minmax(0,var(--pqb))}
 .padq{overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--surface);padding:18px 20px 40px}
@@ -1063,7 +1070,7 @@ body.desktop.win:not(.hosted) .padwrap.full .padbar{padding-right:150px;min-heig
 .padmore .hintm{margin-left:auto}
 body.padding{-webkit-user-select:none;user-select:none}
 /* keep the close button reachable while scrolling a long dialog */
-.dialog > header{position:sticky;top:calc(-1 * max(24px, env(safe-area-inset-top, 0px)));z-index:3;background:var(--surface);border-radius:12px 14px 0 0}
+.dialog > header{position:sticky;top:calc(-1 * max(24px, var(--sat)));z-index:3;background:var(--surface);border-radius:12px 14px 0 0}
 .dialog > footer{position:sticky;bottom:calc(-1 * max(24px, env(safe-area-inset-bottom, 0px)));z-index:3;background:var(--surface);border-radius:0 0 14px 14px}
 
 .sidelabrow{display:flex;align-items:center;justify-content:space-between;padding-right:6px !important}
@@ -1389,7 +1396,7 @@ html.lh .banner{margin:0 0 var(--s4)}
 .navcl,.appbar{display:none}
 body.desktop .navcl{display:flex;align-items:center;gap:2px;position:fixed;top:12px;left:84px;z-index:40;-webkit-app-region:no-drag}
 html.win body.desktop .navcl{top:4px;left:8px}
-html.hosted body.desktop .navcl{top:max(10px, env(safe-area-inset-top));left:12px}
+html.hosted body.desktop .navcl{top:max(10px, var(--sat));left:12px}
 .ncb{width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:var(--r-sm);background:transparent;color:var(--fg-2);cursor:pointer;padding:0;transition:background var(--t-fast),color var(--t-fast)}
 .ncb svg{width:16px;height:16px}
 .ncb:hover:not(:disabled){background:rgba(var(--ovr),.08);color:var(--fg)}
@@ -1398,7 +1405,7 @@ html.lh body.desktop .sidetoggle{display:none}
 html.lh body.desktop .toolbar{padding-top:56px}
 html.win body.desktop .toolbar,html.lh html.win body.desktop .toolbar{padding-top:44px}
 html.lh.win body.desktop .toolbar{padding-top:44px}
-html.lh.hosted body.desktop .toolbar{padding-top:max(52px, calc(env(safe-area-inset-top) + 42px))}
+html.lh.hosted body.desktop .toolbar{padding-top:max(52px, calc(var(--sat) + 42px))}
 
 body.desktop .appbar{display:flex;align-items:center;gap:var(--s3);position:fixed;top:0;left:var(--sidew);right:0;height:var(--appbar);padding:0 var(--s4) 0 var(--s6);z-index:30;background:var(--side-solid);border-bottom:1px solid var(--border-2);-webkit-app-region:drag;transition:left .25s var(--ease),padding .25s var(--ease)}
 body.desktop.sidebar-hidden .appbar{left:0;padding-left:128px}
@@ -1406,7 +1413,7 @@ html.fs body.desktop .navcl{left:12px}
 html.fs body.desktop.sidebar-hidden .appbar{padding-left:56px}
 html.win body.desktop.sidebar-hidden .appbar,html.hosted body.desktop.sidebar-hidden .appbar{padding-left:56px}
 html.win body.desktop .appbar{padding-right:150px}
-html.hosted body.desktop .appbar{top:0;height:calc(var(--appbar) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
+html.hosted body.desktop .appbar{top:0;height:calc(var(--appbar) + var(--sat));padding-top:var(--sat)}
 .appbar button,.appbar select,.appbar input,.appbar .seg{-webkit-app-region:no-drag}
 .abt{display:flex;align-items:center;gap:6px;min-width:0;flex:1;font:500 13px var(--ui);color:var(--fg-3);white-space:nowrap;overflow:hidden}
 .abt b{font:600 15px var(--ui);color:var(--fg);letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis}
@@ -1434,7 +1441,7 @@ html.hosted body.desktop .appbar{top:0;height:calc(var(--appbar) + env(safe-area
 .appbar #rflash{margin-right:4px}
 body.desktop .page,html.lh body.desktop .page{padding-top:calc(var(--appbar) + 28px)}
 body.desktop.sidebar-hidden .page{padding-top:calc(var(--appbar) + 28px)}
-html.hosted body.desktop .page{padding-top:calc(var(--appbar) + env(safe-area-inset-top) + 28px)}
+html.hosted body.desktop .page{padding-top:calc(var(--appbar) + var(--sat) + 28px)}
 body.desktop::after{display:none}
 body.desktop .ptitle,body.desktop .narrow > .crumbs{display:none}
 body.desktop .btable th{top:var(--appbar)}
@@ -1586,7 +1593,7 @@ html.lh .dialog.builder{position:fixed;inset:0;max-width:none;width:auto;border:
 @keyframes b-in{from{opacity:0;transform:translateY(12px)}}
 html.lh .builder > .bhead{position:relative;top:auto;flex:none;display:flex;align-items:center;gap:var(--s2);height:var(--appbar);padding:0 var(--s4) 0 84px;border-bottom:1px solid var(--border);background:var(--bg);border-radius:0;-webkit-app-region:drag}
 html.win .builder > .bhead{padding-left:var(--s3);padding-right:150px}
-html:not(.desktop) .builder > .bhead,html.hosted .builder > .bhead{padding-left:var(--s3);padding-top:env(safe-area-inset-top);height:calc(var(--appbar) + env(safe-area-inset-top))}
+html:not(.desktop) .builder > .bhead,html.hosted .builder > .bhead{padding-left:var(--s3);padding-top:var(--sat);height:calc(var(--appbar) + var(--sat))}
 .builder > .bhead button,.builder > .bhead .ednav{-webkit-app-region:no-drag}
 .builder .bhead h2{flex:none;margin:0 0 0 2px;font:600 15px var(--ui);letter-spacing:-.01em;white-space:nowrap}
 .bwhere{font:400 13px var(--ui);color:var(--fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -1752,7 +1759,7 @@ html.lh.win body.desktop,html.lh.win.desktop{background:var(--side-solid) !impor
 html.lh body.desktop .toolbar{background:var(--side-solid);border-right:0}
 html.lh body.desktop .page{margin:var(--appbar) 8px 8px var(--sidew);min-height:calc(100vh - var(--appbar) - 8px);box-sizing:border-box;border:1px solid var(--border);border-radius:12px;background-color:var(--bg);padding-top:28px;transition:margin-left .25s var(--ease)}
 html.lh body.desktop.sidebar-hidden .page{margin-left:8px;padding-top:28px}
-html.lh.hosted body.desktop .page{margin-top:calc(var(--appbar) + env(safe-area-inset-top))}
+html.lh.hosted body.desktop .page{margin-top:calc(var(--appbar) + var(--sat))}
 html.lh body.desktop .appbar{background:var(--side-solid);border-bottom:0;padding-right:16px}
 html.lh body.desktop .appbar::before,html.lh body.desktop .appbar::after{content:"";position:absolute;bottom:-12px;width:12px;height:12px;pointer-events:none}
 html.lh body.desktop .appbar::before{left:0;background:radial-gradient(circle at 100% 100%, transparent 11px, var(--border) 11.5px, var(--border) 12px, var(--side-solid) 12.6px)}
@@ -2784,7 +2791,7 @@ body.ppcolres,body.ppcolres *{cursor:col-resize!important;user-select:none}
 .ppstage.nobar > .ppzbar:not([hidden]) ~ .ppzshow{display:inline-flex}
 @media (pointer:coarse){ .ppzshow{width:56px;height:32px} .ppzshow.tm{width:auto;height:36px;padding:0 12px 0 8px} }
 @media (max-width:900px){ .ppzshow{position:static;order:-1;align-self:center;transform:none;margin:12px 0 0} html:not(.ppfull) .ppzshow svg,html:not(.ppfull) .ppzbar [data-act="pp-bar"] svg{transform:rotate(180deg)} }
-@media (max-width:900px){ html:not(.ppfull) .ppzshow.tm{position:sticky;top:calc(8px + env(safe-area-inset-top,0px));z-index:5} }
+@media (max-width:900px){ html:not(.ppfull) .ppzshow.tm{position:sticky;top:calc(8px + var(--sat));z-index:5} }
 html.ppfull .ppzshow{position:absolute;order:0;margin:0;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px))}
 .pptmact{display:flex;gap:8px}
 .pptmact .btn{flex:1}
@@ -2911,7 +2918,7 @@ html.ppfull .ppzshow{position:absolute;order:0;margin:0;transform:translateX(-50
 /* full screen paper: everything else steps back, the paper fills the window */
 html.ppfull,html.ppfull body{overflow:hidden}
 html.ppfull #root > .ppm{animation:none;transform:none}
-html.ppfull .ppstage{position:fixed;inset:0;z-index:45;height:auto;top:0;align-self:stretch;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) 0 env(safe-area-inset-left,0px)}
+html.ppfull .ppstage{position:fixed;inset:0;z-index:45;height:auto;top:0;align-self:stretch;padding:var(--sat) env(safe-area-inset-right,0px) 0 env(safe-area-inset-left,0px)}
 html.ppfull .ppscroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:24px 24px 88px}
 html.ppfull .ppzbar{position:absolute;order:0;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);margin:0;box-shadow:0 1px 2px rgba(0,0,0,.2),0 6px 18px rgba(0,0,0,.22)}
 html.ppfull .ppzbar #ppzfs{color:var(--fg)}
@@ -4113,7 +4120,7 @@ const PAD_ERASE_R = 0.018;   // stroke-eraser reach, in width units
 function padHtml(){
   if (!padOpen) return '';
   const c = study?.cur ? S.cards[study.cur] : null, full = pad.full && !!c;
-  const sheet = `<div class="padcv"><canvas id="pad" class="${pad.tool === 'eraser' ? 'erasing' : ''}"></canvas><div class="padcur" id="padcur"></div></div><div class="padmore"><button class="padb" data-pad="more">+ More space</button>${pad.h > 380 ? '<button class="padb" data-pad="less">− Less</button>' : ''}<span class="hintm">${full ? 'Drag the bar between the question and the page to resize' : 'It also grows by itself when you write near the bottom'}</span></div>`;
+  const sheet = `<div class="padcv"><canvas id="pad" class="${pad.tool === 'eraser' ? 'erasing' : ''}${pad.penSeen ? ' fscroll' : ''}"></canvas><div class="padcur" id="padcur"></div></div><div class="padmore"><button class="padb" data-pad="more">+ More space</button>${pad.h > 380 ? '<button class="padb" data-pad="less">− Less</button>' : ''}<span class="hintm">${full ? 'Drag the bar between the question and the page to resize' : 'It also grows by itself when you write near the bottom'}</span></div>`;
   const now = Date.now(), s = c?.srs || freshSrs();
   const foot = !full ? '' : study.shown
     ? `<div class="padfoot">${[['Again'], ['Hard'], ['Good'], ['Easy']].map(([l], i) => `<button class="btn r${i + 1}" data-act="rate" data-r="${i + 1}" title="Shortcut: ${i + 1}">${l} <small>${fmtIvl(schedule(s, i + 1, now).due - now)}</small></button>`).join('')}</div>`
@@ -4138,8 +4145,20 @@ function padState(){
   const st = study.padBy[study.cur] = study.padBy[study.cur] || { strokes: [], hist: [], redo: [], h: 380 };
   pad.strokes = st.strokes; pad.hist = st.hist; pad.redo = st.redo; pad.h = st.h; pad.st = st;
 }
+/* what the page scrolls in: its own pane in full screen, otherwise the window */
+const padScroller = () => $('#padwrap.full #padscroll') || document.scrollingElement;
+/* the scratchpad's tools stick just under whatever bar is fixed at the top of the screen */
+function padStickTop(){
+  const w = $('#padwrap'); if (!w || w.classList.contains('full')) return;
+  const bars = [$('#appbar'), document.body.classList.contains('desktop') ? null : $('.toolbar')].filter(b => b && getComputedStyle(b).display !== 'none' && /fixed|sticky/.test(getComputedStyle(b).position));
+  const sat = parseFloat(getComputedStyle(document.body, '::before').height) || 0;
+  w.style.setProperty('--padtop', Math.round(Math.max(sat, ...bars.map(b => b.getBoundingClientRect().bottom))) + 'px');
+}
+/* the phone's top bar gets shorter once you scroll, so follow it */
+let padStickRaf = 0; const padStickSoon = () => { if (!padStickRaf && padOpen) padStickRaf = requestAnimationFrame(() => { padStickRaf = 0; padStickTop(); }); };
+addEventListener('resize', padStickSoon); addEventListener('scroll', padStickSoon, { passive: true });
 function padMount(){
-  const cv = $('#pad'); if (!cv) return;
+  const cv = $('#pad'); if (!cv) return; padStickTop();
   padState(); cv.style.height = pad.h + 'px';
   const full = !!$('#padwrap.full'), scroller = $('#padscroll');
   let lastW = 0;
@@ -4155,7 +4174,9 @@ function padMount(){
   if (full){ typeset($('#padq')); padResizer(); }
   const pt = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.width, e.pointerType === 'pen' ? (e.pressure > 0 ? e.pressure : 0.5) : 0.5]; };
   // Safari on iPad: stop the page from treating pencil/finger touches on the pad as scrolls, zooms, text selection or Scribble
-  const stop = e => { if (e.touches && [...e.touches].some(t => t.touchType === 'stylus') || !pad.penSeen) e.preventDefault(); };
+  // once a Pencil is in use, a finger scrolls the page (#pad.fscroll lets the browser pan); the Pencil, and fingers while it's writing, never do
+  let penUpAt = 0;
+  const stop = e => { if (e.touches && [...e.touches].some(t => t.touchType === 'stylus') || !pad.penSeen || (pad.cur && pad.cur.pen) || Date.now() - penUpAt < 250) e.preventDefault(); };
   cv.addEventListener('touchstart', stop, { passive: false }); cv.addEventListener('touchmove', stop, { passive: false });
   // eraser ring: shows exactly what the eraser will touch (follows the Pencil while hovering on iPads that support it, and the mouse on a Mac)
   const ring = $('#padcur');
@@ -4167,9 +4188,21 @@ function padMount(){
   };
   cv.addEventListener('pointermove', showRing); cv.addEventListener('pointerleave', () => { if (ring && !pad.cur) ring.style.display = 'none'; });
   // double-tap with a finger (once the Pencil is in use) swaps pen ⇄ eraser. Safari doesn't pass the Pencil's own double-tap to web pages.
-  let tap = null, lastTap = null, penUpAt = 0;
+  let tap = null, lastTap = null;
+  // drawing with a finger (no Pencil yet): two fingers scroll the page instead of drawing
+  const fingers = new Map(); let pan = null;
+  const mid = () => { let x = 0, y = 0; fingers.forEach(f => { x += f[0]; y += f[1]; }); return [x / fingers.size, y / fingers.size]; };
+  const padAbort = () => {   // drop the stroke the first finger started
+    const c = pad.cur; if (!c) return; pad.cur = null; document.body.classList.remove('padding');
+    if (c.erase){ if (c.removed.length){ pad.hist.push({ t: 'erase', items: c.removed }); pad.redo.length = 0; } return; }
+    const i = pad.strokes.indexOf(c); if (i >= 0) pad.strokes.splice(i, 1); padRedraw();
+  };
   cv.addEventListener('pointerdown', e => {
-    if (e.pointerType === 'pen') pad.penSeen = true;
+    if (e.pointerType === 'pen' && !pad.penSeen){ pad.penSeen = true; cv.classList.add('fscroll'); }
+    if (e.pointerType === 'touch' && !pad.penSeen){
+      fingers.set(e.pointerId, [e.clientX, e.clientY]);
+      if (fingers.size >= 2 || pan){ e.preventDefault(); if (pad.cur && fingers.has(pad.cur.id)) padAbort(); pan = mid(); return; }
+    }
     if (e.pointerType === 'touch' && pad.penSeen){   // palm rejection once a pencil has been used
       if (tap || pad.cur || Date.now() - penUpAt < 300){ tap = null; lastTap = null; return; }
       tap = { id: e.pointerId, t: Date.now(), x: e.clientX, y: e.clientY }; return;
@@ -4177,9 +4210,15 @@ function padMount(){
     if (e.button > 0) return;
     e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch {}
     document.body.classList.add('padding'); showRing(e);
-    if (pad.tool === 'eraser' && pad.eraser === 'stroke'){ pad.cur = { erase: true, id: e.pointerId, removed: [] }; padStrokeErase(pt(e)); return; }
-    pad.cur = { tool: pad.tool, color: pad.color, size: pad.size, pts: [pt(e)], id: e.pointerId, drawn: 0 }; pad.strokes.push(pad.cur); padRedraw(true);
+    if (pad.tool === 'eraser' && pad.eraser === 'stroke'){ pad.cur = { erase: true, id: e.pointerId, removed: [], pen: e.pointerType === 'pen' }; padStrokeErase(pt(e)); return; }
+    pad.cur = { tool: pad.tool, color: pad.color, size: pad.size, pts: [pt(e)], id: e.pointerId, drawn: 0, pen: e.pointerType === 'pen' }; pad.strokes.push(pad.cur); padRedraw(true);
   });
+  cv.addEventListener('pointermove', e => {
+    if (!fingers.has(e.pointerId)) return; fingers.set(e.pointerId, [e.clientX, e.clientY]);
+    if (!pan) return; e.preventDefault(); const m = mid(), sc = padScroller(); sc.scrollTop -= m[1] - pan[1]; sc.scrollLeft -= m[0] - pan[0]; pan = m;
+  });
+  const lift = e => { if (!fingers.delete(e.pointerId)) return; if (!fingers.size) pan = null; else if (pan) pan = mid(); };
+  cv.addEventListener('pointerup', lift); cv.addEventListener('pointercancel', lift);
   cv.addEventListener('pointerup', e => {
     if (!tap || e.pointerId !== tap.id) return;
     const now = Date.now(), ok = now - tap.t < 280 && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) < 14; tap = null;
@@ -4190,6 +4229,7 @@ function padMount(){
   cv.addEventListener('pointermove', e => {
     if (!pad.cur || e.pointerId !== pad.cur.id) return; e.preventDefault();
     const evs = (e.getCoalescedEvents && e.getCoalescedEvents()) || []; const list = evs.length ? evs : [e];
+    if (pan) return;
     if (pad.cur.erase){ list.forEach(ev => padStrokeErase(pt(ev))); return; }
     list.forEach(ev => pad.cur.pts.push(pt(ev))); padRedraw(true);
     const last = pad.cur.pts[pad.cur.pts.length - 1], r = cv.getBoundingClientRect();
@@ -4198,6 +4238,7 @@ function padMount(){
   const end = e => {
     if (!pad.cur || e.pointerId !== pad.cur.id) return;
     const c = pad.cur; pad.cur = null; document.body.classList.remove('padding'); if (e.pointerType === 'pen') penUpAt = Date.now();
+    delete c.pen;
     if (e.pointerType !== 'mouse' && e.type !== 'pointermove' && ring && !matchMedia('(hover: hover)').matches) ring.style.display = 'none';
     if (c.erase){ if (c.removed.length){ pad.hist.push({ t: 'erase', items: c.removed }); pad.redo.length = 0; } return; }
     if (c.pts.length === 1) c.pts.push([c.pts[0][0] + 0.0005, c.pts[0][1], c.pts[0][2]]);
