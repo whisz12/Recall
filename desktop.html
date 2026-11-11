@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261111131351 min-shell:1.27.0 -->
+<!-- recall-build:20261111234425 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -2941,6 +2941,12 @@ html.ppfull body.desktop::after{display:none}
 .tdtabs button[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:2px;border-radius:2px;background:var(--fg)}
 .tdtabs b{font:400 13px var(--ui);color:var(--fg-3);font-variant-numeric:tabular-nums}
 .tdtabs button.over b{color:var(--accent)}
+.tdtabs .tdtabadd{width:36px;justify-content:center;padding:0;color:var(--fg-3)}
+.tdtabs .tdtabadd svg{width:16px;height:16px}
+.tdtabs .tdtabadd:hover{color:var(--fg)}
+.tdtabs .tdtabin{flex:none;align-self:center;height:30px;margin:0 4px;padding:0 8px;border:1px solid var(--border-2);border-radius:6px;background:var(--surface-2);color:var(--fg);font:500 14px var(--ui);outline:none;min-width:0}
+.tdtabs .tdtabin:focus{border-color:var(--accent)}
+@media (pointer:coarse){ .tdtabs .tdtabadd{width:44px} .tdtabs .tdtabin{font-size:16px} }
 .tdo.calm .tdl{border-top:0;padding:4px 0}
 .tdo.calm .tdr{min-height:52px;padding:8px 12px 8px 16px;gap:12px;border-top:1px solid color-mix(in srgb, var(--border) 65%, transparent)}
 .tdo.calm .tdl > .tdr:first-child{border-top:0}
@@ -7456,8 +7462,12 @@ document.addEventListener('keydown', e => {
 
 /* ---------- to-do: tasks for each subject, ticked off with a small moment; kept in settings so they sync ---------- */
 const todoAll = () => Array.isArray(S.settings?.todos) ? S.settings.todos : [];
-const TODO_TABS = [['today', 'Today'], ['doing', 'In progress'], ['hw', 'Homework'], ['all', 'Revision'], ['later', 'Later']], TODO_KEYS = TODO_TABS.map(t => t[0]);
-let todoShowDone = false, todoTab = TODO_KEYS.includes(ls.get('md-todo-tab', 'today')) ? ls.get('md-todo-tab', 'today') : 'today';
+const TODO_TABS0 = [['today', 'Today'], ['doing', 'In progress'], ['hw', 'Homework'], ['all', 'Revision'], ['later', 'Later']];
+/* your own lists (Assignments, Holidays…): S.settings.todoLists [{ id, name }], synced; a task in one has l = its id */
+const todoULists = () => Array.isArray(S.settings?.todoLists) ? S.settings.todoLists.filter(x => x && x.id && x.name) : [];
+const todoTabs = () => [...TODO_TABS0, ...todoULists().map(x => [x.id, x.name])], todoKeys = () => todoTabs().map(t => t[0]);
+const todoTabName = l => todoTabs().find(t => t[0] === l)?.[1] || 'Revision';
+let todoShowDone = false, todoTab = ls.get('md-todo-tab', 'today') || 'today', todoTabNew = false, todoTabRen = null;
 /* which subject's tasks the list shows: this page's subject unless you pick another (or All) in the panel */
 let todoF = { at: null, v: '' };
 function todoEff(subj){ const v = todoF.at === (subj || null) ? todoF.v : ''; if (v === 'all') return null; if (v && (S.nodes[v] || (v.startsWith('tc:') && todoCat(v.slice(3))))) return v; return subj || null; }
@@ -7469,7 +7479,7 @@ const todoMatch = (x, f) => !f ? true : f.startsWith('tc:') ? x.tc === f.slice(3
 const todoFCol = f => !f ? 'var(--accent)' : f.startsWith('tc:') ? (todoCat(f.slice(3))?.color || 'var(--fg-3)') : scol(f);
 const todoFName = f => !f ? '' : f.startsWith('tc:') ? (todoCat(f.slice(3))?.name || 'Subtopic') : (nodeOf(f)?.name || 'Subject');
 const todoXCol = x => (x.tc && todoCat(x.tc)?.color) || (x.s ? scol(x.s) : 'var(--accent)');
-const todoL = x => x.l === 'today' || x.l === 'hw' || x.l === 'doing' || x.l === 'later' ? x.l : 'all';
+const todoL = x => x.l === 'today' || x.l === 'hw' || x.l === 'doing' || x.l === 'later' || (x.l && todoULists().some(u => u.id === x.l)) ? x.l : 'all';
 /* in progress: how many things you're actively working on, across every subject, against a limit you set */
 const todoWip = () => { const n = S.settings?.todoWip; return n === 0 ? 0 : Number.isFinite(n) && n > 0 ? n : 3; };
 const todoDoing = () => todoAll().filter(x => !x.done && !x.k && todoL(x) === 'doing').length;
@@ -7565,7 +7575,7 @@ function todoShown(open){
   return out;
 }
 function todoSection(subj, page){
-  todoSpawn(); todoRowSubj = subj || null;
+  todoSpawn(); todoRowSubj = subj || null; if (!todoKeys().includes(todoTab)) todoTab = 'today';
   const f = todoEff(subj), addTo = f || subj, anName = todoFName(addTo);
   const nr = todoRules().filter(r => todoMatch(r, f)).length;
   const open = todoList(subj), done = todoDoneList(subj), today = done.length, nTask = todoTasks(open).length, shown = todoShown(open);
@@ -7573,7 +7583,7 @@ function todoSection(subj, page){
   const tm = mins ? ` · <span class="tdtot" title="Time estimated for the tasks left${minsDone ? ', ' + fmtMin(minsDone) + ' done' : ''}">${fmtMin(mins)}</span>` : '';
   const cap = todoTab === 'doing'
     ? `${w ? `${nd} of ${w} at once` : `${nd} in progress`}${f && nd !== nTask ? ` · ${nTask} in ${esc(todoFName(f))}` : ''}${tm}${today ? ` · ${today} done` : ''} · <button class="tdrepl" data-act="todo-wip">${w ? 'Change limit' : 'Set a limit'}</button>${over ? `<span class="tdover">Over your limit</span>` : ''}`
-    : `${nTask ? `${nTask} left` : today ? 'All done' : todoTab === 'today' ? 'Nothing for today yet' : todoTab === 'hw' ? 'No homework to hand in' : todoTab === 'later' ? 'Nothing waiting' : 'Nothing to revise yet'}${tm}${today ? ` · ${today} done` : ''}${nr ? ` · <button class="tdrepl" data-act="todo-reps">${nr} repeating</button>` : ''}`;
+    : `${nTask ? `${nTask} left` : today ? 'All done' : todoTab === 'today' ? 'Nothing for today yet' : todoTab === 'hw' ? 'No homework to hand in' : todoTab === 'later' ? 'Nothing waiting' : todoTab === 'all' ? 'Nothing to revise yet' : 'Nothing here'}${tm}${today ? ` · ${today} done` : ''}${nr ? ` · <button class="tdrepl" data-act="todo-reps">${nr} repeating</button>` : ''}`;
   const subs = kids(null), fl = f ? esc(todoFName(f)) : 'All subjects';
   const act = todoNewKind || todoNewMin || todoRepDays.size || todoRepOpen;
   /* selection: only rows you can see stay selected */
@@ -7584,7 +7594,9 @@ function todoSection(subj, page){
       <div class="tdoh">${page ? '' : '<h2>To-do</h2>'}<span class="tdoc">${cap}</span><span class="grow"></span>
         ${shown.length ? `<button type="button" class="tdfbtn" data-act="todo-selmode" aria-pressed="${selOn}" title="Select several tasks to move, tick or delete together (or Shift-click / ⌘-click rows)">${selOn ? 'Done' : 'Select'}</button>` : ''}
         ${subs.length > 1 ? `<button type="button" class="tdfbtn" data-act="todo-fmenu" aria-haspopup="true" title="Which subject's tasks to show">${f ? `<span class="sdot2" style="--sc:${todoFCol(f)}"></span>` : ''}${fl}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6.5 8 10l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ''}</div>
-      <div class="tdtabs" role="tablist" aria-label="Which list">${TODO_TABS.map(([k, l]) => { const n = nOf(k); return `<button type="button" role="tab" data-act="todo-tab" data-v="${k}" aria-selected="${todoTab === k}" class="${k === 'doing' && over ? 'over' : ''}">${l}${n ? `<b>${n}</b>` : ''}</button>`; }).join('')}</div>
+      <div class="tdtabs" role="tablist" aria-label="Which list">${todoTabs().map(([k, l]) => { const n = nOf(k), own = !TODO_TABS0.some(t => t[0] === k);
+        if (own && todoTabRen === k) return `<input class="tdtabin" data-ren="${k}" maxlength="40" value="${esc(l)}" aria-label="Rename list" size="${Math.max(6, l.length + 1)}">`;
+        return `<button type="button" role="tab" data-act="todo-tab" data-v="${k}" aria-selected="${todoTab === k}" class="${k === 'doing' && over ? 'over' : ''}"${own ? ` data-own="1" aria-haspopup="true" title="${todoTab === k ? 'Rename or delete this list' : esc(l)}"` : ''}>${esc(l)}${n ? `<b>${n}</b>` : ''}</button>`; }).join('')}${todoTabNew ? `<input class="tdtabin" data-new="1" maxlength="40" placeholder="List name" aria-label="New list name" size="12">` : `<button type="button" class="tdtabadd" data-act="todo-tabnew" title="New list, like Assignments" aria-label="New list">${'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'}</button>`}</div>
       ${nSel ? `<div class="tdselbar" role="toolbar" aria-label="Selected tasks"><b>${nSel} selected</b><button type="button" data-act="todo-bmove" aria-haspopup="true">Move to…</button><button type="button" data-act="todo-bsubj" aria-haspopup="true">Subject…</button><button type="button" data-act="todo-btick">Tick off</button><button type="button" class="danger" data-act="todo-bdel">Delete</button><span class="grow"></span><span class="tdselhint">Drag any of them to move them all</span><button type="button" data-act="todo-selclear" aria-label="Clear the selection">${I.x}</button></div>` : ''}
       ${shown.length + today ? `<div class="tdl">${shown.map(todoRow).join('')}${today ? todoDoneHead(today) + done.map((x, i) => todoRow(x, shown.length + 1 + i)).join('') : ''}</div>` : ''}
       <label class="tdadd ${act ? 'act' : ''}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" class="${todoNewKind === 'h' ? 'hmode' : ''}" placeholder="${todoNewKind === 'h' ? 'New heading, like At school' : todoRepDays.size ? `Every ${repWords([...todoRepDays])}…` : todoTab === 'doing' ? 'Something you’re working on now' : todoTab === 'hw' ? 'New homework' : 'New task'}${anName && todoNewKind !== 'h' && todoTab !== 'doing' ? ' in ' + esc(anName) : ''}" aria-label="${todoNewKind === 'h' ? 'New heading' : 'New task'}"><span class="tdaddx">${todoNewKind === 'h' ? '' : `<button type="button" class="tdtimebtn ${todoNewMin ? 'on' : ''}" data-act="todo-time" data-id="__new" aria-haspopup="true" title="How long it will take">${CLOCK_IC}<span>${todoNewMin ? fmtMin(todoNewMin) : 'Time'}</span></button><button type="button" class="tdrepbtn ${todoRepDays.size ? 'on' : ''}" data-act="todo-repopen" aria-expanded="${todoRepOpen}" title="Repeat on certain days">${REP_IC}<span>${todoRepDays.size ? esc(repShort([...todoRepDays])) : 'Repeat'}</span></button>`}<button type="button" class="tdrepbtn tdkbtn ${todoNewKind === 'h' ? 'on' : ''}" data-act="todo-hmode" aria-pressed="${todoNewKind === 'h'}" title="${todoNewKind === 'h' ? 'Back to adding tasks' : 'Add a heading, like At school'}">${TD_H_IC}<span>Heading</span></button><button type="button" class="tdrepbtn tdkbtn" data-act="todo-gap" title="Add a blank space to separate things">${TD_GAP_IC}<span>Space</span></button></span></label>
@@ -7633,7 +7645,7 @@ document.addEventListener('click', e => {
 }, true);
 function todoBMenu(kind, anchor){
   closeMenu(); const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
-  m.innerHTML = kind === 'move' ? `<div class="mlabel">Move ${todoSel.size} to</div>` + TODO_TABS.map(([k, l]) => `<button data-act="todo-bmoveto" data-l="${k}">${l}</button>`).join('')
+  m.innerHTML = kind === 'move' ? `<div class="mlabel">Move ${todoSel.size} to</div>` + todoTabs().map(([k, l]) => `<button data-act="todo-bmoveto" data-l="${k}">${l}</button>`).join('')
     : `<div class="mlabel">Subject for ${todoSel.size}</div>` + todoSubjOpts(null, 'data-act="todo-bsubjto"') + `<button class="tdsubm" data-act="todo-bsubjto" data-s=""><span class="sdot2" style="--sc:var(--fg-3)"></span>No subject</button>`;
   document.body.appendChild(m); const r = anchor.getBoundingClientRect();
   m.style.left = Math.max(8, Math.min(innerWidth - m.offsetWidth - 8, r.left)) + 'px'; m.style.top = Math.min(innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px'; m.querySelector('button')?.focus();
@@ -7643,7 +7655,7 @@ function todoBatchAct(act, a){
   if (act === 'todo-bmove') return $('#menu') ? closeMenu() : todoBMenu('move', a);
   if (act === 'todo-bsubj') return $('#menu') ? closeMenu() : todoBMenu('subj', a);
   closeMenu();
-  if (act === 'todo-bmoveto'){ const l = a.dataset.l; todoSave(todoAll().map(z => { if (!ids.has(z.id)) return z; const y = { ...z }; if (l === 'all') delete y.l; else y.l = l; return y; }), 'move tasks'); todoSel.clear(); todoRefresh(); toast(`Moved ${n} to ${TODO_TABS.find(t => t[0] === l)?.[1] || 'Revision'}`, 1600); if (l === 'doing') todoWipWarn(); return; }
+  if (act === 'todo-bmoveto'){ const l = a.dataset.l; todoSave(todoAll().map(z => { if (!ids.has(z.id)) return z; const y = { ...z }; if (l === 'all') delete y.l; else y.l = l; return y; }), 'move tasks'); todoSel.clear(); todoRefresh(); toast(`Moved ${n} to ${todoTabName(l)}`, 1600); if (l === 'doing') todoWipWarn(); return; }
   if (act === 'todo-bsubjto'){ const sv = a.dataset.s || ''; todoSave(todoAll().map(z => ids.has(z.id) && !z.k ? todoSubjApply(z, sv) : z), 'change subject'); todoRefresh(); return toast(sv ? `Now in ${todoFName(sv)}` : 'No subject now', 1400); }
   if (act === 'todo-btick'){
     const now = Date.now(), xs = todoAll().filter(z => ids.has(z.id) && !z.k && !z.done); if (!xs.length) return toast('Headings and spaces can’t be ticked', 1600);
@@ -7839,7 +7851,7 @@ function todoMoveMenu(id, anchor){
   if (x.k === 'gap'){ m.innerHTML = `<button data-act="todo-kind" data-id="${id}" data-k="h">Turn into a heading</button>` + del; }
   else {
   const kinds = x.k === 'h' ? `<hr><button data-act="todo-kind" data-id="${id}" data-k="">Turn into a task</button>` : `<hr><button data-act="todo-time" data-id="${id}" aria-haspopup="true">${x.m ? `Time: about ${fmtMin(x.m)}` : 'Set a time…'}</button><div class="mlabel">Turn into</div><button data-act="todo-kind" data-id="${id}" data-k="h">A heading</button><button data-act="todo-kind" data-id="${id}" data-k="gap">A blank space</button>`;
-  m.innerHTML = `<div class="mlabel">List</div>` + TODO_TABS.filter(([k]) => k !== todoL(x)).map(([k, l]) => `<button data-act="todo-moveto" data-id="${id}" data-l="${k}">Move to ${l}</button>`).join('')
+  m.innerHTML = `<div class="mlabel">List</div>` + todoTabs().filter(([k]) => k !== todoL(x)).map(([k, l]) => `<button data-act="todo-moveto" data-id="${id}" data-l="${k}">Move to ${l}</button>`).join('')
     + (x.k === 'h' ? kinds + del : kinds + `<hr><div class="mlabel">Subject</div>` + todoSubjOpts(x, `data-act="todo-subj" data-id="${id}"`)
     + `<button class="tdsubm" data-act="todo-subj" data-id="${id}" data-s="" role="menuitemradio" aria-checked="${!x.s && !x.tc}"><span class="sdot2" style="--sc:var(--fg-3)"></span>No subject${!x.s && !x.tc ? '<span class="grow"></span>✓' : ''}</button>` + del);
   }
@@ -7920,8 +7932,44 @@ function todoCatDel(){
   if (todoF.v === 'tc:' + id) todoF = { at: todoF.at, v: '' };
   tdCat = null; closeDialog(); todoRefresh(); toast(`${c.name} deleted · its tasks stay under ${c.parent ? nodeOf(c.parent)?.name || 'their subject' : 'no subject'} · ⌘Z to undo`, 3000);
 }
+/* your own lists: + at the end of the tabs makes one; click the open one (or right-click it) to rename or delete it */
+function todoTabMenu(id, anchor){
+  closeMenu(); const n = todoAll().filter(x => !x.done && !x.k && x.l === id).length;
+  const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
+  m.innerHTML = `<button data-act="todo-tabren" data-v="${id}">Rename</button><hr><button class="danger" data-act="todo-tabdel" data-v="${id}">${n ? `Delete list and its ${n} task${n > 1 ? 's' : ''}` : 'Delete list'}</button>`;
+  document.body.appendChild(m); const r = anchor.getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(innerWidth - m.offsetWidth - 8, r.left)) + 'px'; m.style.top = Math.min(innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px'; m.querySelector('button').focus();
+}
+function todoTabSave(inp){
+  const name = inp.value.replace(/\s+/g, ' ').trim().slice(0, 40), ren = inp.dataset.ren;
+  todoTabNew = false; todoTabRen = null;
+  if (name && ren && todoULists().some(x => x.id === ren && x.name !== name)){
+    undoTx = null; undoLabel = 'rename list'; undoRecordSettings();
+    S.settings = { ...S.settings, todoLists: todoULists().map(x => x.id === ren ? { ...x, name } : x) }; saveSettings();
+  } else if (name && !ren){
+    const id = uid('L'); undoTx = null; undoLabel = 'new list'; undoRecordSettings();
+    S.settings = { ...S.settings, todoLists: [...todoULists(), { id, name }] }; saveSettings();
+    todoTab = id; ls.set('md-todo-tab', id); todoRefresh(true); return toast(`${name} added`, 1400);
+  }
+  todoRefresh();
+}
+function todoTabDel(id){
+  const u = todoULists().find(x => x.id === id); if (!u) return;
+  const n = todoAll().filter(x => !x.done && !x.k && x.l === id).length;
+  undoTx = null; undoLabel = 'delete list'; undoRecordSettings();
+  S.settings = { ...S.settings, todoLists: todoULists().filter(x => x.id !== id), todos: todoAll().filter(x => x.l !== id), todoRepeat: todoRules().map(r => r.l === id ? (({ l, ...y }) => y)(r) : r) }; saveSettings();
+  if (todoTab === id){ todoTab = 'today'; ls.set('md-todo-tab', 'today'); }
+  todoRefresh(); toast(`${u.name} deleted${n ? ` with ${n} task${n > 1 ? 's' : ''}` : ''} · ⌘Z to undo`, 2600);
+}
+document.addEventListener('keydown', e => {
+  const inp = e.target.closest?.('.tdtabin'); if (!inp) return;
+  if (e.key === 'Enter'){ e.preventDefault(); e.stopPropagation(); inp.dataset.done = 1; todoTabSave(inp); }
+  else if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); inp.dataset.done = 1; todoTabNew = false; todoTabRen = null; todoRefresh(); }
+}, true);
+document.addEventListener('focusout', e => { const inp = e.target.closest?.('.tdtabin'); if (inp && !inp.dataset.done){ inp.dataset.done = 1; setTimeout(() => todoTabSave(inp), 0); } });
+document.addEventListener('contextmenu', e => { const t = e.target.closest?.('#tdo .tdtabs button[data-own]'); if (!t) return; e.preventDefault(); e.stopPropagation(); todoTabMenu(t.dataset.v, t); }, true);
 function todoMoveTo(id, l){
-  const name = TODO_TABS.find(([k]) => k === l)?.[1] || 'Revision';
+  const name = todoTabName(l);
   todoSave(todoAll().map(z => { if (z.id !== id) return z; const n = { ...z }; if (l === 'all') delete n.l; else n.l = l; return n; }), 'move task'); todoRefresh(); toast('Moved to ' + name, 1400); if (l === 'doing') todoWipWarn();
 }
 
@@ -8219,7 +8267,12 @@ document.addEventListener('click', async e => {
     case 'todo-reps': return todoRepsDialog();
     case 'todo-repsave': return todoRepSave();
     case 'todo-clear': return todoClearDone($('#tdo')?.dataset.subj || null);
-    case 'todo-tab': todoTab = TODO_KEYS.includes(a.dataset.v) ? a.dataset.v : 'today'; ls.set('md-todo-tab', todoTab); return todoRefresh();
+    case 'todo-tab': { const v = todoKeys().includes(a.dataset.v) ? a.dataset.v : 'today';
+      if (v === todoTab && a.dataset.own){ e.stopPropagation(); return $('#menu') ? closeMenu() : todoTabMenu(v, a); }
+      todoTab = v; ls.set('md-todo-tab', todoTab); return todoRefresh(); }
+    case 'todo-tabnew': todoTabNew = true; todoTabRen = null; todoRefresh(); return $('.tdtabin[data-new]')?.focus();
+    case 'todo-tabren': closeMenu(); todoTabRen = a.dataset.v; todoTabNew = false; todoRefresh(); { const i = $('.tdtabin[data-ren]'); i?.focus(); i?.select(); } return;
+    case 'todo-tabdel': closeMenu(); return todoTabDel(a.dataset.v);
     case 'todo-move': e.stopPropagation(); return $('#menu') ? closeMenu() : todoMoveMenu(id, a);
     case 'todo-moveto': return todoMoveTo(id, a.dataset.l);
     case 'todo-subj': return todoSetSubj(id, a.dataset.s || '');
@@ -9106,7 +9159,7 @@ function ppMenu(key, at){
     ${p ? b('pp-open', done ? 'Open' : hasQs ? 'Carry on marking' : 'Start marking') : b('pp-open', (it.src === 'thsc' && ppCanFetch()) || (it.src === 'nesa' && ppCanNesa()) ? 'Get it and start marking' : 'Add the PDF and start…')}
     ${where ? b('pp-m-web', `Open on ${where}`) : ''}
     ${cards.length ? b('pp-m-review', `Review its mistakes (${cards.length})`) + b('pp-m-browse', 'Browse its mistakes') : ''}<hr>
-    ${todo ? b('pp-m-todogo', `On your to-do list (${esc(TODO_TABS.find(t => t[0] === todoL(todo))?.[1] || 'Revision')})`) : b('pp-m-todo', 'Add to to-do list…')}
+    ${todo ? b('pp-m-todogo', `On your to-do list (${esc(todoTabName(todoL(todo)))})`) : b('pp-m-todo', 'Add to to-do list…')}
     ${done ? b('pp-m-undone', 'Mark as not done') : b('pp-m-done', 'Mark as done')}
     ${b('pp-m-score', p?.score || done ? 'Change the score…' : 'Enter a score…')}<hr>
     ${p ? b('pp-m-addsol', p.solSep ? 'Replace the solutions PDF…' : 'Add a solutions PDF…') : ''}
@@ -9128,14 +9181,14 @@ async function ppSetDone(it, on, via){
   S.settings = st; await saveSettings(); return p;
 }
 function ppTodoMenu(key, at){
-  menuAt(`<div class="mhead">Add to which list?</div>${TODO_TABS.map(([k, l]) => `<button data-act="pp-m-todoadd" data-k="${esc(key)}" data-v="${k}">${esc(l)}</button>`).join('')}`, at);
+  menuAt(`<div class="mhead">Add to which list?</div>${todoTabs().map(([k, l]) => `<button data-act="pp-m-todoadd" data-k="${esc(key)}" data-v="${k}">${esc(l)}</button>`).join('')}`, at);
 }
 function ppTodoAdd(key, l){
   const it = ppItemOf(key); if (!it) return;
   const subj = ppNode(PP_COURSE[it.c].s)?.id || null, mins = it.sec === 'hsc' || it.sec === 'trial' ? 180 : it.sec === 'hy' ? 120 : 90;
   const x = { id: uid('t'), t: `${ppTitle(it)} · ${PP_COURSE[it.c].name}`.slice(0, 200), s: subj, done: 0, at: Date.now(), m: mins, pp: it.key }; if (l && l !== 'all') x.l = l;
   todoSave([...todoAll(), x], 'add paper to to-do');
-  toast(`Added to ${TODO_TABS.find(t => t[0] === l)?.[1] || 'your list'}${subj ? ` in ${nodeOf(subj)?.name}` : ''}. Ticking it off marks the paper done.`, 3200);
+  toast(`Added to ${todoTabName(l)}${subj ? ` in ${nodeOf(subj)?.name}` : ''}. Ticking it off marks the paper done.`, 3200);
   if (view.name === 'papers') renderPapers();
 }
 function ppScoreDialog(key){
