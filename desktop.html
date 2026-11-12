@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261112203639 min-shell:1.27.0 -->
+<!-- recall-build:20261112232702 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -3075,6 +3075,36 @@ body.tddragging .tdl > .tdr:not(.tddrag) .tdmore2{opacity:0 !important}
   html.lh .answerbar.lhbar .lhback:disabled{color:var(--fg-3)}
 }
 @media (max-width:430px){ html.lh .answerbar.lhbar [data-act="edit"]{display:none} }
+.toast{width:max-content}
+.toast .toastundo{margin:-6px -8px -6px 10px;padding:6px 8px;border:0;background:none;font:600 13px var(--ui);color:var(--accent);cursor:pointer;border-radius:6px}
+.toast .toastundo:hover{background:rgba(var(--ovr),.08)}
+@media (pointer:coarse){ .toast .toastundo{padding:12px 10px;margin:-12px -10px -12px 8px} }
+body.desktop .hfoot [data-act="pdf-import"]{display:none}
+@media (pointer:coarse){ .hfoot .hfkeys{display:none} }
+.tdtabs button.tdtdrag{z-index:3;cursor:grabbing;transition:none !important;background:var(--surface-2);border-radius:8px;box-shadow:0 8px 22px rgba(0,0,0,.28),0 0 0 1px var(--border-2)}
+.tdtabs button.tddrop{background:rgba(var(--ovr),.1);border-radius:6px;color:var(--fg)}
+.tdr.tdtotab{opacity:.3}
+html:root body .toolbar nav .navmore{display:none}
+.keysdlg .kygrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px}
+.keysdlg h3{margin:0 0 6px;font:600 13px var(--ui);color:var(--fg-2)}
+.keysdlg section + section{margin-top:20px}
+.keysdlg .kyr{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:30px;font:400 14px var(--ui);border-top:1px solid var(--border)}
+.keysdlg .kyk{display:inline-flex;align-items:center;gap:4px;flex:none}
+.keysdlg .kyk i{font-style:normal;font-size:12px;color:var(--fg-3)}
+@media (max-width:640px){ .keysdlg .kygrid{grid-template-columns:1fr} }
+/* phone: the main sections sit in a bar along the bottom (Decks, To-do, Add, Browse, More) */
+@media (max-width:700px){
+  /* a blurred header would trap the fixed bar inside itself, so the phone header is solid */
+  html:root body:not(.desktop) .toolbar{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
+  html:root body:not(.desktop) .toolbar nav{position:fixed;left:0;right:0;bottom:0;z-index:40;margin:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;padding:4px 8px calc(4px + env(safe-area-inset-bottom,0px));background:var(--side-solid, var(--surface));border-top:1px solid var(--border)}
+  html:root body:not(.desktop) .toolbar nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:48px;padding:0;font:500 11px var(--ui);color:var(--fg-3);background:none;box-shadow:none;border-radius:6px}
+  html:root body:not(.desktop) .toolbar nav button[aria-current="true"]{color:var(--fg);background:none}
+  html:root body:not(.desktop) .toolbar nav button .ni{display:block;width:22px;height:22px}
+  html:root body:not(.desktop) .toolbar nav [data-nav="papers"],html:root body:not(.desktop) .toolbar nav [data-nav="stats"],html:root body:not(.desktop) .toolbar nav [data-nav="themes"]{display:none}
+  html:root body:not(.desktop):has(#root.v-study, #root.v-ppmark) .toolbar nav{display:none}
+  html:root body:not(.desktop) .toast{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+  html:root body:not(.desktop):has(#root.v-study) .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+}
 .answerbar.lhbar .lhdel{display:inline-flex;align-items:center;justify-content:center;min-width:44px}
 .answerbar.lhbar .lhdel svg{width:18px;height:18px;display:block}
 @media (hover:none) and (pointer:coarse){ .dhint{display:none} }
@@ -3086,11 +3116,12 @@ body.tddragging .tdl > .tdr:not(.tddrag) .tdmore2{opacity:0 !important}
   <nav aria-label="Main">
     <button data-nav="decks"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5.5" width="11" height="11" rx="2.5"/><path d="M6.5 3.5h8a2.5 2.5 0 0 1 2.5 2.5v8"/></svg><span>Decks</span></button>
     <button data-nav="todo"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5.5 5 7l2.5-3M3.5 12.5 5 14l2.5-3M10.5 5.5h6M10.5 12.5h6"/></svg><span>To-do</span></button>
-    <button data-nav="add" class="navadd">Add</button>
+    <button data-nav="add" class="navadd"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="7.2"/><path d="M10 6.8v6.4M6.8 10h6.4"/></svg><span>Add</span></button>
     <button data-nav="browse"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M7 5h10M7 10h10M7 15h10"/><circle cx="3.6" cy="5" r=".9" fill="currentColor"/><circle cx="3.6" cy="10" r=".9" fill="currentColor"/><circle cx="3.6" cy="15" r=".9" fill="currentColor"/></svg><span>Browse</span></button>
     <button data-nav="papers"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5 2.8h6.6L15.5 6.7V17.2H5z"/><path d="M11.4 2.8v4h4M7.8 10.5h4.8M7.8 13.6h4.8"/></svg><span>Past papers</span></button>
     <button data-nav="stats"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 16V10M8.7 16V5M13.3 16v-4M18 16V7.5M2.5 16.5h16"/></svg><span>Stats</span></button>
     <button data-nav="themes"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.8a7.2 7.2 0 1 0 0 14.4c1.1 0 1.6-.8 1.3-1.7-.4-1.2.3-2.3 1.6-2.3h1.6a2.7 2.7 0 0 0 2.7-2.7C17.2 6.2 14 2.8 10 2.8Z"/><circle cx="6.3" cy="9.3" r="1" fill="currentColor"/><circle cx="8.6" cy="6" r="1" fill="currentColor"/><circle cx="12.4" cy="6.1" r="1" fill="currentColor"/></svg><span>Themes</span></button>
+  <button class="navmore" data-act="nav-more" aria-haspopup="true"><svg class="ni" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4.5" cy="10" r="1.5" fill="currentColor"/><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="15.5" cy="10" r="1.5" fill="currentColor"/></svg><span>More</span></button>
   </nav>
   <div class="sidesearch"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input id="sidesq" type="search" placeholder="Search decks & cards  ⌘K" autocomplete="off" spellcheck="false" aria-label="Search decks and cards"></div>
   <div class="sidesres" id="sidesres" hidden></div>
@@ -3126,7 +3157,10 @@ const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(
 const MIN = 60e3, HOUR = 60*MIN, DAY = 24*HOUR;
 const today0 = () => new Date().setHours(0,0,0,0);
 function typeset(el){ if (window.__mj && el && window.MathJax?.typesetPromise){ MathJax.typesetClear?.([el]); MathJax.typesetPromise([el]).catch(()=>{}); } }
-function toast(msg, ms=2600){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>t.hidden=true, ms); }
+/* any message that says "⌘Z to undo" gets an Undo button instead, so it also works by touch */
+function toast(msg, ms=2600){ const t=$('#toast'), um = /\s*·\s*⌘Z to undo/.exec(String(msg)); t.textContent = um ? String(msg).replace(um[0], '') : msg;
+  if (um){ const b = document.createElement('button'); b.type = 'button'; b.className = 'toastundo'; b.textContent = 'Undo'; b.title = 'Undo (⌘Z)'; b.onclick = e => { e.stopPropagation(); t.hidden = true; undoTx = null; appUndo(); }; t.appendChild(b); ms = Math.max(ms, 5000); }
+  t.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>t.hidden=true, ms); }
 function imgSrc(o){ return o ? (o.file ? 'errimg://img/' + encodeURIComponent(o.file) : (o.url || (o.id ? '/_blob/' + o.id : o.data))) : ''; }
 function fmtIvl(ms){
   if (ms < MIN) return '<1m';
@@ -3244,18 +3278,24 @@ async function applyTx(tx){
   return back;
 }
 /* deleting a card while studying: on to the next one; ⌘Z straight after (before rating anything) brings it back as the current card */
+async function studySkip(){
+  const c = S.cards[study?.cur]; if (!c || study.busy) return; let tx = null;
+  if (!study.practise){ undoTx = null; undoLabel = 'skip card'; await put('cards', { ...c, snz: new Date().setHours(24, 0, 0, 0) }); tx = undoTx || undoStack.at(-1); }
+  study.undel = { tx, id: c.id }; study.queue = study.queue.filter(x => x !== c.id); nextCard(); renderStudy(); typeset($('#root')); window.scrollTo(0, 0); renderSideSubjects();
+  toast((study.practise ? 'Skipped for this session' : 'Skipped until tomorrow') + ' · ⌘Z to undo');
+}
 function studyAfterDel(id){
   study.undel = { tx: undoTx || undoStack.at(-1), id }; study.queue = study.queue.filter(x => x !== id);
   if (study.cur === id) nextCard(); renderStudy(); typeset($('#root'));
 }
 async function studyUndel(){
-  const { id } = study.undel; study.undel = null; redoStack.push(await applyTx(undoStack.pop()));
+  const { id, tx } = study.undel; study.undel = null; if (tx) redoStack.push(await applyTx(undoStack.pop()));
   if (S.cards[id]){ if (study.cur && study.cur !== id) study.queue.unshift(study.cur); study.cur = id; study.shown = false; study.pred = { conf: 50, think: '', set: false }; study.t0 = Date.now(); study.tShown = 0; study.timeUpToast = false; study.pausedMs = 0; study.pausedAt = 0; study.autoShown = false; }
   renderStudy(); typeset($('#root')); renderSideSubjects(); toast('Card is back');
 }
 async function appUndo(){
   if (view.name === 'study' && study && padCanUndo()) return padUndo();
-  if (view.name === 'study' && study?.undel && undoStack.at(-1) === study.undel.tx) return studyUndel();
+  if (view.name === 'study' && study?.undel && (!study.undel.tx || undoStack.at(-1) === study.undel.tx)) return studyUndel();
   if (view.name === 'study' && study) return goBack();
   const tx = undoStack.pop(); if (!tx) return toast('Nothing to undo');
   redoStack.push(await applyTx(tx));
@@ -3361,9 +3401,11 @@ function deckRefOptions(){ const out = []; flatTree().forEach(({ n, d }) => { ou
 function flatTree(){ const out = []; const walk = (pid, d) => kids(pid).forEach(n => { out.push({ n, d }); walk(n.id, d + 1); }); walk(null, 0); return out; }
 function introducedToday(){ const t = today0(); return Object.values(S.cards).filter(c => (c.srs?.intro || 0) >= t).length; }
 function newLeft(){ return Math.max(0, (S.settings.newPerDay ?? 20) - introducedToday()); }
+/* "not today": a card skipped while studying has snz = the start of tomorrow, and stays out of what's due until then */
+const snoozed = c => (c?.snz || 0) > Date.now();
 function counts(id){
   const now = Date.now(), cs = cardsIn(id); let nw = 0, lr = 0, dv = 0;
-  for (const c of cs){ const k = kind(c); if (k === 'new') nw++; else if ((c.srs.due||0) <= now){ if (k === 'learn') lr++; else dv++; } }
+  for (const c of cs){ if (snoozed(c)) continue; const k = kind(c); if (k === 'new') nw++; else if ((c.srs.due||0) <= now){ if (k === 'learn') lr++; else dv++; } }
   return { new: Math.min(nw, newLeft()), newAll: nw, learn: lr, due: dv, total: cs.length };
 }
 function nodeOrder(id){ const ps = pathOf(id); return ps.map(n => String(n.order ?? 0).padStart(4,'0')).join('.'); }
@@ -3424,6 +3466,7 @@ document.addEventListener('keydown', e => {
 function render(){
   if (ppFull && view.name !== 'ppmark') ppFullSet(false, true);
   renderSideSubjects();
+  $('.navmore')?.setAttribute('aria-current', String(['papers', 'ppmark', 'stats', 'themes'].includes(view.name)));
   document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'papers' && (view.name === 'ppmark' || (view.name === 'study' && study?.tag === 'Paper mistakes'))) || (b.dataset.nav === 'decks' && (view.name === 'overview' || (view.name === 'study' && study?.tag !== 'Paper mistakes'))))));
   applyTheme();
   const root = $('#root');
@@ -3502,7 +3545,7 @@ function forgotIn(id){ return cardsIn(id).filter(c => failCount(c) > 0).sort((a,
 function renderDecks(){
   const subjects = kids(null), all = counts(null);
   const banner = S.mode === 'local' && !cloudOn() ? (cloudConfigured() ? '<div class="banner">Sign in to bring in your cards from your Mac and keep both in sync. <button class="link" data-act="cloud">Sign in</button></div>' : '<div class="banner">Cards are saved in this browser only. Open this page from claude.ai while signed in to keep them across devices.</div>') : '';
-  const foot = `<div class="hfoot"><button class="link" data-act="new-deck">New subject</button><button class="link" data-act="pdf-import">Cards from a PDF…</button><button class="link" data-act="cd-edit">${cdOn() ? 'Edit the countdown…' : 'Exam countdown…'}</button><button class="link" data-act="import">Import…</button><button class="link" data-act="export-all">Export all…</button><button class="link" data-act="options">Options</button><button class="link danger-link" data-act="reset-all">Reset</button></div>`;
+  const foot = `<div class="hfoot"><button class="link" data-act="new-deck">New subject</button><button class="link" data-act="pdf-import">Cards from a PDF…</button><button class="link" data-act="cd-edit">${cdOn() ? 'Edit the countdown…' : 'Exam countdown…'}</button><button class="link" data-act="import">Import…</button><button class="link" data-act="export-all">Export all…</button><button class="link" data-act="options">Options</button><button class="link hfkeys" data-act="keys">Keyboard shortcuts</button></div>`;
   if (!subjects.length){
     $('#root').innerHTML = `<div class="narrow home dkhome">${banner}<div class="dkempty"><h1>Start with a subject</h1><p>Make a subject such as Maths or Physics, then add topics inside it and the mistakes you want to stop making.</p><button class="btn primary big" data-act="new-deck">New subject</button></div>${foot}</div>`;
     return;
@@ -3610,6 +3653,7 @@ function histGo(dir){
   study = null; navSkip = true; go(v.name, v.node); navSkip = false;
 }
 const IC = {
+  skip: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3.5 10.5 8 4 12.5zM12.5 3.5v9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   trash: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5M6.8 7v4M9.2 7v4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   edit: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M7.5 2.5H4a1.5 1.5 0 0 0-1.5 1.5v8A1.5 1.5 0 0 0 4 13.5h8a1.5 1.5 0 0 0 1.5-1.5V8.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="m12.2 2.3 1.5 1.5L8.4 9.1l-2 .5.5-2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
   card: '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5 7h6M5 9.5h3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
@@ -3636,7 +3680,7 @@ function renderAppbar(){
     const c = study.cur ? S.cards[study.cur] : null, ps = c ? pathOf(c.nodeId) : (study.node ? pathOf(study.node) : []);
     title = (study.tag ? `<button class="abcr" data-act="pp-back">${esc(study.tag)}</button><i>›</i>` : '') + (ps.length ? ps.map((n, i) => i < ps.length - 1 ? `<span>${esc(n.name)}</span><i>›</i>` : `<b>${esc(n.name)}</b>`).join('') : '<b>All cards</b>');
     const q = queueCounts(), total = study.done + q.nw + q.lr + q.rv, pos = Math.min(study.done + 1, total), st = tmrGet();
-    act = `<span id="rflash" aria-live="polite"></span>${c ? `<button class="abi" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back one step (Z)" aria-label="Back one step">${IC.undo}</button><button class="abi" data-act="edit" data-id="${c.id}" title="Edit this card (E)" aria-label="Edit this card">${IC.edit}</button><button class="abi" data-act="study-del" data-id="${c.id}" title="Delete this card (X)" aria-label="Delete this card">${IC.trash}</button><span class="absep"></span>` : ''}
+    act = `<span id="rflash" aria-live="polite"></span>${c ? `<button class="abi" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back one step (Z)" aria-label="Back one step">${IC.undo}</button><button class="abi" data-act="edit" data-id="${c.id}" title="Edit this card (E)" aria-label="Edit this card">${IC.edit}</button><button class="abi" data-act="study-skip" title="${study.practise ? 'Skip this card for now (S)' : 'Not today: skip until tomorrow (S)'}" aria-label="Skip this card">${IC.skip}</button><button class="abi" data-act="study-del" data-id="${c.id}" title="Delete this card (X)" aria-label="Delete this card">${IC.trash}</button><span class="absep"></span>` : ''}
       <button class="abi abtimer ${st.mode !== 'off' ? 'on' : ''}" data-act="timer-menu" title="Timer (T pauses)" aria-label="Timer settings" aria-haspopup="true">${IC.clock}<span>${st.mode === 'off' ? '' : st.mode === 'watch' ? 'Stopwatch' : c ? fmtSec(limitOf(c, st)) : 'Limit'}</span></button>
       <button class="abi ${padOpen ? 'on' : ''}" data-act="pad-toggle" title="Scratchpad (P)" aria-label="Scratchpad" aria-pressed="${padOpen}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 12.5c1.6-2.6 3-3.6 4-3 1 .6-.4 2.6.6 3s2.4-1.6 3.6-1.4c.8.1.8 1 1.8 1.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 2.6 2.3 2.3-4.3 4.3-2.6.4.4-2.6z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
       ${study.queue.length > 1 ? `<button class="abi" data-act="reshuffle" title="Shuffle the cards left" aria-label="Shuffle the cards left">${IC.shuffle}</button>` : ''}
@@ -3839,6 +3883,7 @@ function shuffled(a){ const b = [...a]; for (let i = b.length - 1; i > 0; i--){ 
 function buildQueue(){
   const now = Date.now(), cs = sortCards(cardsIn(study.node)).filter(c => (!study.ex || !study.ex.has(c.nodeId)) && (!study.keep || study.keep.has(c.id)));
   if (study.practise) return (shuffleOn ? shuffled(cs) : cs).map(c => c.id);
+  cs.splice(0, cs.length, ...cs.filter(c => !snoozed(c)));
   const learn = cs.filter(c => kind(c) === 'learn' && c.srs.due <= now).sort((a,b) => a.srs.due - b.srs.due);
   const rev = cs.filter(c => kind(c) === 'review' && c.srs.due <= now).sort((a,b) => a.srs.due - b.srs.due);
   const nw = cs.filter(c => kind(c) === 'new').slice(0, newLeft());
@@ -3913,10 +3958,10 @@ function nextCard(){
   const now = Date.now(); study.shown = false; study.pred = { conf: 50, think: '', set: false }; study.t0 = Date.now(); study.tShown = 0; study.timeUpToast = false; study.pausedMs = 0; study.pausedAt = 0; study.autoShown = false; const inScope0 = study.node ? new Set(cardsIn(study.node).map(c => c.id)) : null, inScope = (inScope0 || study.ex || study.keep) ? { has: id => (!inScope0 || inScope0.has(id)) && (!study.ex || !study.ex.has(S.cards[id]?.nodeId)) && (!study.keep || study.keep.has(id)) } : null;
   study.queue = study.queue.filter(id => S.cards[id]);
   if (!study.practise){
-    const lrn = Object.values(S.cards).filter(c => study.queue.indexOf(c.id) < 0 && kind(c) === 'learn' && (!inScope || inScope.has(c.id)) && c.srs.due <= now);
+    const lrn = Object.values(S.cards).filter(c => study.queue.indexOf(c.id) < 0 && kind(c) === 'learn' && !snoozed(c) && (!inScope || inScope.has(c.id)) && c.srs.due <= now);
     study.queue.unshift(...lrn.map(c => c.id));
     let i = study.queue.findIndex(id => { const c = S.cards[id]; return kind(c) === 'new' || c.srs.due <= now; });
-    if (i < 0){ const soon = Object.values(S.cards).filter(c => kind(c) === 'learn' && (!inScope || inScope.has(c.id)) && c.srs.due - now <= 20*MIN).sort((a,b) => a.srs.due - b.srs.due)[0]; study.cur = soon ? soon.id : null; study.queue = study.queue.filter(id => id !== study.cur); }
+    if (i < 0){ const soon = Object.values(S.cards).filter(c => kind(c) === 'learn' && !snoozed(c) && (!inScope || inScope.has(c.id)) && c.srs.due - now <= 20*MIN).sort((a,b) => a.srs.due - b.srs.due)[0]; study.cur = soon ? soon.id : null; study.queue = study.queue.filter(id => id !== study.cur); }
     else study.cur = study.queue.splice(i, 1)[0];
   } else study.cur = study.queue.shift() || null;
 }
@@ -4494,7 +4539,7 @@ function bar(c){
   el.classList.toggle('lhbar', isLH());
   if (isLH()){
     const q = queueCounts(), total = study.done + q.nw + q.lr + q.rv, confs = study.confs || [];
-    el.innerHTML = `<div class="inner"><div class="side"><button class="lhb lhback" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back (Z)" aria-label="Back to the previous card"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</button><button class="lhb" data-act="edit" data-id="${c.id}" title="Edit (E)">Edit</button><button class="lhb lhdel" data-act="study-del" data-id="${c.id}" title="Delete this card" aria-label="Delete this card">${IC.trash}</button></div>
+    el.innerHTML = `<div class="inner"><div class="side"><button class="lhb lhback" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back (Z)" aria-label="Back to the previous card"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</button><button class="lhb" data-act="edit" data-id="${c.id}" title="Edit (E)">Edit</button><button class="lhb lhdel" data-act="study-skip" title="Skip this card" aria-label="Skip this card${study.practise ? '' : ' until tomorrow'}">${IC.skip}</button><button class="lhb lhdel" data-act="study-del" data-id="${c.id}" title="Delete this card" aria-label="Delete this card">${IC.trash}</button></div>
       <div class="mid lhstat"><span id="rflash" aria-live="polite"></span>Card ${Math.min(study.done + 1, total)} of ${total} · ${study.done} done${confs.length ? ` · avg confidence ${Math.round(confs.reduce((a, b) => a + b, 0) / confs.length)}%` : ''}</div>
       <div class="side r"><button class="lhb" data-act="${study.node ? 'open' : 'nav-decks'}" data-id="${study.node || ''}" title="Exit (Esc)">Exit</button></div></div>`;
     return;
@@ -4503,7 +4548,7 @@ function bar(c){
   const mid = study.shown
     ? `<div class="ease">${[['Again','again'],['Hard','hard'],['Good','good'],['Easy','easy']].map(([l,k],i) => `<div class="col"><small>${fmtIvl(schedule(s, i+1, now).due - now)}</small><button class="btn r${i+1}" data-act="rate" data-r="${i+1}" title="Shortcut: ${i+1}">${l}</button></div>`).join('')}</div>`
     : `<div class="qcounts" id="qcounts">${countsHtml()}</div><button class="btn primary big showbtn" data-act="show" title="Shortcut: Space">${c.kind === 'learn' ? 'Show Explanation' : 'Show Mistake &amp; Solution'}</button>`;
-  el.innerHTML = `<div class="inner"><div class="side"><button class="btn sm backbtn" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back (Z or Backspace)" aria-label="Back">${I.undo}<span>Back</span></button><button class="btn sm" data-act="edit" data-id="${c.id}">Edit</button><button class="btn sm" data-act="study-del" data-id="${c.id}">Delete</button></div><div class="mid">${mid}</div><div class="side r"><button class="btn sm" data-act="${study.node ? 'open' : 'nav-decks'}" data-id="${study.node||''}">Exit</button></div></div>`;
+  el.innerHTML = `<div class="inner"><div class="side"><button class="btn sm backbtn" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back (Z or Backspace)" aria-label="Back">${I.undo}<span>Back</span></button><button class="btn sm" data-act="edit" data-id="${c.id}">Edit</button><button class="btn sm" data-act="study-skip">Skip</button><button class="btn sm" data-act="study-del" data-id="${c.id}">Delete</button></div><div class="mid">${mid}</div><div class="side r"><button class="btn sm" data-act="${study.node ? 'open' : 'nav-decks'}" data-id="${study.node||''}">Exit</button></div></div>`;
 }
 function showAnswer(){
   if (!study?.cur || study.shown) return;
@@ -6656,6 +6701,17 @@ async function resetCards(id, clearLog){
   if (clearLog){ S.settings.log = {}; await saveSettings(); }
   return cs.length;
 }
+/* every keyboard shortcut in one place: press ? anywhere, or Keyboard shortcuts under the decks */
+function keysDialog(){
+  const k = t => t.split(' ').map(x => x === 'or' || x === 'to' || x === 'then' ? `<i>${x}</i>` : `<kbd>${x}</kbd>`).join('');
+  const sec = (h, rows) => `<section><h3>${h}</h3>${rows.map(([l, t]) => `<div class="kyr"><span>${l}</span><span class="kyk">${k(t)}</span></div>`).join('')}</section>`;
+  openDialog(`<div class="dialog keysdlg" role="dialog" aria-modal="true" aria-labelledby="kyh" style="max-width:720px"><header><h2 id="kyh">Keyboard shortcuts</h2></header>
+    <div class="body"><div class="kygrid"><div>${sec('Studying', [['Show the answer', 'Space'], ['Rate Again, Hard, Good, Easy', '1 2 3 4'], ['Rate Good', 'Space'], ['Back one step', 'Z or ⌫'], ['Edit this card', 'E'], ['Skip until tomorrow', 'S'], ['Delete this card', 'X'], ['Scratchpad', 'P'], ['Pause the timer', 'T'], ['Leave', 'Esc']])}</div>
+      <div>${sec('Anywhere', [['Add a card', 'A'], ['Decks', 'D'], ['Browse', 'B'], ['To-do', 'T'], ['Search', '⌘K'], ['Undo', '⌘Z'], ['Redo', '⇧⌘Z'], ['Back, forward', '⌘[ ⌘]'], ['Show or hide the sidebar', '⌘S'], ['This list', '?']])}
+      ${sec('On a deck', [['Study it', 'S'], ['See its cards in Browse', 'B']])}
+      ${sec('Browse', [['Move up and down', '↑ ↓'], ['Show the answer', 'Space'], ['Edit', 'Enter'], ['Select all', '⌘A']])}</div></div></div>
+    <footer><span class="grow"></span><button class="btn primary" data-act="close">Done</button></footer></div>`, d => d.querySelector('.btn.primary').focus());
+}
 function optionsDialog(){
   openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="od" style="max-width:420px"><header><h2 id="od">Options</h2></header>
     <div class="body"><div class="field"><label for="npd">New cards per day</label><input class="in" id="npd" type="number" min="0" max="999" value="${S.settings.newPerDay ?? 20}"><span class="hint">How many unseen questions Study Now introduces each day, across all decks. Practise all ignores this.</span></div>
@@ -7480,7 +7536,11 @@ const todoAll = () => Array.isArray(S.settings?.todos) ? S.settings.todos : [];
 const TODO_TABS0 = [['today', 'Today'], ['doing', 'In progress'], ['hw', 'Homework'], ['all', 'Revision'], ['later', 'Later']];
 /* your own lists (Assignments, Holidays…): S.settings.todoLists [{ id, name }], synced; a task in one has l = its id */
 const todoULists = () => Array.isArray(S.settings?.todoLists) ? S.settings.todoLists.filter(x => x && x.id && x.name) : [];
-const todoTabs = () => [...TODO_TABS0, ...todoULists().map(x => [x.id, x.name])], todoKeys = () => todoTabs().map(t => t[0]);
+/* the five built-in lists can be renamed too: S.settings.todoNames { today: 'Tonight', … } (synced); their ids never change */
+const todoNames = () => S.settings?.todoNames && typeof S.settings.todoNames === 'object' ? S.settings.todoNames : {};
+/* drag a tab sideways to reorder: S.settings.todoOrder [keys] (synced); lists not in it yet go at the end */
+const todoTabs = () => { const L = [...TODO_TABS0.map(([k, l]) => [k, String(todoNames()[k] || '').trim() || l]), ...todoULists().map(x => [x.id, x.name])], o = Array.isArray(S.settings?.todoOrder) ? S.settings.todoOrder : null;
+  if (!o) return L; const at = k => { const i = o.indexOf(k); return i < 0 ? 1e6 : i; }; return L.map((t, i) => [t, i]).sort((a, b) => at(a[0][0]) - at(b[0][0]) || a[1] - b[1]).map(x => x[0]); }, todoKeys = () => todoTabs().map(t => t[0]);
 const todoTabName = l => todoTabs().find(t => t[0] === l)?.[1] || 'Revision';
 let todoShowDone = false, todoTab = ls.get('md-todo-tab', 'today') || 'today', todoTabNew = false, todoTabRen = null;
 /* which subject's tasks the list shows: this page's subject unless you pick another (or All) in the panel */
@@ -7610,8 +7670,8 @@ function todoSection(subj, page){
         ${shown.length ? `<button type="button" class="tdfbtn" data-act="todo-selmode" aria-pressed="${selOn}" title="Select several tasks to move, tick or delete together (or Shift-click / ⌘-click rows)">${selOn ? 'Done' : 'Select'}</button>` : ''}
         ${subs.length > 1 ? `<button type="button" class="tdfbtn" data-act="todo-fmenu" aria-haspopup="true" title="Which subject's tasks to show">${f ? `<span class="sdot2" style="--sc:${todoFCol(f)}"></span>` : ''}${fl}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6.5 8 10l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ''}</div>
       <div class="tdtabs" role="tablist" aria-label="Which list">${todoTabs().map(([k, l]) => { const n = nOf(k), own = !TODO_TABS0.some(t => t[0] === k);
-        if (own && todoTabRen === k) return `<input class="tdtabin" data-ren="${k}" maxlength="40" value="${esc(l)}" aria-label="Rename list" size="${Math.max(6, l.length + 1)}">`;
-        return `<button type="button" role="tab" data-act="todo-tab" data-v="${k}" aria-selected="${todoTab === k}" class="${k === 'doing' && over ? 'over' : ''}"${own ? ` data-own="1" aria-haspopup="true" title="${todoTab === k ? 'Rename or delete this list' : esc(l)}"` : ''}>${esc(l)}${n ? `<b>${n}</b>` : ''}</button>`; }).join('')}${todoTabNew ? `<input class="tdtabin" data-new="1" maxlength="40" placeholder="List name" aria-label="New list name" size="12">` : `<button type="button" class="tdtabadd" data-act="todo-tabnew" title="New list, like Assignments" aria-label="New list">${'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'}</button>`}</div>
+        if (todoTabRen === k) return `<input class="tdtabin" data-ren="${k}" maxlength="40" value="${esc(l)}" aria-label="Rename list" size="${Math.max(6, l.length + 1)}">`;
+        return `<button type="button" role="tab" data-act="todo-tab" data-v="${k}" aria-selected="${todoTab === k}" class="${k === 'doing' && over ? 'over' : ''}" data-own="1" aria-haspopup="true" title="${todoTab === k ? (own ? 'Rename or delete this list' : 'Rename this list') : esc(l)}">${esc(l)}${n ? `<b>${n}</b>` : ''}</button>`; }).join('')}${todoTabNew ? `<input class="tdtabin" data-new="1" maxlength="40" placeholder="List name" aria-label="New list name" size="12">` : `<button type="button" class="tdtabadd" data-act="todo-tabnew" title="New list, like Assignments" aria-label="New list">${'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'}</button>`}</div>
       ${nSel ? `<div class="tdselbar" role="toolbar" aria-label="Selected tasks"><b>${nSel} selected</b><button type="button" data-act="todo-bmove" aria-haspopup="true">Move to…</button><button type="button" data-act="todo-bsubj" aria-haspopup="true">Subject…</button><button type="button" data-act="todo-btick">Tick off</button><button type="button" class="danger" data-act="todo-bdel">Delete</button><span class="grow"></span><span class="tdselhint">Drag any of them to move them all</span><button type="button" data-act="todo-selclear" aria-label="Clear the selection">${I.x}</button></div>` : ''}
       ${shown.length + today ? `<div class="tdl">${shown.map(todoRow).join('')}${today ? todoDoneHead(today) + done.map((x, i) => todoRow(x, shown.length + 1 + i)).join('') : ''}</div>` : ''}
       <label class="tdadd ${act ? 'act' : ''}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" class="${todoNewKind === 'h' ? 'hmode' : ''}" placeholder="${todoNewKind === 'h' ? 'New heading, like At school' : todoRepDays.size ? `Every ${repWords([...todoRepDays])}…` : todoTab === 'doing' ? 'Something you’re working on now' : todoTab === 'hw' ? 'New homework' : 'New task'}${anName && todoNewKind !== 'h' && todoTab !== 'doing' ? ' in ' + esc(anName) : ''}" aria-label="${todoNewKind === 'h' ? 'New heading' : 'New task'}"><span class="tdaddx">${todoNewKind === 'h' ? '' : `<button type="button" class="tdtimebtn ${todoNewMin ? 'on' : ''}" data-act="todo-time" data-id="__new" aria-haspopup="true" title="How long it will take">${CLOCK_IC}<span>${todoNewMin ? fmtMin(todoNewMin) : 'Time'}</span></button><button type="button" class="tdrepbtn ${todoRepDays.size ? 'on' : ''}" data-act="todo-repopen" aria-expanded="${todoRepOpen}" title="Repeat on certain days">${REP_IC}<span>${todoRepDays.size ? esc(repShort([...todoRepDays])) : 'Repeat'}</span></button>`}<button type="button" class="tdrepbtn tdkbtn ${todoNewKind === 'h' ? 'on' : ''}" data-act="todo-hmode" aria-pressed="${todoNewKind === 'h'}" title="${todoNewKind === 'h' ? 'Back to adding tasks' : 'Add a heading, like At school'}">${TD_H_IC}<span>Heading</span></button><button type="button" class="tdrepbtn tdkbtn" data-act="todo-gap" title="Add a blank space to separate things">${TD_GAP_IC}<span>Space</span></button></span></label>
@@ -7660,7 +7720,7 @@ document.addEventListener('click', e => {
 }, true);
 function todoBMenu(kind, anchor){
   closeMenu(); const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
-  m.innerHTML = kind === 'move' ? `<div class="mlabel">Move ${todoSel.size} to</div>` + todoTabs().map(([k, l]) => `<button data-act="todo-bmoveto" data-l="${k}">${l}</button>`).join('')
+  m.innerHTML = kind === 'move' ? `<div class="mlabel">Move ${todoSel.size} to</div>` + todoTabs().map(([k, l]) => `<button data-act="todo-bmoveto" data-l="${k}">${esc(l)}</button>`).join('')
     : `<div class="mlabel">Subject for ${todoSel.size}</div>` + todoSubjOpts(null, 'data-act="todo-bsubjto"') + `<button class="tdsubm" data-act="todo-bsubjto" data-s=""><span class="sdot2" style="--sc:var(--fg-3)"></span>No subject</button>`;
   document.body.appendChild(m); const r = anchor.getBoundingClientRect();
   m.style.left = Math.max(8, Math.min(innerWidth - m.offsetWidth - 8, r.left)) + 'px'; m.style.top = Math.min(innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px'; m.querySelector('button')?.focus();
@@ -7712,8 +7772,11 @@ function tdDragBegin(row, y){
   }
   row.classList.add('tddrag'); document.body.classList.add('tddragging');
 }
-function tdDragMove(y){
+function tdDragMove(y, x){
   const d = tdDrag; if (!d?.on) return;
+  /* over a list's tab: letting go there moves the task (or the ones you picked) to that list */
+  if (x != null){ const tb = [...document.querySelectorAll('#tdo .tdtabs button[data-own]')].find(b => { const r = b.getBoundingClientRect(); return b.dataset.v !== todoTab && x >= r.left && x <= r.right && y >= r.top - 8 && y <= r.bottom + 8; });
+    document.querySelectorAll('#tdo .tdtabs .tddrop').forEach(b => b !== tb && b.classList.remove('tddrop')); tb?.classList.add('tddrop'); d.row.classList.toggle('tdtotab', !!tb); }
   let dy = y - d.y0; d.row.style.transform = `translateY(${dy}px)`;
   const rows = tdOpenRows(d.l).filter(r => !r.classList.contains('tdcarry')), others = rows.filter(r => r !== d.row);
   const r0 = d.row.getBoundingClientRect(), mid = r0.top + r0.height / 2;
@@ -7727,9 +7790,13 @@ function tdDragMove(y){
 function tdDragEnd(){
   const d = tdDrag; tdDrag = null; if (!d) return;
   document.body.classList.remove('tddragging'); d.row.classList.remove('tddrag', 'tdmulti'); d.row.style.transform = ''; d.row.style.transition = '';
+  d.row.classList.remove('tdtotab'); const tab = $('#tdo .tdtabs .tddrop'); tab?.classList.remove('tddrop');
   if (!d.on) return;
   const carried = d.carry && d.carry.length > 1;
   tdDragEndAt = Date.now();
+  if (tab){ const l = tab.dataset.v, ids = new Set(carried ? d.carry : [d.row.dataset.tid]);
+    todoSave(todoAll().map(z => { if (!ids.has(z.id)) return z; const y = { ...z }; if (l === 'all') delete y.l; else y.l = l; return y; }), ids.size > 1 ? 'move tasks' : 'move task');
+    todoSel.clear(); todoRefresh(); toast(`Moved ${ids.size > 1 ? ids.size + ' ' : ''}to ${todoTabName(l)} · ⌘Z to undo`, 1600); if (l === 'doing') todoWipWarn(); return; }
   let ids = tdOpenRows(d.l).filter(r => !r.classList.contains('tdcarry')).map(r => r.dataset.tid);
   if (carried){ const at = ids.indexOf(d.row.dataset.tid); ids.splice(at, 1, ...d.carry); }
   d.l.querySelectorAll('.tdcarry').forEach(r => r.classList.remove('tdcarry'));
@@ -7754,7 +7821,7 @@ document.addEventListener('pointerdown', e => {
 document.addEventListener('pointermove', e => {
   const d = tdDrag; if (!d || e.pointerType === 'touch') return;
   if (!d.on){ if (Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 5) return; tdDragBegin(d.row, d.y0); getSelection()?.removeAllRanges(); }
-  e.preventDefault(); tdDragMove(e.clientY);
+  e.preventDefault(); tdDragMove(e.clientY, e.clientX);
 }, true);
 ['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, e => { if (tdDrag && e.pointerType !== 'touch') tdDragEnd(); }, true));
 /* finger: hold still for a moment, then drag; a quick swipe still scrolls */
@@ -7767,7 +7834,7 @@ document.addEventListener('touchstart', e => {
 document.addEventListener('touchmove', e => {
   const t = e.touches[0];
   if (tdHold){ if (Math.hypot(t.clientX - tdHold.x, t.clientY - tdHold.y) > 8){ clearTimeout(tdHold.t); tdHold = null; } return; }
-  if (tdDrag?.on){ e.preventDefault(); tdDragMove(t.clientY); }
+  if (tdDrag?.on){ e.preventDefault(); tdDragMove(t.clientY, t.clientX); }
 }, { passive: false });
 ['touchend', 'touchcancel'].forEach(t => document.addEventListener(t, () => { clearTimeout(tdHold?.t); tdHold = null; if (tdDrag) tdDragEnd(); }, true));
 /* the click that ends a drag doesn't also tick, edit or open the task */
@@ -7790,7 +7857,7 @@ function todoAdd(){
     undoTx = null; undoLabel = 'add repeating task'; undoRecordSettings();
     S.settings = { ...S.settings, todoRepeat: [...todoRules(), r] }; saveSettings();
     todoRepDays = new Set(); todoRepOpen = false; todoRefresh(true);
-    return toast(`Repeats every ${repWords(days)}${days.includes(new Date().getDay()) ? ' · added to Today' : ' · it will show up in Today'}`, 2600);
+    return toast(`Repeats every ${repWords(days)}${days.includes(new Date().getDay()) ? ` · added to ${todoTabName('today')}` : ` · it will show up in ${todoTabName('today')}`}`, 2600);
   }
   const x = { id: uid('t'), t: t.slice(0, 200), s: subj, ...tcx, done: 0, at: Date.now(), ...(est ? { m: est } : {}) }; if (todoTab !== 'all') x.l = todoTab;
   todoSave([...todoAll(), x], 'add task'); todoRefresh(true); if (x.l === 'doing') todoWipWarn();
@@ -7866,7 +7933,7 @@ function todoMoveMenu(id, anchor){
   if (x.k === 'gap'){ m.innerHTML = `<button data-act="todo-kind" data-id="${id}" data-k="h">Turn into a heading</button>` + del; }
   else {
   const kinds = x.k === 'h' ? `<hr><button data-act="todo-kind" data-id="${id}" data-k="">Turn into a task</button>` : `<hr><button data-act="todo-time" data-id="${id}" aria-haspopup="true">${x.m ? `Time: about ${fmtMin(x.m)}` : 'Set a time…'}</button><div class="mlabel">Turn into</div><button data-act="todo-kind" data-id="${id}" data-k="h">A heading</button><button data-act="todo-kind" data-id="${id}" data-k="gap">A blank space</button>`;
-  m.innerHTML = `<div class="mlabel">List</div>` + todoTabs().filter(([k]) => k !== todoL(x)).map(([k, l]) => `<button data-act="todo-moveto" data-id="${id}" data-l="${k}">Move to ${l}</button>`).join('')
+  m.innerHTML = `<div class="mlabel">List</div>` + todoTabs().filter(([k]) => k !== todoL(x)).map(([k, l]) => `<button data-act="todo-moveto" data-id="${id}" data-l="${k}">Move to ${esc(l)}</button>`).join('')
     + (x.k === 'h' ? kinds + del : kinds + `<hr><div class="mlabel">Subject</div>` + todoSubjOpts(x, `data-act="todo-subj" data-id="${id}"`)
     + `<button class="tdsubm" data-act="todo-subj" data-id="${id}" data-s="" role="menuitemradio" aria-checked="${!x.s && !x.tc}"><span class="sdot2" style="--sc:var(--fg-3)"></span>No subject${!x.s && !x.tc ? '<span class="grow"></span>✓' : ''}</button>` + del);
   }
@@ -7951,13 +8018,17 @@ function todoCatDel(){
 function todoTabMenu(id, anchor){
   closeMenu(); const n = todoAll().filter(x => !x.done && !x.k && x.l === id).length;
   const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
-  m.innerHTML = `<button data-act="todo-tabren" data-v="${id}">Rename</button><hr><button class="danger" data-act="todo-tabdel" data-v="${id}">${n ? `Delete list and its ${n} task${n > 1 ? 's' : ''}` : 'Delete list'}</button>`;
+  const built = TODO_TABS0.find(t => t[0] === id), renamed = built && todoTabName(id) !== built[1];
+  const ks = todoKeys(), at = ks.indexOf(id);
+  m.innerHTML = `<button data-act="todo-tabren" data-v="${id}">Rename</button>${at > 0 ? `<button data-act="todo-tabshift" data-v="${id}" data-d="-1">Move left</button>` : ''}${at < ks.length - 1 ? `<button data-act="todo-tabshift" data-v="${id}" data-d="1">Move right</button>` : ''}` + (built ? (renamed ? `<button data-act="todo-tabreset" data-v="${id}">Call it ${esc(built[1])} again</button>` : '') : `<hr><button class="danger" data-act="todo-tabdel" data-v="${id}">${n ? `Delete list and its ${n} task${n > 1 ? 's' : ''}` : 'Delete list'}</button>`);
   document.body.appendChild(m); const r = anchor.getBoundingClientRect();
   m.style.left = Math.max(8, Math.min(innerWidth - m.offsetWidth - 8, r.left)) + 'px'; m.style.top = Math.min(innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px'; m.querySelector('button').focus();
 }
 function todoTabSave(inp){
   const name = inp.value.replace(/\s+/g, ' ').trim().slice(0, 40), ren = inp.dataset.ren;
   todoTabNew = false; todoTabRen = null;
+  const built = ren && TODO_TABS0.find(t => t[0] === ren);
+  if (built){ if (name && name !== todoTabName(ren)) todoTabRename0(ren, name === built[1] ? '' : name); return todoRefresh(); }
   if (name && ren && todoULists().some(x => x.id === ren && x.name !== name)){
     undoTx = null; undoLabel = 'rename list'; undoRecordSettings();
     S.settings = { ...S.settings, todoLists: todoULists().map(x => x.id === ren ? { ...x, name } : x) }; saveSettings();
@@ -7967,6 +8038,43 @@ function todoTabSave(inp){
     todoTab = id; ls.set('md-todo-tab', id); todoRefresh(true); return toast(`${name} added`, 1400);
   }
   todoRefresh();
+}
+function todoTabOrder(keys){
+  if (keys.join() === todoKeys().join()) return false;
+  undoTx = null; undoLabel = 'reorder lists'; undoRecordSettings(); S.settings = { ...S.settings, todoOrder: keys }; saveSettings(); return true;
+}
+function todoTabShift(id, d){ const ks = todoKeys(), i = ks.indexOf(id), j = i + d; if (i < 0 || j < 0 || j >= ks.length) return; [ks[i], ks[j]] = [ks[j], ks[i]]; todoTabOrder(ks); todoRefresh(); }
+/* mouse or Pencil: hold a tab and drag it sideways (same feel as the subject tabs) */
+let tdTabDrag = null, tdTabEat = false;
+document.addEventListener('pointerdown', e => {
+  const t = e.target.closest?.('#tdo .tdtabs button[data-own]'); if (!t || e.button !== 0 || e.pointerType === 'touch') return;
+  tdTabDrag = { el: t, x0: e.clientX, grab: e.clientX - t.getBoundingClientRect().left, on: false };
+});
+document.addEventListener('pointermove', e => {
+  const d = tdTabDrag; if (!d) return;
+  if (!d.on){ if (Math.abs(e.clientX - d.x0) < 6) return; d.on = true; d.bar = d.el.parentElement; d.el.classList.add('tdtdrag'); closeMenu(); }
+  const want = e.clientX - d.grab, mid = want + d.el.offsetWidth / 2;
+  const others = [...d.bar.querySelectorAll('button[data-own]')].filter(x => x !== d.el);
+  const before = others.find(x => { const r = x.getBoundingClientRect(); return mid < r.left + r.width / 2; }) || d.bar.querySelector('.tdtabadd, .tdtabin[data-new]');
+  if (before && d.el.nextElementSibling !== before){
+    const first = new Map(others.map(x => [x, x.getBoundingClientRect().left]));
+    d.bar.insertBefore(d.el, before);
+    others.forEach(x => { const dx = first.get(x) - x.getBoundingClientRect().left; if (!dx) return; x.style.transition = 'none'; x.style.transform = `translateX(${dx}px)`; void x.offsetWidth; x.style.transition = 'transform .2s var(--ease)'; x.style.transform = ''; });
+  }
+  d.el.style.transform = 'none'; const nat = d.el.getBoundingClientRect().left, r0 = d.bar.getBoundingClientRect();
+  d.el.style.transform = `translateX(${Math.max(r0.left, Math.min(r0.right - d.el.offsetWidth, want)) - nat}px)`;
+});
+addEventListener('pointerup', () => {
+  const d = tdTabDrag; tdTabDrag = null; if (!d?.on) return;
+  tdTabEat = true; setTimeout(() => tdTabEat = false, 0);
+  d.el.classList.remove('tdtdrag'); d.el.style.transform = '';
+  todoTabOrder([...d.bar.querySelectorAll('button[data-own]')].map(x => x.dataset.v)); todoRefresh();
+});
+document.addEventListener('click', e => { if (tdTabEat && e.target.closest?.('.tdtabs')){ e.stopPropagation(); e.preventDefault(); tdTabEat = false; } }, true);
+function todoTabRename0(k, name){
+  undoTx = null; undoLabel = 'rename list'; undoRecordSettings();
+  const m = { ...todoNames() }; if (name) m[k] = name; else delete m[k];
+  S.settings = { ...S.settings, todoNames: m }; saveSettings();
 }
 function todoTabDel(id){
   const u = todoULists().find(x => x.id === id); if (!u) return;
@@ -7982,6 +8090,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); inp.dataset.done = 1; todoTabNew = false; todoTabRen = null; todoRefresh(); }
 }, true);
 document.addEventListener('focusout', e => { const inp = e.target.closest?.('.tdtabin'); if (inp && !inp.dataset.done){ inp.dataset.done = 1; setTimeout(() => todoTabSave(inp), 0); } });
+document.addEventListener('dblclick', e => { const t = e.target.closest?.('#tdo .tdtabs button[data-own]'); if (!t) return; e.preventDefault(); closeMenu(); todoTabRen = t.dataset.v; todoTabNew = false; todoRefresh(); const i = $('.tdtabin[data-ren]'); i?.focus(); i?.select(); });
 document.addEventListener('contextmenu', e => { const t = e.target.closest?.('#tdo .tdtabs button[data-own]'); if (!t) return; e.preventDefault(); e.stopPropagation(); todoTabMenu(t.dataset.v, t); }, true);
 function todoMoveTo(id, l){
   const name = todoTabName(l);
@@ -8026,7 +8135,7 @@ function todoSpawn(){
 function todoRepsDialog(){
   const rules = todoRules(); if (!rules.length) return;
   openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="trh" style="max-width:600px"><header><h2 id="trh">Repeating tasks</h2></header>
-    <div class="body"><p class="hint" style="margin:0 0 12px">Each one shows up in Today on its days. Changes apply from the next time it shows up.</p><div class="trlist">${rules.map(r => `<div class="trrow" data-rid="${r.id}">
+    <div class="body"><p class="hint" style="margin:0 0 12px">Each one shows up in ${esc(todoTabName('today'))} on its days. Changes apply from the next time it shows up.</p><div class="trlist">${rules.map(r => `<div class="trrow" data-rid="${r.id}">
       <input class="in trt" value="${esc(r.t)}" maxlength="200" aria-label="Task">
       <span class="trdays" role="group" aria-label="Days">${REP_DAYS.map(([d, l]) => `<button type="button" data-trd="${d}" aria-pressed="${r.days.includes(d)}" title="${REP_NAMES[d]}">${l}</button>`).join('')}</span>
       <span class="trsub">${r.s && nodeOf(r.s) ? `<span class="sdot2" style="--sc:${scol(r.s)}"></span>${esc(nodeOf(r.s).name)}` : 'No subject'}</span>
@@ -8287,6 +8396,7 @@ document.addEventListener('click', async e => {
       todoTab = v; ls.set('md-todo-tab', todoTab); return todoRefresh(); }
     case 'todo-tabnew': todoTabNew = true; todoTabRen = null; todoRefresh(); return $('.tdtabin[data-new]')?.focus();
     case 'todo-tabren': closeMenu(); todoTabRen = a.dataset.v; todoTabNew = false; todoRefresh(); { const i = $('.tdtabin[data-ren]'); i?.focus(); i?.select(); } return;
+    case 'todo-tabreset': closeMenu(); todoTabRename0(a.dataset.v, ''); return todoRefresh();
     case 'todo-tabdel': closeMenu(); return todoTabDel(a.dataset.v);
     case 'todo-move': e.stopPropagation(); return $('#menu') ? closeMenu() : todoMoveMenu(id, a);
     case 'todo-moveto': return todoMoveTo(id, a.dataset.l);
@@ -8433,9 +8543,13 @@ document.addEventListener('click', async e => {
     case 'cm-unlink': { const c = S.cards[id], here = brRef(); if (!c || !here) return; const [b, k] = here.split('::'), set = subtree(b); const also = (c.also || []).filter(r => !refIn(r, set, k)); const nc = { ...c }; if (also.length) nc.also = also; else delete nc.also; await put('cards', nc); closeMenu(); render(); return toast('Removed from this deck · ⌘Z to undo'); }
     case 'cm-reset': { const c = S.cards[id]; if (!c) return; await put('cards', { ...c, srs: freshSrs() }); closeMenu(); render(); return toast('Progress reset · ⌘Z to undo'); }
     case 'cm-delete': return confirmCardDelete(id);
+    case 'study-skip': return studySkip();
+    case 'keys': closeMenu(); return keysDialog();
+    case 'nav-more': { e.stopPropagation(); if ($('#menu')) return closeMenu(); const r = a.getBoundingClientRect(); menuAt(`<button data-nav="papers">Past papers</button><button data-nav="stats">Stats</button><button data-nav="themes">Themes</button>`, { x: r.right - 170, y: r.top - 132 }); return; }
+    case 'todo-tabshift': closeMenu(); return todoTabShift(a.dataset.v, +a.dataset.d);
     case 'study-del': return confirmCardDelete(id || study?.cur);
     case 'do-del-card': { $('#layer').innerHTML = ''; await del('cards', id);
-      if (view.name === 'study' && study){ studyAfterDel(id); return toast(matchMedia('(pointer:fine)').matches ? 'Card deleted · ⌘Z to undo' : 'Card deleted'); }
+      if (view.name === 'study' && study){ studyAfterDel(id); return toast('Card deleted · ⌘Z to undo'); }
       render(); return toast('Card deleted · ⌘Z to undo'); }
     case 'do-cmove': { const to = [...cardMoveSel][0]; if (!to) return toast('Pick a deck.'); const c = S.cards[id]; $('#layer').innerHTML = ''; if (to === homeRef(c) && !(cardMoveFrom && linkedHere(c, cardMoveFrom))) return render(); await moveCardFrom(id, cardMoveFrom, to); render(); return toast(`Moved to ${refName(to)} · ⌘Z to undo`); }
     case 'do-calso': { const c = S.cards[id]; if (!c) return; const nc = { ...c }; const also = [...cardAlsoSel].filter(r => r !== homeRef(c) && r !== c.nodeId); if (also.length) nc.also = also; else delete nc.also; $('#layer').innerHTML = ''; await put('cards', nc); render(); return toast('Decks updated · ⌘Z to undo'); }
@@ -8603,6 +8717,7 @@ document.addEventListener('keydown', e => {
   if (view.name === 'study' && study?.cur && !study.shown && e.target.id === 'dthink' && (e.metaKey || e.ctrlKey) && e.key === 'Enter'){ e.preventDefault(); return showAnswer(); }
   if (view.name === 'study' && study?.cur && e.target.id === 'dthink' && e.key === 'Escape'){ e.target.blur(); return; }
   if (dialogOpen() || typing || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === '?'){ e.preventDefault(); return keysDialog(); }
   if (view.name === 'study' && study && (e.key === 'z' || e.key === 'Z' || e.key === 'Backspace')){ e.preventDefault(); return goBack(); }
   if (view.name === 'study' && study?.cur){
     if (!study.shown && (e.key === ' ' || e.key === 'Enter')){ e.preventDefault(); return showAnswer(); }
@@ -8610,6 +8725,7 @@ document.addEventListener('keydown', e => {
     if (study.shown && (e.key === ' ' || e.key === 'Enter')){ e.preventDefault(); return rate(3); }
     if (e.key === 'e'){ e.preventDefault(); return editor(study.cur); }
     if (e.key === 'x' || e.key === 'X'){ e.preventDefault(); return confirmCardDelete(study.cur); }
+    if (e.key === 's' || e.key === 'S'){ e.preventDefault(); return studySkip(); }
     if (e.key === 'p' || e.key === 'P'){ e.preventDefault(); return padToggle(); }
     if (e.key === 't' || e.key === 'T'){ e.preventDefault(); return tmrPause(); }
   }
@@ -10170,7 +10286,7 @@ async function ppmRemoveQ(i){
   undoTx = null; undoBaseSettings = clone(S.settings); undoLabel = 'remove ' + it.label;
   S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings();
   ppmSide();
-  toast(`Removed ${it.label}${card ? ' · its card stays in your deck' : ''}${matchMedia('(pointer: fine)').matches ? ' · ⌘Z to undo' : ''}`, 3200);
+  toast(`Removed ${it.label}${card ? ' · its card stays in your deck' : ''}${' · ⌘Z to undo'}`, 3200);
 }
 /* after undo/redo: bring the question list back in line with the saved paper */
 function ppmResync(){
