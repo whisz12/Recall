@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261111234425";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261112203639";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -3010,6 +3010,8 @@ body.tddragging .tdl > .tdr:not(.tddrag) .tdmore2{opacity:0 !important}
   html.lh .answerbar.lhbar .lhback:disabled{color:var(--fg-3)}
 }
 @media (max-width:430px){ html.lh .answerbar.lhbar [data-act="edit"]{display:none} }
+.answerbar.lhbar .lhdel{display:inline-flex;align-items:center;justify-content:center;min-width:44px}
+.answerbar.lhbar .lhdel svg{width:18px;height:18px;display:block}
 @media (hover:none) and (pointer:coarse){ .dhint{display:none} }
 @media (prefers-reduced-motion: reduce){ .ppcar,.ppyr,.ppbox{transition:none} }
 
@@ -3178,8 +3180,19 @@ async function applyTx(tx){
   } finally { undoMute = false; undoTx = null; }
   return back;
 }
+/* deleting a card while studying: on to the next one; ⌘Z straight after (before rating anything) brings it back as the current card */
+function studyAfterDel(id){
+  study.undel = { tx: undoTx || undoStack.at(-1), id }; study.queue = study.queue.filter(x => x !== id);
+  if (study.cur === id) nextCard(); renderStudy(); typeset($('#root'));
+}
+async function studyUndel(){
+  const { id } = study.undel; study.undel = null; redoStack.push(await applyTx(undoStack.pop()));
+  if (S.cards[id]){ if (study.cur && study.cur !== id) study.queue.unshift(study.cur); study.cur = id; study.shown = false; study.pred = { conf: 50, think: '', set: false }; study.t0 = Date.now(); study.tShown = 0; study.timeUpToast = false; study.pausedMs = 0; study.pausedAt = 0; study.autoShown = false; }
+  renderStudy(); typeset($('#root')); renderSideSubjects(); toast('Card is back');
+}
 async function appUndo(){
   if (view.name === 'study' && study && padCanUndo()) return padUndo();
+  if (view.name === 'study' && study?.undel && undoStack.at(-1) === study.undel.tx) return studyUndel();
   if (view.name === 'study' && study) return goBack();
   const tx = undoStack.pop(); if (!tx) return toast('Nothing to undo');
   redoStack.push(await applyTx(tx));
@@ -3524,6 +3537,7 @@ function histGo(dir){
   study = null; navSkip = true; go(v.name, v.node); navSkip = false;
 }
 const IC = {
+  trash: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5M6.8 7v4M9.2 7v4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   edit: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M7.5 2.5H4a1.5 1.5 0 0 0-1.5 1.5v8A1.5 1.5 0 0 0 4 13.5h8a1.5 1.5 0 0 0 1.5-1.5V8.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="m12.2 2.3 1.5 1.5L8.4 9.1l-2 .5.5-2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
   card: '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5 7h6M5 9.5h3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
   clock: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 9V6.2M6.3 1.8h3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
@@ -3549,7 +3563,7 @@ function renderAppbar(){
     const c = study.cur ? S.cards[study.cur] : null, ps = c ? pathOf(c.nodeId) : (study.node ? pathOf(study.node) : []);
     title = (study.tag ? `<button class="abcr" data-act="pp-back">${esc(study.tag)}</button><i>›</i>` : '') + (ps.length ? ps.map((n, i) => i < ps.length - 1 ? `<span>${esc(n.name)}</span><i>›</i>` : `<b>${esc(n.name)}</b>`).join('') : '<b>All cards</b>');
     const q = queueCounts(), total = study.done + q.nw + q.lr + q.rv, pos = Math.min(study.done + 1, total), st = tmrGet();
-    act = `<span id="rflash" aria-live="polite"></span>${c ? `<button class="abi" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back one step (Z)" aria-label="Back one step">${IC.undo}</button><button class="abi" data-act="edit" data-id="${c.id}" title="Edit this card (E)" aria-label="Edit this card">${IC.edit}</button><span class="absep"></span>` : ''}
+    act = `<span id="rflash" aria-live="polite"></span>${c ? `<button class="abi" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back one step (Z)" aria-label="Back one step">${IC.undo}</button><button class="abi" data-act="edit" data-id="${c.id}" title="Edit this card (E)" aria-label="Edit this card">${IC.edit}</button><button class="abi" data-act="study-del" data-id="${c.id}" title="Delete this card (X)" aria-label="Delete this card">${IC.trash}</button><span class="absep"></span>` : ''}
       <button class="abi abtimer ${st.mode !== 'off' ? 'on' : ''}" data-act="timer-menu" title="Timer (T pauses)" aria-label="Timer settings" aria-haspopup="true">${IC.clock}<span>${st.mode === 'off' ? '' : st.mode === 'watch' ? 'Stopwatch' : c ? fmtSec(limitOf(c, st)) : 'Limit'}</span></button>
       <button class="abi ${padOpen ? 'on' : ''}" data-act="pad-toggle" title="Scratchpad (P)" aria-label="Scratchpad" aria-pressed="${padOpen}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 12.5c1.6-2.6 3-3.6 4-3 1 .6-.4 2.6.6 3s2.4-1.6 3.6-1.4c.8.1.8 1 1.8 1.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 2.6 2.3 2.3-4.3 4.3-2.6.4.4-2.6z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
       ${study.queue.length > 1 ? `<button class="abi" data-act="reshuffle" title="Shuffle the cards left" aria-label="Shuffle the cards left">${IC.shuffle}</button>` : ''}
@@ -4407,7 +4421,7 @@ function bar(c){
   el.classList.toggle('lhbar', isLH());
   if (isLH()){
     const q = queueCounts(), total = study.done + q.nw + q.lr + q.rv, confs = study.confs || [];
-    el.innerHTML = `<div class="inner"><div class="side"><button class="lhb lhback" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back (Z)" aria-label="Back to the previous card"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</button><button class="lhb" data-act="edit" data-id="${c.id}" title="Edit (E)">Edit</button></div>
+    el.innerHTML = `<div class="inner"><div class="side"><button class="lhb lhback" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back (Z)" aria-label="Back to the previous card"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</button><button class="lhb" data-act="edit" data-id="${c.id}" title="Edit (E)">Edit</button><button class="lhb lhdel" data-act="study-del" data-id="${c.id}" title="Delete this card" aria-label="Delete this card">${IC.trash}</button></div>
       <div class="mid lhstat"><span id="rflash" aria-live="polite"></span>Card ${Math.min(study.done + 1, total)} of ${total} · ${study.done} done${confs.length ? ` · avg confidence ${Math.round(confs.reduce((a, b) => a + b, 0) / confs.length)}%` : ''}</div>
       <div class="side r"><button class="lhb" data-act="${study.node ? 'open' : 'nav-decks'}" data-id="${study.node || ''}" title="Exit (Esc)">Exit</button></div></div>`;
     return;
@@ -4416,7 +4430,7 @@ function bar(c){
   const mid = study.shown
     ? `<div class="ease">${[['Again','again'],['Hard','hard'],['Good','good'],['Easy','easy']].map(([l,k],i) => `<div class="col"><small>${fmtIvl(schedule(s, i+1, now).due - now)}</small><button class="btn r${i+1}" data-act="rate" data-r="${i+1}" title="Shortcut: ${i+1}">${l}</button></div>`).join('')}</div>`
     : `<div class="qcounts" id="qcounts">${countsHtml()}</div><button class="btn primary big showbtn" data-act="show" title="Shortcut: Space">${c.kind === 'learn' ? 'Show Explanation' : 'Show Mistake &amp; Solution'}</button>`;
-  el.innerHTML = `<div class="inner"><div class="side"><button class="btn sm backbtn" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back (Z or Backspace)" aria-label="Back">${I.undo}<span>Back</span></button><button class="btn sm" data-act="edit" data-id="${c.id}">Edit</button></div><div class="mid">${mid}</div><div class="side r"><button class="btn sm" data-act="${study.node ? 'open' : 'nav-decks'}" data-id="${study.node||''}">Exit</button></div></div>`;
+  el.innerHTML = `<div class="inner"><div class="side"><button class="btn sm backbtn" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back (Z or Backspace)" aria-label="Back">${I.undo}<span>Back</span></button><button class="btn sm" data-act="edit" data-id="${c.id}">Edit</button><button class="btn sm" data-act="study-del" data-id="${c.id}">Delete</button></div><div class="mid">${mid}</div><div class="side r"><button class="btn sm" data-act="${study.node ? 'open' : 'nav-decks'}" data-id="${study.node||''}">Exit</button></div></div>`;
 }
 function showAnswer(){
   if (!study?.cur || study.shown) return;
@@ -4431,6 +4445,7 @@ function showAnswer(){
   if (r.top > innerHeight * 0.55) hr.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start' });
 }
 async function rate(r){
+  if (study) study.undel = null;
   const c = S.cards[study.cur]; if (!c || !study.shown || study.busy) return;
   study.hist.push({ id: c.id, srs: c.srs ? JSON.parse(JSON.stringify(c.srs)) : null, revs: c.revs ? [...c.revs] : null, queue: [...study.queue], done: study.done, day: dayKey() });
   if (study.hist.length > 300) study.hist.shift();
@@ -8339,7 +8354,10 @@ document.addEventListener('click', async e => {
     case 'cm-unlink': { const c = S.cards[id], here = brRef(); if (!c || !here) return; const [b, k] = here.split('::'), set = subtree(b); const also = (c.also || []).filter(r => !refIn(r, set, k)); const nc = { ...c }; if (also.length) nc.also = also; else delete nc.also; await put('cards', nc); closeMenu(); render(); return toast('Removed from this deck · ⌘Z to undo'); }
     case 'cm-reset': { const c = S.cards[id]; if (!c) return; await put('cards', { ...c, srs: freshSrs() }); closeMenu(); render(); return toast('Progress reset · ⌘Z to undo'); }
     case 'cm-delete': return confirmCardDelete(id);
-    case 'do-del-card': { $('#layer').innerHTML = ''; await del('cards', id); render(); return toast('Card deleted · ⌘Z to undo'); }
+    case 'study-del': return confirmCardDelete(id || study?.cur);
+    case 'do-del-card': { $('#layer').innerHTML = ''; await del('cards', id);
+      if (view.name === 'study' && study){ studyAfterDel(id); return toast(matchMedia('(pointer:fine)').matches ? 'Card deleted · ⌘Z to undo' : 'Card deleted'); }
+      render(); return toast('Card deleted · ⌘Z to undo'); }
     case 'do-cmove': { const to = [...cardMoveSel][0]; if (!to) return toast('Pick a deck.'); const c = S.cards[id]; $('#layer').innerHTML = ''; if (to === homeRef(c) && !(cardMoveFrom && linkedHere(c, cardMoveFrom))) return render(); await moveCardFrom(id, cardMoveFrom, to); render(); return toast(`Moved to ${refName(to)} · ⌘Z to undo`); }
     case 'do-calso': { const c = S.cards[id]; if (!c) return; const nc = { ...c }; const also = [...cardAlsoSel].filter(r => r !== homeRef(c) && r !== c.nodeId); if (also.length) nc.also = also; else delete nc.also; $('#layer').innerHTML = ''; await put('cards', nc); render(); return toast('Decks updated · ⌘Z to undo'); }
     case 'link-deck': { const ids = cardsIn(id).map(c => c.id); return linkDialog(ids, `Also show these ${ids.length} cards in…`); }
@@ -8408,7 +8426,7 @@ document.addEventListener('click', async e => {
     case 'pick': e.stopPropagation(); zone(a.dataset.zone); return $('#efile').click();
     case 'rm-img': if (a.dataset.zone === 'q'){ ed.card.qImgs = (ed.card.qImgs || []).filter((_, k) => k !== +a.dataset.i); ed.card.qImg = ed.card.qImgs[0] || null; } else ed.card.solImgs.splice(+a.dataset.i, 1); return drawThumbs();
     case 'reset-srs': ed.card.srs = freshSrs(); return toast('Progress resets to New when you save.');
-    case 'del-card': { const c = ed.card; if (a.dataset.confirm !== '1'){ a.dataset.confirm = '1'; a.textContent = 'Click again to delete'; return; } $('#layer').innerHTML = ''; ed = null; await del('cards', c.id); if (view.name === 'study'){ if (study.cur === c.id){ nextCard(); } renderStudy(); } else render(); return toast('Card deleted · ⌘Z to undo'); }
+    case 'del-card': { const c = ed.card; if (a.dataset.confirm !== '1'){ a.dataset.confirm = '1'; a.textContent = 'Click again to delete'; return; } $('#layer').innerHTML = ''; ed = null; await del('cards', c.id); if (view.name === 'study' && study) studyAfterDel(c.id); else render(); return toast('Card deleted · ⌘Z to undo'); }
     case 'save-card': return saveCard();
     case 'add-mistake': { const c = S.cards[study.cur]; $('#addm').innerHTML = `<textarea class="in" id="qm" placeholder="What went wrong, and what to remember next time"></textarea><div style="display:flex;gap:8px"><button class="btn sm primary" data-act="save-mistake">Save</button></div>`; autoGrow($('#qm')); $('#qm').focus(); return; }
     case 'save-mistake': { const v = $('#qm').value.trim(); if (!v) return; const c = S.cards[study.cur]; await put('cards', { ...c, mistake: v }); $('#addm').outerHTML = `<div class="stext rich">${rich(v)}</div>`; typeset($('.answer')); return toast('Saved'); }
@@ -8512,6 +8530,7 @@ document.addEventListener('keydown', e => {
     if (study.shown && ['1','2','3','4'].includes(e.key)){ e.preventDefault(); return rate(+e.key); }
     if (study.shown && (e.key === ' ' || e.key === 'Enter')){ e.preventDefault(); return rate(3); }
     if (e.key === 'e'){ e.preventDefault(); return editor(study.cur); }
+    if (e.key === 'x' || e.key === 'X'){ e.preventDefault(); return confirmCardDelete(study.cur); }
     if (e.key === 'p' || e.key === 'P'){ e.preventDefault(); return padToggle(); }
     if (e.key === 't' || e.key === 'T'){ e.preventDefault(); return tmrPause(); }
   }
