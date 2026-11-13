@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261112232702";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261113134013";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -3011,6 +3011,24 @@ body.tddragging .tdl > .tdr:not(.tddrag) .tdmore2{opacity:0 !important}
 }
 @media (max-width:430px){ html.lh .answerbar.lhbar [data-act="edit"]{display:none} }
 .toast{width:max-content}
+.sflag[aria-pressed="true"] .flf{fill:currentColor}
+.abi.sflag[aria-pressed="true"]{color:var(--fg)}
+.qa .label .qflag{display:inline-flex;align-items:center;gap:4px;height:24px;margin:-2px 0;padding:0 6px;border:0;border-radius:6px;background:none;font:500 12px var(--ui);color:var(--fg-3);cursor:pointer}
+.qa .label .qflag svg{width:14px;height:14px}
+.qa .label .qflag:hover{background:rgba(var(--ovr),.08);color:var(--fg)}
+.qa .label .qflag[aria-pressed="true"]{color:var(--fg)}
+@media (pointer:coarse){ .qa .label .qflag{height:36px;padding:0 10px;margin:-8px 0} }
+.qhintb{margin:16px 0 4px;padding-top:12px;border-top:1px solid var(--border)}
+.qhintb .qhh{margin:0 0 6px;font:600 13px var(--ui);color:var(--fg-2)}
+.qhintb .stext{font-size:17px}
+.qhintb .qhed{display:inline-block;margin-top:8px;font-size:12px;color:var(--fg-3)}
+.qhintb textarea{width:100%}
+.qhintb .qhact{display:flex;gap:8px;margin-top:8px}
+.dock .dhintb[aria-pressed="true"]{background:rgba(var(--ovr),.1)}
+@media (max-width:430px){ .dock.dock-show .hintm{display:none} }
+.brflag{display:inline-flex;margin-left:6px;color:var(--fg-2);vertical-align:-2px}
+.brflag svg{width:13px;height:13px}
+.brflag .flf{fill:currentColor}
 .toast .toastundo{margin:-6px -8px -6px 10px;padding:6px 8px;border:0;background:none;font:600 13px var(--ui);color:var(--accent);cursor:pointer;border-radius:6px}
 .toast .toastundo:hover{background:rgba(var(--ovr),.08)}
 @media (pointer:coarse){ .toast .toastundo{padding:12px 10px;margin:-12px -10px -12px 8px} }
@@ -3580,6 +3598,7 @@ function histGo(dir){
   study = null; navSkip = true; go(v.name, v.node); navSkip = false;
 }
 const IC = {
+  flag: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 14V2.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path class="flf" d="M4 3h8l-1.8 2.6L12 8.2H4z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
   skip: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3.5 10.5 8 4 12.5zM12.5 3.5v9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   trash: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5M6.8 7v4M9.2 7v4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   edit: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M7.5 2.5H4a1.5 1.5 0 0 0-1.5 1.5v8A1.5 1.5 0 0 0 4 13.5h8a1.5 1.5 0 0 0 1.5-1.5V8.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="m12.2 2.3 1.5 1.5L8.4 9.1l-2 .5.5-2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
@@ -3607,7 +3626,7 @@ function renderAppbar(){
     const c = study.cur ? S.cards[study.cur] : null, ps = c ? pathOf(c.nodeId) : (study.node ? pathOf(study.node) : []);
     title = (study.tag ? `<button class="abcr" data-act="pp-back">${esc(study.tag)}</button><i>›</i>` : '') + (ps.length ? ps.map((n, i) => i < ps.length - 1 ? `<span>${esc(n.name)}</span><i>›</i>` : `<b>${esc(n.name)}</b>`).join('') : '<b>All cards</b>');
     const q = queueCounts(), total = study.done + q.nw + q.lr + q.rv, pos = Math.min(study.done + 1, total), st = tmrGet();
-    act = `<span id="rflash" aria-live="polite"></span>${c ? `<button class="abi" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back one step (Z)" aria-label="Back one step">${IC.undo}</button><button class="abi" data-act="edit" data-id="${c.id}" title="Edit this card (E)" aria-label="Edit this card">${IC.edit}</button><button class="abi" data-act="study-skip" title="${study.practise ? 'Skip this card for now (S)' : 'Not today: skip until tomorrow (S)'}" aria-label="Skip this card">${IC.skip}</button><button class="abi" data-act="study-del" data-id="${c.id}" title="Delete this card (X)" aria-label="Delete this card">${IC.trash}</button><span class="absep"></span>` : ''}
+    act = `<span id="rflash" aria-live="polite"></span>${c ? `<button class="abi" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back one step (Z)" aria-label="Back one step">${IC.undo}</button><button class="abi" data-act="edit" data-id="${c.id}" title="Edit this card (E)" aria-label="Edit this card">${IC.edit}</button><button class="abi sflag" data-act="study-flag" aria-pressed="${!!c.flag}" title="Flag this card to come back to it (F)" aria-label="Flag this card">${IC.flag}</button><button class="abi" data-act="study-skip" title="${study.practise ? 'Skip this card for now (S)' : 'Not today: skip until tomorrow (S)'}" aria-label="Skip this card">${IC.skip}</button><button class="abi" data-act="study-del" data-id="${c.id}" title="Delete this card (X)" aria-label="Delete this card">${IC.trash}</button><span class="absep"></span>` : ''}
       <button class="abi abtimer ${st.mode !== 'off' ? 'on' : ''}" data-act="timer-menu" title="Timer (T pauses)" aria-label="Timer settings" aria-haspopup="true">${IC.clock}<span>${st.mode === 'off' ? '' : st.mode === 'watch' ? 'Stopwatch' : c ? fmtSec(limitOf(c, st)) : 'Limit'}</span></button>
       <button class="abi ${padOpen ? 'on' : ''}" data-act="pad-toggle" title="Scratchpad (P)" aria-label="Scratchpad" aria-pressed="${padOpen}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 12.5c1.6-2.6 3-3.6 4-3 1 .6-.4 2.6.6 3s2.4-1.6 3.6-1.4c.8.1.8 1 1.8 1.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 2.6 2.3 2.3-4.3 4.3-2.6.4.4-2.6z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
       ${study.queue.length > 1 ? `<button class="abi" data-act="reshuffle" title="Shuffle the cards left" aria-label="Shuffle the cards left">${IC.shuffle}</button>` : ''}
@@ -4384,9 +4403,10 @@ function renderStudyLH(c, ps, left, pct){
       <div class="sbar" aria-hidden="true"><span style="width:${pct}%"></span></div>
     </div>
     <article class="qa fadein" id="qa">
-      <div class="label">${c.label ? `<span class="lhtag">${esc(c.label)}</span>` : ''}<span>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</span>${marksOf(c) ? `<span class="qmk">${marksOf(c)} mark${marksOf(c) === 1 ? '' : 's'}</span>` : ''}${isLeech(c) ? `<span class="leechtag" title="You've missed this card ${failCount(c)} times. Consider rewriting it (E).">Leech</span>` : ''}${occOf(c) && !study.shown ? '<span class="hint">tap the boxes to peek</span>' : ''}<span class="qtime" id="qtime" role="timer" aria-live="off"></span></div>
+      <div class="label">${c.label ? `<span class="lhtag">${esc(c.label)}</span>` : ''}<span>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</span>${marksOf(c) ? `<span class="qmk">${marksOf(c)} mark${marksOf(c) === 1 ? '' : 's'}</span>` : ''}${isLeech(c) ? `<span class="leechtag" title="You've missed this card ${failCount(c)} times. Consider rewriting it (E).">Leech</span>` : ''}${occOf(c) && !study.shown ? '<span class="hint">tap the boxes to peek</span>' : ''}<button type="button" class="qflag sflag" data-act="study-flag" aria-pressed="${!!c.flag}" title="Flag this card to come back to it (F)">${IC.flag}<span>${c.flag ? 'Flagged' : 'Flag'}</span></button><span class="qtime" id="qtime" role="timer" aria-live="off"></span></div>
       <div class="qtbar" id="qtbar" hidden><i></i></div>
       ${ppSrcLine(c)}${front(c)}
+      <div id="qhint">${study.hintFor === c.id ? hintHtml(c) : ''}</div>
       ${study.shown ? '<hr id="answer">' + predHtml() + back(c) : ''}
     </article>
     ${padHtml()}
@@ -4395,6 +4415,20 @@ function renderStudyLH(c, ps, left, pct){
   $('#lhmap')?.remove(); bar(c); padMount(); if (study.shown) $('#qa')?.classList.add('revealed');
   if (!study.shown) setTimeout(() => { const t = $('#dthink'); if (t) autoGrow(t); }, 0);
   tmrTick();
+}
+/* Hint (H): the card's own hint if it has one; if not, what went wrong last time; if neither, a box to write one on the spot */
+function hintHtml(c){
+  const own = (c.hint || '').trim(), was = c.kind !== 'learn' ? (c.mistake || '').trim() : '';
+  if (study.hintEdit === c.id || (!own && !was)) return `<div class="qhintb"><h3 class="qhh">${own ? 'Hint' : 'No hint on this card yet'}</h3><textarea class="in" id="qhin" rows="2" placeholder="A nudge for next time, without giving the answer away">${esc(own)}</textarea><div class="qhact"><button class="btn sm primary" data-act="hint-save">Save hint</button>${own || was ? '<button class="btn sm" data-act="hint-cancel">Cancel</button>' : ''}</div></div>`;
+  return `<div class="qhintb"><h3 class="qhh">${own ? 'Hint' : 'What went wrong last time'}</h3><div class="stext rich">${rich(own || was)}</div><button class="link qhed" data-act="hint-edit">${own ? 'Change hint' : 'Write a hint instead'}</button></div>`;
+}
+function hintDraw(){ const c = S.cards[study?.cur], box = $('#qhint'); if (!c || !box) return; box.innerHTML = study.hintFor === c.id ? hintHtml(c) : ''; typeset(box); document.querySelectorAll('[data-act="study-hint"]').forEach(b => b.setAttribute('aria-pressed', String(study.hintFor === c.id))); const t = $('#qhin'); if (t){ autoGrow(t); t.focus(); } }
+function studyHint(){ const c = S.cards[study?.cur]; if (!c) return; study.hintEdit = null; study.hintFor = study.hintFor === c.id ? null : c.id; hintDraw(); if (study.hintFor) $('#qhint')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+async function studyFlag(){
+  const c = S.cards[study?.cur]; if (!c) return; const on = !c.flag, y = { ...c }; if (on) y.flag = true; else delete y.flag;
+  undoTx = null; undoLabel = on ? 'flag card' : 'unflag card'; await put('cards', y);
+  document.querySelectorAll('.sflag').forEach(b => { b.setAttribute('aria-pressed', String(on)); const t = b.querySelector('span'); if (t) t.textContent = on ? 'Flagged' : 'Flag'; });
+  toast(on ? 'Flagged · find it in Browse under Flagged' : 'Flag removed', 1600);
 }
 function predHtml(){
   return '';
@@ -4408,6 +4442,7 @@ function dockHtml(c){
       <p class="dhint">Space picks Good · Z goes back</p></div>`;
   return `<div class="dock dock-show">
       <span class="hintm">${c.kind === 'learn' ? 'Explain it to yourself first' : 'Work it out first'}</span>
+      <button class="btn big dhintb" data-act="study-hint" aria-pressed="${study.hintFor === c.id}" title="A nudge before you look at the answer (H)">Hint<kbd>H</kbd></button>
       <button class="btn primary big" data-act="show" title="Show (Space)">${c.kind === 'learn' ? 'Show explanation' : 'Show answer'}<kbd>Space</kbd></button></div>`;
 }
 document.addEventListener('input', e => {
@@ -5091,7 +5126,7 @@ function browseList(){
   let cs = sortCards(pp ? ppCards(pp === true ? undefined : c => c.paper.id === pp) : cardsIn(browse.node));
   if (ws.length) cs = cs.filter(c => { const t = brHay(c) + ' ' + cardOcr(c).toLowerCase(); return ws.every(w => t.includes(w)); });
   const scope = cs;
-  if (browse.status === 'done') cs = cs.filter(isDone); else if (browse.status === 'todo') cs = cs.filter(c => !isDone(c)); else if (browse.status === 'leech') cs = cs.filter(isLeech); else if (browse.status === 'due') cs = cs.filter(c => kind(c) !== 'new' && c.srs.due <= Date.now());
+  if (browse.status === 'done') cs = cs.filter(isDone); else if (browse.status === 'todo') cs = cs.filter(c => !isDone(c)); else if (browse.status === 'leech') cs = cs.filter(isLeech); else if (browse.status === 'flag') cs = cs.filter(c => c.flag); else if (browse.status === 'due') cs = cs.filter(c => kind(c) !== 'new' && c.srs.due <= Date.now());
   if (browse.rate) cs = cs.filter(c => lastRate(c) === browse.rate);
   return { cs, scope };
 }
@@ -5101,7 +5136,7 @@ function browseRow(c){
   const title = plainMd(c.qText) || (c.qImg ? 'Image question' : 'No question');
   const ms = brMulti.has(c.id), ws = brWords(), hay = ws.length ? brHay(c) : '';
   const pic = ws.length && !ws.every(w => hay.includes(w)) ? ocrSnip(cardOcr(c), ws) : '';
-  return `<button class="brow ${ms ? 'msel' : ''}" data-act="bsel" data-id="${c.id}" data-card="${c.id}" draggable="true" aria-selected="${sel}" title="Double-click to edit · ⌘-click or Shift-click to select several">${brPick || brMulti.size ? `<span class="brck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.6 11 12.2 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>` : ''}${thumb}<span class="brtx"><span class="brt1">${c.label ? `<b>${esc(c.label)}</b>` : `<b>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</b>`}${r ? `<span class="rpill ${RPILL[r]}">${RATES[r][0]}</span>` : isDone(c) ? '' : '<span class="rpill new">New</span>'}</span><span class="brq">${pic ? `<span class="brin">In a picture:</span> ${pic}` : esc(title.length > 110 ? title.slice(0, 109) + '…' : title)}</span><span class="brd"><span class="sdot2" style="--sc:${scol(c.nodeId)}"></span>${esc(deckShort(c.nodeId))}${brPP() && c.paper && ppPapers()[c.paper.id] ? ` · ${esc(ppTitle(ppPapers()[c.paper.id]))}` : ''}</span></span></button>`;
+  return `<button class="brow ${ms ? 'msel' : ''}" data-act="bsel" data-id="${c.id}" data-card="${c.id}" draggable="true" aria-selected="${sel}" title="Double-click to edit · ⌘-click or Shift-click to select several">${brPick || brMulti.size ? `<span class="brck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.6 11 12.2 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>` : ''}${thumb}<span class="brtx"><span class="brt1">${c.label ? `<b>${esc(c.label)}</b>` : `<b>${c.kind === 'learn' ? 'Knowledge' : 'Question'}</b>`}${r ? `<span class="rpill ${RPILL[r]}">${RATES[r][0]}</span>` : isDone(c) ? '' : '<span class="rpill new">New</span>'}${c.flag ? `<span class="brflag" title="Flagged">${IC.flag}</span>` : ''}</span><span class="brq">${pic ? `<span class="brin">In a picture:</span> ${pic}` : esc(title.length > 110 ? title.slice(0, 109) + '…' : title)}</span><span class="brd"><span class="sdot2" style="--sc:${scol(c.nodeId)}"></span>${esc(deckShort(c.nodeId))}${brPP() && c.paper && ppPapers()[c.paper.id] ? ` · ${esc(ppTitle(ppPapers()[c.paper.id]))}` : ''}</span></span></button>`;
 }
 function browsePreview(){
   const box = $('#brprev'); if (!box) return;
@@ -5112,7 +5147,7 @@ function browsePreview(){
   const added = c.createdAt ? new Date(c.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '';
   const tc = { ...c }, view2 = brViewer(c), shown = brShown === c.id; if (view2){ setQImgs(tc, []); delete tc.occl; }
   box.innerHTML = `<div class="brph"><span class="brcrumb">${esc(pathOf(c.nodeId).map(n => n.name).join(' › '))}</span><span class="grow"></span>
-      <button class="btn" data-act="cm-move" data-id="${c.id}">Move</button><button class="btn" data-act="edit" data-id="${c.id}">Edit</button><button class="btn primary" data-act="cm-practise" data-id="${c.id}">Practise</button>
+      <button class="btn" data-act="card-flag" data-id="${c.id}" aria-pressed="${!!c.flag}">${c.flag ? 'Unflag' : 'Flag'}</button><button class="btn" data-act="cm-move" data-id="${c.id}">Move</button><button class="btn" data-act="edit" data-id="${c.id}">Edit</button><button class="btn primary" data-act="cm-practise" data-id="${c.id}">Practise</button>
       <button class="icon soft" data-act="brmore" data-id="${c.id}" aria-label="More for this card">${I.gear}</button></div>
     ${c.paper ? ppSrcLine(c) : ''}
     <article class="qa brqa">
@@ -5133,8 +5168,8 @@ function renderBrowse(){
   const { cs, scope } = browseList();
   browse.ids = cs.map(c => c.id);
   if (!browse.sel || !browse.ids.includes(browse.sel)) browse.sel = browse.ids[0] || null;
-  const cnt = st => scope.filter(c => st === 'done' ? isDone(c) : st === 'todo' ? !isDone(c) : st === 'leech' ? isLeech(c) : st === 'due' ? kind(c) !== 'new' && c.srs.due <= Date.now() : true).length;
-  const stOpt = [['all', 'Any status'], ['due', 'Due now'], ['todo', 'Not done'], ['done', 'Done'], ['leech', 'Leeches']];
+  const cnt = st => scope.filter(c => st === 'done' ? isDone(c) : st === 'todo' ? !isDone(c) : st === 'leech' ? isLeech(c) : st === 'flag' ? !!c.flag : st === 'due' ? kind(c) !== 'new' && c.srs.due <= Date.now() : true).length;
+  const stOpt = [['all', 'Any status'], ['due', 'Due now'], ['todo', 'Not done'], ['done', 'Done'], ['leech', 'Leeches'], ['flag', 'Flagged']];
   $('#root').innerHTML = `<div class="brw">
     <section class="brlist" aria-label="Cards">
       <div class="brhead">
@@ -6205,7 +6240,7 @@ async function readRecall(bytes, fileName){
   const pathOfN = id => { const p = []; let n = byId[id]; while (n){ p.unshift(n.name); n = byId[n.parent]; } return p; };
   const media = new Map(); Object.keys(z).filter(k => k.startsWith('images/')).forEach(k => media.set(k, z[k]));
   const meta = {}; d.nodes.forEach(n => meta[pathOfN(n.id).join('\x1f')] = n);
-  const cards = d.cards.map(c => ({ path: pathOfN(c.node), qText: c.qText || '', solText: c.solText || '', mistake: c.mistake || '', label: c.label || '', kind: c.kind, qtype: c.qtype, source: c.source, qImgs: c.qImgs?.length ? c.qImgs : c.qImg ? [c.qImg] : [], aImgs: c.solImgs || [], srs: c.srs || null }));
+  const cards = d.cards.map(c => ({ path: pathOfN(c.node), qText: c.qText || '', solText: c.solText || '', mistake: c.mistake || '', hint: c.hint || '', label: c.label || '', kind: c.kind, qtype: c.qtype, source: c.source, qImgs: c.qImgs?.length ? c.qImgs : c.qImg ? [c.qImg] : [], aImgs: c.solImgs || [], srs: c.srs || null }));
   return { kind: 'recall', name: d.name || fileName.replace(/\.recall$/i, ''), cards, media, meta, hasProgress: cards.some(c => c.srs), whole: !!d.whole };
 }
 
@@ -6308,7 +6343,7 @@ async function runImport(){
     const nodeId = await ensure(c.path); if (!nodeId) continue;
     const qi = []; for (const n of c.qImgs) { const r = await img(n); if (r) qi.push(r); }
     const ai = []; for (const n of c.aImgs) { const r = await img(n); if (r) ai.push(r); }
-    const card = { id: uid('c'), nodeId, label: c.label || '', qText: c.qText || '', qImg: qi[0] || null, ...(qi.length > 1 ? { qImgs: qi } : {}), mistake: c.mistake || '', solText: c.solText || '', solImgs: ai, createdAt: now, order: now + done, srs: keep && c.srs ? { ...freshSrs(), ...c.srs } : freshSrs(), source: c.source || (d.kind === 'anki' ? 'Anki' : d.kind === 'text' ? 'Imported text' : '') };
+    const card = { id: uid('c'), nodeId, label: c.label || '', qText: c.qText || '', qImg: qi[0] || null, ...(qi.length > 1 ? { qImgs: qi } : {}), mistake: c.mistake || '', ...(c.hint ? { hint: c.hint } : {}), solText: c.solText || '', solImgs: ai, createdAt: now, order: now + done, srs: keep && c.srs ? { ...freshSrs(), ...c.srs } : freshSrs(), source: c.source || (d.kind === 'anki' ? 'Anki' : d.kind === 'text' ? 'Imported text' : '') };
     card.kind = d.kind === 'recall' ? (c.kind || undefined) : 'learn'; if (!card.kind) delete card.kind;
     if (!card.source) delete card.source;
     const hostK = c.path.length > strip ? null : rootK;
@@ -6366,7 +6401,7 @@ async function buildRecall(id, withProgress){
   for (const c of cs){
     const node = virt ? 'n1' : (local.get(c.nodeId) || rootLocal);
     const o = { node, qText: c.qText || '', solText: c.solText || '' };
-    if (c.mistake) o.mistake = c.mistake; if (c.label) o.label = c.label; if (c.kind) o.kind = c.kind; if (c.qtype && !virt && local.has(c.nodeId)) o.qtype = c.qtype; if (c.source) o.source = c.source;
+    if (c.mistake) o.mistake = c.mistake; if (c.hint) o.hint = c.hint; if (c.label) o.label = c.label; if (c.kind) o.kind = c.kind; if (c.qtype && !virt && local.has(c.nodeId)) o.qtype = c.qtype; if (c.source) o.source = c.source;
     const qk = []; for (const im of qImgsOf(c)){ const k = await putImg(im); if (k) qk.push(k); } if (qk[0]) o.qImg = qk[0]; if (qk.length > 1) o.qImgs = qk;
     const sol = []; for (const im of c.solImgs || []){ const k = await putImg(im); if (k) sol.push(k); } if (sol.length) o.solImgs = sol;
     if (withProgress && c.srs) o.srs = c.srs;
@@ -6633,7 +6668,7 @@ function keysDialog(){
   const k = t => t.split(' ').map(x => x === 'or' || x === 'to' || x === 'then' ? `<i>${x}</i>` : `<kbd>${x}</kbd>`).join('');
   const sec = (h, rows) => `<section><h3>${h}</h3>${rows.map(([l, t]) => `<div class="kyr"><span>${l}</span><span class="kyk">${k(t)}</span></div>`).join('')}</section>`;
   openDialog(`<div class="dialog keysdlg" role="dialog" aria-modal="true" aria-labelledby="kyh" style="max-width:720px"><header><h2 id="kyh">Keyboard shortcuts</h2></header>
-    <div class="body"><div class="kygrid"><div>${sec('Studying', [['Show the answer', 'Space'], ['Rate Again, Hard, Good, Easy', '1 2 3 4'], ['Rate Good', 'Space'], ['Back one step', 'Z or ⌫'], ['Edit this card', 'E'], ['Skip until tomorrow', 'S'], ['Delete this card', 'X'], ['Scratchpad', 'P'], ['Pause the timer', 'T'], ['Leave', 'Esc']])}</div>
+    <div class="body"><div class="kygrid"><div>${sec('Studying', [['Show the answer', 'Space'], ['Rate Again, Hard, Good, Easy', '1 2 3 4'], ['Rate Good', 'Space'], ['Back one step', 'Z or ⌫'], ['Edit this card', 'E'], ['Hint', 'H'], ['Flag this card', 'F'], ['Skip until tomorrow', 'S'], ['Delete this card', 'X'], ['Scratchpad', 'P'], ['Pause the timer', 'T'], ['Leave', 'Esc']])}</div>
       <div>${sec('Anywhere', [['Add a card', 'A'], ['Decks', 'D'], ['Browse', 'B'], ['To-do', 'T'], ['Search', '⌘K'], ['Undo', '⌘Z'], ['Redo', '⇧⌘Z'], ['Back, forward', '⌘[ ⌘]'], ['Show or hide the sidebar', '⌘S'], ['This list', '?']])}
       ${sec('On a deck', [['Study it', 'S'], ['See its cards in Browse', 'B']])}
       ${sec('Browse', [['Move up and down', '↑ ↓'], ['Show the answer', 'Space'], ['Edit', 'Enter'], ['Select all', '⌘A']])}</div></div></div>
@@ -6719,6 +6754,7 @@ function editor(cardId, presetNode, pasted){
           <div class="field"><span class="lbl">Marks <span class="hint" id="emkhint"></span></span><div class="mkrow">${marksSeg(card)}</div></div>
           <div class="field"><span class="lbl">Time limit <span class="hint">· when the timer is on</span></span><div class="mkrow"><div class="seg" id="etime"><button type="button" data-tm="auto" aria-pressed="${!own}" id="etauto">Auto</button><button type="button" data-tm="own" aria-pressed="${!!own}">Set own</button></div><input class="in mkn" id="etown" placeholder="m:ss" value="${own ? fmtSec(own * 1000) : ''}" aria-label="Time limit, minutes and seconds" ${own ? '' : 'hidden'}></div></div>
         </div>
+        <div class="field"><label for="ehint">Hint <span class="hint">· optional, shown when you press Hint while studying</span></label><input class="in" id="ehint" maxlength="400" value="${esc(card.hint || '')}" placeholder="A nudge that doesn't give the answer away"></div>
         <div class="field mistake-only"><label for="em">Why I got it wrong</label>${rteBox('em', card.mistake, 'What tripped you up, and what to do next time')}</div>
         <div class="field"><span class="lbl"><span id="eslbl">${learn ? 'Explanation' : 'Worked solution'}</span> <span class="hint">· images and/or notes</span></span>
           <div class="drop" id="zs" tabindex="0" data-zone="s" aria-label="Solution images: click to choose, drop, or paste"><div class="dropcta">Drop or paste solution images, or <button type="button" class="btn sm" data-act="pick" data-zone="s">Choose images</button></div></div><div class="thumbs" id="ts"></div>
@@ -6841,7 +6877,7 @@ async function addFiles(files, z){
 /* Browse: flip through cards in the editor with ↑ / ↓ (or the arrows in its header). Edits are saved as you move on, and ⌘Z undoes them. */
 function edNavList(id){ return view.name === 'browse' && Array.isArray(browse.ids) && browse.ids.includes(id) ? browse.ids : null; }
 function edSnap(){ if (!ed) return ''; const v = sel => $(sel)?.value ?? null;
-  return JSON.stringify([v('#eq'), v('#em'), v('#es'), v('#elabel'), v('#edeck'), v('#enewdeck'), $('#ekind [aria-pressed="true"]')?.dataset.kind || '', $('#etype [aria-pressed="true"]')?.dataset.qt ?? null, ed.card.qImgs || [], ed.card.solImgs || [], ed.card.also || [], ed.card.occl || null, ed.card.nodeId]); }
+  return JSON.stringify([v('#eq'), v('#em'), v('#es'), v('#elabel'), v('#ehint'), v('#edeck'), v('#enewdeck'), $('#ekind [aria-pressed="true"]')?.dataset.kind || '', $('#etype [aria-pressed="true"]')?.dataset.qt ?? null, ed.card.qImgs || [], ed.card.solImgs || [], ed.card.also || [], ed.card.occl || null, ed.card.nodeId]); }
 async function edNav(dir){
   if (!ed || ed.isNew) return; const ids = edNavList(ed.card.id); if (!ids) return;
   const j = ids.indexOf(ed.card.id) + dir;
@@ -6854,6 +6890,7 @@ async function saveCard(stay){
   if (ed.pend.q + ed.pend.s > 0) return toast('Still adding images…');
   const c = ed.card;
   c.qText = $('#eq').value.trim(); c.mistake = $('#em').value.trim(); c.solText = $('#es').value.trim(); c.label = $('#elabel').value.trim();
+  if ($('#ehint')){ const h = $('#ehint').value.trim(); if (h) c.hint = h; else delete c.hint; }
   if ($('#emarks')){ const mk = edMarks(); if (mk) c.marks = mk; else delete c.marks; const own = $('#etime [aria-pressed="true"]')?.dataset.tm === 'own' ? edTimeOwn() : 0; if (own) c.tlim = own; else delete c.tlim; }
   { const k = $('#ekind [aria-pressed="true"]')?.dataset.kind || 'mistake'; if (k === 'learn') c.kind = 'learn'; else delete c.kind; if (ed.isNew) ls.set('md-kind', k); }
   if ($('#etype')){ const qt = $('#etype [aria-pressed="true"]')?.dataset.qt || ''; if (qt) c.qtype = qt; else delete c.qtype; }
@@ -6867,7 +6904,7 @@ async function saveCard(stay){
   if (isNew){
     toast('Added');
     ed.card = { id: uid('c'), nodeId: c.nodeId, label:'', qText:'', qImg:null, qImgs:[], mistake:'', solText:'', solImgs:[], createdAt: Date.now(), order: Date.now(), srs: freshSrs() }; if (c.qtype) ed.card.qtype = c.qtype; if (c.kind) ed.card.kind = c.kind;
-    ed.isNew = true; ['eq','em','es','elabel'].forEach(i => $('#'+i).value = ''); ls.set('md-draft', null); edReset(); drawThumbs(); zone('q'); $('#eq').focus();
+    ed.isNew = true; ['eq','em','es','elabel','ehint'].forEach(i => { const el = $('#'+i); if (el) el.value = ''; }); ls.set('md-draft', null); edReset(); drawThumbs(); zone('q'); $('#eq').focus();
   } else {
     if (stay === true){ toast('Saved', 1200); return true; }
     toast('Saved'); $('#layer').innerHTML = ''; ed = null;
@@ -8394,7 +8431,7 @@ document.addEventListener('click', async e => {
     case 'th-imgmatch': { const ts = { ...themeSettings() }; ts.imgMatch = ts.imgMatch === false; saveTheme(ts); return renderThemes(); }
     case 'th-acc': { const ts = { ...themeSettings() }; if (a.dataset.c) ts.acc = a.dataset.c; else delete ts.acc; saveTheme(ts); renderAppbar(); return renderThemes(); }
     case 'subj-col': { await put('nodes', { ...S.nodes[id], color: a.dataset.c }); renderSideSubjects?.(); return renderThemes(); }
-    case 'draft-discard': { ls.set('md-draft', null); ['eq','em','es','elabel'].forEach(i => { const el = $('#'+i); if (el) el.value = ''; }); edReset(); return $('#eq')?.focus(); }
+    case 'draft-discard': { ls.set('md-draft', null); ['eq','em','es','elabel','ehint'].forEach(i => { const el = $('#'+i); if (el) el.value = ''; }); edReset(); return $('#eq')?.focus(); }
     case 'bside': { if (!ed) return; ed.side = a.dataset.side; $('#bside').querySelectorAll('[data-side]').forEach(x => x.setAttribute('aria-pressed', String(x === a))); return edPreview(); }
     case 'td-type': { if (!td) return; const k = a.dataset.k; td.touched = true; td.types.has(k) ? td.types.delete(k) : td.types.add(k); return tdDraw(); }
     case 'td-custom': { const w = $('#tdcust'); w.innerHTML = '<input class="in tdcin" id="tdcin" placeholder="Name, then Enter" autocomplete="off">'; const inp = $('#tdcin'); inp.focus(); inp.addEventListener('keydown', ev => { if (ev.key === 'Enter'){ ev.preventDefault(); ev.stopPropagation(); const v = inp.value.replace(/::/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40); if (v && !td.custom.includes(v)){ td.custom.push(v); td.types.add('c:' + v); td.touched = true; } tdDraw(); } else if (ev.key === 'Escape'){ ev.stopPropagation(); tdDraw(); } }); inp.addEventListener('blur', () => setTimeout(() => { if ($('#tdcin')) tdDraw(); }, 150)); return; }
@@ -8465,6 +8502,12 @@ document.addEventListener('click', async e => {
     case 'cm-reset': { const c = S.cards[id]; if (!c) return; await put('cards', { ...c, srs: freshSrs() }); closeMenu(); render(); return toast('Progress reset · ⌘Z to undo'); }
     case 'cm-delete': return confirmCardDelete(id);
     case 'study-skip': return studySkip();
+    case 'study-flag': return studyFlag();
+    case 'study-hint': return studyHint();
+    case 'hint-edit': study.hintEdit = study.cur; return hintDraw();
+    case 'hint-cancel': study.hintEdit = null; return hintDraw();
+    case 'hint-save': { const c = S.cards[study.cur], v = $('#qhin').value.trim(); if (!c) return; const y = { ...c }; if (v) y.hint = v; else delete y.hint; undoTx = null; undoLabel = 'hint'; await put('cards', y); study.hintEdit = null; if (!v && !(c.kind !== 'learn' && (c.mistake || '').trim())) study.hintFor = null; hintDraw(); return toast(v ? 'Hint saved' : 'Hint removed', 1400); }
+    case 'card-flag': { const c = S.cards[id]; if (!c) return; const y = { ...c }; if (c.flag) delete y.flag; else y.flag = true; undoTx = null; undoLabel = c.flag ? 'unflag card' : 'flag card'; await put('cards', y); return render(); }
     case 'keys': closeMenu(); return keysDialog();
     case 'nav-more': { e.stopPropagation(); if ($('#menu')) return closeMenu(); const r = a.getBoundingClientRect(); menuAt(`<button data-nav="papers">Past papers</button><button data-nav="stats">Stats</button><button data-nav="themes">Themes</button>`, { x: r.right - 170, y: r.top - 132 }); return; }
     case 'todo-tabshift': closeMenu(); return todoTabShift(a.dataset.v, +a.dataset.d);
@@ -8647,6 +8690,8 @@ document.addEventListener('keydown', e => {
     if (e.key === 'e'){ e.preventDefault(); return editor(study.cur); }
     if (e.key === 'x' || e.key === 'X'){ e.preventDefault(); return confirmCardDelete(study.cur); }
     if (e.key === 's' || e.key === 'S'){ e.preventDefault(); return studySkip(); }
+    if (e.key === 'f' || e.key === 'F'){ e.preventDefault(); return studyFlag(); }
+    if ((e.key === 'h' || e.key === 'H') && !study.shown){ e.preventDefault(); return studyHint(); }
     if (e.key === 'p' || e.key === 'P'){ e.preventDefault(); return padToggle(); }
     if (e.key === 't' || e.key === 'T'){ e.preventDefault(); return tmrPause(); }
   }
