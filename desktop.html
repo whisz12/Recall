@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261113134013 min-shell:1.27.0 -->
+<!-- recall-build:20261113221813 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -3076,6 +3076,52 @@ body.tddragging .tdl > .tdr:not(.tddrag) .tdmore2{opacity:0 !important}
 }
 @media (max-width:430px){ html.lh .answerbar.lhbar [data-act="edit"]{display:none} }
 .toast{width:max-content}
+/* calendar */
+.calpage{display:flex;gap:32px;max-width:1040px;margin:0 auto;padding:12px 8px 64px;align-items:flex-start}
+.calmainc{flex:1;min-width:0}
+.calph h1{margin:0;font:600 30px/1.15 var(--ui);letter-spacing:-.02em;color:var(--fg)}
+.calph p{margin:6px 0 0;font:400 15px var(--ui);color:var(--fg-2)}
+.caladd{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 4px}
+.caladd .in{height:36px;margin:0;width:auto}
+.caladd #calt{flex:1 1 220px;min-width:0}
+.caladd select.in{max-width:150px}
+.caladd .btn{height:36px}
+.calg h2{margin:24px 0 8px;font:600 13px var(--ui);color:var(--fg-2)}
+.call{border:1px solid var(--border);border-radius:10px;background:var(--surface);overflow:hidden}
+.calr{display:flex;align-items:center;gap:12px;min-height:56px;padding:0 16px 0 12px}
+.calr + .calr{border-top:1px solid var(--border)}
+.calr.past{opacity:.7}
+.cald{width:40px;flex:none;text-align:center;line-height:1.15}
+.cald span{display:block;font:400 11px var(--ui);color:var(--fg-3)}
+.cald b{font:600 17px var(--ui);font-variant-numeric:tabular-nums;color:var(--fg)}
+.calck{width:30px;height:30px;flex:none;margin:0 -4px;display:grid;place-items:center;border:0;background:none;padding:0;cursor:pointer}
+.calck svg{width:20px;height:20px;padding:2px;box-sizing:border-box;border:1.5px solid var(--fg-3);border-radius:50%;color:transparent}
+.calck:hover svg{color:var(--fg-2);border-color:var(--fg-2)}
+.calmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:8px 0;border:0;background:none;text-align:left;cursor:pointer;color:var(--fg)}
+.calt{font:500 14px var(--ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.calmain:hover .calt{text-decoration:underline}
+.calmeta{display:flex;align-items:center;gap:6px;font:400 12px var(--ui);color:var(--fg-3)}
+.calmeta .sdot2{width:7px;height:7px}
+.calleft{flex:none;font:400 12px var(--ui);font-variant-numeric:tabular-nums;color:var(--fg-2)}
+.calleft.soon{font-weight:600;color:var(--accent)}
+.calpastb{display:inline-block;margin-top:20px;font-size:13px;color:var(--fg-3)}
+.calside{width:260px;flex:none;position:sticky;top:76px;padding:16px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+.calmh{display:flex;align-items:center;gap:2px}
+.calmh b{flex:1;font:600 14px var(--ui)}
+.calmg{display:grid;grid-template-columns:repeat(7,1fr);margin-top:8px}
+.calmw{display:contents}
+.calmw span{text-align:center;font:400 11px var(--ui);color:var(--fg-3);padding-bottom:6px}
+.calmg button{height:36px;display:flex;flex-direction:column;align-items:center;gap:1px;padding:0;border:0;background:none;cursor:pointer;color:var(--fg)}
+.calmg button span{display:grid;place-items:center;width:24px;height:24px;border-radius:12px;font:400 12px var(--ui);font-variant-numeric:tabular-nums}
+.calmg button.old span{color:var(--fg-3)}
+.calmg button:hover span{background:rgba(var(--ovr),.1)}
+.calmg button.pick span{box-shadow:0 0 0 1.5px var(--fg-2)}
+.calmg button.now span{background:var(--fg);color:var(--bg);font-weight:600}
+.calmg button em{width:5px;height:5px;border-radius:50%;background:var(--sc)}
+.tdday{flex:none;height:22px;padding:0 6px;border:1px solid var(--border-2);border-radius:4px;background:none;font:500 12px var(--ui);color:var(--fg-2);cursor:pointer;white-space:nowrap}
+.tdday:hover{background:rgba(var(--ovr),.08)}
+@media (max-width:860px){ .calpage{flex-direction:column;gap:24px} .calside{position:static;width:auto;align-self:stretch} .calmg button{height:40px} }
+@media (max-width:560px){ .calph h1{font-size:24px} .caladd #calt{flex-basis:100%} .caladd .in{font-size:16px;height:44px} .caladd select.in{flex:1;max-width:none} .caladd .btn{height:44px} .calr{padding:0 12px 0 8px} }
 .sflag[aria-pressed="true"] .flf{fill:currentColor}
 .abi.sflag[aria-pressed="true"]{color:var(--fg)}
 .qa .label .qflag{display:inline-flex;align-items:center;gap:4px;height:24px;margin:-2px 0;padding:0 6px;border:0;border-radius:6px;background:none;font:500 12px var(--ui);color:var(--fg-3);cursor:pointer}
@@ -3118,7 +3164,7 @@ html:root body .toolbar nav .navmore{display:none}
   html:root body:not(.desktop) .toolbar nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:48px;padding:0;font:500 11px var(--ui);color:var(--fg-3);background:none;box-shadow:none;border-radius:6px}
   html:root body:not(.desktop) .toolbar nav button[aria-current="true"]{color:var(--fg);background:none}
   html:root body:not(.desktop) .toolbar nav button .ni{display:block;width:22px;height:22px}
-  html:root body:not(.desktop) .toolbar nav [data-nav="papers"],html:root body:not(.desktop) .toolbar nav [data-nav="stats"],html:root body:not(.desktop) .toolbar nav [data-nav="themes"]{display:none}
+  html:root body:not(.desktop) .toolbar nav [data-nav="browse"],html:root body:not(.desktop) .toolbar nav [data-nav="papers"],html:root body:not(.desktop) .toolbar nav [data-nav="stats"],html:root body:not(.desktop) .toolbar nav [data-nav="themes"]{display:none}
   html:root body:not(.desktop):has(#root.v-study, #root.v-ppmark) .toolbar nav{display:none}
   html:root body:not(.desktop) .toast{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
   html:root body:not(.desktop):has(#root.v-study) .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
@@ -3135,6 +3181,7 @@ html:root body .toolbar nav .navmore{display:none}
     <button data-nav="decks"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5.5" width="11" height="11" rx="2.5"/><path d="M6.5 3.5h8a2.5 2.5 0 0 1 2.5 2.5v8"/></svg><span>Decks</span></button>
     <button data-nav="todo"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5.5 5 7l2.5-3M3.5 12.5 5 14l2.5-3M10.5 5.5h6M10.5 12.5h6"/></svg><span>To-do</span></button>
     <button data-nav="add" class="navadd"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="7.2"/><path d="M10 6.8v6.4M6.8 10h6.4"/></svg><span>Add</span></button>
+    <button data-nav="cal"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4.5h12a1 1 0 0 1 1 1V16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5.5a1 1 0 0 1 1-1zM3 8.5h14M7 2.5v3.5M13 2.5v3.5"/></svg><span>Calendar</span></button>
     <button data-nav="browse"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M7 5h10M7 10h10M7 15h10"/><circle cx="3.6" cy="5" r=".9" fill="currentColor"/><circle cx="3.6" cy="10" r=".9" fill="currentColor"/><circle cx="3.6" cy="15" r=".9" fill="currentColor"/></svg><span>Browse</span></button>
     <button data-nav="papers"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5 2.8h6.6L15.5 6.7V17.2H5z"/><path d="M11.4 2.8v4h4M7.8 10.5h4.8M7.8 13.6h4.8"/></svg><span>Past papers</span></button>
     <button data-nav="stats"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 16V10M8.7 16V5M13.3 16v-4M18 16V7.5M2.5 16.5h16"/></svg><span>Stats</span></button>
@@ -3484,7 +3531,7 @@ document.addEventListener('keydown', e => {
 function render(){
   if (ppFull && view.name !== 'ppmark') ppFullSet(false, true);
   renderSideSubjects();
-  $('.navmore')?.setAttribute('aria-current', String(['papers', 'ppmark', 'stats', 'themes'].includes(view.name)));
+  $('.navmore')?.setAttribute('aria-current', String(['browse', 'papers', 'ppmark', 'stats', 'themes'].includes(view.name)));
   document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'papers' && (view.name === 'ppmark' || (view.name === 'study' && study?.tag === 'Paper mistakes'))) || (b.dataset.nav === 'decks' && (view.name === 'overview' || (view.name === 'study' && study?.tag !== 'Paper mistakes'))))));
   applyTheme();
   const root = $('#root');
@@ -3499,6 +3546,7 @@ function render(){
   else if (view.name === 'papers') renderPapers();
   else if (view.name === 'ppmark') renderPPMark();
   else if (view.name === 'todo') renderTodo();
+  else if (view.name === 'cal') renderCal();
   if (view.name !== 'study'){ $('#answerbar')?.remove(); $('#lhmap')?.remove(); }
   renderAppbar();
   typeset(root);
@@ -3563,7 +3611,7 @@ function forgotIn(id){ return cardsIn(id).filter(c => failCount(c) > 0).sort((a,
 function renderDecks(){
   const subjects = kids(null), all = counts(null);
   const banner = S.mode === 'local' && !cloudOn() ? (cloudConfigured() ? '<div class="banner">Sign in to bring in your cards from your Mac and keep both in sync. <button class="link" data-act="cloud">Sign in</button></div>' : '<div class="banner">Cards are saved in this browser only. Open this page from claude.ai while signed in to keep them across devices.</div>') : '';
-  const foot = `<div class="hfoot"><button class="link" data-act="new-deck">New subject</button><button class="link" data-act="pdf-import">Cards from a PDF…</button><button class="link" data-act="cd-edit">${cdOn() ? 'Edit the countdown…' : 'Exam countdown…'}</button><button class="link" data-act="import">Import…</button><button class="link" data-act="export-all">Export all…</button><button class="link" data-act="options">Options</button><button class="link hfkeys" data-act="keys">Keyboard shortcuts</button></div>`;
+  const foot = `<div class="hfoot"><button class="link" data-act="new-deck">New subject</button><button class="link" data-act="pdf-import">Cards from a PDF…</button><button class="link" data-act="cd-edit">${cdManual() && cdOn() && !cdGet()?.auto ? 'Edit the countdown…' : 'Exam countdown…'}</button><button class="link" data-act="import">Import…</button><button class="link" data-act="export-all">Export all…</button><button class="link" data-act="options">Options</button><button class="link hfkeys" data-act="keys">Keyboard shortcuts</button></div>`;
   if (!subjects.length){
     $('#root').innerHTML = `<div class="narrow home dkhome">${banner}<div class="dkempty"><h1>Start with a subject</h1><p>Make a subject such as Maths or Physics, then add topics inside it and the mistakes you want to stop making.</p><button class="btn primary big" data-act="new-deck">New subject</button></div>${foot}</div>`;
     return;
@@ -3694,6 +3742,7 @@ function renderAppbar(){
   else if (view.name === 'papers' || view.name === 'ppmark'){ const r = ppAppbar(); title = r.title; act = r.act; }
   else if (view.name === 'stats') title = '<b>Stats</b>';
   else if (view.name === 'todo') title = '<b>To-do</b>';
+  else if (view.name === 'cal') title = '<b>Calendar</b>';
   else if (view.name === 'themes'){ const m = themeSettings().mode || 'fixed'; title = '<b>Themes</b>'; act = `<div class="seg abseg" role="group" aria-label="Appearance">${[['system', 'System', 'Match your computer’s light or dark setting'], ['dark', 'Dark', 'Always dark'], ['light', 'Light', 'Always light']].map(([k, l, tt]) => `<button type="button" data-act="th-mode" data-m="${k}" title="${tt}" aria-pressed="${m === k || (m === 'fixed' && k === (lum(themeColours(themeSettings()).bg) < .3 ? 'dark' : 'light'))}">${l}</button>`).join('')}</div>`; }
   else if (view.name === 'study' && study){
     const c = study.cur ? S.cards[study.cur] : null, ps = c ? pathOf(c.nodeId) : (study.node ? pathOf(study.node) : []);
@@ -6742,7 +6791,7 @@ function keysDialog(){
   const sec = (h, rows) => `<section><h3>${h}</h3>${rows.map(([l, t]) => `<div class="kyr"><span>${l}</span><span class="kyk">${k(t)}</span></div>`).join('')}</section>`;
   openDialog(`<div class="dialog keysdlg" role="dialog" aria-modal="true" aria-labelledby="kyh" style="max-width:720px"><header><h2 id="kyh">Keyboard shortcuts</h2></header>
     <div class="body"><div class="kygrid"><div>${sec('Studying', [['Show the answer', 'Space'], ['Rate Again, Hard, Good, Easy', '1 2 3 4'], ['Rate Good', 'Space'], ['Back one step', 'Z or ⌫'], ['Edit this card', 'E'], ['Hint', 'H'], ['Flag this card', 'F'], ['Skip until tomorrow', 'S'], ['Delete this card', 'X'], ['Scratchpad', 'P'], ['Pause the timer', 'T'], ['Leave', 'Esc']])}</div>
-      <div>${sec('Anywhere', [['Add a card', 'A'], ['Decks', 'D'], ['Browse', 'B'], ['To-do', 'T'], ['Search', '⌘K'], ['Undo', '⌘Z'], ['Redo', '⇧⌘Z'], ['Back, forward', '⌘[ ⌘]'], ['Show or hide the sidebar', '⌘S'], ['This list', '?']])}
+      <div>${sec('Anywhere', [['Add a card', 'A'], ['Decks', 'D'], ['Browse', 'B'], ['To-do', 'T'], ['Calendar', 'C'], ['Search', '⌘K'], ['Undo', '⌘Z'], ['Redo', '⇧⌘Z'], ['Back, forward', '⌘[ ⌘]'], ['Show or hide the sidebar', '⌘S'], ['This list', '?']])}
       ${sec('On a deck', [['Study it', 'S'], ['See its cards in Browse', 'B']])}
       ${sec('Browse', [['Move up and down', '↑ ↓'], ['Show the answer', 'Space'], ['Edit', 'Enter'], ['Select all', '⌘A']])}</div></div></div>
     <footer><span class="grow"></span><button class="btn primary" data-act="close">Done</button></footer></div>`, d => d.querySelector('.btn.primary').focus());
@@ -7667,7 +7716,7 @@ function todoRow(x, i){
     ${x.done ? '<span class="tdselb ghost" aria-hidden="true"></span>' : `<button class="tdselb" data-act="todo-sel" data-id="${x.id}" role="checkbox" aria-checked="${todoSel.has(x.id)}" aria-label="Select ${esc(x.t || 'blank space')}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8.3 6.8 11 12 5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}<button class="tdck" data-act="todo-tick" data-id="${x.id}" role="checkbox" aria-checked="${!!x.done}" aria-label="${x.done ? 'Untick' : 'Tick off'}: ${esc(x.t)}"><svg viewBox="0 0 22 22" aria-hidden="true"><circle class="tdcr" cx="11" cy="11" r="9"/><path class="tdcv" d="M6.6 11.4 9.6 14.3 15.6 8"/></svg><span class="tdburst" aria-hidden="true">${'<i></i>'.repeat(8)}</span></button>
     <span class="tdt" data-tedit="${x.id}" title="Click to edit"><span class="tdtx">${esc(x.t)}</span></span>${x.pp ? `<button class="tdpp" data-act="pp-open" data-k="${esc(x.pp)}" title="Open the paper" aria-label="Open the paper"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5h5.2L12 5.3v8.2H4z M9.2 2.5v2.8H12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>` : ''}
     ${x.r && todoRule(x.r) ? `<span class="tdrep" title="Repeats every ${esc(repWords(todoRule(x.r).days))}">${REP_IC}${esc(repShort(todoRule(x.r).days))}</span>` : ''}
-    ${late ? `<span class="tdodue late">From ${todoDay(x.due).toLowerCase()}</span>` : ''}
+    ${late ? `<span class="tdodue late">From ${todoDay(x.due).toLowerCase()}</span>` : ''}${x.day && !x.done ? `<button class="tdday ${x.day < dayKey() ? 'late' : ''}" data-act="cal-edit" data-id="${x.id}" title="On the calendar · click to change the day">${x.day < dayKey() ? 'From ' : ''}${esc(todoDay(x.day))}</button>` : ''}
     <span class="tdmeta">${x.done ? (tag ? `<span class="tdsub"><span class="sdot2" style="--sc:${tag.c}"></span><span class="tdsubn">${esc(tag.n)}</span></span>` : '') : `<button class="tdsub ${tag ? '' : 'empty'}" data-act="todo-subjmenu" data-id="${x.id}" title="Change the subject" aria-haspopup="true" aria-label="${tag ? 'Subject: ' + esc(tag.n) + ', change' : 'Set a subject'}">${tag ? `<span class="sdot2" style="--sc:${tag.c}"></span><span class="tdsubn">${esc(tag.n)}</span>` : `<span class="sdot2" style="--sc:var(--fg-3)"></span><span class="tdsubn">Subject</span>`}</button>`}<button class="tdtime ${x.m ? 'set' : ''}" data-act="todo-time" data-id="${x.id}" title="${x.m ? 'About ' + fmtMin(x.m) + ' · change' : 'Set how long it will take'}" aria-label="${x.m ? 'Time: about ' + fmtMin(x.m) : 'Set time'}" aria-haspopup="true">${x.m ? fmtMin(x.m) : CLOCK_IC}</button></span>
     ${x.done ? '' : tdMoreBtn(x, x.t)}
   </div>`;
@@ -7687,7 +7736,7 @@ function todoShown(open){
   return out;
 }
 function todoSection(subj, page){
-  todoSpawn(); todoRowSubj = subj || null; if (!todoKeys().includes(todoTab)) todoTab = 'today';
+  todoSpawn(); calRoll(); todoRowSubj = subj || null; if (!todoKeys().includes(todoTab)) todoTab = 'today';
   const f = todoEff(subj), addTo = f || subj, anName = todoFName(addTo);
   const nr = todoRules().filter(r => todoMatch(r, f)).length;
   const open = todoList(subj), done = todoDoneList(subj), today = done.length, nTask = todoTasks(open).length, shown = todoShown(open);
@@ -7731,6 +7780,91 @@ function todoFMenu(anchor){
   m.style.left = Math.max(8, Math.min(innerWidth - wd - 8, r.right - wd)) + 'px'; m.style.top = Math.min(innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px'; m.querySelector('[aria-checked="true"]')?.focus();
 }
 /* ---------- the To-do page: the list on its own, with room to breathe ---------- */
+/* ---------- calendar: events (S.settings.events [{ id, t, d: 'YYYY-MM-DD', k: exam|due|event, s }], synced) and to-do tasks given a day (task.day).
+   One agenda, soonest first. A task moves into Today when its day comes (calRoll). The exam countdown reads the next exam from here (cdGet). ---------- */
+const calEvents = () => Array.isArray(S.settings?.events) ? S.settings.events.filter(e => e && e.id && e.d) : [];
+const CAL_KIND = { event: 'Event', exam: 'Exam', due: 'Due', task: 'Task' };
+const calN = d => Math.round((new Date(d + 'T00:00') - today0()) / DAY);
+const calLeft = n => n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n > 1 ? `In ${n} days` : n === -1 ? 'Yesterday' : `${-n} days ago`;
+let calMonth = null, calPast = false, calPick = '', calKind = 'event';
+function calItems(){
+  const ev = calEvents().map(e => ({ id: e.id, src: 'ev', t: e.t || 'Event', d: e.d, k: CAL_KIND[e.k] ? e.k : 'event', s: e.s || null }));
+  const cx = (cdManual()?.exams || []).filter(x => x.date).map(x => ({ id: 'cd:' + x.id, src: 'cd', t: x.name || (x.subj && nodeOf(x.subj)?.name) || 'Exam', d: x.date, k: 'exam', s: x.subj || null }));
+  const tk = todoAll().filter(x => x.day && !x.k && !x.done).map(x => ({ id: x.id, src: 'task', t: x.t, d: x.day, k: 'task', s: x.s || null, l: todoL(x) }));
+  return [...ev, ...cx, ...tk].sort((a, b) => a.d < b.d ? -1 : a.d > b.d ? 1 : (a.k === 'task') - (b.k === 'task'));
+}
+/* a task whose day has come moves into Today, once (dr remembers the day it was moved for) */
+function calRoll(){
+  if (!S.ready) return; const tk = dayKey(); let ch = false;
+  const list = todoAll().map(x => { if (!x.day || x.done || x.k || x.day > tk || x.dr === x.day) return x; ch = true; const y = { ...x, dr: x.day }; if (todoL(x) !== 'doing') y.l = 'today'; return y; });
+  if (ch){ S.settings = { ...S.settings, todos: list }; saveSettings(); }
+}
+function calRow(x){
+  const n = calN(x.d), dt = new Date(x.d + 'T00:00'), sn = x.s && nodeOf(x.s), late = x.k === 'task' && n < 0;
+  return `<div class="calr ${n < 0 && !late ? 'past' : ''}" data-d="${x.d}">
+    <div class="cald" aria-hidden="true"><span>${dt.toLocaleDateString(undefined, { weekday: 'short' })}</span><b>${dt.getDate()}</b></div>
+    ${x.k === 'task' ? `<button class="calck" data-act="cal-tick" data-id="${x.id}" role="checkbox" aria-checked="false" aria-label="Tick off ${esc(x.t)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8.3 6.8 11 12 5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ''}
+    <button class="calmain" data-act="cal-edit" data-id="${esc(x.id)}" title="Click to change"><span class="calt">${esc(x.t)}</span><span class="calmeta"><span class="sdot2" style="--sc:${sn ? scol(x.s) : 'var(--fg-3)'}"></span>${sn ? esc(sn.name) + ' · ' : ''}${x.k === 'task' ? 'Task in ' + esc(todoTabName(x.l)) : CAL_KIND[x.k]}</span></button>
+    <span class="calleft ${n >= 0 && n <= 7 ? 'soon' : ''}">${late ? 'From ' + dt.toLocaleDateString(undefined, { weekday: 'short' }) + ' ' + dt.getDate() : calLeft(n)}</span></div>`;
+}
+function calMini(){
+  const tk = dayKey(), ym = calMonth || tk.slice(0, 7), [y, mo] = ym.split('-').map(Number), first = new Date(y, mo - 1, 1), lead = (first.getDay() + 6) % 7, dim = new Date(y, mo, 0).getDate();
+  const by = {}; calItems().forEach(x => { (by[x.d] = by[x.d] || []).push(x); });
+  let cells = '<i></i>'.repeat(lead);
+  for (let i = 1; i <= dim; i++){ const d = ym + '-' + String(i).padStart(2, '0'), it = by[d];
+    cells += `<button class="${d === tk ? 'now' : ''} ${d === calPick ? 'pick' : ''} ${d < tk ? 'old' : ''}" data-act="cal-day" data-d="${d}" aria-label="${new Date(d + 'T00:00').toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}${it ? ', ' + it.length + ' on this day' : ''}"><span>${i}</span>${it ? `<em style="--sc:${it[0].s && nodeOf(it[0].s) ? scol(it[0].s) : 'var(--fg-3)'}"></em>` : ''}</button>`; }
+  return `<div class="calmh"><b>${first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</b><button class="icon soft" data-act="cal-mon" data-d="-1" aria-label="Previous month"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="icon soft" data-act="cal-mon" data-d="1" aria-label="Next month"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    <div class="calmg"><div class="calmw" aria-hidden="true">${['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(x => `<span>${x}</span>`).join('')}</div>${cells}</div>`;
+}
+function calAside(){ const a = $('#calside'); if (a) a.innerHTML = calMini(); }
+function renderCal(){
+  calRoll();
+  const tk = dayKey(), all = calItems(), up = all.filter(x => x.d >= tk || x.k === 'task'), past = all.filter(x => x.d < tk && x.k !== 'task').reverse();
+  const next = up.find(x => x.d >= tk), nn = next ? calN(next.d) : 0, toSun = 6 - (new Date().getDay() + 6) % 7;
+  const grp = x => { const n = calN(x.d); return n <= 0 ? 'Today' : n === 1 ? 'Tomorrow' : n <= toSun ? 'This week' : n <= toSun + 7 ? 'Next week' : new Date(x.d + 'T00:00').toLocaleDateString(undefined, { month: 'long', ...(x.d.slice(0, 4) !== tk.slice(0, 4) ? { year: 'numeric' } : {}) }); };
+  const groups = []; up.slice().sort((a, b) => Math.max(calN(a.d), 0) - Math.max(calN(b.d), 0)).forEach(x => { const g = grp(x), last = groups[groups.length - 1]; if (last && last[0] === g) last[1].push(x); else groups.push([g, [x]]); });
+  const subs = kids(null);
+  $('#root').innerHTML = `<div class="calpage"><div class="calmainc">
+    <header class="calph"><h1>${!next ? 'Nothing coming up' : nn === 0 ? 'On today' : 'Next up ' + calLeft(nn).toLowerCase()}</h1>${next ? `<p>${esc(next.t)}${nn > 1 ? ', ' + new Date(next.d + 'T00:00').toLocaleDateString(undefined, { weekday: 'long' }) + (nn > 6 ? ' ' + new Date(next.d + 'T00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '') : ''}</p>` : '<p>Add an exam, a due date or a task for a day.</p>'}</header>
+    <div class="caladd"><input class="in" id="calt" maxlength="200" placeholder="Add something, like Physics test" aria-label="What is it">
+      <input class="in" type="date" id="cald" value="${esc(calPick || tk)}" aria-label="Day">
+      <select class="in" id="calk" aria-label="Kind">${[['event', 'Event'], ['exam', 'Exam'], ['due', 'Due date'], ['task', 'To-do task']].map(([v, l]) => `<option value="${v}" ${calKind === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <select class="in" id="cals" aria-label="Subject"><option value="">No subject</option>${subs.map(n => `<option value="${n.id}">${esc(n.name)}</option>`).join('')}</select>
+      <button class="btn primary" data-act="cal-add">Add</button></div>
+    ${groups.map(([g, xs]) => `<section class="calg"><h2>${g}</h2><div class="call">${xs.map(calRow).join('')}</div></section>`).join('')}
+    ${past.length ? `<button class="link calpastb" data-act="cal-past" aria-expanded="${calPast}">${calPast ? 'Hide earlier' : `Show earlier (${past.length})`}</button>${calPast ? `<section class="calg"><div class="call">${past.slice(0, 60).map(calRow).join('')}</div></section>` : ''}` : ''}
+  </div><aside class="calside" id="calside" aria-label="Month">${calMini()}</aside></div>`;
+}
+function calAdd(){
+  const t = ($('#calt')?.value || '').replace(/\s+/g, ' ').trim(), d = $('#cald')?.value, k = $('#calk')?.value || 'event', sj = $('#cals')?.value || null;
+  if (!t){ $('#calt')?.focus(); return toast('Type what it is first', 1600); } if (!/^\d{4}-\d\d-\d\d$/.test(d || '')){ $('#cald')?.focus(); return toast('Pick a day', 1600); }
+  calKind = k; calPick = '';
+  if (k === 'task'){ const now = d <= dayKey(); todoSave([...todoAll(), { id: uid('t'), t: t.slice(0, 200), s: sj, done: 0, at: Date.now(), day: d, l: now ? 'today' : 'later', ...(now ? { dr: d } : {}) }], 'add task'); }
+  else { undoTx = null; undoLabel = 'add event'; undoRecordSettings(); S.settings = { ...S.settings, events: [...calEvents(), { id: uid('e'), t: t.slice(0, 200), d, k, s: sj }] }; saveSettings(); }
+  render(); $('#calt')?.focus(); toast(k === 'task' ? `Task added for ${todoDay(d).toLowerCase()}` : `${CAL_KIND[k]} added`, 1400);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing && e.target.tagName === 'INPUT' && e.target.closest?.('.caladd')){ e.preventDefault(); e.stopPropagation(); calAdd(); } }, true);
+function calEdit(id){
+  if (String(id).startsWith('cd:')) return cdEdit();
+  const ev = calEvents().find(e => e.id === id), task = !ev && todoAll().find(x => x.id === id); if (!ev && !task) return;
+  const subs = kids(null), t = ev ? ev.t : task.t, d = ev ? ev.d : task.day || '', sj = (ev ? ev.s : task.s) || '';
+  openDialog(`<div class="dialog caldlg" role="dialog" aria-modal="true" aria-labelledby="calh" style="max-width:440px"><header><h2 id="calh">${ev ? 'Edit ' + CAL_KIND[ev.k || 'event'].toLowerCase() : task.day ? 'Change the day' : 'Schedule for a day'}</h2></header>
+    <div class="body"><div class="field"><label for="cet">${ev ? 'What' : 'Task'}</label><input class="in" id="cet" maxlength="200" value="${esc(t)}"></div>
+      <div class="field"><label for="ced">Day</label><input class="in" type="date" id="ced" value="${esc(d || dayKey(Date.now() + DAY))}"></div>
+      ${ev ? `<div class="field"><label for="cek">Kind</label><select class="in" id="cek">${[['event', 'Event'], ['exam', 'Exam'], ['due', 'Due date']].map(([v, l]) => `<option value="${v}" ${(ev.k || 'event') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="field"><label for="ces">Subject</label><select class="in" id="ces"><option value="">No subject</option>${subs.map(n => `<option value="${n.id}" ${n.id === sj ? 'selected' : ''}>${esc(n.name)}</option>`).join('')}</select></div>` : '<p class="hint">On its day the task moves into Today.</p>'}</div>
+    <footer>${ev ? `<button class="btn danger" data-act="cal-del" data-id="${esc(id)}">Delete</button>` : task.day ? `<button class="btn" data-act="cal-del" data-id="${esc(id)}">Take off the calendar</button>` : ''}<span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="cal-save" data-id="${esc(id)}">Save</button></footer></div>`, dlg => dlg.querySelector(ev || task.day ? '#cet' : '#ced').focus());
+}
+function calSave(id){
+  const t = ($('#cet')?.value || '').replace(/\s+/g, ' ').trim(), d = $('#ced')?.value; if (!t) return $('#cet')?.focus(); if (!/^\d{4}-\d\d-\d\d$/.test(d || '')) return $('#ced')?.focus();
+  if (calEvents().some(e => e.id === id)){ undoTx = null; undoLabel = 'edit event'; undoRecordSettings(); S.settings = { ...S.settings, events: calEvents().map(e => e.id === id ? { ...e, t: t.slice(0, 200), d, k: $('#cek').value, s: $('#ces').value || null } : e) }; saveSettings(); }
+  else todoSave(todoAll().map(x => { if (x.id !== id) return x; const y = { ...x, t: t.slice(0, 200), day: d }; if (x.day !== d) delete y.dr; return y; }), 'schedule task');
+  closeDialog(); if (view.name === 'study') return; render(); toast('Saved', 1200);
+}
+function calDel(id){
+  if (calEvents().some(e => e.id === id)){ undoTx = null; undoLabel = 'delete event'; undoRecordSettings(); S.settings = { ...S.settings, events: calEvents().filter(e => e.id !== id) }; saveSettings(); closeDialog(); render(); return toast('Deleted · ⌘Z to undo', 2600); }
+  todoSave(todoAll().map(x => { if (x.id !== id) return x; const { day, dr, ...y } = x; return y; }), 'unschedule task'); closeDialog(); render(); toast('Taken off the calendar · ⌘Z to undo', 2600);
+}
 function renderTodo(){
   const d = new Date();
   $('#root').innerHTML = `<div class="tdpage"><header class="tdph"><h1>To-do</h1><p>${d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}</p></header>${todoSection(null, true)}</div>`;
@@ -7970,7 +8104,7 @@ function todoMoveMenu(id, anchor){
   if (x.k === 'gap'){ m.innerHTML = `<button data-act="todo-kind" data-id="${id}" data-k="h">Turn into a heading</button>` + del; }
   else {
   const kinds = x.k === 'h' ? `<hr><button data-act="todo-kind" data-id="${id}" data-k="">Turn into a task</button>` : `<hr><button data-act="todo-time" data-id="${id}" aria-haspopup="true">${x.m ? `Time: about ${fmtMin(x.m)}` : 'Set a time…'}</button><div class="mlabel">Turn into</div><button data-act="todo-kind" data-id="${id}" data-k="h">A heading</button><button data-act="todo-kind" data-id="${id}" data-k="gap">A blank space</button>`;
-  m.innerHTML = `<div class="mlabel">List</div>` + todoTabs().filter(([k]) => k !== todoL(x)).map(([k, l]) => `<button data-act="todo-moveto" data-id="${id}" data-l="${k}">Move to ${esc(l)}</button>`).join('')
+  m.innerHTML = (x.k ? '' : `<button data-act="cal-edit" data-id="${id}">${x.day ? 'Change the day…' : 'Schedule for a day…'}</button><hr>`) + `<div class="mlabel">List</div>` + todoTabs().filter(([k]) => k !== todoL(x)).map(([k, l]) => `<button data-act="todo-moveto" data-id="${id}" data-l="${k}">Move to ${esc(l)}</button>`).join('')
     + (x.k === 'h' ? kinds + del : kinds + `<hr><div class="mlabel">Subject</div>` + todoSubjOpts(x, `data-act="todo-subj" data-id="${id}"`)
     + `<button class="tdsubm" data-act="todo-subj" data-id="${id}" data-s="" role="menuitemradio" aria-checked="${!x.s && !x.tc}"><span class="sdot2" style="--sc:var(--fg-3)"></span>No subject${!x.s && !x.tc ? '<span class="grow"></span>✓' : ''}</button>` + del);
   }
@@ -8282,7 +8416,17 @@ document.addEventListener('touchend', e => {
 }, { passive: true });
 
 /* ---------- exam countdown: one block (e.g. HSC Trials) with its exams; a live clock at the top of every page, a card on Decks ---------- */
-const cdGet = () => S.settings?.countdown || null;
+/* the countdown you set up by hand (Decks › Exam countdown) */
+const cdManual = () => S.settings?.countdown || null;
+/* the clock follows the calendar: with exams in the calendar it counts to the next one, unless a hand-made block comes first or is underway */
+function cdGet(){
+  const m = cdManual(), tk = dayKey(), ex = calEvents().filter(e => e.k === 'exam' && e.d >= tk).sort((a, b) => a.d < b.d ? -1 : a.d > b.d ? 1 : 0);
+  if (!ex.length) return m;
+  const auto = { auto: true, name: ex[0].t || 'Exam', start: '', end: '', exams: ex.map(e => ({ id: e.id, name: e.t || 'Exam', subj: e.s || '', date: e.d, time: '09:00' })) };
+  if (!m) return auto;
+  const mt = cdTarget(m); if (!mt || Date.now() >= (cdEnd(m) || mt).getTime() + DAY) return auto;
+  return mt.getTime() > Date.now() && cdExamAt(auto.exams[0]) < mt ? auto : m;
+}
 const cdDay = d => new Date(d + 'T00:00');
 function cdTarget(cd = cdGet()){ if (!cd) return null; const t = new Date(cd.start || ''); if (!isNaN(t)) return t; const ex = (cd.exams || []).filter(x => x.date).map(x => cdExamAt(x)).sort((a, b) => a - b); return ex[0] || null; }
 const cdExamAt = x => new Date(x.date + 'T' + (x.time || '09:00'));
@@ -8324,7 +8468,7 @@ function cdCard(subj){
 /* ---------- set up or edit ---------- */
 let cdDraft = null;
 function cdEdit(){
-  const cd = cdGet(), t = cd?.start ? new Date(cd.start) : null, p2 = n => String(n).padStart(2, '0');
+  const cd = cdManual(), t = cd?.start ? new Date(cd.start) : null, p2 = n => String(n).padStart(2, '0');
   cdDraft = cd ? JSON.parse(JSON.stringify(cd)) : { name: '', start: '', end: '', exams: [] };
   cdDraft.sd = t ? `${t.getFullYear()}-${p2(t.getMonth() + 1)}-${p2(t.getDate())}` : ''; cdDraft.st = t ? `${p2(t.getHours())}:${p2(t.getMinutes())}` : '09:00';
   if (!cdDraft.exams.length) cdDraft.exams.push({ id: uid('x'), name: '', subj: curSubj()?.id || '', date: '', time: '09:00' });
@@ -8438,7 +8582,15 @@ document.addEventListener('click', async e => {
     case 'todo-move': e.stopPropagation(); return $('#menu') ? closeMenu() : todoMoveMenu(id, a);
     case 'todo-moveto': return todoMoveTo(id, a.dataset.l);
     case 'todo-subj': return todoSetSubj(id, a.dataset.s || '');
-    case 'cd-edit': closeMenu(); return cdEdit();
+    case 'cd-edit': closeMenu(); if (cdGet()?.auto && !a.closest('.hfoot')) return go('cal'); return cdEdit();
+    case 'cal-add': return calAdd();
+    case 'cal-edit': closeMenu(); return calEdit(id);
+    case 'cal-save': return calSave(id);
+    case 'cal-del': return calDel(id);
+    case 'cal-tick': { todoDone(id); render(); return toast('Ticked off · ⌘Z to undo', 2200); }
+    case 'cal-mon': { const [y, mo] = (calMonth || dayKey().slice(0, 7)).split('-').map(Number), d = new Date(y, mo - 1 + (+a.dataset.d), 1); calMonth = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); return calAside(); }
+    case 'cal-day': { calPick = a.dataset.d; const di = $('#cald'); if (di) di.value = calPick; calAside(); const row = document.querySelector(`.calr[data-d="${calPick}"]`); if (row) row.scrollIntoView({ block: 'center', behavior: 'smooth' }); else $('#calt')?.focus(); return; }
+    case 'cal-past': calPast = !calPast; return render();
     case 'cd-save': return cdSave();
     case 'cd-del': return cdDelete();
     case 'cd-addexam': cdRead(); cdDraft.exams.push({ id: uid('x'), name: '', subj: '', date: '', time: '09:00' }); cdDrawForm(); return document.querySelector('.cdedrow:last-child .cdxs')?.focus();
@@ -8588,7 +8740,7 @@ document.addEventListener('click', async e => {
     case 'hint-save': { const c = S.cards[study.cur], v = $('#qhin').value.trim(); if (!c) return; const y = { ...c }; if (v) y.hint = v; else delete y.hint; undoTx = null; undoLabel = 'hint'; await put('cards', y); study.hintEdit = null; if (!v && !(c.kind !== 'learn' && (c.mistake || '').trim())) study.hintFor = null; hintDraw(); return toast(v ? 'Hint saved' : 'Hint removed', 1400); }
     case 'card-flag': { const c = S.cards[id]; if (!c) return; const y = { ...c }; if (c.flag) delete y.flag; else y.flag = true; undoTx = null; undoLabel = c.flag ? 'unflag card' : 'flag card'; await put('cards', y); return render(); }
     case 'keys': closeMenu(); return keysDialog();
-    case 'nav-more': { e.stopPropagation(); if ($('#menu')) return closeMenu(); const r = a.getBoundingClientRect(); menuAt(`<button data-nav="papers">Past papers</button><button data-nav="stats">Stats</button><button data-nav="themes">Themes</button>`, { x: r.right - 170, y: r.top - 132 }); return; }
+    case 'nav-more': { e.stopPropagation(); if ($('#menu')) return closeMenu(); const r = a.getBoundingClientRect(); menuAt(`<button data-nav="browse">Browse</button><button data-nav="papers">Past papers</button><button data-nav="stats">Stats</button><button data-nav="themes">Themes</button>`, { x: r.right - 170, y: r.top - 168 }); return; }
     case 'todo-tabshift': closeMenu(); return todoTabShift(a.dataset.v, +a.dataset.d);
     case 'study-del': return confirmCardDelete(id || study?.cur);
     case 'do-del-card': { $('#layer').innerHTML = ''; await del('cards', id);
@@ -8786,6 +8938,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'b' && view.name === 'overview' && nodeOf(view.node)){ browse.node = view.node; browse.q = ''; browse.status = 'all'; browse.rate = 0; return go('browse'); }
     if (e.key === 'b') return go('browse');
     if (e.key === 't' && view.name !== 'todo') return go('todo');
+    if (e.key === 'c' && view.name !== 'cal') return go('cal');
     if (e.key === 's' && view.name === 'overview') return startStudy(view.node);
   }
 });
