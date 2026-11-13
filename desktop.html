@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261113221813 min-shell:1.27.0 -->
+<!-- recall-build:20261113223614 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -1038,6 +1038,10 @@ html.iosapp{--sat:calc(env(safe-area-inset-top,0px) + 32px)}
 #pad.erasing{cursor:none}
 #pad.fscroll{touch-action:pan-x pan-y}
 .padcv{position:relative;background:var(--surface)}
+.padwrap:not(.full) .padcv{overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain}
+.padb.padzv{min-width:48px;font-variant-numeric:tabular-nums;text-align:center}
+.padb.padzb{min-width:28px;text-align:center}
+.padb:disabled{opacity:.4;cursor:default}
 .padcur{display:none;position:absolute;pointer-events:none;z-index:2;border-radius:50%;transform:translate(-50%,-50%);border:1.5px solid rgba(0,0,0,.6);box-shadow:0 0 0 1px rgba(255,255,255,.95), inset 0 0 0 1px rgba(255,255,255,.8);background:rgba(0,0,0,.05)}
 .padwrap.full{position:fixed;inset:0;z-index:45;margin:0;max-width:none;border:0;border-radius:0;display:flex;flex-direction:column;background:var(--bg)}
 .padwrap.full,.padwrap.full *{-webkit-app-region:no-drag}
@@ -3081,7 +3085,14 @@ body.tddragging .tdl > .tdr:not(.tddrag) .tdmore2{opacity:0 !important}
 .calmainc{flex:1;min-width:0}
 .calph h1{margin:0;font:600 30px/1.15 var(--ui);letter-spacing:-.02em;color:var(--fg)}
 .calph p{margin:6px 0 0;font:400 15px var(--ui);color:var(--fg-2)}
-.caladd{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 4px}
+.calnav{display:flex;align-items:center;gap:4px;margin:16px 0 0 -6px}
+.calnav b{min-width:128px;text-align:center;font:600 14px var(--ui);font-variant-numeric:tabular-nums}
+.calnav .btn{margin-left:8px}
+.calnavb{width:30px;height:30px;display:grid;place-items:center;padding:0;border:0;border-radius:6px;background:none;color:var(--fg-2);cursor:pointer}
+.calnavb svg{width:16px;height:16px}
+.calnavb:hover{background:rgba(var(--ovr),.08);color:var(--fg)}
+@media (pointer:coarse){ .calnavb{width:44px;height:44px} }
+.caladd{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
 .caladd .in{height:36px;margin:0;width:auto}
 .caladd #calt{flex:1 1 220px;min-width:0}
 .caladd select.in{max-width:150px}
@@ -4240,7 +4251,7 @@ function occFront(c){
    Every change is an op on a history stack, so undo/redo (⌘Z / ⇧⌘Z) covers drawing and erasing alike. */
 let padOpen = ls.get('md-pad', false);
 const PAD_STEP = 420;
-const pad = { tool: 'pen', eraser: ls.get('md-pad-eraser', 'stroke'), color: 0, size: 1, penSeen: false, strokes: [], hist: [], redo: [], cur: null, h: 380, full: false, qHide: false, qSize: ls.get('md-padq', 0.36) };
+const pad = { tool: 'pen', eraser: ls.get('md-pad-eraser', 'stroke'), color: 0, size: 1, penSeen: false, strokes: [], hist: [], redo: [], cur: null, h: 380, zoom: 1, full: false, qHide: false, qSize: ls.get('md-padq', 0.36) };
 /* the page takes the theme's card colour, so the inks follow it: the first is the theme's text colour (black on light, near white on dark),
    the others are lighter on dark themes so they still read */
 const PAD_INKS = [['#111111', 'Black'], ['#1d5fd6', 'Blue'], ['#d63a3a', 'Red'], ['#1f8a4c', 'Green'], ['#e07a00', 'Orange']];
@@ -4265,6 +4276,7 @@ function padHtml(){
       <button class="padb ${pad.tool === 'eraser' ? 'on' : ''}" data-pad="eraser" title="Eraser (click again to switch between stroke and precise). With Apple Pencil: double-tap the page with a finger to swap pen and eraser">⌫ ${pad.eraser === 'stroke' ? 'Stroke eraser' : 'Precise eraser'}</button>
       <span class="padsep"></span>${PAD_COLORS().map((col, i) => [col, i === 0 ? 'Pen' : PAD_INKS[i][1]]).map(([col, name], i) => `<button class="padc ${pad.color === i && pad.tool === 'pen' ? 'on' : ''}" data-pad="c${i}" style="--c:${col}" title="${name}" aria-label="${name} ink"></button>`).join('')}
       <span class="padsep"></span>${[0, 1, 2].map(z => `<button class="pads ${pad.size === z ? 'on' : ''}" data-pad="s${z}" title="${['Fine', 'Medium', 'Thick'][z]}"><i style="width:${3 + z * 3}px;height:${3 + z * 3}px"></i></button>`).join('')}
+      <span class="padsep"></span><button class="padb padzb" data-pad="zout" title="Zoom out" aria-label="Zoom out" ${pad.zoom <= 1 ? 'disabled' : ''}>−</button><button class="padb padzv" data-pad="z100" id="padzv" title="Back to 100%">${Math.round(pad.zoom * 100)}%</button><button class="padb padzb" data-pad="zin" title="Zoom in. You can also pinch, or hold ⌘ and scroll" aria-label="Zoom in" ${pad.zoom >= PAD_ZMAX ? 'disabled' : ''}>+</button>
       <span class="padsep"></span><button class="padb" data-pad="undo" title="Undo (⌘Z)">↶</button><button class="padb" data-pad="redo" title="Redo (⇧⌘Z)">↷</button><button class="padb" data-pad="clear" title="Clear the page">Clear</button><button class="padb" data-pad="save" title="Add this working to the card's solution images">Save to card</button>
       ${full ? `<button class="padb" data-pad="q" title="${pad.qHide ? 'Show the question beside the page' : 'Hide the question to get more room'}">${pad.qHide ? 'Show question' : 'Hide question'}</button>` : ''}
       <button class="padb ${full ? 'on' : ''}" data-pad="full" title="${full ? 'Exit full screen (Esc)' : 'Full screen, with the question beside your working'}">${full ? '⤡ Exit full screen' : '⤢ Full screen'}</button>${full ? '' : '<button class="padb" data-pad="close" title="Close scratchpad (P)">✕</button>'}
@@ -4290,20 +4302,42 @@ function padStickTop(){
 /* the phone's top bar gets shorter once you scroll, so follow it */
 let padStickRaf = 0; const padStickSoon = () => { if (!padStickRaf && padOpen) padStickRaf = requestAnimationFrame(() => { padStickRaf = 0; padStickTop(); }); };
 addEventListener('resize', padStickSoon); addEventListener('scroll', padStickSoon, { passive: true });
+/* zoom: the page is drawn pad.zoom times wider (and so taller, since strokes live in width units) and scrolls sideways inside its frame.
+   Buttons step through PAD_ZOOMS; pinch (two fingers, or the trackpad) and ⌘/Ctrl + scroll zoom around where you are pointing. */
+const PAD_ZOOMS = [1, 1.5, 2, 3, 4], PAD_ZMAX = 4;
+const padHScroller = () => $('#padwrap.full #padscroll') || $('#padwrap .padcv');
+function padZoom(z, ax, ay){
+  const cv = $('#pad'); if (!cv) return; z = Math.max(1, Math.min(PAD_ZMAX, z)); if (Math.abs(z - pad.zoom) < 0.005) return;
+  const hs = padHScroller(), vs = padScroller(), r = cv.getBoundingClientRect(), box = hs.getBoundingClientRect();
+  if (ax == null){ ax = (Math.max(r.left, box.left, 0) + Math.min(r.right, box.right, innerWidth)) / 2; ay = (Math.max(r.top, 0) + Math.min(r.bottom, innerHeight)) / 2; }
+  const fx = (ax - r.left) / r.width, fy = (ay - r.top) / r.height;
+  pad.zoom = z; cv.style.width = z * 100 + '%'; pad.fit?.();
+  const r2 = cv.getBoundingClientRect(); hs.scrollLeft += r2.left + fx * r2.width - ax; vs.scrollTop += r2.top + fy * r2.height - ay;
+  const v = $('#padzv'); if (v) v.textContent = Math.round(z * 100) + '%';
+  const o = $('#padwrap [data-pad="zout"]'), i = $('#padwrap [data-pad="zin"]'); if (o) o.disabled = z <= 1; if (i) i.disabled = z >= PAD_ZMAX;
+}
 function padMount(){
   const cv = $('#pad'); if (!cv) return; padStickTop();
-  padState(); cv.style.height = pad.h + 'px';
+  padState(); cv.style.height = pad.h + 'px'; cv.style.width = pad.zoom * 100 + '%';
   const full = !!$('#padwrap.full'), scroller = $('#padscroll');
   let lastW = 0;
   const fit = () => {
-    let r = cv.getBoundingClientRect(); const d = devicePixelRatio || 1; if (!r.width) return;
+    let r = cv.getBoundingClientRect(); if (!r.width) return;
     // strokes live in width units, so when the page gets wider (full screen) the page gets proportionally taller too
     if (pad.st.w && Math.abs(pad.st.w - r.width) > 1){ pad.h = Math.max(380, Math.round(pad.h * r.width / pad.st.w)); pad.st.h = pad.h; cv.style.height = pad.h + 'px'; }
     pad.st.w = r.width;
     if (full && scroller){ const want = scroller.clientHeight - ($('#padwrap .padmore')?.offsetHeight || 0); if (pad.h < want){ pad.h = want; pad.st.h = pad.h; cv.style.height = pad.h + 'px'; } }
-    r = cv.getBoundingClientRect(); cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); lastW = r.width; padRedraw();
+    r = cv.getBoundingClientRect();
+    // zoomed in, the page can get bigger than a canvas is allowed to be (iPad stops near 16 million pixels), so it is drawn a little less finely instead
+    const d = pad.d = Math.min(devicePixelRatio || 1, Math.sqrt(14e6 / (r.width * r.height)));
+    cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); lastW = r.width; cv.style.backgroundSize = `${22 * pad.zoom}px ${22 * pad.zoom}px`; padRedraw();
   };
-  fit(); new ResizeObserver(() => { const r = cv.getBoundingClientRect(); if (Math.abs(r.width - lastW) > 0.5 || Math.round(r.height * (devicePixelRatio || 1)) !== cv.height) fit(); }).observe(cv);
+  pad.fit = fit;
+  fit(); new ResizeObserver(() => { const r = cv.getBoundingClientRect(); if (Math.abs(r.width - lastW) > 0.5 || Math.abs(Math.round(r.height * (pad.d || 1)) - cv.height) > 1) fit(); }).observe(cv);
+  cv.addEventListener('wheel', e => { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); padZoom(pad.zoom * Math.exp(-e.deltaY * 0.01), e.clientX, e.clientY); }, { passive: false });
+  // iPad with a Pencil in use: fingers scroll the page natively, so the pinch comes from Safari's own gesture events
+  let gz = 1; cv.addEventListener('gesturestart', e => { if (!pad.penSeen) return; e.preventDefault(); gz = pad.zoom; });
+  cv.addEventListener('gesturechange', e => { if (!pad.penSeen) return; e.preventDefault(); padZoom(gz * e.scale, e.clientX, e.clientY); });
   if (full){ typeset($('#padq')); padResizer(); }
   const pt = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.width, e.pointerType === 'pen' ? (e.pressure > 0 ? e.pressure : 0.5) : 0.5]; };
   // Safari on iPad: stop the page from treating pencil/finger touches on the pad as scrolls, zooms, text selection or Scribble
@@ -4323,7 +4357,8 @@ function padMount(){
   // double-tap with a finger (once the Pencil is in use) swaps pen ⇄ eraser. Safari doesn't pass the Pencil's own double-tap to web pages.
   let tap = null, lastTap = null;
   // drawing with a finger (no Pencil yet): two fingers scroll the page instead of drawing
-  const fingers = new Map(); let pan = null;
+  const fingers = new Map(); let pan = null, pinch = null;
+  const spread = () => { const f = [...fingers.values()]; return f.length < 2 ? 0 : Math.hypot(f[0][0] - f[1][0], f[0][1] - f[1][1]); };
   const mid = () => { let x = 0, y = 0; fingers.forEach(f => { x += f[0]; y += f[1]; }); return [x / fingers.size, y / fingers.size]; };
   const padAbort = () => {   // drop the stroke the first finger started
     const c = pad.cur; if (!c) return; pad.cur = null; document.body.classList.remove('padding');
@@ -4334,7 +4369,7 @@ function padMount(){
     if (e.pointerType === 'pen' && !pad.penSeen){ pad.penSeen = true; cv.classList.add('fscroll'); }
     if (e.pointerType === 'touch' && !pad.penSeen){
       fingers.set(e.pointerId, [e.clientX, e.clientY]);
-      if (fingers.size >= 2 || pan){ e.preventDefault(); if (pad.cur && fingers.has(pad.cur.id)) padAbort(); pan = mid(); return; }
+      if (fingers.size >= 2 || pan){ e.preventDefault(); if (pad.cur && fingers.has(pad.cur.id)) padAbort(); pan = mid(); pinch = fingers.size === 2 ? { d: spread(), z: pad.zoom } : null; return; }
     }
     if (e.pointerType === 'touch' && pad.penSeen){   // palm rejection once a pencil has been used
       if (tap || pad.cur || Date.now() - penUpAt < 300){ tap = null; lastTap = null; return; }
@@ -4348,9 +4383,11 @@ function padMount(){
   });
   cv.addEventListener('pointermove', e => {
     if (!fingers.has(e.pointerId)) return; fingers.set(e.pointerId, [e.clientX, e.clientY]);
-    if (!pan) return; e.preventDefault(); const m = mid(), sc = padScroller(); sc.scrollTop -= m[1] - pan[1]; sc.scrollLeft -= m[0] - pan[0]; pan = m;
+    if (!pan) return; e.preventDefault(); const m = mid(), sc = padScroller();
+    if (pinch && pinch.d > 20 && fingers.size === 2){ const k = spread() / pinch.d; if (pinch.on || Math.abs(k - 1) > 0.06){ pinch.on = true; padZoom(pinch.z * k, m[0], m[1]); } }
+    sc.scrollTop -= m[1] - pan[1]; padHScroller().scrollLeft -= m[0] - pan[0]; pan = m;
   });
-  const lift = e => { if (!fingers.delete(e.pointerId)) return; if (!fingers.size) pan = null; else if (pan) pan = mid(); };
+  const lift = e => { if (!fingers.delete(e.pointerId)) return; pinch = null; if (!fingers.size) pan = null; else if (pan) pan = mid(); };
   cv.addEventListener('pointerup', lift); cv.addEventListener('pointercancel', lift);
   cv.addEventListener('pointerup', e => {
     if (!tap || e.pointerId !== tap.id) return;
@@ -4449,7 +4486,7 @@ function padScribble(c){
   pad.hist.push({ t: 'erase', items }); pad.redo.length = 0; padRedraw(); return true;
 }
 function padRedraw(incremental){
-  const cv = $('#pad'); if (!cv) return; const g = cv.getContext('2d'), W = cv.width, H = cv.height, cols = PAD_COLORS(), dpr = devicePixelRatio || 1;
+  const cv = $('#pad'); if (!cv) return; const g = cv.getContext('2d'), W = cv.width, H = cv.height, cols = PAD_COLORS(), dpr = pad.d || devicePixelRatio || 1;
   const unit = W, lw = s => padLw(s.size, W / dpr, s.tool) * dpr;
   const wid = (s, p) => s.tool === 'eraser' ? lw(s) : lw(s) * (0.45 + p[2] * 1.1);   // the eraser ignores pressure, so it always matches its ring
   const drawStroke = (s, from) => {
@@ -4491,6 +4528,9 @@ async function padAction(k){
   if (k === 'eraser'){ if (pad.tool === 'eraser'){ pad.eraser = pad.eraser === 'stroke' ? 'precise' : 'stroke'; ls.set('md-pad-eraser', pad.eraser); toast(pad.eraser === 'stroke' ? 'Stroke eraser: rubs out whole lines' : 'Precise eraser: rubs out just what you touch'); } pad.tool = 'eraser'; return padSyncBar(); }
   if (/^c\d$/.test(k)){ pad.color = +k[1]; pad.tool = 'pen'; return padSyncBar(); }
   if (/^s\d$/.test(k)){ pad.size = +k[1]; return padSyncBar(); }
+  if (k === 'zin') return padZoom(PAD_ZOOMS.find(z => z > pad.zoom + 0.01) || PAD_ZMAX);
+  if (k === 'zout') return padZoom([...PAD_ZOOMS].reverse().find(z => z < pad.zoom - 0.01) || 1);
+  if (k === 'z100') return padZoom(1);
   if (k === 'undo') return padUndo();
   if (k === 'redo') return padRedo();
   if (k === 'clear'){ if (!pad.strokes.length) return; pad.hist.push({ t: 'clear', items: pad.strokes.splice(0) }); pad.redo.length = 0; return padRedraw(); }
@@ -7813,7 +7853,7 @@ function calMini(){
   let cells = '<i></i>'.repeat(lead);
   for (let i = 1; i <= dim; i++){ const d = ym + '-' + String(i).padStart(2, '0'), it = by[d];
     cells += `<button class="${d === tk ? 'now' : ''} ${d === calPick ? 'pick' : ''} ${d < tk ? 'old' : ''}" data-act="cal-day" data-d="${d}" aria-label="${new Date(d + 'T00:00').toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}${it ? ', ' + it.length + ' on this day' : ''}"><span>${i}</span>${it ? `<em style="--sc:${it[0].s && nodeOf(it[0].s) ? scol(it[0].s) : 'var(--fg-3)'}"></em>` : ''}</button>`; }
-  return `<div class="calmh"><b>${first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</b><button class="icon soft" data-act="cal-mon" data-d="-1" aria-label="Previous month"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="icon soft" data-act="cal-mon" data-d="1" aria-label="Next month"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+  return `<div class="calmh"><b>${first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</b></div>
     <div class="calmg"><div class="calmw" aria-hidden="true">${['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(x => `<span>${x}</span>`).join('')}</div>${cells}</div>`;
 }
 function calAside(){ const a = $('#calside'); if (a) a.innerHTML = calMini(); }
@@ -7824,8 +7864,22 @@ function renderCal(){
   const grp = x => { const n = calN(x.d); return n <= 0 ? 'Today' : n === 1 ? 'Tomorrow' : n <= toSun ? 'This week' : n <= toSun + 7 ? 'Next week' : new Date(x.d + 'T00:00').toLocaleDateString(undefined, { month: 'long', ...(x.d.slice(0, 4) !== tk.slice(0, 4) ? { year: 'numeric' } : {}) }); };
   const groups = []; up.slice().sort((a, b) => Math.max(calN(a.d), 0) - Math.max(calN(b.d), 0)).forEach(x => { const g = grp(x), last = groups[groups.length - 1]; if (last && last[0] === g) last[1].push(x); else groups.push([g, [x]]); });
   const subs = kids(null);
+  /* ‹ month › above the list: on this month it is the agenda (soonest first); on any other month it lists that month, past ones included */
+  const ym = calMonth && calMonth !== tk.slice(0, 7) ? calMonth : null, mdate = new Date((ym || tk.slice(0, 7)) + '-01T00:00'), mname = mdate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  const arrow = (d, l, pth) => `<button class="calnavb" data-act="cal-mon" data-d="${d}" aria-label="${l}" title="${l}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="${pth}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+  const nav = `<div class="calnav">${arrow(-1, 'Previous month', 'M10 3.5 5.5 8l4.5 4.5')}<b>${mname}</b>${arrow(1, 'Next month', 'M6 3.5 10.5 8 6 12.5')}${ym ? '<button class="btn sm" data-act="cal-mon" data-d="0">Today</button>' : ''}</div>`;
+  if (ym){ const inM = all.filter(x => x.d.startsWith(ym)), ds = ym < tk.slice(0, 7) ? ym + '-01' : ym + '-01';
+    $('#root').innerHTML = `<div class="calpage"><div class="calmainc">
+    <header class="calph"><h1>${inM.length ? `${inM.length} thing${inM.length === 1 ? '' : 's'} on in ${mdate.toLocaleDateString(undefined, { month: 'long' })}` : `Nothing on in ${mdate.toLocaleDateString(undefined, { month: 'long' })}`}</h1></header>${nav}
+    <div class="caladd"><input class="in" id="calt" maxlength="200" placeholder="Add something in ${mdate.toLocaleDateString(undefined, { month: 'long' })}" aria-label="What is it">
+      <input class="in" type="date" id="cald" value="${esc(calPick || ds)}" aria-label="Day">
+      <select class="in" id="calk" aria-label="Kind">${[['event', 'Event'], ['exam', 'Exam'], ['due', 'Due date'], ['task', 'To-do task']].map(([v, l]) => `<option value="${v}" ${calKind === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <select class="in" id="cals" aria-label="Subject"><option value="">No subject</option>${subs.map(n => `<option value="${n.id}">${esc(n.name)}</option>`).join('')}</select>
+      <button class="btn primary" data-act="cal-add">Add</button></div>
+    ${inM.length ? `<section class="calg"><div class="call" style="margin-top:20px">${inM.map(calRow).join('')}</div></section>` : ''}
+  </div><aside class="calside" id="calside" aria-label="Month">${calMini()}</aside></div>`; return; }
   $('#root').innerHTML = `<div class="calpage"><div class="calmainc">
-    <header class="calph"><h1>${!next ? 'Nothing coming up' : nn === 0 ? 'On today' : 'Next up ' + calLeft(nn).toLowerCase()}</h1>${next ? `<p>${esc(next.t)}${nn > 1 ? ', ' + new Date(next.d + 'T00:00').toLocaleDateString(undefined, { weekday: 'long' }) + (nn > 6 ? ' ' + new Date(next.d + 'T00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '') : ''}</p>` : '<p>Add an exam, a due date or a task for a day.</p>'}</header>
+    <header class="calph"><h1>${!next ? 'Nothing coming up' : nn === 0 ? 'On today' : 'Next up ' + calLeft(nn).toLowerCase()}</h1>${next ? `<p>${esc(next.t)}${nn > 1 ? ', ' + new Date(next.d + 'T00:00').toLocaleDateString(undefined, { weekday: 'long' }) + (nn > 6 ? ' ' + new Date(next.d + 'T00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '') : ''}</p>` : '<p>Add an exam, a due date or a task for a day.</p>'}</header>${nav}
     <div class="caladd"><input class="in" id="calt" maxlength="200" placeholder="Add something, like Physics test" aria-label="What is it">
       <input class="in" type="date" id="cald" value="${esc(calPick || tk)}" aria-label="Day">
       <select class="in" id="calk" aria-label="Kind">${[['event', 'Event'], ['exam', 'Exam'], ['due', 'Due date'], ['task', 'To-do task']].map(([v, l]) => `<option value="${v}" ${calKind === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
@@ -7838,7 +7892,7 @@ function renderCal(){
 function calAdd(){
   const t = ($('#calt')?.value || '').replace(/\s+/g, ' ').trim(), d = $('#cald')?.value, k = $('#calk')?.value || 'event', sj = $('#cals')?.value || null;
   if (!t){ $('#calt')?.focus(); return toast('Type what it is first', 1600); } if (!/^\d{4}-\d\d-\d\d$/.test(d || '')){ $('#cald')?.focus(); return toast('Pick a day', 1600); }
-  calKind = k; calPick = '';
+  calKind = k; calPick = ''; if (calMonth && !d.startsWith(calMonth)) calMonth = d.slice(0, 7) === dayKey().slice(0, 7) ? null : d.slice(0, 7);
   if (k === 'task'){ const now = d <= dayKey(); todoSave([...todoAll(), { id: uid('t'), t: t.slice(0, 200), s: sj, done: 0, at: Date.now(), day: d, l: now ? 'today' : 'later', ...(now ? { dr: d } : {}) }], 'add task'); }
   else { undoTx = null; undoLabel = 'add event'; undoRecordSettings(); S.settings = { ...S.settings, events: [...calEvents(), { id: uid('e'), t: t.slice(0, 200), d, k, s: sj }] }; saveSettings(); }
   render(); $('#calt')?.focus(); toast(k === 'task' ? `Task added for ${todoDay(d).toLowerCase()}` : `${CAL_KIND[k]} added`, 1400);
@@ -8588,7 +8642,7 @@ document.addEventListener('click', async e => {
     case 'cal-save': return calSave(id);
     case 'cal-del': return calDel(id);
     case 'cal-tick': { todoDone(id); render(); return toast('Ticked off · ⌘Z to undo', 2200); }
-    case 'cal-mon': { const [y, mo] = (calMonth || dayKey().slice(0, 7)).split('-').map(Number), d = new Date(y, mo - 1 + (+a.dataset.d), 1); calMonth = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); return calAside(); }
+    case 'cal-mon': { const [y, mo] = (calMonth || dayKey().slice(0, 7)).split('-').map(Number), d = new Date(y, mo - 1 + (+a.dataset.d), 1); calMonth = +a.dataset.d ? d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') : null; if (calMonth === dayKey().slice(0, 7)) calMonth = null; calPick = ''; return render(); }
     case 'cal-day': { calPick = a.dataset.d; const di = $('#cald'); if (di) di.value = calPick; calAside(); const row = document.querySelector(`.calr[data-d="${calPick}"]`); if (row) row.scrollIntoView({ block: 'center', behavior: 'smooth' }); else $('#calt')?.focus(); return; }
     case 'cal-past': calPast = !calPast; return render();
     case 'cd-save': return cdSave();
