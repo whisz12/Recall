@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261113223614 min-shell:1.27.0 -->
+<!-- recall-build:20261113234259 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -3934,6 +3934,7 @@ function renderOverview(){
         <button class="ovb" data-act="gear" data-id="${esc(n.id)}" aria-label="Options for ${esc(n.name)}">${I.gear}</button>
         ${cs.length > 1 ? `<button class="ovb ${shuffleOn ? 'on' : ''}" data-act="shuffle-toggle" aria-pressed="${shuffleOn}" title="Shuffle the order">${I.shuffle}Shuffle</button>` : ''}
         <button class="ovb" data-act="add-here" data-id="${esc(n.id)}">Add card</button>
+        ${!n.virtual && kids(n.id).length && c.total ? `<button class="ovb ${saLeftOut(n.id) ? 'on' : ''}" data-act="study-pick" data-id="${esc(n.id)}" title="Study this without some of its ${n.parentId ? 'subtopics' : 'topics'}">Choose ${n.parentId ? 'subtopics' : 'topics'}…</button>` : ''}
         <button class="ovb" data-act="practise" data-id="${esc(n.id)}" ${c.total ? '' : 'disabled'}>Practise all ${c.total}</button>
         <button class="btn primary big" data-act="${any ? 'study' : 'practise'}" data-id="${esc(n.id)}" ${c.total ? '' : 'disabled'}>${any ? 'Study ' + any : 'Practise'}</button>
       </div>
@@ -3993,9 +3994,13 @@ document.addEventListener('click', e => {
 }, true);
 
 /* ---------- study all: choose which subjects, topics and subtopics go in; the choice is remembered ---------- */
-let saOpen = null, saMode = 'study';
-const saEx = () => new Set(ls.get('md-study-ex', []).filter(id => S.nodes[id]));
-const saCards = ex => Object.values(S.cards).filter(c => !ex.has(c.nodeId));
+/* the same picker works inside one subject or topic (saRoot): "Choose subtopics…" on its page. What you leave out is remembered
+   per subject/topic in md-study-exn { rootId: [ids] }, separately from Study all's md-study-ex. */
+let saOpen = null, saMode = 'study', saRoot = null;
+const saEx = () => new Set((saRoot ? ls.get('md-study-exn', {})[saRoot] || [] : ls.get('md-study-ex', [])).filter(id => S.nodes[id]));
+const saPut = ids => { if (!saRoot) return ls.set('md-study-ex', ids); const m = ls.get('md-study-exn', {}); if (ids.length) m[saRoot] = ids; else delete m[saRoot]; ls.set('md-study-exn', m); };
+const saCards = ex => (saRoot ? cardsIn(saRoot) : Object.values(S.cards)).filter(c => !ex.has(c.nodeId));
+const saLeftOut = id => (ls.get('md-study-exn', {})[id] || []).filter(x => S.nodes[x]).length;
 function saState(id, ex){ const ids = [...subtree(id)], off = ids.filter(i => ex.has(i)).length; return !off ? 'on' : off === ids.length ? 'off' : 'mixed'; }
 function saDue(ex){ const now = Date.now(); let nw = 0, n = 0; for (const c of saCards(ex)){ const k = kind(c); if (k === 'new') nw++; else if ((c.srs.due || 0) <= now) n++; } return n + Math.min(nw, newLeft()); }
 function saRows(ex){
@@ -4007,11 +4012,13 @@ function saRows(ex){
       <label><input type="checkbox" data-sa="${n.id}" ${st === 'on' ? 'checked' : ''} data-mixed="${st === 'mixed'}">${d ? '' : `<span class="sdot2" style="--sc:${scol(n.id)}"></span>`}<span class="san">${esc(n.name)}</span></label>
       <span class="sac">${due ? `<b>${due}</b> due` : `${tot} card${tot === 1 ? '' : 's'}`}</span></div>` + (open ? ch.map(k => row(k, d + 1)).join('') : '');
   };
-  return kids(null).map(s => row(s, 0)).join('');
+  if (!saRoot) return kids(null).map(s => row(s, 0)).join('');
+  const own = Object.values(S.cards).filter(c => c.nodeId === saRoot).length;   // cards sitting straight on the topic, in no subtopic
+  return kids(saRoot).map(s => row(s, 0)).join('') + (own ? `<div class="sarow ${ex.has(saRoot) ? 'saoff' : ''}" style="--d:0"><span class="caret blank" aria-hidden="true"></span><label><input type="checkbox" data-sa="${saRoot}" data-self="1" ${ex.has(saRoot) ? '' : 'checked'}><span class="san">Cards not in a ${nodeOf(saRoot)?.parentId ? 'subtopic' : 'topic'}</span></label><span class="sac">${own} card${own === 1 ? '' : 's'}</span></div>` : '');
 }
 function saFoot(ex){
   const due = saDue(ex), all = saCards(ex).length, practise = saMode === 'practise' || !due;
-  return `<span class="hint">${all ? `${all} card${all === 1 ? '' : 's'} picked` : 'Nothing picked'}</span><span class="grow"></span><button class="btn" data-act="close">Cancel</button>
+  return `<span class="hint">${all ? `${all} card${all === 1 ? '' : 's'} picked` : 'Nothing picked'}</span><span class="grow"></span><button class="btn" data-act="close">Cancel</button>${saRoot && !practise ? `<button class="btn" data-act="sa-go" data-mode="practise">Practise all ${all}</button>` : ''}
     <button class="btn primary" data-act="sa-go" data-mode="${practise ? 'practise' : 'study'}" ${all ? '' : 'disabled'}>${practise ? `Practise ${all}` : `Study ${due}`}</button>`;
 }
 function saDraw(){
@@ -4019,19 +4026,20 @@ function saDraw(){
   d.querySelector('.salist').innerHTML = saRows(ex); d.querySelector('footer').innerHTML = saFoot(ex);
   d.querySelectorAll('[data-mixed="true"]').forEach(i => { i.indeterminate = true; });
 }
-function studyAllDialog(mode){
+function studyAllDialog(mode, root){
+  saRoot = root && nodeOf(root) ? root : null; const rn = saRoot && nodeOf(saRoot), word = rn ? (rn.parentId ? 'subtopics' : 'topics') : '';
   saMode = mode; if (!saOpen) saOpen = new Set(kids(null).map(n => n.id));
-  openDialog(`<div class="dialog sadlg" role="dialog" aria-modal="true" aria-labelledby="sah" style="max-width:520px"><header><h2 id="sah">${mode === 'practise' ? 'Practise all' : 'Study all'}</h2><span class="grow"></span><button class="link sm" data-act="sa-all">Pick all</button><button class="link sm" data-act="sa-none">Clear</button></header>
-    <div class="body"><p class="hint" style="margin:0 0 10px">Untick anything to leave it out. Recall remembers what you pick.</p><div class="salist"></div></div><footer></footer></div>`, d => {
-      d.addEventListener('change', e => { const i = e.target.closest('[data-sa]'); if (!i) return; const ex = saEx(), ids = [...subtree(i.dataset.sa)], on = saState(i.dataset.sa, ex) === 'on'; ids.forEach(id => on ? ex.add(id) : ex.delete(id)); ls.set('md-study-ex', [...ex]); saDraw(); d.querySelector(`[data-sa="${i.dataset.sa}"]`)?.focus(); });
+  openDialog(`<div class="dialog sadlg" role="dialog" aria-modal="true" aria-labelledby="sah" style="max-width:520px"><header><h2 id="sah">${rn ? `${mode === 'practise' ? 'Practise' : 'Study'} ${esc(rn.name)}` : mode === 'practise' ? 'Practise all' : 'Study all'}</h2><span class="grow"></span><button class="link sm" data-act="sa-all">Pick all</button><button class="link sm" data-act="sa-none">Clear</button></header>
+    <div class="body"><p class="hint" style="margin:0 0 10px">${rn ? `Untick the ${word} you want to leave out this time. Recall remembers what you pick for ${esc(rn.name)}.` : 'Untick anything to leave it out. Recall remembers what you pick.'}</p><div class="salist"></div></div><footer></footer></div>`, d => {
+      d.addEventListener('change', e => { const i = e.target.closest('[data-sa]'); if (!i) return; const ex = saEx(), self = !!i.dataset.self, ids = self ? [i.dataset.sa] : [...subtree(i.dataset.sa)], on = self ? !ex.has(i.dataset.sa) : saState(i.dataset.sa, ex) === 'on'; ids.forEach(id => on ? ex.add(id) : ex.delete(id)); saPut([...ex]); saDraw(); d.querySelector(`[data-sa="${i.dataset.sa}"]`)?.focus(); });
       d.addEventListener('click', e => { const t = e.target.closest('[data-sa-tog]'); if (!t || t.classList.contains('blank')) return; e.preventDefault(); const id = t.dataset.saTog; saOpen.has(id) ? saOpen.delete(id) : saOpen.add(id); saDraw(); });
     });
   saDraw(); $('#layer .sadlg footer .btn.primary')?.focus();
 }
 function saGo(mode){
-  const ex = saEx(); closeDialog(); study = null;
-  if (mode === 'practise') return startStudy(null, true, null, sortCards(saCards(ex)).map(c => c.id));
-  startStudy(null, false, null, null, ex);
+  const ex = saEx(), root = saRoot; closeDialog(); study = null;
+  if (mode === 'practise') return startStudy(root, true, null, sortCards(saCards(ex)).map(c => c.id));
+  startStudy(root, false, null, null, ex);
 }
 function nextCard(){
   const now = Date.now(); study.shown = false; study.pred = { conf: 50, think: '', set: false }; study.t0 = Date.now(); study.tShown = 0; study.timeUpToast = false; study.pausedMs = 0; study.pausedAt = 0; study.autoShown = false; const inScope0 = study.node ? new Set(cardsIn(study.node).map(c => c.id)) : null, inScope = (inScope0 || study.ex || study.keep) ? { has: id => (!inScope0 || inScope0.has(id)) && (!study.ex || !study.ex.has(S.cards[id]?.nodeId)) && (!study.keep || study.keep.has(id)) } : null;
@@ -6649,7 +6657,7 @@ function gearMenu(id, anchor){
   const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
   const kidWord = n.parentId ? 'subtopics' : 'topics';
   if (n.virtual) m.innerHTML = `<button data-act="customise" data-id="${id}">Rename or customise…</button><button data-act="move" data-id="${id}">Move to…</button><button data-act="link-deck" data-id="${id}">Also show its cards in…</button><button data-act="add-here" data-id="${id}">Add card here</button><button data-act="practise" data-id="${id}">Practise all cards</button><button data-act="browse-here" data-id="${id}">Browse cards</button><button data-act="reset-deck" data-id="${id}">Reset progress…</button><button data-act="export-deck" data-id="${id}">Export / share…</button><hr><button class="danger" data-act="del-type" data-id="${id}">Remove bubble…</button>`;
-  else m.innerHTML = `<button data-act="add-child" data-id="${id}">Add ${n.parentId ? 'subtopic' : 'topic'} inside…</button>${n.parentId ? `<button data-act="add-bubble" data-id="${id}">Add big bubble…</button><button data-act="manage" data-id="${id}">Edit subtopics &amp; bubbles…</button>` : kids(id).length ? `<button data-act="manage" data-id="${id}">Rename or delete topics…</button>` : ''}<button data-act="customise" data-id="${id}">Rename or customise…</button><button data-act="move" data-id="${id}">Move to…</button><button data-act="link-deck" data-id="${id}">Also show its cards in…</button><button data-act="add-here" data-id="${id}">Add card here</button><button data-act="practise" data-id="${id}">Practise all cards</button><button data-act="browse-here" data-id="${id}">Browse cards</button><button data-act="reset-deck" data-id="${id}">Reset progress…</button><button data-act="export-deck" data-id="${id}">Export / share…</button><button data-act="import-here" data-id="${id}">Import cards here…</button><hr><button class="danger" data-act="del-deck" data-id="${id}">Delete</button>`;
+  else m.innerHTML = `${kids(id).length ? `<button data-act="study-pick" data-id="${id}">Study only some ${kidWord}…</button><hr>` : ''}<button data-act="add-child" data-id="${id}">Add ${n.parentId ? 'subtopic' : 'topic'} inside…</button>${n.parentId ? `<button data-act="add-bubble" data-id="${id}">Add big bubble…</button><button data-act="manage" data-id="${id}">Edit subtopics &amp; bubbles…</button>` : kids(id).length ? `<button data-act="manage" data-id="${id}">Rename or delete topics…</button>` : ''}<button data-act="customise" data-id="${id}">Rename or customise…</button><button data-act="move" data-id="${id}">Move to…</button><button data-act="link-deck" data-id="${id}">Also show its cards in…</button><button data-act="add-here" data-id="${id}">Add card here</button><button data-act="practise" data-id="${id}">Practise all cards</button><button data-act="browse-here" data-id="${id}">Browse cards</button><button data-act="reset-deck" data-id="${id}">Reset progress…</button><button data-act="export-deck" data-id="${id}">Export / share…</button><button data-act="import-here" data-id="${id}">Import cards here…</button><hr><button class="danger" data-act="del-deck" data-id="${id}">Delete</button>`;
   document.body.appendChild(m);
   const r = anchor.getBoundingClientRect ? anchor.getBoundingClientRect() : { left: anchor.x, right: anchor.x + m.offsetWidth, top: anchor.y, bottom: anchor.y }; const w = m.offsetWidth, h = m.offsetHeight;
   m.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px';
@@ -8847,8 +8855,9 @@ document.addEventListener('click', async e => {
     case 'bexpand': undoRecordUi(); Object.values(S.nodes).forEach(n => { if (kids(n.id).length) bexp.add(n.id); }); ls.set('md-bexp', [...bexp]); return renderBrowse();
     case 'study': return id ? startStudy(id) : studyAllDialog('study');
     case 'sa-go': return saGo(a.dataset.mode);
-    case 'sa-all': ls.set('md-study-ex', []); return saDraw();
-    case 'sa-none': ls.set('md-study-ex', Object.keys(S.nodes)); return saDraw();
+    case 'sa-all': saPut([]); return saDraw();
+    case 'sa-none': saPut(saRoot ? [...subtree(saRoot)] : Object.keys(S.nodes)); return saDraw();
+    case 'study-pick': closeMenu(); return studyAllDialog('study', id);
     case 'back-card': return goBack();
     case 'shuffle-toggle': undoRecordUi(); shuffleOn = !shuffleOn; ls.set('md-shuffle', shuffleOn); render(); return toast(shuffleOn ? 'Shuffle on: cards come in a random order' : 'Shuffle off: cards come in order');
     case 'reshuffle': { if (!study) return; study.queue = shuffled(study.queue); renderStudy(); typeset($('#root')); return toast('Shuffled the ' + study.queue.length + ' cards left'); }
