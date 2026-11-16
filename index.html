@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261116232348";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261116235554";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -3589,6 +3589,50 @@ html.lh .h7sttodo .sth h2{font:400 13px var(--ui);color:var(--fg-2)}
 
 .h7kr small{text-align:right}
 
+.h7ppby{display:flex;align-items:center;gap:4px 14px;padding:12px 16px 2px;color:var(--fg-3);font-size:12px}
+.h7ppby button{border:0;background:none;padding:0 0 3px;color:var(--fg-3);font:400 12px var(--ui);cursor:pointer;border-bottom:1.5px solid transparent}
+.h7ppby button[aria-pressed="true"]{color:var(--fg);border-bottom-color:var(--fg)}
+.h7ppfh{display:flex;align-items:baseline;gap:8px;width:100%;padding:9px 16px;border:0;border-bottom:1px solid var(--border);background:none;color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.h7ppfh:hover{background:var(--hover)}
+.h7ppfh svg{width:12px;height:12px;flex:none;align-self:center;color:var(--fg-3);transition:transform .15s var(--ease)}
+.h7ppfo.open>.h7ppfh svg{transform:rotate(90deg)}
+.h7ppfh b{font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.h7ppfh small{color:var(--fg-3);white-space:nowrap}
+.h7ppfi .h7ppr{padding-left:36px}
+/* exam countdown: split-flap digits */
+.cdpill b#cdclock{display:inline-flex;align-items:center;gap:1px;font:500 13px var(--ui);letter-spacing:0}
+.cdpill .fd{position:relative;display:inline-block;width:.72em;height:1.5em;border-radius:3px;background:var(--surface-2);perspective:120px;font:500 13px/1.5em var(--ui);font-variant-numeric:tabular-nums;color:var(--fg);text-align:center}
+.cdpill .fdu,.cdpill .fdl{position:absolute;left:0;right:0;height:50%;overflow:hidden;backface-visibility:hidden}
+.cdpill .fdu{top:0;border-radius:3px 3px 0 0}
+.cdpill .fdl{bottom:0;border-radius:0 0 3px 3px}
+.cdpill .fdu i,.cdpill .fdl i{position:absolute;left:0;right:0;height:200%;font-style:normal;line-height:1.5em}
+.cdpill .fdu i{top:0}
+.cdpill .fdl i{bottom:0}
+.cdpill .fd::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--bg);opacity:.55;z-index:3}
+.cdpill .ffu{z-index:2;background:var(--surface-2);transform-origin:50% 100%;animation:fdTop .28s ease-in both}
+.cdpill .ffl{z-index:2;background:var(--surface-2);transform-origin:50% 0;transform:rotateX(90deg);animation:fdBot .28s ease-out .28s both}
+@keyframes fdTop{from{transform:rotateX(0)}to{transform:rotateX(-90deg)}}
+@keyframes fdBot{from{transform:rotateX(90deg)}to{transform:rotateX(0)}}
+.cdpill .fsep{display:inline-block;min-width:.32em;text-align:center;color:var(--fg-3);font:500 13px var(--ui)}
+.cdpill .fd + .fsep:not(:empty){margin:0 1px}
+@media (prefers-reduced-motion:reduce){ .cdpill .ffu,.cdpill .ffl{animation:none} }
+/* study back */
+.appbar .abback{flex:none}
+/* topic dragging */
+.h7dragging{user-select:none}
+.h7drag{position:relative;z-index:5;background:var(--bg);box-shadow:0 10px 28px rgba(0,0,0,.35);border-radius:6px}
+body.h7grabbing,body.h7grabbing *{cursor:grabbing !important}
+
+.h7ppr{padding:7px 16px}.h7ppr .h7ppt small{font-size:12px}
+.cdpill b#cdclock .fsep{background:none !important;border:0 !important;padding:0 !important;width:auto;min-width:.3em;height:auto;box-shadow:none !important}.cdpill b#cdclock .fsep.sp{min-width:.45em}.cdpill b#cdclock .fsep.u{color:var(--fg-3);font-weight:400;margin-left:1px}
+/* background picture shows through the H7 page */
+html.lh body.desktop.hasbg,html.lh.hasbg body{background:transparent !important}
+html.lh body.desktop.hasbg .page,html.lh body.hasbg .page{background:transparent !important}
+html.lh body.desktop.hasbg .appbar{background:color-mix(in srgb, var(--bg) 55%, transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html.lh body.desktop.hasbg .toolbar{background:color-mix(in srgb, var(--side-solid) 72%, transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+html.lh body.hasbg .h7drag{background:color-mix(in srgb, var(--bg) 85%, transparent)}
+
+
 /* iPad / browser tweaks */
 html.hosted body.desktop .toolbar{padding-top:max(22px, var(--sat))}
 html.hosted body.desktop::after{display:none}
@@ -4154,7 +4198,7 @@ function renderAppbar(){
   else if (view.name === 'themes') title = '<b>Settings</b>';
   else if (view.name === 'study' && study){
     const c = study.cur ? S.cards[study.cur] : null, ps = c ? pathOf(c.nodeId) : (study.node ? pathOf(study.node) : []);
-    title = (study.tag ? `<button class="abcr" data-act="pp-back">${esc(study.tag)}</button><i>›</i>` : '') + (ps.length ? ps.map((n, i) => i < ps.length - 1 ? `<span>${esc(n.name)}</span><i>›</i>` : `<b>${esc(n.name)}</b>`).join('') : '<b>All cards</b>');
+    title = `<button class="abi abback" data-act="study-exit" title="Back (Esc)" aria-label="Back"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` + (study.tag ? `<button class="abcr" data-act="pp-back">${esc(study.tag)}</button><i>›</i>` : '') + (ps.length ? ps.map((n, i) => i < ps.length - 1 ? `<button class="abcr" data-act="open" data-id="${esc(n.id)}">${esc(n.name)}</button><i>›</i>` : `<b>${esc(n.name)}</b>`).join('') : '<b>All cards</b>');
     const q = queueCounts(), total = study.done + q.nw + q.lr + q.rv, pos = Math.min(study.done + 1, total), st = tmrGet();
     act = `<span id="rflash" aria-live="polite"></span>${c ? `<button class="abi" data-act="back-card" ${study.hist?.length || study.shown ? '' : 'disabled'} title="Back one step (Z)" aria-label="Back one step">${IC.undo}</button><button class="abi" data-act="edit" data-id="${c.id}" title="Edit this card (E)" aria-label="Edit this card">${IC.edit}</button><button class="abi sflag" data-act="study-flag" aria-pressed="${!!c.flag}" title="Flag this card to come back to it (F)" aria-label="Flag this card">${IC.flag}</button><button class="abi" data-act="study-skip" title="${study.practise ? 'Skip this card for now (S)' : 'Not today: skip until tomorrow (S)'}" aria-label="Skip this card">${IC.skip}</button><button class="abi" data-act="study-del" data-id="${c.id}" title="Delete this card (X)" aria-label="Delete this card">${IC.trash}</button><span class="absep"></span>` : ''}
       <button class="abi abtimer ${st.mode !== 'off' ? 'on' : ''}" data-act="timer-menu" title="Timer (T pauses)" aria-label="Timer settings" aria-haspopup="true">${IC.clock}<span>${st.mode === 'off' ? '' : st.mode === 'watch' ? 'Stopwatch' : c ? fmtSec(limitOf(c, st)) : 'Limit'}</span></button>
@@ -5728,7 +5772,7 @@ function browsePreview(){
   const added = c.createdAt ? new Date(c.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '';
   const tc = { ...c }, view2 = brViewer(c), shown = brShown === c.id; if (view2){ setQImgs(tc, []); delete tc.occl; }
   box.innerHTML = `<div class="brph"><span class="brcrumb">${esc(pathOf(c.nodeId).map(n => n.name).join(' › '))}</span><span class="grow"></span>
-      <button class="btn" data-act="card-flag" data-id="${c.id}" aria-pressed="${!!c.flag}">${c.flag ? 'Unflag' : 'Flag'}</button><button class="btn" data-act="cm-move" data-id="${c.id}">Move</button><button class="btn" data-act="edit" data-id="${c.id}">Edit</button><button class="btn primary" data-act="cm-practise" data-id="${c.id}">Practise</button>
+      <button class="btn" data-act="card-flag" data-id="${c.id}" aria-pressed="${!!c.flag}">${c.flag ? 'Unflag' : 'Flag'}</button><button class="btn" data-act="cm-move" data-id="${c.id}">Move</button><button class="btn" data-act="edit" data-id="${c.id}" title="Edit (E)">Edit</button><button class="btn primary" data-act="cm-practise" data-id="${c.id}">Practise</button>
       <button class="icon soft" data-act="brmore" data-id="${c.id}" aria-label="More for this card">${I.gear}</button></div>
     ${c.paper ? ppSrcLine(c) : ''}
     <article class="qa brqa">
@@ -8906,13 +8950,12 @@ function cdClock(){
 function cdShort(cd){ const n = (cd.name || 'Exams').trim(); return n.length > 22 ? n.slice(0, 21) + '…' : n; }
 function cdPill(){
   if (!cdOn()) return ''; const cd = cdGet(), before = cdTarget(cd) > Date.now();
-  return `<button class="cdpill" data-act="cd-edit" title="${esc(cd.name || 'Countdown')} · ${esc(cdTarget(cd).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }))} · click to edit"><span class="cddot" aria-hidden="true"></span><span class="cdpn">${esc(cdShort(cd))}</span><b id="cdclock">${cdClock()}</b></button>`;
+  return `<button class="cdpill" data-act="cd-edit" title="${esc(cd.name || 'Countdown')} · ${esc(cdTarget(cd).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }))} · click to edit"><span class="cddot" aria-hidden="true"></span><span class="cdpn">${esc(cdShort(cd))}</span><b id="cdclock" data-s="${esc(cdClock())}">${cdClockHtml(cdClock())}</b></button>`;
 }
 function cdMobile(){
   $('#cdmob')?.remove(); if (!cdOn() || !$('#root')) return;
   const d = document.createElement('div'); d.id = 'cdmob'; d.innerHTML = cdPill(); $('#root').prepend(d);
 }
-setInterval(() => { if (document.hidden) return; const c = $('#cdclock'); if (c) c.textContent = cdClock(); }, 1000);
 function cdCard(subj){
   const cd = cdGet(), t = cdTarget(cd), days = cdDaysTo(t), ex = (cd.exams || []).filter(x => x.date).slice().sort((a, b) => cdExamAt(a) - cdExamAt(b));
   const fmt = d => cdDay(d).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
@@ -9318,6 +9361,7 @@ document.addEventListener('click', async e => {
     case 'sa-none': saPut(saRoot ? [...subtree(saRoot)] : Object.keys(S.nodes)); return saDraw();
     case 'study-pick': closeMenu(); return studyAllDialog('study', id);
     case 'back-card': return goBack();
+    case 'study-exit': { if (study?.tag && document.querySelector('[data-act="pp-back"]')) return document.querySelector('[data-act="pp-back"]').click(); const n = study?.node; study = null; return n ? go('overview', n) : go('decks'); }
     case 'shuffle-toggle': undoRecordUi(); shuffleOn = !shuffleOn; ls.set('md-shuffle', shuffleOn); render(); return toast(shuffleOn ? 'Shuffle on: cards come in a random order' : 'Shuffle off: cards come in order');
     case 'reshuffle': { if (!study) return; study.queue = shuffled(study.queue); renderStudy(); typeset($('#root')); return toast('Shuffled the ' + study.queue.length + ' cards left'); }
     case 'practise': return id ? startStudy(id, true) : studyAllDialog('practise');
@@ -9454,6 +9498,7 @@ document.addEventListener('keydown', e => {
   if (view.name === 'browse' && (e.key === 'ArrowDown' || e.key === 'ArrowUp') && browse.ids?.length){ e.preventDefault(); const i = Math.max(0, browse.ids.indexOf(browse.sel)), j = Math.max(0, Math.min(browse.ids.length - 1, i + (e.key === 'ArrowDown' ? 1 : -1))); return browseSelect(browse.ids[j], false, true); }
   if (view.name === 'browse' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && browse.sel && !isTyping(document.activeElement)){ const L = brImgs(S.cards[browse.sel] || {}); if (L.length > 1){ e.preventDefault(); brImg = Math.max(0, Math.min(L.length - 1, brImg + (e.key === 'ArrowRight' ? 1 : -1))); return browsePreview(); } }
   if (view.name === 'browse' && e.key === ' ' && !ed && browse.sel && !$('.lightbox')){ e.preventDefault(); return brToggle(); }
+  if (view.name === 'browse' && (e.key === 'e' || e.key === 'E') && !e.metaKey && !e.ctrlKey && !e.altKey && browse.sel && S.cards[browse.sel] && !ed && !dialogOpen() && !$('.lightbox') && !isTyping(document.activeElement)){ e.preventDefault(); return editor(browse.sel); }
   if (view.name === 'browse' && e.key === 'Enter' && browse.sel){ e.preventDefault(); return browseSelect(browse.sel, true); }
   if (view.name === 'ppmark' && ppKey(e)) return;
   if (view.name !== 'study'){
@@ -9820,12 +9865,12 @@ function renderPapers(){
 }
 let ppTabFrom = null;
 document.addEventListener('input', e => {
-  if (e.target.id === 'ppq'){ ppQ = e.target.value; const pos = e.target.selectionStart; renderPapers(); const q = $('#ppq'); if (q){ q.focus(); try { q.setSelectionRange(pos, pos); } catch {} } }
+  if (e.target.id === 'ppq'){ ppQ = e.target.value; clearTimeout(ppQT); ppQT = setTimeout(h7ppRefresh, 140); }
 });
 document.addEventListener('change', e => {
-  if (e.target.id === 'ppschool'){ pp.school = e.target.value; ppSave(); renderPapers(); }
-  if (e.target.id === 'ppyear'){ pp.y = e.target.value; ppSave(); renderPapers(); }
-  if (e.target.id === 'ppsecf'){ pp.sec = e.target.value; ppSave(); renderPapers(); }
+  if (e.target.id === 'ppschool'){ pp.school = e.target.value; ppSave(); h7ppRefresh(); }
+  if (e.target.id === 'ppyear'){ pp.y = e.target.value; ppSave(); h7ppRefresh(); }
+  if (e.target.id === 'ppsecf'){ pp.sec = e.target.value; ppSave(); h7ppRefresh(); }
 });
 
 /* choose which subjects get a tab (your own Recall subjects are ticked by default) */
@@ -11174,7 +11219,9 @@ async function ppAction(act, a, e){
   const v = a.dataset.v;
   if (act.startsWith('pp-m-')) return ppMenuAct(act, a);
   switch (act){
-    case 'pp-sel': pp.sel = a.dataset.k; return renderPapers();
+    case 'pp-sel': pp.sel = a.dataset.k; return renderPapers('sel');
+    case 'pp-grp': { ppOpen.has(v) ? ppOpen.delete(v) : ppOpen.add(v); ls.set('md-pp-open', [...ppOpen].slice(-60)); return h7ppRefresh(); }
+    case 'pp-by': ppBy = v; ls.set('md-pp-by', v); return h7ppRefresh();
     case 'pp-h7menu': { const r = a.getBoundingClientRect(); return ppMenu(a.dataset.k, { x: r.left, y: r.bottom + 4 }); }
     case 'pp-ipick': return ppPickFiles(fs => ppImportDialog(fs));
     case 'pp-irm': ppImp = ppImp.filter(r => r.id !== a.dataset.id); return ppImpDraw();
@@ -11187,8 +11234,8 @@ async function ppAction(act, a, e){
     case 'pp-igo': return ppImpGo(!!a.dataset.open);
     case 'pp-subj': { if (pp.s === v) return; const on = $('.pphome .stab[aria-selected="true"]'); ppTabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; pp.s = v; ppSave(); return renderPapers(); }
     case 'pp-course': pp.c = { ...(pp.c || {}), [ppSubjCur().k]: v }; ppSave(); return renderPapers();
-    case 'pp-tog': pp[v] = !pp[v]; ppSave(); return renderPapers();
-    case 'pp-clear': pp.school = ''; pp.y = ''; pp.sec = ''; pp.sol = false; pp.todo = false; ppSave(); return renderPapers();
+    case 'pp-tog': pp[v] = !pp[v]; ppSave(); a.setAttribute('aria-pressed', String(!!pp[v])); return h7ppRefresh();
+    case 'pp-clear': pp.school = ''; pp.y = ''; pp.sec = ''; pp.sol = false; pp.todo = false; ppSave(); document.querySelectorAll('.pptog[data-act="pp-tog"]').forEach(b => b.setAttribute('aria-pressed', 'false')); return h7ppRefresh();
     case 'pp-col': ppCol.has(v) ? ppCol.delete(v) : ppCol.add(v); ls.set('md-pp-col', [...ppCol]); return renderPapers();
     case 'pp-more': ppMore.add(v); return renderPapers();
     case 'pp-reload': ppLoad(true); return renderPapers();
@@ -11406,7 +11453,7 @@ function renderDecks(){
       </section>
     </div>
     <div class="h7sech"><h2>Topics</h2><span><button class="link" data-act="add-child" data-id="${subj.id}">New topic</button><button class="link" data-act="pdf-import">Cards from a PDF</button><button class="link" data-act="gear" data-id="${subj.id}">${esc(subj.name)} options</button></span></div>
-    <div class="h7topics">${[...withCards, ...noCards].map(t => h7Topic(t, maxN)).join('') || `<p class="h7none">No topics yet. <button class="link" data-act="add-child" data-id="${subj.id}">Make the first one</button></p>`}</div>
+    <div class="h7topics">${topics.map(t => h7Topic(t, maxN)).join('') || `<p class="h7none">No topics yet. <button class="link" data-act="add-child" data-id="${subj.id}">Make the first one</button></p>`}</div>
     ${wrongToday.length || forgot.length || recent.length ? `<div class="h7lower">
       ${wrongToday.length ? `<section><div class="h7lh"><h2>Got wrong today</h2><span>flagged, back in 10 minutes</span></div>${wrongToday.slice(0, 5).map(x => h7CardRow(x, esc(atTime(x)))).join('')}</section>` : ''}
       ${forgot.length ? `<section><div class="h7lh"><h2>Keeps slipping</h2><button class="link" data-act="practise-forgot" data-id="${subj.id}">Practise these</button></div>${forgot.map(x => h7CardRow(x, `Again ${failCount(x)} times${lastMissed(x) ? ', last ' + esc(dayWord(lastMissed(x))) : ''}`)).join('')}</section>` : ''}
@@ -11506,40 +11553,49 @@ function ppPreview(it){
     </div>
   </div>`;
 }
-function renderPapers(){
+function renderPapers(partial){
   if (!ppIdxP) ppLoad();
   const keepTop = $('#h7pplist')?.scrollTop || 0;
   const s = ppSubjCur(), c = ppCourseCur(), all = ppItems(c), items = ppFilter(all), q = ppQ.trim();
   ppNesaWarm(c);
-  const list = q ? ppSearch(q) : items, byY = (a, b) => b.year - a.year || a.school.localeCompare(b.school);
+  const list = q ? ppFilter(ppSearch(q).filter(i => i.c === c)) : items, byY = (a, b) => b.year - a.year || a.school.localeCompare(b.school);
   const carry = list.filter(i => i.paper && i.paper.st !== 'done').sort(byY);
-  const groups = q ? [['Matches', 'q', list]] : [['Carry on', 'carry', carry], ...PP_SECS.map(([k, name]) => [name, k, list.filter(i => i.sec === k).sort(byY)])].filter(g => g[2].length);
+  const groups = q ? [['Matches', 'q', list.slice().sort(byY)]] : [['Carry on', 'carry', carry], ...PP_SECS.map(([k, name]) => [name, k, list.filter(i => i.sec === k).sort(byY)])].filter(g => g[2].length);
   if (!pp.sel || !list.some(i => i.key === pp.sel)) pp.sel = (carry[0] || groups[0]?.[2][0])?.key || '';
   const sel = pp.sel ? ppItemOf(pp.sel) : null;
   const schools = [...new Set(all.filter(i => i.sec !== 'hsc').map(i => i.school))].sort((a, b) => a.localeCompare(b)), years = [...new Set(all.map(i => i.year))].sort((a, b) => b - a);
   if (pp.school && !schools.includes(pp.school)) pp.school = ''; if (pp.sec && !all.some(i => i.sec === pp.sec)) pp.sec = '';
   const selF = (id, label, cur, opts) => `<select id="${id}" class="h7ppf" aria-label="${label}">${opts.map(([v, l]) => `<option value="${esc(v)}" ${String(cur) === String(v) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
   const status = !ppLoaded(c) && ppIdxP ? '<p class="h7none">Getting the list of papers from THSC…</p>' : !ppLoaded(c) ? `<p class="h7none">${ppIdxErr === 'offline' ? 'You’re offline, so the THSC list can’t load yet.' : 'Couldn’t reach THSC for the list of papers.'} You can still upload papers. <button class="link" data-act="pp-reload">Try again</button></p>` : '';
-  const row = i => { const p = i.paper, sc = p?.st === 'done' ? ppScore(p) : null, mk = p && p.st !== 'done' && p.qs?.length ? ppScore(p) : null;
+  const row = (i, only) => { const p = i.paper, sc = p?.st === 'done' ? ppScore(p) : null, mk = p && p.st !== 'done' && p.qs?.length ? ppScore(p) : null;
     const st = sc ? (sc.of ? sc.pct + '%' : 'Done') : mk ? `Q${mk.marked} of ${p.qs.length}` : p ? 'In your papers' : '';
-    return `<button class="h7ppr ${i.key === pp.sel ? 'on' : ''}" data-act="pp-sel" data-k="${esc(i.key)}" aria-current="${i.key === pp.sel}"><span class="h7ppt"><b>${esc(i.school === 'NSW HSC' ? `${i.year} HSC` : `${i.school} ${i.year}`)}</b><small>${esc(ppSecName(i.sec, true))}, ${i.sol ? 'with solutions' : 'paper only'}</small></span>${st ? `<span class="h7ppst ${sc || mk ? 'acc' : ''}">${esc(st)}</span>` : ''}</button>`; };
+    return `<button class="h7ppr ${i.key === pp.sel ? 'on' : ''}" data-act="pp-sel" data-k="${esc(i.key)}" aria-current="${i.key === pp.sel}"><span class="h7ppt"><b>${esc(only === 'year' ? String(i.year) : only === 'school' ? i.school : i.school === 'NSW HSC' ? `${i.year} HSC` : `${i.school} ${i.year}`)}</b><small>${esc(ppSecName(i.sec, true))}, ${i.sol ? 'with solutions' : 'paper only'}</small></span>${st ? `<span class="h7ppst ${sc || mk ? 'acc' : ''}">${esc(st)}</span>` : ''}</button>`; };
   const subTabs = ppShown().map(x => `<button type="button" data-act="pp-subj" data-v="${x.k}" aria-pressed="${x.k === s.k}">${esc(x.name)}</button>`).join('') + `<button type="button" class="h7ppadd" data-act="pp-subjects" aria-label="Choose subjects" title="Choose subjects">+</button>`;
   const courseTabs = s.courses.length > 1 ? `<div class="h7pptabs" role="group" aria-label="Course">${s.courses.map(k => `<button type="button" data-act="pp-course" data-v="${k}" aria-pressed="${k === c}">${esc(PP_COURSE[k].short)}</button>`).join('')}</div>` : '';
-  $('#root').innerHTML = `<div class="h7pp">
+  const html = `<div class="h7pp">
     <section class="h7ppl1" aria-label="Papers">
       <div class="h7pph">
         <div class="h7ppsubj" role="group" aria-label="Subject">${subTabs}</div>
         ${courseTabs}
         <input id="ppq" class="in" type="search" placeholder="Search, e.g. ruse 2023 trial" value="${esc(ppQ)}" autocomplete="off" spellcheck="false" aria-label="Search past papers">
         <div class="h7ppfs">${selF('ppsecf', 'Section', pp.sec || '', [['', 'Any section'], ...PP_SECS.filter(([k]) => all.some(i => i.sec === k)).map(([k, l]) => [k, l.replace(/ assessments$/, '')])])}${selF('ppyear', 'Year', pp.y, [['', 'Any year'], ...years.map(y => [y, String(y)])])}${selF('ppschool', 'School', pp.school, [['', 'Any school'], ...schools.map(x => [x, x])])}</div>
-        <div class="h7ppfs"><button class="pptog" data-act="pp-tog" data-v="sol" aria-pressed="${!!pp.sol}">Has solutions</button><button class="pptog" data-act="pp-tog" data-v="todo" aria-pressed="${!!pp.todo}">Not done yet</button>${pp.school || pp.y || pp.sec || pp.sol || pp.todo ? '<button class="link" data-act="pp-clear">Clear</button>' : ''}<span class="grow"></span><button class="link" data-act="pp-ipick">Import</button></div>
+        <div class="h7ppfs"><button class="pptog" data-act="pp-tog" data-v="sol" aria-pressed="${!!pp.sol}">Has solutions</button><button class="pptog" data-act="pp-tog" data-v="todo" aria-pressed="${!!pp.todo}">Not done yet</button><button class="link" id="ppclear" data-act="pp-clear" ${pp.school || pp.y || pp.sec || pp.sol || pp.todo ? '' : 'hidden'}>Clear</button><span class="grow"></span><button class="link" data-act="pp-ipick">Import</button></div>
       </div>
-      <div class="h7pplist" id="h7pplist">${status}${groups.map(([name, k, xs]) => { const cap = ppMore.has(k) || q ? xs.length : 60; return `<div class="h7ppg"><div class="h7ppgh"><span>${esc(name)}</span><span>${xs.length}</span></div>${xs.slice(0, cap).map(row).join('')}${xs.length > cap ? `<button class="link h7ppmore" data-act="pp-more" data-v="${k}">Show all ${xs.length}</button>` : ''}</div>`; }).join('') || (ppLoaded(c) ? `<p class="h7none">No papers match. <button class="link" data-act="pp-clear">Clear the filters</button></p>` : '')}
+      <div class="h7pplist" id="h7pplist">${status}${q ? '' : `<div class="h7ppby" role="group" aria-label="Group papers"><span>Group by</span><button type="button" data-act="pp-by" data-v="school" aria-pressed="${ppBy === 'school'}">School</button><button type="button" data-act="pp-by" data-v="year" aria-pressed="${ppBy === 'year'}">Year</button><button type="button" data-act="pp-by" data-v="none" aria-pressed="${ppBy === 'none'}">Nothing</button></div>`}${groups.map(([name, k, xs]) => h7ppGroup(name, k, xs, q, row)).join('') || (ppLoaded(c) ? `<p class="h7none">No papers match. <button class="link" data-act="pp-clear">Clear the filters</button></p>` : '')}
         <p class="ppcredit">Trial papers and assessment tasks are listed from <a href="https://thsconline.github.io/s/" target="_blank" rel="noopener">THSC Online</a>; HSC papers link to NESA. Recall keeps the list on this device and never re-hosts the papers.</p></div>
     </section>
     <main class="h7ppr1">${ppPreview(sel)}</main>
   </div>`;
-  const l = $('#h7pplist'); if (l) l.scrollTop = keepTop;
+  if (partial && view.name === 'papers' && $('#h7pplist')){
+    const t = document.createElement('template'); t.innerHTML = html;
+    $('#h7pplist').replaceChildren(...t.content.querySelector('#h7pplist').childNodes);
+    const pv = t.content.querySelector('.h7ppr1'); if (partial !== 'list' || $('.h7ppr1')?.dataset.k !== pp.sel) $('.h7ppr1').replaceChildren(...pv.childNodes);
+    $('.h7ppr1').dataset.k = pp.sel || '';
+    const cl = $('#ppclear'); if (cl) cl.hidden = !!t.content.querySelector('#ppclear')?.hidden;
+    for (const id of ['ppsecf', 'ppyear', 'ppschool']){ const a = $('#' + id), b = t.content.querySelector('#' + id); if (a && b && a.value !== b.value) a.value = b.value; }
+    if (partial === 'sel'){ $('.h7ppr.on')?.scrollIntoView({ block: 'nearest' }); return; }
+  } else $('#root').innerHTML = html;
+  const l = $('#h7pplist'); if (l && !partial) l.scrollTop = keepTop;
 }
 document.addEventListener('dblclick', e => { const r = e.target.closest?.('.h7ppr[data-k]'); if (r) ppAction('pp-open', r, e); });
 /* ---------- Settings: a theme is picked from a small picture of the page ---------- */
@@ -11629,6 +11685,85 @@ function renderStats(){
     </div>
     ${todo ? `<div class="h7sttodo">${todo}</div>` : ''}
   </div>`;
+}
+
+/* ---------- topics: hold the mouse on a topic row and drag it up or down to reorder ---------- */
+let rowDrag = null, rowDragEat = false;
+document.addEventListener('pointerdown', e => {
+  if (e.button !== 0 || e.pointerType === 'touch') return;
+  const t = e.target.closest?.('.h7tr[data-id], .h7ovr[data-id]'); if (!t || !t.closest('#root')) return;
+  const el = t.closest('.h7t') || t, list = el.parentElement, id = t.dataset.id, n = S.nodes[id]; if (!n) return;
+  rowDrag = { el, list, id, host: n.parentId || null, y0: e.clientY, grab: e.clientY - el.getBoundingClientRect().top, on: false, sel: el.classList.contains('h7t') ? '.h7t' : '.h7ovr' };
+});
+document.addEventListener('pointermove', e => {
+  const d = rowDrag; if (!d) return;
+  if (!d.on){ if (Math.abs(e.clientY - d.y0) < 6) return; d.on = true; d.el.classList.add('h7drag'); d.list.classList.add('h7dragging'); document.body.classList.add('h7grabbing'); }
+  e.preventDefault();
+  const want = e.clientY - d.grab, mid = want + d.el.offsetHeight / 2;
+  const others = [...d.list.children].filter(x => x !== d.el && x.matches(d.sel));
+  const before = others.find(x => { const r = x.getBoundingClientRect(); return mid < r.top + r.height / 2; }) || null;
+  const cur = d.el.nextElementSibling && d.el.nextElementSibling.matches(d.sel) ? d.el.nextElementSibling : null;
+  if (before !== cur){
+    const first = new Map(others.map(x => [x, x.getBoundingClientRect().top]));
+    if (before) d.list.insertBefore(d.el, before); else { const last = others[others.length - 1]; last ? last.after(d.el) : null; }
+    others.forEach(x => { const dy = first.get(x) - x.getBoundingClientRect().top; if (!dy) return; x.style.transition = 'none'; x.style.transform = `translateY(${dy}px)`; void x.offsetWidth; x.style.transition = 'transform .18s var(--ease)'; x.style.transform = ''; });
+  }
+  d.el.style.transform = 'none'; const nat = d.el.getBoundingClientRect().top;
+  const r0 = d.list.getBoundingClientRect(), lim = Math.max(r0.top, Math.min(r0.bottom - d.el.offsetHeight, want));
+  d.el.style.transform = `translateY(${lim - nat}px)`;
+});
+addEventListener('pointerup', async () => {
+  const d = rowDrag; rowDrag = null; if (!d?.on) return;
+  rowDragEat = true; setTimeout(() => rowDragEat = false, 0);
+  d.el.classList.remove('h7drag'); d.list.classList.remove('h7dragging'); document.body.classList.remove('h7grabbing'); d.el.style.transform = '';
+  const ids = [...d.list.children].filter(x => x.matches(d.sel)).map(x => (x.querySelector('[data-id]') || x).dataset.id);
+  const at = ids.indexOf(d.id), next = ids[at + 1] || null;
+  const was = kids(d.host).map(n => n.id).filter(x => ids.includes(x));
+  if (ids.join() === was.join()) return;
+  undoTx = null; undoLabel = 'reorder topics';
+  await moveNode(d.id, d.host, next); render(); toast('Topics reordered · ⌘Z to undo', 1600);
+});
+document.addEventListener('click', e => { if (rowDragEat && e.target.closest?.('.h7tr, .h7ovr')){ e.stopPropagation(); e.preventDefault(); rowDragEat = false; } }, true);
+
+/* ---------- exam countdown: each digit flips over to the next, like a split-flap clock ---------- */
+const cdReduce = matchMedia('(prefers-reduced-motion: reduce)');
+const cdDig = ch => /\d/.test(ch) ? `<span class="fd" data-v="${ch}"><span class="fdu"><i>${ch}</i></span><span class="fdl"><i>${ch}</i></span></span>` : `<span class="fsep${ch === ' ' ? ' sp' : /[a-z]/i.test(ch) ? ' u' : ''}">${ch === ' ' ? '' : esc(ch)}</span>`;
+const cdClockHtml = s => /\d/.test(s) && /:/.test(s) ? s.split('').map(cdDig).join('') : esc(s);
+function cdTick(){
+  const c = $('#cdclock'); if (!c) return;
+  const s = cdClock();
+  if (c.dataset.s === s) return;
+  const old = c.dataset.s || '', fds = c.querySelectorAll('.fd, .fsep');
+  if (!old || old.length !== s.length || fds.length !== s.length || !/:/.test(s)){ c.innerHTML = cdClockHtml(s); c.dataset.s = s; return; }
+  c.dataset.s = s;
+  [...s].forEach((ch, i) => {
+    const el = fds[i]; if (!el.classList.contains('fd') || el.dataset.v === ch) return;
+    const was = el.dataset.v; el.dataset.v = ch;
+    if (cdReduce.matches){ el.innerHTML = `<span class="fdu"><i>${ch}</i></span><span class="fdl"><i>${ch}</i></span>`; return; }
+    el.innerHTML = `<span class="fdu"><i>${ch}</i></span><span class="fdl"><i>${was}</i></span><span class="fdu ffu"><i>${was}</i></span><span class="fdl ffl"><i>${ch}</i></span>`;
+    clearTimeout(el._t); el._t = setTimeout(() => { if (el.dataset.v === ch) el.innerHTML = `<span class="fdu"><i>${ch}</i></span><span class="fdl"><i>${ch}</i></span>`; }, 650);
+  });
+}
+setInterval(() => { if (!document.hidden) cdTick(); }, 250);
+
+/* ---------- Papers: typing in the search box or changing a filter redraws the list only ---------- */
+let ppQT = 0;
+function h7ppRefresh(){ const l = $('#h7pplist'), top = l?.scrollTop || 0; renderPapers('list'); const l2 = $('#h7pplist'); if (l2) l2.scrollTop = top; }
+let ppOpen = new Set(ls.get('md-pp-open', [])), ppBy = ls.get('md-pp-by', 'school');
+function h7ppGroup(name, k, xs, q, row){
+  const head = `<div class="h7ppgh"><span>${esc(name)}</span><span>${xs.length}</span></div>`;
+  if (q || ppBy === 'none' || k === 'carry' || k === 'hsc' || xs.length <= 8){
+    const cap = ppMore.has(k) || q ? xs.length : 60;
+    return `<div class="h7ppg">${head}${xs.slice(0, cap).map(i => row(i)).join('')}${xs.length > cap ? `<button class="link h7ppmore" data-act="pp-more" data-v="${k}">Show all ${xs.length}</button>` : ''}</div>`;
+  }
+  const key = i => ppBy === 'year' ? String(i.year) : i.school, folders = [...new Set(xs.map(key))];
+  if (ppBy === 'school') folders.sort((a, b) => a.localeCompare(b));
+  return `<div class="h7ppg">${head}${folders.map(f => {
+    const fx = xs.filter(i => key(i) === f), id = k + '|' + f, open = ppOpen.has(id), ys = fx.map(i => i.year), lo = Math.min(...ys), hi = Math.max(...ys);
+    const done = fx.filter(i => i.paper?.st === 'done').length;
+    const sub = (ppBy === 'year' ? `${fx.length} school${fx.length === 1 ? '' : 's'}` : `${fx.length} paper${fx.length === 1 ? '' : 's'}, ${lo === hi ? lo : lo + '–' + hi}`) + (done ? `, ${done} done` : '');
+    return `<div class="h7ppfo ${open ? 'open' : ''}"><button class="h7ppfh" data-act="pp-grp" data-v="${esc(id)}" aria-expanded="${open}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><b>${esc(f)}</b><small>${sub}</small></button>${open ? `<div class="h7ppfi">${fx.map(i => row(i, ppBy === 'school' ? 'year' : 'school')).join('')}</div>` : ''}</div>`;
+  }).join('')}</div>`;
 }
 
 initStore().finally(() => { lhMigrate(); designMigrate(); h7Migrate(); if (S.ready) settingsRepair(); cloudBoot(); });
