@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261113234259 min-shell:1.27.0 -->
+<!-- recall-build:20261116141952 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -612,21 +612,33 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.45}
 .lightbox{position:fixed;inset:0;z-index:60;background:rgba(8,9,12,.94);display:grid;place-items:center;padding:56px max(64px,env(safe-area-inset-right,0px)) 40px max(64px,env(safe-area-inset-left,0px));cursor:zoom-out;animation:fade .14s ease-out}
 .lightbox figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;max-height:100%;min-height:0}
 .lightbox img{max-width:min(100%,1400px);max-height:calc(100vh - 140px);border-radius:10px;background:#fff;cursor:default;object-fit:contain}
-.lightbox figcaption{font-size:13px;color:var(--fg-2);font-weight:600}
-.lightbox figcaption span{color:var(--fg-3);font-weight:500;margin-left:8px;font-variant-numeric:tabular-nums}
-.lbnav{position:fixed;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid var(--border-2);background:rgba(35,39,49,.9);color:var(--fg);font-size:24px;line-height:1;display:grid;place-items:center;padding:0 0 3px;cursor:pointer}
-.lbnav:hover{background:var(--hover)}
+.lightbox{touch-action:none;overflow:hidden}
+.lightbox figure img{cursor:zoom-in;transform-origin:50% 50%;will-change:transform;user-select:none;-webkit-user-select:none}
+.lightbox.zoomed figure img{cursor:grab}
+.lightbox .lbnav,.lightbox .lbclose{z-index:2}
+.lightbox.zoomed figure img:active{cursor:grabbing}
+.lightbox.zoomed figcaption{visibility:hidden}
+.lbzbar{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2;display:flex;align-items:center;gap:2px;padding:3px;border:1px solid rgba(255,255,255,.18);border-radius:10px;background:rgba(35,39,49,.92);cursor:default}
+.lbzbar button{min-width:36px;height:32px;padding:0 8px;border:0;border-radius:6px;background:none;color:#f2f2f2;font:500 15px var(--ui);cursor:pointer}
+.lbzbar .lbzv{min-width:58px;font-size:13px;font-variant-numeric:tabular-nums}
+.lbzbar button:hover:not(:disabled){background:rgba(255,255,255,.1)}
+.lbzbar button:disabled{opacity:.35;cursor:default}
+@media (pointer:coarse){ .lbzbar button{min-width:44px;height:40px} }
+.lightbox figcaption{font-size:13px;color:#d4d4d4;font-weight:600}
+.lightbox figcaption span{color:#a3a3a3;font-weight:500;margin-left:8px;font-variant-numeric:tabular-nums}
+.lbnav{position:fixed;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(35,39,49,.9);color:#f2f2f2;font-size:24px;line-height:1;display:grid;place-items:center;padding:0 0 3px;cursor:pointer}
+.lbnav:hover{background:rgba(60,65,78,.95)}
 .lbnav:disabled{opacity:.25;cursor:default}
 .lbnav.prev{left:max(12px,env(safe-area-inset-left,0px))}
 .lbnav.next{right:max(12px,env(safe-area-inset-right,0px))}
-.lbclose{position:fixed;top:calc(12px + var(--sat));right:max(12px,env(safe-area-inset-right,0px));width:38px;height:38px;border-radius:50%;border:1px solid var(--border-2);background:rgba(35,39,49,.9);color:var(--fg);display:grid;place-items:center;cursor:pointer}
+.lbclose{position:fixed;top:calc(12px + var(--sat));right:max(12px,env(safe-area-inset-right,0px));width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(35,39,49,.9);color:#f2f2f2;display:grid;place-items:center;cursor:pointer}
 .lbclose svg{width:14px;height:14px}
 .bthumb{border:0;padding:0;background:none;border-radius:6px;flex:none;cursor:zoom-in;line-height:0}
 .bthumb:hover img{outline:2px solid var(--accent);outline-offset:1px}
 .solink{border:0;background:none;padding:2px 0 0;color:var(--solution);font-size:12px;font-weight:600;cursor:zoom-in;text-align:left}
 .solink:hover{text-decoration:underline;text-underline-offset:3px}
 .thumb img{cursor:zoom-in}
-@media (max-width:760px){ .lightbox{padding:56px 12px 70px} .lbnav{top:auto;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:none} }
+@media (max-width:760px){ .lightbox{padding:56px 12px 70px} .lbnav{top:auto;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:none} .lbzbar{bottom:calc(16px + env(safe-area-inset-bottom,0px))} }
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--surface-2);border:1px solid var(--border-2);border-radius:10px;padding:8px 14px;font-size:13px;box-shadow:0 10px 28px rgba(0,0,0,.45);max-width:calc(100% - 32px)}
 .banner{border:1px solid color-mix(in srgb, var(--hard) 35%, var(--surface));background:color-mix(in srgb, var(--hard) 10%, var(--surface));color:color-mix(in srgb, var(--hard) 35%, var(--fg));border-radius:10px;padding:9px 12px;font-size:13px;margin-bottom:16px}
 .loading{padding:80px 0;text-align:center;color:var(--fg-3)}
@@ -2711,7 +2723,8 @@ body.ppcolres,body.ppcolres *{cursor:col-resize!important;user-select:none}
 .ppzview[hidden]{display:none}
 .ppnum{width:2.6em;height:24px;padding:0;border:0;border-radius:4px;background:transparent;color:var(--fg);font:600 14px var(--ui);font-variant-numeric:tabular-nums;text-align:center}
 .ppnum:focus{outline:2px solid var(--accent);outline-offset:0;background:var(--surface)}
-.pprfl{display:flex;gap:16px;align-items:center}
+.pprfl{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center}
+.pprfl .link{white-space:nowrap}
 .ppkeys{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0;font-size:13px}
 .ppkeys dt{margin:0;text-align:right}.ppkeys dd{margin:0;color:var(--fg-2)}
 .ppkeyspop{width:300px}
@@ -8589,21 +8602,77 @@ function openGallery(items, i){
 function drawGallery(){
   const lb = $('.lightbox'); if (!lb || !gallery) return;
   const { items, i } = gallery, it = items[i], many = items.length > 1;
-  lb.innerHTML = `<figure><img src="${esc(it.src)}" alt="${esc(it.label)}"><figcaption>${esc(it.label)}${many ? ` <span>${i+1} / ${items.length}</span>` : ''}</figcaption></figure>
+  lbz = { s: 1, x: 0, y: 0 };
+  lb.innerHTML = `<figure><img src="${esc(it.src)}" alt="${esc(it.label)}" draggable="false"><figcaption>${esc(it.label)}${many ? ` <span>${i+1} / ${items.length}</span>` : ''}</figcaption></figure>
+    <div class="lbzbar" role="toolbar" aria-label="Zoom"><button data-lbz="out" aria-label="Zoom out" title="Zoom out (−)" disabled>−</button><button data-lbz="fit" class="lbzv" title="Fit to the screen (0)">100%</button><button data-lbz="in" aria-label="Zoom in" title="Zoom in (+). You can also pinch, hold ⌘ and scroll, or double-click">+</button></div>
     ${many ? `<button class="lbnav prev" data-step="-1" aria-label="Previous image" ${i === 0 ? 'disabled' : ''}>‹</button><button class="lbnav next" data-step="1" aria-label="Next image" ${i === items.length - 1 ? 'disabled' : ''}>›</button>` : ''}
     <button class="lbclose" aria-label="Close">${I.x}</button>`;
 }
+/* zoom in the image viewer: transform on the <img> (translate then scale about its centre). Pinch, ⌘/Ctrl + scroll, double-click or
+   double-tap, the − / + buttons or the − + 0 keys. Drag (mouse, Pencil or one finger) moves around once zoomed in; scroll moves too. */
+let lbz = { s: 1, x: 0, y: 0 }; const LBZ_MAX = 8;
+function lbzApply(anim){
+  const img = $('.lightbox figure img'); if (!img) return;
+  const lb = $('.lightbox'), w = img.offsetWidth * lbz.s, h = img.offsetHeight * lbz.s, W = lb.clientWidth, H = lb.clientHeight, mx = Math.abs(w - W) / 2 + (w > W ? 40 : 0), my = Math.abs(h - H) / 2 + (h > H ? 40 : 0);   // a big picture's edge can come 40px in; a small one can go anywhere on screen
+  if (lbz.s <= 1){ lbz.s = 1; lbz.x = 0; lbz.y = 0; } else { lbz.x = Math.max(-mx, Math.min(mx, lbz.x)); lbz.y = Math.max(-my, Math.min(my, lbz.y)); }
+  img.style.transition = anim ? 'transform .18s var(--ease)' : 'none'; img.style.transform = lbz.s === 1 ? '' : `translate(${lbz.x}px, ${lbz.y}px) scale(${lbz.s})`;
+  lb.classList.toggle('zoomed', lbz.s > 1);
+  const v = lb.querySelector('.lbzv'); if (v) v.textContent = Math.round(lbz.s * 100) + '%';
+  const o = lb.querySelector('[data-lbz="out"]'), i = lb.querySelector('[data-lbz="in"]'); if (o) o.disabled = lbz.s <= 1; if (i) i.disabled = lbz.s >= LBZ_MAX;
+}
+function lbzTo(s, px, py, anim){
+  const img = $('.lightbox figure img'); if (!img) return; s = Math.max(1, Math.min(LBZ_MAX, s));
+  const r = img.getBoundingClientRect(), cx = r.left + r.width / 2 - lbz.x, cy = r.top + r.height / 2 - lbz.y;
+  if (px == null){ px = innerWidth / 2; py = innerHeight / 2; }
+  const u = (px - cx - lbz.x) / lbz.s, v = (py - cy - lbz.y) / lbz.s;
+  lbz.x = px - cx - u * s; lbz.y = py - cy - v * s; lbz.s = s; lbzApply(anim);
+}
+const LBZ_STEPS = [1, 1.5, 2, 3, 4, 6, 8];
+function lbzStep(d){ lbzTo(d > 0 ? LBZ_STEPS.find(z => z > lbz.s + .01) || LBZ_MAX : [...LBZ_STEPS].reverse().find(z => z < lbz.s - .01) || 1, null, null, true); }
+(() => {
+  const pts = new Map(); let g = null, moved = false, lastTap = 0;
+  const lbOf = e => e.target.closest?.('.lightbox');
+  document.addEventListener('wheel', e => { if (!lbOf(e)) return; e.preventDefault();
+    if (e.ctrlKey || e.metaKey) return lbzTo(lbz.s * Math.exp(-e.deltaY * (e.ctrlKey && !e.metaKey ? 0.01 : 0.004)), e.clientX, e.clientY);
+    if (lbz.s > 1){ lbz.x -= e.deltaX; lbz.y -= e.deltaY; lbzApply(); } }, { passive: false });
+  document.addEventListener('pointerdown', e => {
+    if (!lbOf(e) || e.target.closest('button')) return; pts.set(e.pointerId, [e.clientX, e.clientY]); moved = false;
+    if (pts.size === 2){ const [a, b] = [...pts.values()]; g = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), s: lbz.s, m: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] }; }
+    else g = { pan: [e.clientX, e.clientY, lbz.x, lbz.y] };
+  });
+  document.addEventListener('pointermove', e => {
+    if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, [e.clientX, e.clientY]); if (!g) return;
+    if (pts.size >= 2 && g.d){ const [a, b] = [...pts.values()], m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; moved = true;
+      lbz.x += m[0] - g.m[0]; lbz.y += m[1] - g.m[1]; g.m = m; lbzTo(g.s * Math.hypot(a[0] - b[0], a[1] - b[1]) / g.d, m[0], m[1]); return; }
+    if (g.pan && lbz.s > 1){ const dx = e.clientX - g.pan[0], dy = e.clientY - g.pan[1]; if (Math.abs(dx) + Math.abs(dy) > 4) moved = true; lbz.x = g.pan[2] + dx; lbz.y = g.pan[3] + dy; lbzApply(); }
+  });
+  const up = e => { if (!pts.delete(e.pointerId)) return;
+    if (pts.size === 1){ const [p] = [...pts.values()]; g = { pan: [p[0], p[1], lbz.x, lbz.y] }; return; }
+    if (pts.size) return; g = null;
+    // double-tap on touch (double-click covers mouse)
+    if (e.pointerType === 'touch' && !moved && e.target.closest?.('.lightbox figure img')){ const t = Date.now(); if (t - lastTap < 300){ lastTap = 0; lbzTo(lbz.s > 1 ? 1 : 2.5, e.clientX, e.clientY, true); } else lastTap = t; }
+  };
+  document.addEventListener('pointerup', up); document.addEventListener('pointercancel', up);
+  document.addEventListener('dblclick', e => { if (!e.target.closest?.('.lightbox figure img')) return; e.preventDefault(); lbzTo(lbz.s > 1 ? 1 : 2.5, e.clientX, e.clientY, true); });
+  // a drag that ends over the dark background is not a click to close
+  document.addEventListener('click', e => { if (moved && lbOf(e)){ e.stopPropagation(); moved = false; } }, true);
+  // Safari's own pinch would zoom the whole page
+  ['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => { if ($('.lightbox')) e.preventDefault(); }, { passive: false }));
+})();
 function stepGallery(d){ if (!gallery) return; const n = gallery.i + d; if (n < 0 || n >= gallery.items.length) return; gallery.i = n; drawGallery(); }
 
 /* ---------- events ---------- */
 document.addEventListener('click', async e => {
-  if (e.target.closest('.lightbox')){ const lb = e.target.closest('.lightbox'); const nav = e.target.closest('[data-step]'); if (nav) return stepGallery(+nav.dataset.step); gallery = null; lb.remove(); return; }
+  if (e.target.closest('.lightbox')){ const lb = e.target.closest('.lightbox'); const nav = e.target.closest('[data-step]'); if (nav) return stepGallery(+nav.dataset.step);
+    const zb = e.target.closest('[data-lbz]'); if (zb){ const k = zb.dataset.lbz; return k === 'fit' ? lbzTo(1, null, null, true) : lbzStep(k === 'in' ? 1 : -1); }
+    if (e.target.closest('figure img, .lbzbar')) return;   // clicking the picture no longer closes it; the background and × do
+    gallery = null; lb.remove(); return; }
   const g = e.target.closest('[data-gallery]');
   if (g){ e.stopPropagation(); const c = S.cards[g.dataset.gallery]; if (c) openGallery(g.dataset.gq ? brImgs(c) : cardImages(c), +g.dataset.i || 0); return; }
   const oc = e.target.closest('.occ'); if (oc){ oc.classList.toggle('open'); return; }
   const pb = e.target.closest('[data-pad]'); if (pb){ return padAction(pb.dataset.pad); }
   const z = e.target.closest('[data-zoom]');
-  if (z){ openGallery([{ src: z.getAttribute('src'), label: z.alt || '' }], 0); return; }
+  if (z){ const sib = [...(z.parentElement?.querySelectorAll('img[data-zoom]') || [z])]; openGallery(sib.map(x => ({ src: x.getAttribute('src'), label: x.alt || '' })), Math.max(0, sib.indexOf(z))); return; }
   if (!e.target.closest('#menu') && !e.target.closest('[data-act="gear"]')) closeMenu();
   if ($('#tpop') && !e.target.closest('#tpop') && !e.target.closest('[data-act="timer-menu"], [data-act="pp-tm"], [data-act="pp-mark"], [data-act="pp-keys"]')) $('#tpop').remove();
   if (document.body.classList.contains('desktop') && $('#sidesres') && !$('#sidesres').hidden && (!e.target.closest('#abmid') || e.target.closest('.siderec'))){ $('#sidesres').hidden = true; if (e.target.closest('.siderec')){ const q = $('#sidesq'); if (q) q.value = ''; } }
@@ -8963,7 +9032,9 @@ document.addEventListener('keydown', e => {
   if (cleanerOpen()){ if (e.key === 'Escape'){ e.preventDefault(); closeCleaner(); } return; }
   if (e.key === 'Escape' && $('.pickpop')){ e.preventDefault(); return closePicker(); }
   const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
-  if ($('.lightbox') && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')){ e.preventDefault(); return stepGallery(e.key === 'ArrowRight' ? 1 : -1); }
+  if ($('.lightbox') && (e.key === 'ArrowRight' || e.key === 'ArrowLeft') && lbz.s <= 1){ e.preventDefault(); return stepGallery(e.key === 'ArrowRight' ? 1 : -1); }
+  if ($('.lightbox') && !e.metaKey && !e.ctrlKey){ if (e.key === '+' || e.key === '='){ e.preventDefault(); return lbzStep(1); } if (e.key === '-' || e.key === '_'){ e.preventDefault(); return lbzStep(-1); } if (e.key === '0'){ e.preventDefault(); return lbzTo(1, null, null, true); }
+    if (lbz.s > 1 && /^Arrow/.test(e.key)){ e.preventDefault(); const d = 80; lbz.x += e.key === 'ArrowLeft' ? d : e.key === 'ArrowRight' ? -d : 0; lbz.y += e.key === 'ArrowUp' ? d : e.key === 'ArrowDown' ? -d : 0; return lbzApply(true); } }
   if (e.key === 'Escape' && $('#tpop')){ e.preventDefault(); return $('#tpop').remove(); }
   if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && (e.key === '[' || e.key === ']') && !dialogOpen() && !isTyping(document.activeElement)){ e.preventDefault(); return histGo(e.key === '[' ? -1 : 1); }
   if (e.key === 'Escape'){ const lb = $('.lightbox'); if (lb){ gallery = null; return lb.remove(); } if ($('#menu')) return closeMenu(); if (dialogOpen()) return closeDialog(); if ($('#padwrap.full')) return padAction('full'); if (view.name === 'study'){ const n = study?.node; study = null; return n ? go('overview', n) : go('decks'); } if (view.name === 'ppmark' && ppm){ if (ppFull) return ppFullSet(false, true); if (ppm.draw){ ppm.draw = null; return ppmSide(); } if (!isTyping(document.activeElement) && !$('.pickpop') && !$('#tpop')) return go('papers'); } return; }
@@ -9189,7 +9260,7 @@ function ppReview(s){
 
 /* the PDFs: IndexedDB on this device, plus a copy in cloud storage when sync is on */
 function ppDB(){ return ppDB.p || (ppDB.p = new Promise((res, rej) => { try { const r = indexedDB.open('recall-papers', 1); r.onupgradeneeded = () => r.result.createObjectStore('pdf'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e){ rej(e); } }).catch(e => { ppDB.p = null; throw e; })); }
-async function ppPutPdf(id, buf, name){ const db = await ppDB(); return new Promise((res, rej) => { const t = db.transaction('pdf', 'readwrite'); t.objectStore('pdf').put({ buf, name }, id); t.oncomplete = () => res(true); t.onerror = () => rej(t.error); }); }
+async function ppPutPdf(id, buf, name, at){ const db = await ppDB(); return new Promise((res, rej) => { const t = db.transaction('pdf', 'readwrite'); t.objectStore('pdf').put({ buf, name, ...(at ? { at } : {}) }, id); t.oncomplete = () => res(true); t.onerror = () => rej(t.error); }); }
 async function ppGetPdf(id){ try { const db = await ppDB(); return await new Promise(res => { const r = db.transaction('pdf').objectStore('pdf').get(id); r.onsuccess = () => res(r.result || null); r.onerror = () => res(null); }); } catch { return null; } }
 async function ppDelPdf(id){ try { const db = await ppDB(); db.transaction('pdf', 'readwrite').objectStore('pdf').delete(id); } catch {} }
 async function ppPdfOf(p){
@@ -9199,25 +9270,46 @@ async function ppPdfOf(p){
 }
 /* a separate solutions PDF: stored next to the paper's (key "<id>:sol", cloud copy p.solFile); p.solSep marks it */
 const ppSolKey = id => id + ':sol';
+/* p.solAt stamps which solutions PDF is current. The copy on this device carries the same stamp, so a device still holding an
+   older (replaced) copy fetches the new one from the cloud instead of showing the old answers. */
 async function ppSolOf(p){
   if (!p?.solSep) return null;
-  const got = await ppGetPdf(ppSolKey(p.id)); if (got?.buf) return got;
-  if (p.solFile && cloudOn()){ try { const { data, error } = await cloud.sb.storage.from('images').download(cloudPath(p.solFile)); if (!error && data){ const buf = await data.arrayBuffer(); ppPutPdf(ppSolKey(p.id), buf, p.solName).catch(() => {}); return { buf, name: p.solName }; } } catch (e){ console.warn(e); } }
-  return null;
+  const got = await ppGetPdf(ppSolKey(p.id));
+  if (got?.buf && (!p.solAt || got.at === p.solAt)) return got;
+  if (p.solFile && cloudOn()){ try { const { data, error } = await cloud.sb.storage.from('images').download(cloudPath(p.solFile)); if (!error && data){ const buf = await data.arrayBuffer(); ppPutPdf(ppSolKey(p.id), buf, p.solName, p.solAt).catch(() => {}); return { buf, name: p.solName, at: p.solAt }; } } catch (e){ console.warn(e); } }
+  return got?.buf ? got : null;
 }
+/* keep the PDF on this device straight away; the cloud copy uploads afterwards and is added to the paper when it's done */
 async function ppSolStore(p, file){
   if (!isPdf(file)){ toast('That isn’t a PDF.'); return null; }
-  const buf = await file.arrayBuffer(), q = { ...p, solSep: true, solName: file.name || 'solutions.pdf', sol: 1 };
-  try { await ppPutPdf(ppSolKey(p.id), buf, q.solName); } catch (e){ console.warn(e); toast('Couldn’t keep the solutions PDF on this device.', 4000); }
-  delete q.solFile; if (cloudOn()){ try { const r = await cloudUploadBlob(new Blob([buf], { type: 'application/pdf' }), 'pdf'); q.solFile = r.file; } catch (e){ console.warn('sol pdf upload', e); } }
+  const buf = await file.arrayBuffer(), at = Date.now(), q = { ...p, solSep: true, solName: file.name || 'solutions.pdf', sol: 1, solAt: at };
+  if (!p.solSep) q.solWas = p.sol ? 1 : 0;
+  delete q.msol; delete q.solFile;   // solutions you'd placed by hand were on the old PDF's pages
+  try { await ppPutPdf(ppSolKey(p.id), buf, q.solName, at); } catch (e){ console.warn(e); toast('Couldn’t keep the solutions PDF on this device.', 4000); }
+  if (cloudOn()) (async () => {
+    let file2 = null; try { file2 = (await cloudUploadBlob(new Blob([buf], { type: 'application/pdf' }), 'pdf')).file; } catch (e){ console.warn('sol pdf upload', e); return; }
+    for (let i = 0; i < 20; i++){ const cur = ppPapers()[p.id]; if (cur){ if (cur.solAt === at && cur.solFile !== file2){ S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: { ...cur, solFile: file2 } } }; undoMute = true; try { await saveSettings(); } finally { undoMute = false; } } return; } await new Promise(r => setTimeout(r, 500)); }
+  })();
   return q;
+}
+/* take the separate solutions PDF off a paper. The copy on this device stays until another replaces it, so ⌘Z brings it straight back. */
+async function ppSolDelete(pid){
+  const p = ppPapers()[pid]; if (!p?.solSep) return;
+  const q = { ...p, sol: p.solWas ?? 0 }; ['solSep', 'solName', 'solFile', 'solAt', 'solWas', 'msol'].forEach(k => delete q[k]);
+  await ppSavePaper(q, 'delete solutions'); toast('Solutions PDF deleted · ⌘Z to undo', 3200);
+  if (view.name === 'ppmark' && view.node === pid){ ppm = null; renderPPMark(); } else ppRefresh();
+}
+function ppSolDelAsk(pid){
+  const p = ppPapers()[pid]; if (!p?.solSep) return;
+  openDialog(`<div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="ppsdh" style="max-width:440px"><header><h2 id="ppsdh">Delete the solutions PDF?</h2></header><div class="body"><p style="margin:0;color:var(--fg-2)">${esc(p.solName || 'The solutions PDF')} comes off this paper. The paper, your marking and any cards stay. You can undo with ⌘Z.</p></div>
+    <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn danger" data-act="pp-delsolgo" data-id="${esc(pid)}">Delete</button></footer></div>`, d => d.querySelector('.btn.danger').focus());
 }
 /* add (or replace) the solutions PDF of a paper you already have, then reopen it */
 function ppAddSolPick(pid){
   ppPickFile(async f => {
-    const p = ppPapers()[pid]; if (!p || !f) return;
+    const p = ppPapers()[pid]; if (!p || !f) return; const rep0 = !!p.solSep;
     const q = await ppSolStore(p, f); if (!q) return;
-    await ppSavePaper(q, 'add solutions'); toast('Solutions added', 2000);
+    await ppSavePaper(q, rep0 ? 'replace solutions' : 'add solutions'); toast(rep0 ? `Solutions replaced with ${q.solName}` : 'Solutions added', 2200);
     if (view.name === 'ppmark' && view.node === pid){ ppm = null; renderPPMark(); } else ppRefresh();
   });
 }
@@ -9558,7 +9650,7 @@ function ppMenu(key, at){
     ${todo ? b('pp-m-todogo', `On your to-do list (${esc(todoTabName(todoL(todo)))})`) : b('pp-m-todo', 'Add to to-do list…')}
     ${done ? b('pp-m-undone', 'Mark as not done') : b('pp-m-done', 'Mark as done')}
     ${b('pp-m-score', p?.score || done ? 'Change the score…' : 'Enter a score…')}<hr>
-    ${p ? b('pp-m-addsol', p.solSep ? 'Replace the solutions PDF…' : 'Add a solutions PDF…') : ''}
+    ${p ? b('pp-m-addsol', p.solSep ? 'Replace the solutions PDF…' : 'Add a solutions PDF…') : ''}${p?.solSep ? b('pp-m-delsol', 'Delete the solutions PDF…') : ''}
     ${p?.name ? b('pp-m-save', 'Save the PDF…') : ''}
     ${b('pp-m-copy', 'Copy the name')}
     ${p && p.src === 'up' ? b('pp-m-edit', 'Edit details…') : ''}
@@ -9624,6 +9716,7 @@ async function ppMenuAct(act, a){
     case 'pp-m-copy': { const t = `${ppName(it)} ${ppSecName(it.sec, true)} · ${PP_COURSE[it.c].name}`; try { await navigator.clipboard.writeText(t); toast('Copied'); } catch { toast(t, 4000); } return; }
     case 'pp-m-edit': return ppEditDialog(key);
     case 'pp-m-addsol': return ppAddSolPick(p.id);
+    case 'pp-m-delsol': return ppSolDelAsk(p.id);
     case 'pp-m-editsave': { const sch = ($('#ppesch').value || '').trim(), y = +$('#ppey').value; if (!sch || !(y > 1990)) return toast('Fill in the school and year.'); const sec = $('#ppes').value; undoTx = null; undoLabel = 'edit paper'; S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: { ...p, c: $('#ppec').value, sec, school: sec === 'hsc' ? 'NSW HSC' : ppTidySchool(sch), year: y, sol: $('#ppesol').checked } } }; await saveSettings(); closeDialog(); return ppRefresh(); }
     case 'pp-m-remove': {
       openDialog(`<div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="pprmh" style="max-width:440px"><header><h2 id="pprmh">Remove ${esc(ppName(it))}?</h2></header><div class="body"><p style="margin:0;color:var(--fg-2)">Your marking and score for this paper are removed. Cards you made from it stay in your decks. You can undo with ⌘Z.</p></div>
@@ -9863,11 +9956,15 @@ const ppScanPages = R => R.pages.filter(p => !p.lines.length && (p.imgs || []).s
 async function ppOcr(R, pid, prog){
   const todo = ppScanPages(R); if (!todo.length) return false;
   let got = null; try { const c = await ppGetPdf(ppOcrKey(pid)); if (c?.buf && typeof c.buf === 'string') got = JSON.parse(c.buf); } catch {}
-  if (!got){
-    got = {}; const W = await tessWorker();
-    for (const [k, p] of todo.entries()){
+  /* the text read off the solutions pages belongs to one solutions PDF (_sol = its solAt); after a replace those pages are read again */
+  const sa = ppPapers()[pid]?.solAt || 0;
+  if (got && (got._sol || 0) !== sa){ for (const pg of R.pages) if (pg.sol) delete got[pg.n]; }
+  const need = got ? todo.filter(p => !got[p.n]) : todo; if (!got) got = {}; got._sol = sa;
+  if (need.length){
+    const W = await tessWorker();
+    for (const [k, p] of need.entries()){
       const sc = Math.min(4, Math.max(2, 2000 / p.w));   // about 2000 px across: small scans read badly at less
-      prog?.(`Reading the scanned pages… ${k + 1} of ${todo.length}`);
+      prog?.(`Reading the scanned pages… ${k + 1} of ${need.length}`);
       const v2 = p.pg.getViewport({ scale: sc }), cv = document.createElement('canvas'); cv.width = Math.ceil(v2.width); cv.height = Math.ceil(v2.height);
       const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); await p.pg.render({ canvasContext: cx, viewport: v2 }).promise;
       const { data } = await W.recognize(cv); cv.width = cv.height = 0;
@@ -9900,7 +9997,7 @@ async function ppmLoad(p){
       try {
         m.busy = 'Getting the marking guidelines from NESA…'; ppmSide();
         const r = await ppNesaGet(p.c, p.year, { exam: false, mg: true }); if (ppm !== m) return;
-        if (r.mg && p.solSep) await ppPutPdf(ppSolKey(p.id), await r.mg.arrayBuffer(), p.solName || r.mg.name);
+        if (r.mg && p.solSep) await ppPutPdf(ppSolKey(p.id), await r.mg.arrayBuffer(), p.solName || r.mg.name, p.solAt);
         else if (r.mg){ const q = await ppSolStore(p, r.mg); if (q){ await ppSavePaper(q, 'add marking guidelines'); p = q; } }
       } catch (e){ console.warn('NESA marking guidelines', e); }
       if (ppm !== m) return;
@@ -10360,7 +10457,7 @@ function ppmSide(){
     ${!m.items.length && !m.need && !m.err ? `<p class="ppnote">${m.scanned ? 'This PDF is scanned, so Recall can’t find the questions by itself.' : 'Recall couldn’t find numbered questions.'} Draw a box round each question you got wrong.</p>` : ''}
     <div class="pprfoot"><button class="btn sm ${m.draw === 'q' ? 'on' : ''}" data-act="pp-draw" data-v="q" aria-pressed="${m.draw === 'q'}">Box a question<kbd>B</kbd></button>
       <div class="pplg"><span><i class="ok"></i>Right</span><span><i class="part"></i>Part</span><span><i class="bad"></i>Wrong</span></div>
-      <span class="pprfl"><button class="link sm" data-act="pp-keys" aria-haspopup="dialog">Keys</button><button class="link sm danger-link" data-act="pp-remove">Remove this paper</button></span></div>`;
+      <span class="pprfl"><button class="link sm" data-act="pp-keys" aria-haspopup="dialog">Keys</button><button class="link sm" data-act="pp-solmenu" aria-haspopup="true">Solutions</button><button class="link sm danger-link" data-act="pp-remove">Remove this paper</button></span></div>`;
   const ph = ppmPanel(), card = ppWide() && !!ph.trim();
   panel.innerHTML = ph; panel.classList.toggle('show', !ppWide() || card); panel.classList.toggle('card', card); panel.classList.toggle('min', card && ppCardMin && m.sel != null);
   if (card) ppCardPlace(panel);
@@ -10445,10 +10542,10 @@ async function ppmMarkSave(){
 }
 function ppmSolLine(p){
   const m = ppm, found = m.items.some(it => it.sol?.length);
-  if (m.solMissing) return `<p class="ppnote ppsolln">The solutions PDF (${esc(p.solName || 'solutions')}) isn’t on this device. <button class="link sm" data-act="pp-addsol">Add it again</button></p>`;
+  if (m.solMissing) return `<p class="ppnote ppsolln">The solutions PDF (${esc(p.solName || 'solutions')}) isn’t on this device. <button class="link sm" data-act="pp-addsol">Add it again</button> <button class="link sm" data-act="pp-delsol">Delete it</button></p>`;
   if (m.locked && m.cutP) return `<p class="ppnote ppsolln"><b>Solutions open when your time’s up</b> · <span class="pplockt">${ppmLockLeft()}</span> left. Stopping the timer opens them too.</p>`;
   const sbs = ppSplitOk() ? `<button class="link sm" data-act="pp-split">${ppSplitOn() ? 'Hide the side view' : 'Show side by side'}</button> ` : '';
-  if (m.solFrom) return `<p class="ppnote ppsolln">Solutions: ${esc(p.solName || 'separate PDF')}${ppSplitOn() ? ', on the right' : ', after the paper'} (pages S1–S${m.R.pages.length - m.solFrom + 1}). ${sbs}<button class="link sm" data-act="pp-addsol">Replace</button></p>`;
+  if (m.solFrom) return `<p class="ppnote ppsolln">Solutions: ${esc(p.solName || 'separate PDF')}${ppSplitOn() ? ', on the right' : ', after the paper'} (pages S1–S${m.R.pages.length - m.solFrom + 1}). ${sbs}<button class="link sm" data-act="pp-addsol">Replace</button> <button class="link sm" data-act="pp-delsol">Delete</button></p>`;
   if (m.cutP && sbs) return `<p class="ppnote ppsolln">Solutions from page ${m.cutP}. ${sbs}</p>`;
   if (!found) return `<p class="ppnote ppsolln">Solutions in a separate PDF? <button class="link sm" data-act="pp-addsol">Add the solutions PDF</button></p>`;
   return '';
@@ -10689,7 +10786,11 @@ async function ppAction(act, a, e){
     case 'pp-ipick': return ppPickFiles(fs => ppImportDialog(fs));
     case 'pp-irm': ppImp = ppImp.filter(r => r.id !== a.dataset.id); return ppImpDraw();
     case 'pp-isol': { const row = ppImp.find(r => r.id === a.dataset.id); if (!row) return; return ppPickFile(f => { if (f && isPdf(f)){ row.solFile = f; row.solm = 'sep'; } ppImpDraw(); }); }
-    case 'pp-addsol': return ppAddSolPick(ppm?.pid);
+    case 'pp-addsol': closeMenu(); return ppAddSolPick(ppm?.pid);
+    case 'pp-delsol': closeMenu(); return ppSolDelAsk(ppm?.pid);
+    case 'pp-solmenu': { e?.stopPropagation(); if ($('#menu')) return closeMenu(); const p = ppmP(); if (!p) return; const r = a.getBoundingClientRect();
+      menuAt(p.solSep ? `<div class="mhead">${esc(p.solName || 'Solutions PDF')}</div><button data-act="pp-addsol">Replace…</button><button class="danger" data-act="pp-delsol">Delete…</button>` : `<button data-act="pp-addsol">Add a solutions PDF…</button>`, { x: r.left, y: r.top - (p.solSep ? 110 : 44) }); return; }
+    case 'pp-delsolgo': closeDialog(); return ppSolDelete(a.dataset.id);
     case 'pp-igo': return ppImpGo(!!a.dataset.open);
     case 'pp-subj': { if (pp.s === v) return; const on = $('.pphome .stab[aria-selected="true"]'); ppTabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; pp.s = v; ppSave(); return renderPapers(); }
     case 'pp-course': pp.c = { ...(pp.c || {}), [ppSubjCur().k]: v }; ppSave(); return renderPapers();
