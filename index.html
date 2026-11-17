@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261117140731";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261117232551";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -3656,6 +3656,9 @@ html.lh body.hasbg .h7drag{background:color-mix(in srgb, var(--bg) 85%, transpar
 }
 .siderec{flex-shrink:0;min-height:max-content}
 .siderec .nm,.siderec .meta{flex-shrink:0}
+.ppdiag{margin:14px 0 0;color:var(--fg-3)}
+.ppdiag summary{cursor:pointer;font-size:12px}
+.ppdiag pre{margin:8px 0;padding:10px 12px;border-radius:6px;background:var(--surface-2);color:var(--fg-2);font:400 11px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;user-select:text}
 
 /* iPad / browser tweaks */
 html.hosted body.desktop .toolbar{padding-top:max(22px, var(--sat))}
@@ -9625,7 +9628,7 @@ if (window.RECALL_HOSTED){
    A paper you add lives in S.settings.papers (synced); its PDF lives in IndexedDB on the device (recall-papers), plus a
    copy in cloud storage when sync is on. Each question you get wrong becomes a normal card in the deck you pick, with
    card.paper = { id, q, got, of }, so it shows in Decks and in the Paper mistakes deck (every card with card.paper). */
-const PP_FROM = 2016, PP_RAW = 'https://raw.githubusercontent.com/thsconline/s/master/yr12/';
+const PP_FROM = 2016, PP_HSC_FROM = 2001, PP_RAW = 'https://raw.githubusercontent.com/thsconline/s/master/yr12/';
 const PP_SUBJ = [
   { k: 'maths', name: 'Maths', rx: /math/i, courses: ['std', 'adv', 'x1', 'x2'] },
   { k: 'physics', name: 'Physics', rx: /phys/i, courses: ['phy'] },
@@ -9705,15 +9708,18 @@ function ppShown(){
 const ppShownCourses = () => ppShown().flatMap(x => x.courses);
 const ppLoaded = c => !!ppIdx?.t?.[c];
 const ppKeyT = (no, t) => 't' + no + ':' + t;
-const ppHscYears = c => { const now = new Date(), yr = now.getFullYear(), last = now.getMonth() < 11 && !(c && ppNesaIdx[PP_COURSE[c]?.nesa]?.y?.[yr]) ? yr - 1 : yr; const out = []; for (let y = last; y >= PP_FROM; y--) out.push(y); return out; };
+const ppHscYears = c => { const now = new Date(), yr = now.getFullYear(), last = now.getMonth() < 11 && !(c && ppNesaIdx[PP_COURSE[c]?.nesa]?.y?.[yr]) ? yr - 1 : yr; const out = []; for (let y = last; y >= PP_HSC_FROM; y--) out.push(y); return out; };
 function ppThscUrl(no, t){ const x = String(t).replace(/\(Adv\.\)/g, '__ADV__').replace(/\(Std\.\)/g, '__STD__').replace(/[^A-Za-z0-9._\- ]/g, '').replace(/__ADV__/g, '(Adv.)').replace(/__STD__/g, '(Std.)'); return 'https://thsconline.github.io/s/v/' + encodeURIComponent(no) + '/' + encodeURIComponent(x); }
 const PP_NESA = 'https://www.nsw.gov.au/education-and-training/nesa/curriculum/hsc-exam-papers/';
+/* HSC years on an older syllabus (NESA keeps them on the course's archive page). English and Economics papers before
+   2019/2020 cover different texts or content too, so they count as old as well. */
+const ppOldCourse = (c, y) => { const k = PP_COURSE[c]; return !!k && y <= (k.arch || (k.s === 'economics' ? 0 : 2019)); };
 const ppNesaUrl = (c, y) => { const k = PP_COURSE[c], old = y && y <= k.arch; return ppNesaIdx[k.nesa]?.y?.[y] || PP_NESA + (old ? k.narch || k.nesa + '-archive' : k.nesa) + (y ? '/' + y : ''); };
 let ppNesaIdx = ls.get('md-nesa-idx', null) || {};
 /* every paper for a course: THSC's list, the NESA HSC years, and anything you uploaded yourself */
 function ppItems(c){
   const lib = Object.values(ppPapers()).filter(p => p.c === c), byKey = new Map(lib.filter(p => p.key).map(p => [p.key, p])), out = [];
-  if (PP_COURSE[c].nesa) for (const y of ppHscYears(c)){ const key = 'n:' + c + ':' + y; out.push({ key, c, sec: 'hsc', school: 'NSW HSC', year: y, sol: 1, src: 'nesa', paper: byKey.get(key) || null }); }
+  if (PP_COURSE[c].nesa) for (const y of ppHscYears(c)){ const key = 'n:' + c + ':' + y; out.push({ key, c, sec: 'hsc', school: 'NSW HSC', year: y, sol: 1, src: 'nesa', old: ppOldCourse(c, y), paper: byKey.get(key) || null }); }
   for (const [sec, school, year, no, title, sol] of (ppIdx?.c?.[c] || [])){ const key = ppKeyT(no, title); out.push({ key, c, sec, school, year, sol, src: 'thsc', no, title, paper: byKey.get(key) || null }); }
   const seen = new Set(out.map(i => i.key));
   for (const p of lib) if (!p.key || !seen.has(p.key)) out.push({ key: 'p:' + p.id, c, sec: p.sec, school: p.school, year: p.year, sol: p.sol ? 1 : 0, src: 'up', paper: p });
@@ -9966,7 +9972,7 @@ async function ppFetchOpen(item){
     const file = new File([r.bytes], r.name || name + '.pdf', { type: 'application/pdf' });
     return ppAddPdf(item, file);
   } catch (e){
-    console.warn(where + ' download', e); if (!$('#ppfh')) return;
+    console.warn(where + ' download', e); ppLastErr = { at: new Date().toISOString(), src: where, paper: name, no: item.no || '', title: item.title || '', msg: String(e?.message || e || '') }; if (!$('#ppfh')) return;
     closeDialog(); ppGetDialog(item, e?.quiet ? '' : `Couldn’t get it inside Recall: ${String(e?.message || 'no connection').replace(/^Error invoking remote method '[^']*': (Error: )?/, '').replace(/\.$/, '')}. You can still open it on ${where} and drop the PDF in.`);
   }
 }
@@ -9975,7 +9981,7 @@ async function ppFetchOpen(item){
 const ppCanNesa = () => !!window.desktop?.nesaGet;
 function ppNesaLinks(html, base){
   const d = new DOMParser().parseFromString(html, 'text/html'), root = d.querySelector('main') || d.body;
-  return [...root.querySelectorAll('a[href]')].map(a => { let u = null; try { u = new URL(a.getAttribute('href'), base); } catch {} return u && /nsw\.gov\.au$/.test(u.hostname) ? { t: a.textContent.replace(/\s+/g, ' ').trim(), u: u.href, path: u.pathname } : null; }).filter(Boolean);
+  return [...root.querySelectorAll('a[href]')].map(a => { let u = null; try { u = new URL(a.getAttribute('href'), base); } catch {} return u && /nsw\.gov\.au$|nsw\.edu\.au$/.test(u.hostname) ? { t: a.textContent.replace(/\s+/g, ' ').trim(), u: u.href, path: u.pathname } : null; }).filter(Boolean);
 }
 async function ppNesaPage(url){ const r = await window.desktop.nesaGet(url); if (!r?.html) throw new Error('NESA sent something odd'); return ppNesaLinks(r.html, r.url || url); }
 /* year -> exam pack page, read from the course page and its archive page (old syllabuses), kept for a week */
@@ -10018,6 +10024,19 @@ async function ppNesaGet(c, y, want = { exam: true, mg: true }){
 }
 /* get a paper you haven't added yet: open it on THSC or NESA, then drop the PDF in */
 let ppGetItem = null;
+let ppLastErr = null;
+async function ppDiagText(){
+  const i = await window.desktop?.appInfo?.().catch(() => null);
+  return [
+    `Recall paper download problem`,
+    `When: ${ppLastErr?.at || new Date().toISOString()}`,
+    `Computer: ${window.desktop ? (window.desktop.platform === 'win32' ? 'Windows' : window.desktop.platform === 'darwin' ? 'Mac' : window.desktop.platform) : 'web'} · ${navigator.userAgent.match(/Windows NT [\d.]+|Mac OS X [\d_]+/)?.[0] || ''}`,
+    `App: ${i?.shell || 'web'} · page ${i?.build || window.RECALL_BUILD || '?'}${i?.ready ? ' (update ' + i.ready + ' waiting for a restart)' : ''}`,
+    `Can download itself: ${!!window.desktop?.paperFetch} · sync on: ${cloudOn()} · online: ${navigator.onLine}`,
+    `Paper: ${ppLastErr?.paper || ''} (${ppLastErr?.src || ''} ${ppLastErr?.no || ''}) ${ppLastErr?.title || ''}`,
+    `Error: ${ppLastErr?.msg || 'none recorded'}`
+  ].join('\n');
+}
 function ppGetDialog(item, why){
   ppGetItem = item;
   const where = item.src === 'nesa' ? 'NESA' : 'THSC', url = item.src === 'nesa' ? ppNesaUrl(item.c, item.year) : ppThscUrl(item.no, item.title);
@@ -10027,8 +10046,9 @@ function ppGetDialog(item, why){
       <ol class="ppsteps"><li><span>Open it on ${where}${item.src === 'nesa' ? ` and download the ${item.year} exam pack` : ''}.</span><a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Open on ${where}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 3h4v4M13 3 7 9M11 9.5V13H3V5h3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
       <li><span>Drop the PDF here, or choose it.</span><div class="zone ppzone" id="ppzone"><button class="btn primary" data-act="pp-pick">Choose PDF</button><span class="hint">or drag it in</span></div></li></ol>
       ${item.src === 'thsc' && !why ? (window.desktop ? '<p class="hint" style="margin:12px 0 0">Recall 1.28 for Mac and Windows opens THSC papers straight in the app. <a href="https://whisz12.github.io/Recall/download.html" target="_blank" rel="noopener">Get it</a></p>' : (cloudOn() ? '' : '<p class="hint" style="margin:12px 0 0">Turn on sync (sidebar) and Recall gets THSC papers straight into the app on this device too.</p>')) : ''}
+      ${why ? `<details class="ppdiag"><summary>Details for fixing this</summary><pre id="ppdiagt">Loading…</pre><button class="btn sm" data-act="pp-copydiag">Copy details</button></details>` : ''}
       ${item.src === 'nesa' ? `<p class="hint" style="margin:12px 0 0">NESA puts the marking guidelines in a separate PDF. Download that too and add it with Add a solutions PDF.${ppCanNesa() ? '' : ` Recall ${window.desktop ? '1.29 ' : ''}for Mac and Windows gets the paper and its marking guidelines straight into the app. <a href="https://whisz12.github.io/Recall/download.html" target="_blank" rel="noopener">Get it</a>`}</p>` : ''}
-    </div></div>`, d => ppZone(d.querySelector('#ppzone'), f => ppAddPdf(ppGetItem, f)));
+    </div></div>`, d => { ppZone(d.querySelector('#ppzone'), f => ppAddPdf(ppGetItem, f)); const t = d.querySelector('#ppdiagt'); if (t) ppDiagText().then(s => { t.textContent = s; }); });
 }
 function ppZone(z, cb, multi){
   if (!z) return;
@@ -11276,6 +11296,7 @@ async function ppAction(act, a, e){
   if (act.startsWith('pp-m-')) return ppMenuAct(act, a);
   switch (act){
     case 'pp-sel': pp.sel = a.dataset.k; return renderPapers('sel');
+    case 'pp-copydiag': return ppDiagText().then(s => navigator.clipboard.writeText(s)).then(() => toast('Copied. Paste it to Jeremy.'), () => toast('Couldn’t copy. Select the text and copy it.'));
     case 'pp-grp': { ppOpen.has(v) ? ppOpen.delete(v) : ppOpen.add(v); ls.set('md-pp-open', [...ppOpen].slice(-60)); return h7ppRefresh(); }
     case 'pp-by': ppBy = v; ls.set('md-pp-by', v); return h7ppRefresh();
     case 'pp-h7menu': { const r = a.getBoundingClientRect(); return ppMenu(a.dataset.k, { x: r.left, y: r.bottom + 4 }); }
@@ -11626,7 +11647,7 @@ function renderPapers(partial){
   const status = !ppLoaded(c) && ppIdxP ? '<p class="h7none">Getting the list of papers from THSC…</p>' : !ppLoaded(c) ? `<p class="h7none">${ppIdxErr === 'offline' ? 'You’re offline, so the THSC list can’t load yet.' : 'Couldn’t reach THSC for the list of papers.'} You can still upload papers. <button class="link" data-act="pp-reload">Try again</button></p>` : '';
   const row = (i, only) => { const p = i.paper, sc = p?.st === 'done' ? ppScore(p) : null, mk = p && p.st !== 'done' && p.qs?.length ? ppScore(p) : null;
     const st = sc ? (sc.of ? sc.pct + '%' : 'Done') : mk ? `Q${mk.marked} of ${p.qs.length}` : p ? 'In your papers' : '';
-    return `<button class="h7ppr ${i.key === pp.sel ? 'on' : ''}" data-act="pp-sel" data-k="${esc(i.key)}" aria-current="${i.key === pp.sel}"><span class="h7ppt"><b>${esc(only === 'year' ? String(i.year) : only === 'school' ? i.school : i.school === 'NSW HSC' ? `${i.year} HSC` : `${i.school} ${i.year}`)}</b><small>${esc(ppSecName(i.sec, true))}, ${i.sol ? 'with solutions' : 'paper only'}</small></span>${st ? `<span class="h7ppst ${sc || mk ? 'acc' : ''}">${esc(st)}</span>` : ''}</button>`; };
+    return `<button class="h7ppr ${i.key === pp.sel ? 'on' : ''}" data-act="pp-sel" data-k="${esc(i.key)}" aria-current="${i.key === pp.sel}"><span class="h7ppt"><b>${esc(only === 'year' ? String(i.year) : only === 'school' ? i.school : i.school === 'NSW HSC' ? `${i.year} HSC` : `${i.school} ${i.year}`)}</b><small>${i.old ? 'Old syllabus, ' + (i.sol ? 'with marking guidelines' : 'paper only') : `${esc(ppSecName(i.sec, true))}, ${i.sol ? 'with solutions' : 'paper only'}`}</small></span>${st ? `<span class="h7ppst ${sc || mk ? 'acc' : ''}">${esc(st)}</span>` : ''}</button>`; };
   const subTabs = ppShown().map(x => `<button type="button" data-act="pp-subj" data-v="${x.k}" aria-pressed="${x.k === s.k}">${esc(x.name)}</button>`).join('') + `<button type="button" class="h7ppadd" data-act="pp-subjects" aria-label="Choose subjects" title="Choose subjects">+</button>`;
   const courseTabs = s.courses.length > 1 ? `<div class="h7pptabs" role="group" aria-label="Course">${s.courses.map(k => `<button type="button" data-act="pp-course" data-v="${k}" aria-pressed="${k === c}">${esc(PP_COURSE[k].short)}</button>`).join('')}</div>` : '';
   const html = `<div class="h7pp">
@@ -11809,6 +11830,11 @@ function h7ppRefresh(){ const l = $('#h7pplist'), top = l?.scrollTop || 0; rende
 let ppOpen = new Set(ls.get('md-pp-open', [])), ppBy = ls.get('md-pp-by', 'school');
 function h7ppGroup(name, k, xs, q, row){
   const head = `<div class="h7ppgh"><span>${esc(name)}</span><span>${xs.length}</span></div>`;
+  if (!q && k === 'hsc' && xs.some(i => i.old)){
+    // this course's HSC papers first, then the older-syllabus ones (2001 onwards) folded away in one folder
+    const cur = xs.filter(i => !i.old), old = xs.filter(i => i.old), id = 'hsc|old', open = ppOpen.has(id), ys = old.map(i => i.year);
+    return `<div class="h7ppg">${head}${cur.map(i => row(i)).join('')}<div class="h7ppfo ${open ? 'open' : ''}"><button class="h7ppfh" data-act="pp-grp" data-v="${id}" aria-expanded="${open}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Older syllabus</b><small>${old.length} papers, ${Math.min(...ys)}–${Math.max(...ys)}</small></button>${open ? `<div class="h7ppfi">${old.map(i => row(i, 'year')).join('')}</div>` : ''}</div></div>`;
+  }
   if (q || ppBy === 'none' || k === 'carry' || k === 'hsc' || xs.length <= 8){
     const cap = ppMore.has(k) || q ? xs.length : 60;
     return `<div class="h7ppg">${head}${xs.slice(0, cap).map(i => row(i)).join('')}${xs.length > cap ? `<button class="link h7ppmore" data-act="pp-more" data-v="${k}">Show all ${xs.length}</button>` : ''}</div>`;
