@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261117123335";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261117140731";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -3654,6 +3654,8 @@ html.lh body.hasbg .h7drag{background:color-mix(in srgb, var(--bg) 85%, transpar
   .tdo .tdadd input{flex:1 1 0;min-width:0}
   .tdo .tdadd:focus-within .tdaddx,.tdo .tdadd:has(input:not(:placeholder-shown)) .tdaddx{flex:1 0 100%;max-width:none;justify-content:flex-start;padding-left:28px;flex-wrap:wrap}
 }
+.siderec{flex-shrink:0;min-height:max-content}
+.siderec .nm,.siderec .meta{flex-shrink:0}
 
 /* iPad / browser tweaks */
 html.hosted body.desktop .toolbar{padding-top:max(22px, var(--sat))}
@@ -6170,7 +6172,7 @@ function renderThemes(){
         <section><h3>Pattern</h3><div class="seg thpat" role="group" aria-label="Background pattern">${PATTERNS.map(([k, l]) => `<button type="button" data-act="th-pattern" data-p="${k}" aria-pressed="${pat === k}">${l}</button>`).join('')}</div></section>
         <section><h3>Accent</h3><div class="swrow" role="radiogroup" aria-label="Accent colour"><button class="sw swth ${acc ? '' : 'on'}" data-act="th-acc" data-c="" role="radio" aria-checked="${!acc}" title="The theme's own" aria-label="The theme's own accent" style="--c:${(THEMES[cur] || THEMES.slate).btn}"></button>${ACCENTS.map(([c, l]) => `<button class="sw ${acc === c ? 'on' : ''}" data-act="th-acc" data-c="${c}" role="radio" aria-checked="${acc === c}" title="${l}" aria-label="${l}" style="--c:${c}"></button>`).join('')}</div></section>
         <section><button class="thsw" data-act="th-stripe" role="switch" aria-checked="${!!ts.stripe}"><span>Subject stripe<small>A thin band along the top of the page, split by what's due in each subject.</small></span><i aria-hidden="true"></i></button></section>
-        <section><button class="thsw" data-act="th-imgmatch" role="switch" aria-checked="${ts.imgMatch !== false}"><span>Recolour screenshots to match the theme<small>Tap an image while studying to see the original.</small></span><i aria-hidden="true"></i></button></section>
+        <section><button class="thsw" data-act="th-imgmatch" role="switch" aria-checked="${ts.imgMatch !== false}"><span>Recolour screenshots to match the theme<small>Tap an image while studying to see the original.</small></span><i aria-hidden="true"></i></button>${ts.imgMatch !== false ? `<button class="thsw" data-act="th-keepcol" role="switch" aria-checked="${ts.keepCol !== false}"><span>Keep coloured diagrams in colour<small>Finds colour pictures and diagrams inside screenshots and leaves them as they are. Turn off to recolour everything. You can still set a single picture in the card builder.</small></span><i aria-hidden="true"></i></button>` : ''}</section>
         <details class="thmore"><summary>Subject colours</summary>${kids(null).map(n => { const sc = scol(n.id); return `<div class="scrow"><span class="sdot2" style="background:${sc}"></span><span class="scn">${esc(n.name)}</span><span class="scdots">${PALETTE.map(c => `<button class="sw sm ${isHex(sc) && sc.toLowerCase() === c ? 'on' : ''}" data-act="subj-col" data-id="${n.id}" data-c="${c}" aria-label="${esc(n.name)}: ${c}" style="--c:${c}"></button>`).join('')}<label class="sw sm swpick" title="Any colour" style="--c:${isHex(sc) ? sc : '#888888'}"><input type="color" class="cpick" data-subj="${n.id}" value="${isHex(sc) ? sc : '#888888'}" aria-label="${esc(n.name)} colour"></label></span></div>`; }).join('') || '<p class="sub">No subjects yet.</p>'}</details>
         <details class="thmore" ${img ? 'open' : ''}><summary>Background image</summary>
           <div class="bgprev" style="${img ? `background-image:url('${esc(img)}')` : ''}">${img ? '' : 'No background image'}</div>
@@ -9260,6 +9262,7 @@ document.addEventListener('click', async e => {
     case 'tmr': { tmrSet({ [a.dataset.k]: a.dataset.v }); if (study){ study.autoShown = false; } return timerRefresh(); }
     case 'tmr-step': { const st = tmrGet(); tmrSet({ fixed: Math.max(30, Math.min(3600, (st.fixed || 180) + +a.dataset.d)), src: 'fixed' }); return timerRefresh(); }
     case 'th-mode': return themeMode(a.dataset.m, e.clientX || null, e.clientY || null);
+    case 'th-keepcol': { const ts = { ...themeSettings() }; ts.keepCol = ts.keepCol === false; saveTheme(ts); renderThemes(); return duoScan(); }
     case 'th-imgmatch': { const ts = { ...themeSettings() }; ts.imgMatch = ts.imgMatch === false; saveTheme(ts); return renderThemes(); }
     case 'th-acc': { const ts = { ...themeSettings() }; if (a.dataset.c) ts.acc = a.dataset.c; else delete ts.acc; saveTheme(ts); renderAppbar(); return renderThemes(); }
     case 'subj-col': { await put('nodes', { ...S.nodes[id], color: a.dataset.c }); renderSideSubjects?.(); return renderThemes(); }
@@ -11402,6 +11405,7 @@ function duoApply(img, res){
 }
 async function duoOne(img){
   const want = img.dataset.col; if (want === 'keep') return duoApply(img, { keep: true }); if (want === 'theme') return duoApply(img, { keep: false, regs: [] });
+  if (themeSettings().keepCol === false) return duoApply(img, { keep: false, regs: [] });
   const src = img.currentSrc || img.src; if (!src) return;
   let res = duoCache.get(src); if (!res){ const px = await duoPixels(img); if (!px) return; res = duoRegions(px); duoCache.set(src, res); }
   if (img.isConnected) duoApply(img, res);
@@ -11409,7 +11413,7 @@ async function duoOne(img){
 function duoScan(){
   if (!document.documentElement.classList.contains('imgduo')) return;
   document.querySelectorAll('.qa img:not(.duoreg), .bthumb img, .thumbs .thumb img, .bcard img:not(.duoreg), .brthumb img').forEach(img => {
-    const key = (img.currentSrc || img.src) + '|' + (img.dataset.col || ''); if (img.dataset.duo === key) return; img.dataset.duo = key; duoOne(img);
+    const key = (img.currentSrc || img.src) + '|' + (img.dataset.col || '') + '|' + (themeSettings().keepCol === false ? 0 : 1); if (img.dataset.duo === key) return; img.dataset.duo = key; duoOne(img);
   });
 }
 let duoT = 0; new MutationObserver(() => { if (duoT) return; duoT = requestAnimationFrame(() => { duoT = 0; duoScan(); }); }).observe(document.documentElement, { childList: true, subtree: true });
