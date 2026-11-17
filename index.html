@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261116235554";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261117123335";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -3632,6 +3632,28 @@ html.lh body.desktop.hasbg .appbar{background:color-mix(in srgb, var(--bg) 55%, 
 html.lh body.desktop.hasbg .toolbar{background:color-mix(in srgb, var(--side-solid) 72%, transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 html.lh body.hasbg .h7drag{background:color-mix(in srgb, var(--bg) 85%, transparent)}
 
+.imwarn{margin:10px 0 0;color:var(--fg-2)}
+/* to-do in narrow places (topic side panel, study side panel, small windows): the task name gets the full width,
+   its subject, time and menu go on a line underneath */
+.tdo{container-type:inline-size;container-name:tdo}
+@container tdo (max-width:460px){
+  .tdo .tdr:not(.tdh):not(.tdgap){flex-wrap:wrap;row-gap:2px;align-items:flex-start}
+  .tdo .tdr:not(.tdh):not(.tdgap) > .tdck{margin-top:1px}
+  .tdo .tdr .tdt{flex:1 1 0;min-width:0}
+  .tdo .tdr .tdtx{overflow-wrap:break-word;word-break:normal;hyphens:none}
+  .tdo .tdr .tdmeta{flex:1 0 100%;justify-content:flex-start;padding-left:40px;margin:0;gap:4px;opacity:1}
+  .tdo .tdr .tdmeta:not(:has(.tdsub:not(.empty), .tdtime.set)){display:none}
+  .tdo .tdr:hover .tdmeta, .tdo .tdr:focus-within .tdmeta{display:flex}
+  .tdo:not(.selmode) .tdr .tdselb{display:none}
+  .tdo .tdr .tdsubn{max-width:12em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+
+@container tdo (max-width:460px){
+  .tdo .tdr:not(.tdh):not(.tdgap):hover .tdmeta,.tdo .tdr:not(.tdh):not(.tdgap):focus-within .tdmeta{display:flex}
+  .tdo .tdadd{flex-wrap:wrap;row-gap:6px}
+  .tdo .tdadd input{flex:1 1 0;min-width:0}
+  .tdo .tdadd:focus-within .tdaddx,.tdo .tdadd:has(input:not(:placeholder-shown)) .tdaddx{flex:1 0 100%;max-width:none;justify-content:flex-start;padding-left:28px;flex-wrap:wrap}
+}
 
 /* iPad / browser tweaks */
 html.hosted body.desktop .toolbar{padding-top:max(22px, var(--sat))}
@@ -6791,6 +6813,21 @@ async function readAnki(bytes, fileName){
     if (map) for (const [k, name] of Object.entries(map)){ if (z[k]) media.set(name, z[k]); }
     else pbRead(m).filter(([f]) => f === 1).forEach(([, e], idx) => { let name = '', key = String(idx); for (const [f, v] of pbRead(e)){ if (f === 1) name = pbStr(v); if (f === 255) key = String(v); } if (name && z[key]) media.set(name, z[key]); });
   }
+  // pictures are matched loosely: Anki keeps names as typed (accents, spaces, capitals), but fields can hold them
+  // URL-encoded, with a ./ or folder in front, or decomposed accents (macOS); some decks keep pictures in the zip
+  // under their own names, and some paste them straight into the field as data: links
+  const mNorm = s => { let t = String(s || ''); for (let k = 0; k < 2; k++){ try { const d = decodeURIComponent(t); if (d === t) break; t = d; } catch { break; } } return t.split(/[?#]/)[0].replace(/^\.?\//, '').split(/[\\/]/).pop().normalize('NFC').trim().toLowerCase(); };
+  const mIdx = new Map(); for (const k of media.keys()) mIdx.set(mNorm(k), k);
+  const zIdx = new Map(); for (const k of Object.keys(z)) if (/\.(png|jpe?g|gif|webp|svg|bmp|heic|avif)$/i.test(k)) zIdx.set(mNorm(k), k);
+  let missing = 0, dataN = 0;
+  const mFind = n => {
+    if (!n) return null;
+    if (/^data:image\//i.test(n)){ try { const [h, b] = n.split(','), ext = (/image\/([a-z0-9+]+)/i.exec(h)?.[1] || 'png').replace('jpeg', 'jpg').replace('svg+xml', 'svg'), bin = /;base64/i.test(h) ? atob(b) : decodeURIComponent(b), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); const name = `pasted-${++dataN}.${ext}`; media.set(name, u); return name; } catch { missing++; return null; } }
+    if (media.has(n)) return n;
+    const k = mNorm(n), hit = mIdx.get(k); if (hit) return hit;
+    const zk = zIdx.get(k); if (zk){ media.set(zk, z[zk]); mIdx.set(k, zk); return zk; }
+    missing++; return null;
+  };
   const SQL = await (await loadLib('sql'))(); const db = new SQL.Database(col);
   const q = (sql) => { try { const r = db.exec(sql)[0]; return r ? r.values.map(v => Object.fromEntries(r.columns.map((c, i) => [c, v[i]]))) : []; } catch { return null; } };
   const colRow = q('SELECT crt, models, decks FROM col')?.[0] || q('SELECT crt FROM col')?.[0] || {};
@@ -6827,10 +6864,11 @@ async function readAnki(bytes, fileName){
       srs = { ...freshSrs(), state: r.type === 2 ? 'review' : r.type === 3 ? 'relearning' : 'learning', ivl: Math.max(0, r.ivl > 0 ? r.ivl : 0), ease: r.factor ? r.factor / 1000 : 2.5, reps: r.reps || 0, lapses: r.lapses || 0, due: isFinite(due) ? due : now };
       srs.last = r.type === 2 ? srs.due - srs.ivl * DAY : now; srs.intro = srs.last;
     }
-    const qImgs = Q.imgs.filter(n => media.has(n)), aImgs = A.imgs.filter(n => media.has(n) && !qImgs.includes(n));
+    const qImgs = [...new Set(Q.imgs.map(mFind).filter(Boolean))], aImgs = [...new Set(A.imgs.map(mFind).filter(n => n && !qImgs.includes(n)))];
     cards.push({ path: decks[r.did] || ['Imported'], qText: Q.text, solText: A.text, qImgs, aImgs, srs, suspended: r.queue === -1, tags: String(r.tags || '').trim() });
   }
-  return { kind: 'anki', name: fileName.replace(/\.(apkg|colpkg)$/i, ''), cards, media, hasProgress: cards.some(c => c.srs) };
+  const used = new Set(cards.flatMap(c => [...c.qImgs, ...c.aImgs])); for (const k of [...media.keys()]) if (!used.has(k)) media.delete(k);
+  return { kind: 'anki', name: fileName.replace(/\.(apkg|colpkg)$/i, ''), cards, media, missing, hasProgress: cards.some(c => c.srs) };
 }
 
 function readText(text, fileName){
@@ -6894,7 +6932,7 @@ function importDialog(){
   importSel = new Set(importHere ? [importHere] : []);
   openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="imh" style="max-width:560px"><header><h2 id="imh">Import from ${src}</h2></header>
     <div class="body">
-      <div class="imsum"><span class="imbig">${n}</span> card${n === 1 ? '' : 's'}${imgs ? ` · ${imgs} image${imgs === 1 ? '' : 's'}` : ''}${d.cards.some(c => c.path.length) ? ` · ${new Set(d.cards.map(c => c.path.join('\x1f'))).size} deck${new Set(d.cards.map(c => c.path.join('\x1f'))).size === 1 ? '' : 's'}` : ''}<span class="sub" style="display:block;font-size:12.5px;margin-top:2px">${esc(d.name)}</span></div>
+      <div class="imsum"><span class="imbig">${n}</span> card${n === 1 ? '' : 's'}${imgs ? ` · ${imgs} picture${imgs === 1 ? '' : 's'}` : ''}${d.cards.some(c => c.path.length) ? ` · ${new Set(d.cards.map(c => c.path.join('\x1f'))).size} deck${new Set(d.cards.map(c => c.path.join('\x1f'))).size === 1 ? '' : 's'}` : ''}<span class="sub" style="display:block;font-size:12.5px;margin-top:2px">${esc(d.name)}</span></div>${d.missing ? `<p class="hint imwarn">${d.missing} picture${d.missing === 1 ? '' : 's'} used on these cards ${d.missing === 1 ? 'isn’t' : 'aren’t'} in the file, so ${d.missing === 1 ? 'it' : 'they'} can’t come across. In Anki, export the deck again with <b>Include media</b> ticked.</p>` : ''}
       ${d.cards.some(c => c.path.length) ? `<div class="imtree">${importTree(d)}</div>` : ''}
       ${d.whole ? '<p class="sub" style="margin:0">These subjects will be added to your library. Any subject with the same name as one you already have is merged into it.</p>' : `<div class="field"><span class="lbl">Put it</span>
         <label class="check"><input type="radio" name="imdest" value="new" ${importHere ? '' : 'checked'}> As a new subject called</label>
@@ -6971,7 +7009,8 @@ async function runImport(){
   }
   importData = null; closeDialog();
   view = rootId ? { name: 'overview', node: into ? destRef : rootId } : { name: 'decks', node: null }; render();
-  toast(`Imported ${done} card${done === 1 ? '' : 's'}${failed ? ` (${failed} image${failed === 1 ? '' : 's'} couldn't be read)` : ''} · ⌘Z to undo`, 5000);
+  const lost = failed + (d.missing || 0);
+  toast(`Imported ${done} card${done === 1 ? '' : 's'}${lost ? ` (${lost} picture${lost === 1 ? '' : 's'} couldn't come across)` : ''} · ⌘Z to undo`, 5000);
 }
 
 /* export */
@@ -9371,7 +9410,7 @@ document.addEventListener('click', async e => {
     case 'edit': return editor(id || study?.cur);
     case 'upd-check': return updCheck(true);
     case 'upd-go': return updGo();
-    case 'upd-later': return $('#updbar')?.remove();
+    case 'upd-later': if (updS.bar) ls.set('md-upd-later', { build: updS.bar, at: Date.now() }); return $('#updbar')?.remove();
     case 'shell-later': ls.set('md-rel-later', { tag: a.dataset.v, at: Date.now() }); return $('#updbar')?.remove();
     case 'ednav': return edNav(+a.dataset.dir);
     case 'clean-img': { e.stopPropagation(); if (!ed) return; const z = a.dataset.zone, i = +a.dataset.i, e0 = ed; const im = z === 'q' ? (e0.card.qImgs || [])[i] : (e0.card.solImgs || [])[i]; if (!im) return;
@@ -9519,12 +9558,15 @@ document.addEventListener('keydown', e => {
 const fmtBuild = b => b && /^\d{14}$/.test(b) ? new Date(+b.slice(0, 4), +b.slice(4, 6) - 1, +b.slice(6, 8), +b.slice(8, 10), +b.slice(10, 12)).toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'unknown';
 const updS = { ready: null, lastWeb: 0, manual: false };
 function updBar(m){
+  updS.heard = Date.now();
   if (m.state === 'current'){ if (updS.manual) toast('Recall is up to date'); updS.manual = false; return updAbout(); }
   if (m.state === 'error'){ if (updS.manual) toast('Couldn’t check for updates: ' + (m.msg || 'no connection')); updS.manual = false; return; }
   updS.manual = false;
   $('#updbar')?.remove();
   const el = document.createElement('div'); el.id = 'updbar'; el.className = 'updbar'; el.setAttribute('role', 'status');
-  if (m.state === 'shell') el.innerHTML = `<span>The latest Recall update needs a one-time reinstall of the app.</span><a class="btn sm primary" href="https://whisz12.github.io/Recall/download.html" target="_blank" rel="noopener">Download</a><button class="btn sm" data-act="upd-later">Later</button>`;
+  updS.bar = m.build || '';
+  if (m.state === 'stuck') el.innerHTML = `<span><b>A new version of Recall is out, but this app couldn’t download it.</b> Quit Recall completely (${window.desktop?.platform === 'win32' ? 'close it, then check it isn’t still in the system tray' : '⌘Q'}) and open it again. It picks the update up as it starts.</span><button class="btn sm" data-act="upd-later">Later</button>`;
+  else if (m.state === 'shell') el.innerHTML = `<span>The latest Recall update needs a one-time reinstall of the app.</span><a class="btn sm primary" href="https://whisz12.github.io/Recall/download.html" target="_blank" rel="noopener">Download</a><button class="btn sm" data-act="upd-later">Later</button>`;
   else { updS.ready = m.build; el.innerHTML = `<span><b>A new version of Recall is ready.</b> ${window.desktop ? 'Restart to use it.' : 'Reload to use it.'}</span><button class="btn sm primary" data-act="upd-go">${window.desktop ? 'Restart now' : 'Reload'}</button><button class="btn sm" data-act="upd-later">Later</button>`; }
   document.body.appendChild(el); updAbout();
 }
@@ -9892,7 +9934,18 @@ function ppSubjectsDialog(){
 let ppRelayOk = null;
 const ppCanFetch = () => !!window.desktop?.paperFetch || (cloudOn() && ppRelayOk !== false);
 async function ppGetPaper(no, title){
-  if (window.desktop?.paperFetch) return window.desktop.paperFetch(no, title);
+  if (window.desktop?.paperFetch){
+    let err = null;
+    for (let k = 0; k < 2; k++){ try { return await window.desktop.paperFetch(no, title); } catch (e){ err = e; if (/Not a THSC paper|odd reply|didn.t send a PDF/.test(String(e?.message))) break; await new Promise(r => setTimeout(r, 1200)); } }
+    // the app couldn't reach THSC (often a school or work network blocking it): go through Recall's download service if signed in
+    if (cloudOn() && ppRelayOk !== false){ try { return await ppGetPaperRelay(no, title); } catch (e2){ if (!e2?.quiet) err = e2; } }
+    const m = String(err?.message || '').replace(/^Error invoking remote method '[^']*': (Error: )?/, '');
+    const net = /fetch failed|ENOTFOUND|ECONN|ETIMEDOUT|ERR_|abort|network|certificate|THSC replied 40[13]/i.test(m);
+    throw new Error(net ? `this computer couldn’t reach THSC${m ? ': ' + m : ''}. A school or work network can block it; try another Wi-Fi${cloudOn() ? '' : ', or turn on sync so Recall can fetch it for you'}` : m || 'no connection');
+  }
+  return ppGetPaperRelay(no, title);
+}
+async function ppGetPaperRelay(no, title){
   const { data } = await cloud.sb.auth.getSession(), tok = data?.session?.access_token; if (!tok) throw new Error('Sign in to sync first');
   const r = await fetch(CLOUD_URL.replace(/\/$/, '') + '/functions/v1/thsc-paper', { method: 'POST', headers: { Authorization: 'Bearer ' + tok, apikey: CLOUD_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ no, title }) });
   if (r.status === 404){ ppRelayOk = false; const e = new Error('not set up'); e.quiet = true; throw e; }
@@ -9911,7 +9964,7 @@ async function ppFetchOpen(item){
     return ppAddPdf(item, file);
   } catch (e){
     console.warn(where + ' download', e); if (!$('#ppfh')) return;
-    closeDialog(); ppGetDialog(item, e?.quiet ? '' : `Couldn't get it inside Recall (${String(e?.message || 'no connection').replace(/^Error invoking remote method '[^']*': (Error: )?/, '')}), so open it on ${where} instead.`);
+    closeDialog(); ppGetDialog(item, e?.quiet ? '' : `Couldn’t get it inside Recall: ${String(e?.message || 'no connection').replace(/^Error invoking remote method '[^']*': (Error: )?/, '').replace(/\.$/, '')}. You can still open it on ${where} and drop the PDF in.`);
   }
 }
 /* 1.29: the Mac and Windows apps fetch NESA's exam pages and PDFs for the page (nsw.gov.au sends no CORS header,
@@ -11764,6 +11817,38 @@ function h7ppGroup(name, k, xs, q, row){
     const sub = (ppBy === 'year' ? `${fx.length} school${fx.length === 1 ? '' : 's'}` : `${fx.length} paper${fx.length === 1 ? '' : 's'}, ${lo === hi ? lo : lo + '–' + hi}`) + (done ? `, ${done} done` : '');
     return `<div class="h7ppfo ${open ? 'open' : ''}"><button class="h7ppfh" data-act="pp-grp" data-v="${esc(id)}" aria-expanded="${open}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><b>${esc(f)}</b><small>${sub}</small></button>${open ? `<div class="h7ppfi">${fx.map(i => row(i, ppBy === 'school' ? 'year' : 'school')).join('')}</div>` : ''}</div>`;
   }).join('')}</div>`;
+}
+
+/* ---------- desktop: make sure a new version reaches every app, even when the app's own updater is stuck ----------
+   Older Mac/Windows apps check GitHub themselves, but a check that hangs (sleep, Wi-Fi change, a school proxy) blocks
+   every later check until Recall is quit. The page double-checks GitHub every half hour and when the window comes back,
+   nudges the app, and if nothing arrives says how to get it. "Later" waits 8 hours before asking again. */
+let updWLast = 0;
+async function updWatch(force){
+  if (!window.desktop?.appInfo || !navigator.onLine) return;
+  if (!force && Date.now() - updWLast < 25 * 60e3) return; updWLast = Date.now();
+  try {
+    const r = await fetch('https://raw.githubusercontent.com/whisz12/Recall/main/version.json?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) return;
+    const v = await r.json(); if (!/^\d{14}$/.test(v?.build || '')) return;
+    const info = await window.desktop.appInfo(); if (!info) return;
+    const loaded = info.build || '0';
+    if (v.build <= loaded || $('#updbar')) return;
+    const later = ls.get('md-upd-later', null); if (later && later.build === v.build && Date.now() - later.at < 8 * HOUR) return;
+    if (info.ready && info.ready >= v.build) return updBar({ state: 'ready', build: info.ready });
+    if (verNum(info.shell) < verNum(v.minShell || '0')) return updBar({ state: 'shell', min: v.minShell, build: v.build });
+    const asked = Date.now(); updS.heard = 0;
+    try { window.desktop.checkUpdate?.(); } catch {}
+    setTimeout(async () => {
+      if (updS.heard >= asked || $('#updbar')) return;
+      const i2 = await window.desktop.appInfo().catch(() => null);
+      if (i2?.ready && i2.ready >= v.build) return updBar({ state: 'ready', build: i2.ready });
+      updBar({ state: 'stuck', build: v.build });
+    }, 90e3);
+  } catch (e){ console.warn('update watch', e); }
+}
+if (window.desktop?.appInfo){
+  setTimeout(() => updWatch(true), 60e3); setInterval(() => updWatch(false), 30 * 60e3);
+  addEventListener('focus', () => updWatch(false));
 }
 
 initStore().finally(() => { lhMigrate(); designMigrate(); h7Migrate(); if (S.ready) settingsRepair(); cloudBoot(); });
