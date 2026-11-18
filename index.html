@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261119000632";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261119005011";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -3957,6 +3957,15 @@ body:not(.desktop):has(#fpill) #root{padding-bottom:56px}
 .hrstimes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .hrsfoot{margin:30px 0 0;color:var(--fg-3);font-size:12px}
 @media (max-width:900px){ .hrs,.hrsswrap{padding-left:18px;padding-right:18px} .hrs{padding-bottom:140px} .hrsgrid{grid-template-columns:1fr} .hrsgrid>section+section{margin-top:28px} .hrsbig b{font-size:52px} .hplanner{grid-template-columns:1fr} .hrsfacts{gap:10px 24px} .hweek{height:200px;gap:6px} }
+
+/* the subject tabs stay at the top while you scroll on iPad and phone, so you can always switch */
+@media (pointer:coarse){
+  html.lh body:not(.desktop) #root .stabs.h7tabs{position:sticky;top:var(--tbh,56px);z-index:12;background:var(--bg);padding-top:8px;margin-top:-8px}
+  html.lh.hosted body.desktop #root .stabs.h7tabs{position:sticky;top:calc(var(--appbar) + var(--sat,0px));z-index:12;background:var(--bg);padding-top:10px;margin-top:-10px}
+}
+
+/* phone: the top bar starts at the very top and pads itself below the status bar band, so nothing on the page slides under it */
+body:not(.desktop) header.toolbar{top:0;padding-top:var(--sat)}
 
 
 /* iPad / browser tweaks */
@@ -9489,7 +9498,7 @@ document.addEventListener('click', async e => {
   if (act.startsWith('hrs-')) return hrsAction(act, a, e);
   switch (act){
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
-    case 'side-subj': { scrollTo({ top: 0 }); if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; renderDecks(); return renderSideSubjects(); } ls.set('md-subj', id); study = null; return go('decks'); }
+    case 'side-subj': { if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; return subjSwapDraw(); } ls.set('md-subj', id); study = null; return go('decks'); }
     case 'hist-back': return histGo(-1);
     case 'px-view': if (!pdfx) return; pdfx.view = a.dataset.v === 'pages' ? 'pages' : 'cards'; return pxDraw();
     case 'px-drawk': if (!pdfx) return; pdfx.drawSol = a.dataset.v === 's' && pdfx.sel != null; return pxDraw();
@@ -9583,7 +9592,7 @@ document.addEventListener('click', async e => {
     case 'th-cdone': thEdit = null; return renderThemes();
     case 'th-pattern': { const ts0 = themeSettings(), ts = { ...ts0, patterns: { ...(ts0.patterns || {}), [activeBase(ts0)]: a.dataset.p } }; return themeReveal(() => { saveTheme(ts); renderThemes(); }, e.clientX || null, e.clientY || null); }
     case 'hist-fwd': return histGo(1);
-    case 'subj-tab': { scrollTo({ top: 0 }); if (ls.get('md-subj', null) === id && $('.stab[aria-selected="true"]')?.dataset.id === id) return; const on = $('.stab[aria-selected="true"]'); tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; renderDecks(); renderSideSubjects(); return; }
+    case 'subj-tab': { if (ls.get('md-subj', null) === id && $('.stab[aria-selected="true"]')?.dataset.id === id) return; const on = $('.stab[aria-selected="true"]'); tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; subjSwapDraw(); return; }
     case 'study-one': return startStudy(null, true, id);
     case 'practise-forgot': { const ids = forgotIn(id).map(c => c.id); return ids.length ? startStudy(id, true, null, ids) : null; }
     case 'timer-menu': { if ($('#tpop')){ $('#tpop').remove(); return; } return timerMenu(a); }
@@ -13042,6 +13051,123 @@ async function hrsAction(act, a){
     }
   }
 }
+
+/* switching subjects on iPad/phone: iOS can lose track of the scroll position when the page shrinks under a moving finger
+   and a script scrolls at the same moment, leaving the top unreachable. So: hold the page's height while the new subject
+   draws, jump to the top only after it's drawn (and only if you were below the tabs), then let the height go. */
+function tbhSet(){ if (document.body.classList.contains('desktop')) return; const t = document.querySelector('header.toolbar'); if (!t) return; const r = t.getBoundingClientRect(); if (r.top <= 1 && r.height < 200) document.documentElement.style.setProperty('--tbh', Math.round(r.bottom) + 'px'); }
+addEventListener('resize', tbhSet); setTimeout(tbhSet, 600); setInterval(tbhSet, 4000);
+function subjSwapDraw(){
+  const root = $('#root'), h = root.offsetHeight;
+  root.style.minHeight = h + 'px';
+  renderDecks(); renderSideSubjects();
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const tabs = $('.stabs'), top = tabs ? tabs.getBoundingClientRect().top : 0;
+    if (scrollY > 0 && top < 0 || scrollY > 200) (document.scrollingElement || document.documentElement).scrollTop = 0;
+    setTimeout(() => { root.style.minHeight = ''; }, 450);
+  }));
+}
+
+/* ---------- Study timer across your devices ----------
+   The timer belongs to whichever device started it (focus.dev). Every other signed-in device mirrors it live over a
+   Realtime broadcast channel just for your account: the same clock, subject and pause state, ticking in step.
+   Only the device running it logs sessions, writes study time and pauses when you leave it, so nothing is counted twice.
+   Pressing Take a break / Stop on a mirror asks the running device to do it; pressing Start on a mirror takes it over.
+   If the running device goes quiet (phone locked, app closed) the mirror shows the timer as paused after 75 seconds. */
+const FDEV = ls.get('md-devid', null) || (() => { const d = Math.random().toString(36).slice(2, 10); ls.set('md-devid', d); return d; })();
+const fMirror = () => !!focus.dev && focus.dev !== FDEV && focus.state !== 'idle';
+let fsChan = null, fsHeard = 0, fsUid = null;
+const fsState = () => ({ state: focus.state, subj: focus.subj, since: focus.since, acc: focus.acc, subjAcc: focus.subjAcc, day: focus.day, by: focus.by, leftAt: focus.leftAt, room: focus.room, dev: focus.dev || FDEV, t: focus.t || Date.now() });
+function fsSend(kind = 'focus', extra = {}){
+  fsConnect(); if (!fsChan) return;
+  try { fsChan.send({ type: 'broadcast', event: 'focus', payload: { kind, from: FDEV, ...(kind === 'focus' || kind === 'beat' ? fsState() : {}), ...extra } }); } catch {}
+}
+function fsMine(){ focus.dev = FDEV; focus.t = Date.now(); fSave(); fsSend(); }
+function fsRepaint(){
+  fPaint();
+  if (dialogOpen()) return;
+  if (view.name === 'group') renderGroup();
+  else if (view.name === 'hours'){ renderHours(); clearTimeout(fsRepaint.t); fsRepaint.t = setTimeout(() => hrsLoad(true), 2500); }
+}
+function fsRecv(p){
+  if (!p || p.from === FDEV) return;
+  if (p.kind === 'hello'){ if (focus.dev === FDEV && focus.state !== 'idle') fsSend(); return; }
+  if (p.kind === 'cmd'){
+    if (focus.dev !== FDEV) return;
+    if (p.cmd === 'pause') fPause('you'); else if (p.cmd === 'stop') fStop();
+    fsRepaint(); return;
+  }
+  if (p.kind !== 'focus' && p.kind !== 'beat') return;
+  fsHeard = Date.now();
+  if (p.kind === 'beat' && focus.dev === p.dev && focus.state === p.state && focus.since === p.since) return;
+  // this device is running and the other one just paused or stopped: keep running, but take its banked time
+  if (focus.dev === FDEV && focus.state === 'studying' && p.state !== 'studying'){
+    if (p.day === focus.day){ focus.acc = Math.max(focus.acc, +p.acc || 0); for (const [k, v] of Object.entries(p.subjAcc || {})) focus.subjAcc[k] = Math.max(focus.subjAcc[k] || 0, v); fSave(); fsRepaint(); }
+    return;
+  }
+  if ((p.t || 0) < (focus.t || 0)) return;
+  // another device's timer is newer: if this one was running, bank its time first, then follow the other
+  if (focus.dev === FDEV && focus.state === 'studying') fBank();
+  focus = { ...focus, state: p.state, subj: p.subj || '', since: +p.since || 0, acc: +p.acc || 0, subjAcc: p.subjAcc || {}, day: p.day || fDay(), by: p.by || '', leftAt: +p.leftAt || 0, room: p.room || null, dev: p.dev, t: p.t, ack: true };
+  fSave(); fsRepaint();
+}
+function fsConnect(){
+  const uid = grOn() ? grUid() : null;
+  if (uid === fsUid) return;
+  if (fsChan){ try { cloud.sb.removeChannel(fsChan); } catch {} fsChan = null; }
+  fsUid = uid; if (!uid) return;
+  fsChan = cloud.sb.channel('focus-' + uid, { config: { broadcast: { self: false } } })
+    .on('broadcast', { event: 'focus' }, m => fsRecv(m.payload))
+    .subscribe(st => { if (st === 'SUBSCRIBED'){ if (focus.dev === FDEV && focus.state !== 'idle') fsSend(); else fsSend('hello'); } });
+  fsAdopt();
+}
+/* opening Recall while another device is mid-session: start from what the account says */
+async function fsAdopt(){
+  try {
+    const { data: s } = await cloud.sb.from('study_status').select('*').eq('user_id', grUid()).maybeSingle();
+    if (!s || s.state === 'idle' || s.day !== fDay()) return;
+    const at = Date.parse(s.updated_at) || 0, since = s.since ? Date.parse(s.since) : 0;
+    if (focus.dev === FDEV && focus.state === 'studying') return;
+    if (at <= (focus.t || 0) || (s.state === 'studying' && Date.now() - at > 3 * 60e3)) return;
+    focus = { ...focus, state: s.state, subj: s.subject || '', since, acc: s.today_secs || 0, day: s.day, by: s.left_at ? 'left' : '', leftAt: s.left_at ? Date.parse(s.left_at) : 0, room: s.room, dev: focus.dev && focus.dev !== FDEV ? focus.dev : 'other', t: at, ack: true };
+    fsHeard = at; fSave(); fsRepaint();
+  } catch {}
+}
+/* the timer functions, made aware of which device owns the run */
+{
+  const start0 = fStart, pause0 = fPause, stop0 = fStop, roll0 = fRoll, back0 = fBack, push0 = grPushDay, stat0 = grPushStatus;
+  fStart = async function(subj, room = null){
+    if (fMirror() && focus.state === 'studying'){ fsSend('cmd', { cmd: 'pause' }); focus = { ...focus, state: 'paused', by: 'you' }; }
+    focus.dev = FDEV;
+    const r = await start0(subj, room); fsMine(); return r;
+  };
+  fPause = function(by = 'you', t){
+    if (fMirror()){
+      if (by === 'left' || by === 'done') return;   // only the device running the timer pauses for leaving or a finished session
+      fsSend('cmd', { cmd: 'pause' }); focus = { ...focus, state: 'paused', by, t: Date.now() }; fSave(); fPaint(); return;
+    }
+    const was = focus.state; const r = pause0(by, t); if (was === 'studying') fsMine(); return r;
+  };
+  fStop = function(){
+    if (fMirror()){ fsSend('cmd', { cmd: 'stop' }); focus = { ...focus, state: 'idle', by: '', room: null, t: Date.now() }; fSave(); fPaint(); return; }
+    const r = stop0(); fsMine(); return r;
+  };
+  fRoll = function(){
+    if (fMirror()){ const d = fDay(); if (focus.day !== d){ focus = { ...focus, acc: 0, subjAcc: {}, day: d }; fSave(); } return; }
+    return roll0();
+  };
+  fBack = function(){ if (fMirror()) return; return back0(); };
+  grPushDay = function(){ if (fMirror()) return; return push0(); };
+  grPushStatus = function(){ if (fMirror()) return; return stat0(); };
+}
+setInterval(() => {
+  fsConnect();
+  if (focus.dev === FDEV && focus.state === 'studying') fsSend('beat');
+  // the running device went quiet: show it as paused here (it will correct itself when that device is back)
+  if (fMirror() && focus.state === 'studying' && Date.now() - Math.max(fsHeard, focus.t || 0) > 75e3){ focus = { ...focus, state: 'paused', by: 'left', leftAt: Math.max(fsHeard, focus.t || 0), acc: Math.min(86400, focus.acc + Math.max(0, (Math.max(fsHeard, focus.t || 0) - focus.since) / 1000)), since: 0 }; fSave(); fsRepaint(); }
+}, 15000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden){ fsConnect(); fsSend('hello'); if (!fsChan) return; setTimeout(() => { if (grOn()) fsAdopt(); }, 600); } });
+setTimeout(fsConnect, 1500); setInterval(fsConnect, 3000);
 
 initStore().finally(() => { lhMigrate(); designMigrate(); h7Migrate(); if (S.ready) settingsRepair(); cloudBoot(); });
 render();
