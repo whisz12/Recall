@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261118212447 min-shell:1.27.0 -->
+<!-- recall-build:20261119000632 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -3940,6 +3940,89 @@ html.examon .fpill{display:none}
 
 body:not(.desktop):has(#fpill) #root{padding-bottom:56px}
 
+/* Study time stats */
+.hrs{max-width:1180px;margin:0 auto;padding:0 40px 56px}
+.hrsswitch{display:inline-flex;border:1px solid var(--border-2);border-radius:8px;overflow:hidden;margin-bottom:22px}
+.hrsswitch [role="tab"]{border:0;background:none;color:var(--fg-3);font:400 13px var(--ui);padding:7px 16px;cursor:pointer}
+.hrsswitch [role="tab"]+[role="tab"]{border-left:1px solid var(--border-2)}
+.hrsswitch [role="tab"][aria-selected="true"]{background:var(--surface-2);color:var(--fg);font-weight:500}
+.hrsswrap{max-width:1180px;margin:0 auto;padding:0 40px}
+.hrsnav{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:26px}
+.hrsmode{display:flex;border:1px solid var(--border-2);border-radius:6px;overflow:hidden}
+.hrsmode [role="radio"]{border:0;background:none;color:var(--fg-3);font:400 13px var(--ui);padding:5px 14px;cursor:pointer}
+.hrsmode [role="radio"]+[role="radio"]{border-left:1px solid var(--border-2)}
+.hrsmode [role="radio"][aria-checked="true"]{background:var(--surface-2);color:var(--fg)}
+.hrsstep{display:flex;align-items:center;gap:6px}
+.hrsstep h1{margin:0 6px;font:400 20px var(--ui);min-width:0}
+.hrsstep .iconbtn{width:30px;height:30px;display:grid;place-items:center;border:0;background:none;color:var(--fg-2);border-radius:6px;cursor:pointer}
+.hrsstep .iconbtn:hover{background:var(--hover)}
+.hrsstep .iconbtn:disabled{opacity:.3;cursor:default;background:none}
+.hrsstep svg{width:16px;height:16px}
+.hrsstep .link{margin-left:8px;font-size:13px}
+.hrstop{display:flex;align-items:flex-end;justify-content:space-between;gap:24px 48px;flex-wrap:wrap;padding-bottom:26px;border-bottom:1px solid var(--border)}
+.hrsbig{display:flex;flex-direction:column;gap:8px}
+.hrsbig b{font:300 64px/1 var(--ui);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--fg)}
+.hrsbig b small{font-size:26px;color:var(--fg-3);margin-left:2px;letter-spacing:0}
+.hdelta{color:var(--fg-3);font-size:13px}
+.hdelta.up{color:var(--good)}
+.hrsfacts{display:flex;gap:10px 36px;flex-wrap:wrap;margin:0}
+.hrsfacts div{display:flex;flex-direction:column;gap:3px}
+.hrsfacts dt{color:var(--fg-3);font-size:12px}
+.hrsfacts dd{margin:0;font:400 17px var(--ui);font-variant-numeric:tabular-nums;color:var(--fg)}
+.hrsgrid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:0 56px;padding-top:24px}
+.hrsgrid h2{margin:0 0 14px;font:400 13px var(--ui);color:var(--fg-3)}
+.hrsgrid .hrsh2b{margin-top:28px}
+.hrsnone{color:var(--fg-3);font-size:13px;margin:0 0 10px;line-height:1.5}
+/* the 10-minute planner: the one bold thing on the day view */
+.hplanner{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+.hpr{display:grid;grid-template-columns:30px repeat(6,1fr);gap:2px;align-items:center;height:22px;margin-bottom:2px}
+.hpr span{color:var(--fg-3);font-size:11px;font-variant-numeric:tabular-nums}
+.hpr i{display:block;height:100%;border-radius:3px;background:var(--surface-2);position:relative;overflow:hidden}
+.hpr i[style]::after{content:"";position:absolute;inset:0;width:calc(var(--f) * 100%);background:var(--c);border-radius:inherit}
+.hpr:nth-child(6n) {margin-bottom:8px}
+.hrsbar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px;margin-bottom:14px}
+.hrsbar i{display:block;min-width:3px}
+.hrsalloc,.hrsses{list-style:none;margin:0 0 6px;padding:0}
+.hrsalloc li,.hrsses li{display:grid;grid-template-columns:10px minmax(0,1fr) auto auto;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px}
+.hrsses li{grid-template-columns:10px auto minmax(0,1fr) auto 24px}
+.hdot{width:8px;height:8px;border-radius:2px}
+.hnm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hpc{color:var(--fg-3);font-size:12px;font-variant-numeric:tabular-nums}
+.hrsalloc b,.hrsses b{font-weight:400;font-variant-numeric:tabular-nums;color:var(--fg);text-align:right}
+.htm{color:var(--fg-2);font-variant-numeric:tabular-nums;font-size:13px}
+.hx{width:24px;height:24px;border:0;background:none;color:var(--fg-3);border-radius:5px;display:grid;place-items:center;cursor:pointer;opacity:.5}
+.hx svg{width:14px;height:14px}
+.hrsses li:hover .hx,.hx:focus-visible{opacity:1}
+.hx:hover{background:var(--hover);color:var(--again)}
+/* week bars */
+.hweek{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;height:240px;background-image:linear-gradient(to top,var(--border) 1px,transparent 1px);background-size:100% calc((100% - 40px) / var(--n));background-position:0 calc(100% - 22px);background-repeat:repeat-y}
+.hwd{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-end;gap:6px;border:0;background:none;padding:0;cursor:pointer;color:var(--fg-3);font:400 12px var(--ui);min-width:0}
+.hwbar{display:flex;flex-direction:column-reverse;height:calc(100% - 40px);justify-content:flex-start;border-radius:4px;overflow:hidden}
+.hwbar i{display:block;width:100%}
+.hwv{font-variant-numeric:tabular-nums;text-align:center;color:var(--fg-2);font-size:11px;white-space:nowrap;min-height:13px}
+.hwl{text-align:center}
+.hwd.today .hwl{color:var(--fg);font-weight:500}
+.hwd.future{opacity:.4;pointer-events:none}
+.hwd:hover .hwbar{filter:brightness(1.08)}
+/* month calendar */
+.hcalh,.hcalg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.hcalh span{color:var(--fg-3);font-size:11px;text-align:center;padding-bottom:4px}
+.hcd{aspect-ratio:1.15;border:0;border-radius:6px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:5px 6px;font:400 12px var(--ui);color:var(--fg-2);background:var(--surface-2);cursor:pointer;min-width:0}
+.hcd small{font-size:10px;font-variant-numeric:tabular-nums;color:inherit;opacity:.85}
+.hcd:disabled{opacity:.35;cursor:default}
+.hcd.l1{background:color-mix(in srgb,var(--accent) 20%,var(--surface-2))}
+.hcd.l2{background:color-mix(in srgb,var(--accent) 40%,var(--surface-2))}
+.hcd.l3{background:color-mix(in srgb,var(--accent) 60%,var(--surface-2));color:#fff}
+.hcd.l4{background:color-mix(in srgb,var(--accent) 80%,var(--surface-2));color:#fff}
+.hcd.l5{background:var(--accent);color:#fff}
+.hcd.today{box-shadow:inset 0 0 0 1.5px var(--fg)}
+.hlegend{display:flex;align-items:center;gap:4px;margin-top:10px;color:var(--fg-3);font-size:11px}
+.hlegend .hcd{width:14px;height:14px;aspect-ratio:auto;padding:0;border-radius:3px;cursor:default}
+.hlegend span:first-child{margin-right:4px}.hlegend span:last-child{margin-left:4px}
+.hrstimes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hrsfoot{margin:30px 0 0;color:var(--fg-3);font-size:12px}
+@media (max-width:900px){ .hrs,.hrsswrap{padding-left:18px;padding-right:18px} .hrs{padding-bottom:140px} .hrsgrid{grid-template-columns:1fr} .hrsgrid>section+section{margin-top:28px} .hrsbig b{font-size:52px} .hplanner{grid-template-columns:1fr} .hrsfacts{gap:10px 24px} .hweek{height:200px;gap:6px} }
+
 </style>
 
 <header class="toolbar"><button class="sidetoggle" data-act="toggle-sidebar" aria-label="Hide sidebar" title="Hide sidebar (⌘S)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="3.5" width="15" height="13" rx="3"/><path d="M7.5 3.5v13"/></svg></button><div class="tin">
@@ -4302,7 +4385,7 @@ function render(){
   renderSideSubjects(); h7NavCounts();
   $('.navmore')?.setAttribute('aria-current', String(['browse', 'papers', 'ppmark', 'stats', 'exam', 'themes'].includes(view.name)));
   document.querySelector('.sideset')?.setAttribute('aria-current', String(view.name === 'themes'));
-  document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'papers' && (view.name === 'ppmark' || (view.name === 'study' && study?.tag === 'Paper mistakes'))) || (b.dataset.nav === 'decks' && (view.name === 'overview' || (view.name === 'study' && study?.tag !== 'Paper mistakes'))))));
+  document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'stats' && view.name === 'hours') || (b.dataset.nav === 'papers' && (view.name === 'ppmark' || (view.name === 'study' && study?.tag === 'Paper mistakes'))) || (b.dataset.nav === 'decks' && (view.name === 'overview' || (view.name === 'study' && study?.tag !== 'Paper mistakes'))))));
   applyTheme();
   const root = $('#root');
   if (!S.ready){ root.innerHTML = '<div class="loading">Loading your collection…</div>'; return; }
@@ -4315,6 +4398,7 @@ function render(){
   else if (view.name === 'exam') renderExam();
   else if (view.name === 'setup') renderSetup();
   else if (view.name === 'group') renderGroup();
+  else if (view.name === 'hours') renderHours();
   else if (view.name === 'themes') renderThemes();
   else if (view.name === 'papers') renderPapers();
   else if (view.name === 'ppmark') renderPPMark();
@@ -4517,6 +4601,7 @@ function renderAppbar(){
   else if (view.name === 'exam') title = '<b>Exam timer</b>';
   else if (view.name === 'setup') title = '<b>Set up decks</b>';
   else if (view.name === 'group') title = '<b>Group study</b>';
+  else if (view.name === 'hours') title = '<b>Progress</b>';
   else if (view.name === 'todo') title = '<b>Plan</b>';
   else if (view.name === 'cal') title = '<b>Calendar</b>';
   else if (view.name === 'themes') title = '<b>Settings</b>';
@@ -9480,6 +9565,7 @@ document.addEventListener('click', async e => {
   if (act === 'pp-back'){ study = null; return go('papers'); }
   if (act.startsWith('pp-')) return ppAction(act, a, e);
   if (act.startsWith('gr-')) return grAction(act, a, e);
+  if (act.startsWith('hrs-')) return hrsAction(act, a, e);
   switch (act){
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
     case 'side-subj': { scrollTo({ top: 0 }); if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; renderDecks(); return renderSideSubjects(); } ls.set('md-subj', id); study = null; return go('decks'); }
@@ -12446,7 +12532,7 @@ async function syGo(){
 const GR_VAPID = 'BHyEy0bqZdCArv2t7TNewyloJdrY2JxIzZZkQQmhYhWHpmGtn8gMd-T4FPBlt17kncNohxpryHXissTJgt1j_cA';
 const gr = { groups: [], members: [], names: {}, status: {}, days: [], rooms: [], me: null, loaded: false, loading: null, err: '', chan: null, cur: ls.get('md-gr-cur', null), rank: 'today', poll: null, seen: {}, lastLoad: 0 };
 const grPrefs = () => ({ start: true, room: true, remind: -1, ...ls.get('md-gr-notif', {}) });
-const fDay = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const fDay = (t = Date.now()) => { const d = new Date(t - 4 * 3600e3);   /* a study day runs 4 am to 4 am */ return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 let focus = { state: 'idle', subj: '', since: 0, acc: 0, subjAcc: {}, day: fDay(), by: '', leftAt: 0, room: null, ack: true, ...ls.get('md-focus', {}) };
 const fSave = () => ls.set('md-focus', focus);
 const fRun = (t = Date.now()) => focus.state === 'studying' ? Math.max(0, (t - focus.since) / 1000) : 0;
@@ -12455,14 +12541,16 @@ const fClock = s => { s = Math.floor(s); const h = Math.floor(s / 3600), m = Mat
 const fShort = s => { s = Math.round(s / 60); return s < 60 ? `${s}m` : `${Math.floor(s / 60)}h ${String(s % 60).padStart(2, '0')}m`; };
 function fRoll(){
   const d = fDay(); if (focus.day === d) return;
-  // a new day: yesterday's total stays in study_days, today starts from zero
-  if (focus.state === 'studying'){ const mid = new Date(); mid.setHours(0, 0, 0, 0); focus.since = Math.max(focus.since, +mid); }
+  // a new study day (4 am): the run so far goes to the old day, today starts from zero
+  if (focus.state === 'studying'){ const b = new Date(); b.setHours(4, 0, 0, 0); if (b > Date.now()) b.setDate(b.getDate() - 1); if (focus.since < +b){ fBank(+b); grPushDay(); } focus.since = Math.max(focus.since, +b); }
   focus = { ...focus, acc: 0, subjAcc: {}, day: d }; fSave();
 }
 function fBank(t = Date.now()){
   // move the running time into today's total
   if (focus.state !== 'studying') return;
-  const s = fRun(t); focus.acc = Math.min(86400, focus.acc + s); const k = focus.subj || 'Other'; focus.subjAcc[k] = Math.round((focus.subjAcc[k] || 0) + s); focus.since = t;
+  const s = fRun(t); focus.acc = Math.min(86400, focus.acc + s); const k = focus.subj || 'Other'; focus.subjAcc[k] = Math.round((focus.subjAcc[k] || 0) + s);
+  try { fLogAdd(focus.since, t, k); } catch {}
+  focus.since = t;
 }
 async function fStart(subj, room = null){
   fRoll();
@@ -12526,6 +12614,7 @@ async function grPushStatus(){
 async function grPushDay(){
   if (!grOn()) return;
   const subjects = { ...focus.subjAcc }; if (focus.state === 'studying'){ const k = focus.subj || 'Other'; subjects[k] = Math.round((subjects[k] || 0) + fRun()); }
+  try { const log = hrsUnion(hrsLocal(focus.day), hrsCloud.rows[focus.day]?.log); if (focus.state === 'studying' && fRun() >= 5) log.push([focus.since, Date.now(), focus.subj || 'Other']); subjects['~log'] = log.slice(-300); } catch {}
   try { await cloud.sb.from('study_days').upsert({ user_id: grUid(), day: focus.day, secs: Math.round(Math.min(86400, fSecs())), subjects, updated_at: new Date().toISOString() }); } catch {}
 }
 async function grMergeDay(){
@@ -12533,7 +12622,9 @@ async function grMergeDay(){
   if (!grOn()) return;
   try {
     const { data } = await cloud.sb.from('study_days').select('secs,subjects').eq('user_id', grUid()).eq('day', focus.day).maybeSingle();
-    if (data && data.secs > focus.acc + fRun()){ focus.acc = data.secs - fRun(); for (const [k, v] of Object.entries(data.subjects || {})) focus.subjAcc[k] = Math.max(focus.subjAcc[k] || 0, v); fSave(); }
+    const { '~log': log, ...sj } = data?.subjects || {};
+    if (data) hrsCloud.rows[focus.day] = { secs: data.secs, subjects: sj, log: Array.isArray(log) ? log : [] };
+    if (data && data.secs > focus.acc + fRun()){ focus.acc = data.secs - fRun(); for (const [k, v] of Object.entries(sj)) focus.subjAcc[k] = Math.max(focus.subjAcc[k] || 0, v); fSave(); }
   } catch {}
 }
 async function grNotify(kind, extra = {}){
@@ -12676,7 +12767,7 @@ function renderGroup(){
             ${fs === 'studying' ? '' : `<label class="grsubj"><span class="vh">Subject</span><select class="in" id="grsubj">${sub.map(s => `<option ${s === focus.subj ? 'selected' : ''}>${esc(s)}</option>`).join('')}<option value="" ${!focus.subj ? 'selected' : ''}>No subject</option></select></label>`}
             ${fs === 'studying' ? `<button class="btn big" data-act="gr-pause">Take a break</button><button class="link" data-act="gr-stop">Stop</button>` : `<button class="btn primary big" data-act="gr-go">${fs === 'paused' ? 'Carry on' : 'Start studying'}</button>${fs === 'paused' ? '<button class="link" data-act="gr-stop">Stop</button>' : ''}`}
           </div>
-          <p class="grrule">Leaving Recall pauses your timer${window.desktop ? ' (after 10 seconds in another app)' : ''}. Studying cards starts it for you.</p>
+          <p class="grrule">Leaving Recall pauses your timer${window.desktop ? ' (after 10 seconds in another app)' : ''}. Studying cards starts it for you. <button class="link" data-act="hrs-open">See your study time</button></p>
         </section>
         <section class="grroom">
           ${room ? `<div class="grrhead"><div><h2>${esc(room.title || 'Group session')}</h2><p>${esc(gr.names[room.started_by] || 'Someone')} started it. ${inRoom.length} studying in it.</p></div><b class="grrleft" data-rtick="${room.id}">${fClock(grRoomLeft(room) / 1000).replace(/^0:/, '')}</b></div>
@@ -12822,6 +12913,214 @@ document.addEventListener('keydown', e => { if (e.key !== 'Enter' || dialogOpen(
 navigator.serviceWorker?.addEventListener?.('message', e => { if (e.data?.go === 'decks' && S.ready) go('decks'); });
 { const r0 = render; render = function(...a){ const r = r0.apply(this, a); try { fPaint(); } catch {} return r; }; }
 { const t = setInterval(() => { if (S.ready){ clearInterval(t); setTimeout(fBack, 800); } }, 300); }
+
+/* ---------- Study time stats (Progress › Study time), after Yeolpumta's day / week / month reports ----------
+   Every run of the focus timer is a session [start ms, end ms, subject], kept on this device (md-fsess) and in that
+   day's study_days row under subjects["~log"], so sessions from your other devices show up too.
+   A study day runs 4 am to 4 am, so a late night counts towards the day it started. */
+const HRS_DAY0 = 4;
+let fLog = ls.get('md-fsess', []);
+const hrsCloud = { rows: {}, at: 0, loading: null };   // day -> { secs, subjects, log }
+const hs = { mode: 'day', at: null };
+const fLogSave = () => { const cut = Date.now() - 400 * DAY; fLog = fLog.filter(x => x[1] > cut); ls.set('md-fsess', fLog); };
+function fLogAdd(s, e, subj){
+  if (e - s < 5000) return;
+  const last = fLog[fLog.length - 1];
+  if (last && last[2] === subj && s - last[1] < 5000 && fDay(last[0]) === fDay(s)) last[1] = e; else fLog.push([s, e, subj]);
+  fLogSave();
+}
+const dayStartMs = key => { const [y, m, d] = key.split('-').map(Number); return new Date(y, m - 1, d, HRS_DAY0).getTime(); };
+const keyAdd = (key, n) => { const t = new Date(dayStartMs(key)); t.setDate(t.getDate() + n); return fDay(t.getTime()); };
+const sameRun = (a, b) => Math.abs(a[0] - b[0]) < 3000;
+function hrsUnion(...lists){ const out = []; for (const l of lists) for (const x of l || []) if (Array.isArray(x) && x.length >= 2 && !out.some(y => sameRun(x, y))) out.push([+x[0], +x[1], x[2] || 'Other']); return out.sort((a, b) => a[0] - b[0]); }
+function hrsLocal(key){ return fLog.filter(x => fDay(x[0]) === key); }
+function hrsRunning(){ return focus.state === 'studying' && focus.since ? [[focus.since, Date.now(), focus.subj || 'Other', 1]] : []; }
+/* one day: its sessions (all devices), seconds and seconds per subject */
+function hrsDay(key){
+  const c = hrsCloud.rows[key];
+  const ses = hrsUnion(hrsLocal(key), c?.log);
+  if (key === fDay()) ses.push(...hrsRunning());
+  let secs, subj = {};
+  if (ses.length){ secs = 0; for (const [s, e, k] of ses){ const d = Math.max(0, (e - s) / 1000); secs += d; subj[k] = (subj[k] || 0) + d; } }
+  else if (c){ secs = c.secs || 0; subj = { ...c.subjects }; }
+  else if (key === focus.day){ secs = focus.acc; subj = { ...focus.subjAcc }; }
+  else secs = 0;
+  // a day studied on a device that didn't keep sessions: trust the bigger total
+  if (c && c.secs > secs + 60 && !c.log?.length){ secs = c.secs; subj = { ...c.subjects }; }
+  return { key, ses, secs, subj };
+}
+async function hrsLoad(force){
+  if (!grOn()) return;
+  if (hrsCloud.loading) return hrsCloud.loading;
+  if (!force && Date.now() - hrsCloud.at < 60000) return;
+  hrsCloud.loading = (async () => {
+    try {
+      const { data, error } = await cloud.sb.from('study_days').select('day,secs,subjects').eq('user_id', grUid()).gte('day', fDay(Date.now() - 400 * DAY));
+      if (error) throw error;
+      hrsCloud.rows = {};
+      for (const r of data || []){ const { '~log': log, ...subjects } = r.subjects || {}; hrsCloud.rows[r.day] = { secs: r.secs, subjects, log: Array.isArray(log) ? log : [] }; }
+      hrsCloud.at = Date.now();
+    } catch {}
+    hrsCloud.loading = null;
+    if (view.name === 'hours' && !dialogOpen()) renderHours();
+  })();
+  return hrsCloud.loading;
+}
+/* write a whole day back (after adding or deleting a session) */
+async function hrsSaveDay(key, ses){
+  ses = ses.filter(x => !x[3]);
+  const subjects = {}; let secs = 0;
+  for (const [s, e, k] of ses){ const d = Math.round((e - s) / 1000); secs += d; subjects[k] = (subjects[k] || 0) + d; }
+  hrsCloud.rows[key] = { secs, subjects, log: ses.map(x => [x[0], x[1], x[2]]) };
+  if (key === focus.day){ focus.acc = secs; focus.subjAcc = subjects; fSave(); }
+  if (grOn()){ try { await cloud.sb.from('study_days').upsert({ user_id: grUid(), day: key, secs: Math.min(86400, secs), subjects: { ...subjects, '~log': ses.map(x => [x[0], x[1], x[2]]) }, updated_at: new Date().toISOString() }); } catch {} }
+}
+/* ---------- colours: a subject's deck colour when it's one of your subjects ---------- */
+const HRS_EXTRA = ['#6b8afd', '#e0884f', '#4fb6a8', '#c17ad8', '#d4b44a', '#7d8a99'];
+function hrsColor(name){
+  const n = kids(null).find(x => x.name === name); if (n) return scol(n.id);
+  if (name === 'Other' || !name) return 'var(--fg-3)';
+  let h = 0; for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return HRS_EXTRA[h % HRS_EXTRA.length];
+}
+const hrsFmt = s => { const m = Math.round(s / 60); if (m < 60) return `${m}<small>m</small>`; return `${Math.floor(m / 60)}<small>h</small> ${String(m % 60).padStart(2, '0')}<small>m</small>`; };
+const hrsPlain = s => { const m = Math.round(s / 60); return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m`; };
+const hrsTime = t => new Date(t).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }).replace(/\s?([AP]M)/i, (m, x) => x.toLowerCase());
+const hrsDate = (key, o) => new Date(dayStartMs(key)).toLocaleDateString(undefined, o);
+function hrsAlloc(subj, total){
+  const rows = Object.entries(subj).filter(([, v]) => v >= 30).sort((a, b) => b[1] - a[1]);
+  if (!rows.length) return `<p class="hrsnone">No study time yet.</p>`;
+  return `<div class="hrsbar" role="img" aria-label="${rows.map(([k, v]) => `${esc(k)} ${Math.round(v / total * 100)}%`).join(', ')}">${rows.map(([k, v]) => `<i style="flex:${v};background:${hrsColor(k)}"></i>`).join('')}</div>
+    <ul class="hrsalloc">${rows.map(([k, v]) => `<li><span class="hdot" style="background:${hrsColor(k)}"></span><span class="hnm">${esc(k)}</span><span class="hpc">${Math.round(v / total * 100)}%</span><b>${hrsPlain(v)}</b></li>`).join('')}</ul>`;
+}
+function hrsDelta(a, b, unit){
+  if (!b && !a) return '';
+  if (!b) return `<span class="hdelta up">first ${unit} with study</span>`;
+  const d = a - b; if (Math.abs(d) < 60) return `<span class="hdelta">same as the ${unit} before</span>`;
+  return `<span class="hdelta ${d > 0 ? 'up' : 'down'}">${hrsPlain(Math.abs(d))} ${d > 0 ? 'more' : 'less'} than the ${unit} before</span>`;
+}
+/* the 10-minute planner: 24 rows of hours from 4 am, six 10-minute cells each, filled by what you studied */
+function hrsPlanner(d){
+  const t0 = dayStartMs(d.key), cells = [];
+  for (let i = 0; i < 144; i++){
+    const a = t0 + i * 600e3, b = a + 600e3, by = {};
+    for (const [s, e, k] of d.ses){ const o = Math.min(b, e) - Math.max(a, s); if (o > 0) by[k] = (by[k] || 0) + o; }
+    const top = Object.entries(by).sort((x, y) => y[1] - x[1])[0], fill = Object.values(by).reduce((x, y) => x + y, 0) / 600e3;
+    cells.push(top ? `<i style="--c:${hrsColor(top[0])};--f:${Math.min(1, fill).toFixed(2)}" title="${hrsTime(a)} ${esc(top[0])}"></i>` : '<i></i>');
+  }
+  const rows = [...Array(24)].map((_, h) => { const hr = (HRS_DAY0 + h) % 24; return `<div class="hpr"><span>${hr === 0 ? '12a' : hr < 12 ? hr + 'a' : hr === 12 ? '12p' : (hr - 12) + 'p'}</span>${cells.slice(h * 6, h * 6 + 6).join('')}</div>`; });
+  return `<div class="hplanner" role="img" aria-label="When you studied on ${hrsDate(d.key, { weekday: 'long', day: 'numeric', month: 'long' })}"><div class="hpcol">${rows.slice(0, 12).join('')}</div><div class="hpcol">${rows.slice(12).join('')}</div></div>`;
+}
+function hrsSwitch(){
+  return `<div class="hrsswitch" role="tablist" aria-label="Progress"><button role="tab" data-act="hrs-cards" aria-selected="${view.name === 'stats'}">Cards</button><button role="tab" data-act="hrs-open" aria-selected="${view.name === 'hours'}">Study time</button></div>`;
+}
+function renderHours(){
+  const today = fDay();
+  if (!hs.at || hs.at > today) hs.at = today;
+  if (grOn() && !hrsCloud.at) hrsLoad(true);
+  const mode = hs.mode, at = hs.at;
+  let head, body;
+  if (mode === 'day'){
+    const d = hrsDay(at), prev = hrsDay(keyAdd(at, -1));
+    const real = d.ses.filter(x => x[1] > x[0]), maxF = real.reduce((m, [s, e]) => Math.max(m, (e - s) / 1000), 0);
+    const first = real[0]?.[0], last = real.length ? Math.max(...real.map(x => x[1])) : 0, rest = first ? Math.max(0, (last - first) / 1000 - d.secs) : 0;
+    head = at === today ? 'Today' : at === keyAdd(today, -1) ? 'Yesterday' : hrsDate(at, { weekday: 'long', day: 'numeric', month: 'long' });
+    body = `<div class="hrstop"><div class="hrsbig"><b ${at === today && focus.state === 'studying' ? 'data-hrsnow' : ''}>${hrsFmt(d.secs)}</b>${hrsDelta(d.secs, prev.secs, 'day')}</div>
+      <dl class="hrsfacts"><div><dt>Longest focus</dt><dd>${maxF ? hrsPlain(maxF) : '–'}</dd></div><div><dt>Started</dt><dd>${first ? hrsTime(first) : '–'}</dd></div><div><dt>Finished</dt><dd>${last ? (at === today && focus.state === 'studying' ? 'still going' : hrsTime(last)) : '–'}</dd></div><div><dt>Breaks</dt><dd>${first ? hrsPlain(rest) : '–'}</dd></div><div><dt>Sessions</dt><dd>${real.length || '–'}</dd></div></dl></div>
+      <div class="hrsgrid"><section><h2>When you studied</h2>${hrsPlanner(d)}</section>
+      <section><h2>Subjects</h2>${hrsAlloc(d.subj, d.secs || 1)}
+        <h2 class="hrsh2b">Sessions</h2>${real.length ? `<ul class="hrsses">${real.map(([s, e, k, live]) => `<li><span class="hdot" style="background:${hrsColor(k)}"></span><span class="htm">${hrsTime(s)} – ${live ? 'now' : hrsTime(e)}</span><span class="hnm">${esc(k)}</span><b>${hrsPlain((e - s) / 1000)}</b>${live ? '<span class="hx"></span>' : `<button class="hx" data-act="hrs-del" data-v="${s}" aria-label="Delete this session" title="Delete this session"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>`}</li>`).join('')}</ul>` : `<p class="hrsnone">${d.secs ? 'Studied on a device that didn’t keep sessions.' : 'No sessions. Start the timer in Group, study cards while you’re in a group, or add time you studied away from Recall.'}</p>`}
+        <button class="link" data-act="hrs-add">Add study time</button></section></div>`;
+  } else if (mode === 'week'){
+    const d0 = new Date(dayStartMs(at)), wd = (d0.getDay() + 6) % 7, mon = keyAdd(at, -wd), keys = [...Array(7)].map((_, i) => keyAdd(mon, i));
+    const days = keys.map(hrsDay), tot = days.reduce((a, d) => a + d.secs, 0), prev = [...Array(7)].map((_, i) => hrsDay(keyAdd(mon, i - 7))).reduce((a, d) => a + d.secs, 0);
+    const past = keys.filter(k => k <= today).length || 1, studied = days.filter(d => d.secs >= 60), best = days.reduce((b, d) => d.secs > (b?.secs || 0) ? d : b, null);
+    const subj = {}; days.forEach(d => Object.entries(d.subj).forEach(([k, v]) => subj[k] = (subj[k] || 0) + v));
+    const mx = Math.max(3600, ...days.map(d => d.secs)), ticks = Math.ceil(mx / 3600);
+    head = `${hrsDate(mon, { day: 'numeric', month: 'short' })} – ${hrsDate(keys[6], { day: 'numeric', month: 'short' })}`;
+    body = `<div class="hrstop"><div class="hrsbig"><b>${hrsFmt(tot)}</b>${hrsDelta(tot, prev, 'week')}</div>
+      <dl class="hrsfacts"><div><dt>Daily average</dt><dd>${hrsPlain(tot / past)}</dd></div><div><dt>Days studied</dt><dd>${studied.length} of ${past}</dd></div><div><dt>Best day</dt><dd>${best?.secs >= 60 ? hrsDate(best.key, { weekday: 'short' }) + ', ' + hrsPlain(best.secs) : '–'}</dd></div></dl></div>
+      <div class="hrsgrid"><section><h2>Each day</h2><div class="hweek" style="--n:${ticks}">${days.map(d => `<button class="hwd ${d.key === today ? 'today' : ''} ${d.key > today ? 'future' : ''}" data-act="hrs-day" data-v="${d.key}" aria-label="${hrsDate(d.key, { weekday: 'long' })}, ${hrsPlain(d.secs)}"><span class="hwv">${d.secs >= 60 ? hrsPlain(d.secs) : ''}</span><span class="hwbar">${Object.entries(d.subj).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<i style="height:${(v / mx * 100).toFixed(2)}%;background:${hrsColor(k)}"></i>`).join('')}</span><span class="hwl">${hrsDate(d.key, { weekday: 'short' })}</span></button>`).join('')}</div></section>
+      <section><h2>Subjects</h2>${hrsAlloc(subj, tot || 1)}</section></div>`;
+  } else {
+    const [y, m] = at.split('-').map(Number), first = `${y}-${String(m).padStart(2, '0')}-01`, n = new Date(y, m, 0).getDate();
+    const keys = [...Array(n)].map((_, i) => `${y}-${String(m).padStart(2, '0')}-${String(i + 1).padStart(2, '0')}`), days = keys.map(hrsDay);
+    const tot = days.reduce((a, d) => a + d.secs, 0), pm = new Date(y, m - 2, 1), pn = new Date(y, m - 1, 0).getDate();
+    const prev = [...Array(pn)].map((_, i) => hrsDay(`${pm.getFullYear()}-${String(pm.getMonth() + 1).padStart(2, '0')}-${String(i + 1).padStart(2, '0')}`)).reduce((a, d) => a + d.secs, 0);
+    const studied = days.filter(d => d.secs >= 60), past = keys.filter(k => k <= today).length || 1;
+    let run = 0, bestRun = 0; days.forEach(d => { if (d.secs >= 60){ run++; bestRun = Math.max(bestRun, run); } else if (d.key <= today) run = 0; });
+    const subj = {}; days.forEach(d => Object.entries(d.subj).forEach(([k, v]) => subj[k] = (subj[k] || 0) + v));
+    const lvl = s => s < 60 ? 0 : s < 3600 ? 1 : s < 7200 ? 2 : s < 4 * 3600 ? 3 : s < 6 * 3600 ? 4 : 5;
+    const lead = (new Date(y, m - 1, 1).getDay() + 6) % 7;
+    head = new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+    body = `<div class="hrstop"><div class="hrsbig"><b>${hrsFmt(tot)}</b>${hrsDelta(tot, prev, 'month')}</div>
+      <dl class="hrsfacts"><div><dt>Daily average</dt><dd>${hrsPlain(tot / past)}</dd></div><div><dt>Days studied</dt><dd>${studied.length} of ${past}</dd></div><div><dt>Longest run</dt><dd>${bestRun ? bestRun + ' day' + (bestRun === 1 ? '' : 's') : '–'}</dd></div><div><dt>Average on a study day</dt><dd>${studied.length ? hrsPlain(tot / studied.length) : '–'}</dd></div></dl></div>
+      <div class="hrsgrid"><section><h2>Every day</h2><div class="hcal"><div class="hcalh">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(x => `<span>${x}</span>`).join('')}</div><div class="hcalg">${'<span></span>'.repeat(lead)}${days.map((d, i) => `<button class="hcd l${lvl(d.secs)} ${d.key === today ? 'today' : ''}" data-act="hrs-day" data-v="${d.key}" ${d.key > today ? 'disabled' : ''} aria-label="${hrsDate(d.key, { day: 'numeric', month: 'long' })}, ${hrsPlain(d.secs)}"><span>${i + 1}</span><small>${d.secs >= 60 ? hrsPlain(d.secs).replace(/ 00m$/, 'h').replace(/(\d+)h (\d+)m/, '$1:$2') : ''}</small></button>`).join('')}</div>
+        <div class="hlegend"><span>Less</span>${[1, 2, 3, 4, 5].map(l => `<i class="hcd l${l}"></i>`).join('')}<span>6h+</span></div></div></section>
+      <section><h2>Subjects</h2>${hrsAlloc(subj, tot || 1)}</section></div>`;
+    void first;
+  }
+  const canNext = mode === 'day' ? at < today : mode === 'week' ? keyAdd(at, 7 - ((new Date(dayStartMs(at)).getDay() + 6) % 7)) <= today : at.slice(0, 7) < today.slice(0, 7);
+  $('#root').innerHTML = `<div class="hrs">${hrsSwitch()}
+    <div class="hrsnav"><div role="radiogroup" aria-label="Period" class="hrsmode">${[['day', 'Day'], ['week', 'Week'], ['month', 'Month']].map(([k, n]) => `<button role="radio" data-act="hrs-mode" data-v="${k}" aria-checked="${mode === k}">${n}</button>`).join('')}</div>
+      <div class="hrsstep"><button class="iconbtn" data-act="hrs-step" data-v="-1" aria-label="Earlier"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h1>${head}</h1><button class="iconbtn" data-act="hrs-step" data-v="1" aria-label="Later" ${canNext ? '' : 'disabled'}><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>${at !== today ? '<button class="link" data-act="hrs-today">Today</button>' : ''}</div></div>
+    ${body}
+    ${!grOn() ? '<p class="hrsfoot">Only this device’s study time is shown. Turn on sync to see time from your other devices.</p>' : '<p class="hrsfoot">A study day runs from 4 am to 4 am, so late nights count towards the day they started.</p>'}
+  </div>`;
+}
+/* the Cards / Study time switch on the Progress page */
+{ const rs = renderStats; renderStats = function(...a){ const r = rs.apply(this, a); try { const root = $('#root'); if (!root.querySelector('.hrsswitch')){ const w = document.createElement('div'); w.className = 'hrsswrap'; w.innerHTML = hrsSwitch(); root.prepend(w); } } catch {} return r; }; }
+setInterval(() => { if (view.name === 'hours' && hs.mode === 'day' && hs.at === fDay() && focus.state === 'studying' && !dialogOpen()){ const b = $('[data-hrsnow]'); if (b) b.innerHTML = hrsFmt(hrsDay(hs.at).secs); } }, 15000);
+function hrsAddDialog(){
+  const subs = [...new Set([...grSubjects(), ...Object.keys(hrsDay(hs.at).subj)])].filter(x => x !== 'Other');
+  const d = new Date(Math.min(Date.now(), dayStartMs(hs.at) + 16 * HOUR)), two = n => String(n).padStart(2, '0');
+  const endV = `${two(d.getHours())}:${two(Math.floor(d.getMinutes() / 5) * 5)}`, st = new Date(d.getTime() - HOUR), startV = `${two(st.getHours())}:${two(Math.floor(st.getMinutes() / 5) * 5)}`;
+  openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="hah" style="max-width:420px"><header><h2 id="hah">Add study time</h2></header>
+    <div class="body"><p class="sub" style="margin-top:0">${hrsDate(hs.at, { weekday: 'long', day: 'numeric', month: 'long' })}. For study you did away from Recall, like a paper on paper.</p>
+      <div class="field"><label for="hasubj">Subject</label><select class="in" id="hasubj">${subs.map(s => `<option>${esc(s)}</option>`).join('')}<option value="Other">Other</option></select></div>
+      <div class="hrstimes"><div class="field"><label for="hafrom">From</label><input class="in" type="time" id="hafrom" value="${startV}" step="300"></div><div class="field"><label for="hato">To</label><input class="in" type="time" id="hato" value="${endV}" step="300"></div></div></div>
+    <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="hrs-add-go">Add</button></footer></div>`, () => $('#hasubj').focus());
+}
+function hrsAt(key, hhmm){
+  const [h, m] = hhmm.split(':').map(Number), [y, mo, d] = key.split('-').map(Number);
+  const t = new Date(y, mo - 1, d, h, m).getTime(); return h < HRS_DAY0 ? t + DAY : t;   // 1 am belongs to the night after
+}
+async function hrsAction(act, a){
+  switch (act){
+    case 'hrs-open': study = null; return go('hours');
+    case 'hrs-cards': return go('stats');
+    case 'hrs-mode': hs.mode = a.dataset.v; return renderHours();
+    case 'hrs-today': hs.at = fDay(); return renderHours();
+    case 'hrs-day': hs.mode = 'day'; hs.at = a.dataset.v; return renderHours();
+    case 'hrs-step': {
+      const n = +a.dataset.v, today = fDay();
+      if (hs.mode === 'day') hs.at = keyAdd(hs.at, n);
+      else if (hs.mode === 'week') hs.at = keyAdd(hs.at, 7 * n);
+      else { const [y, m] = hs.at.split('-').map(Number), t = new Date(y, m - 1 + n, 1); hs.at = fDay(new Date(t.getFullYear(), t.getMonth(), Math.min(new Date().getDate(), new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate()), 12).getTime()); }
+      if (hs.at > today) hs.at = today;
+      return renderHours();
+    }
+    case 'hrs-add': return hrsAddDialog();
+    case 'hrs-add-go': {
+      const s = hrsAt(hs.at, $('#hafrom').value), e = hrsAt(hs.at, $('#hato').value), k = $('#hasubj').value || 'Other';
+      if (!(e > s)) return toast('The end time needs to be after the start');
+      if (e > Date.now() + 60e3) return toast('That’s in the future');
+      const day = hrsDay(hs.at);
+      if (day.ses.some(([a1, b1]) => s < b1 && e > a1)) return toast('That overlaps time you already have');
+      fLogAdd(s, e, k); closeDialog();
+      await hrsSaveDay(hs.at, hrsUnion(day.ses.filter(x => !x[3]), [[s, e, k]]));
+      if (hs.at === fDay()) grPushStatus();
+      toast(`Added ${hrsPlain((e - s) / 1000)} of ${k}`); return renderHours();
+    }
+    case 'hrs-del': {
+      const s = +a.dataset.v, day = hrsDay(hs.at), x = day.ses.find(y => Math.abs(y[0] - s) < 3000); if (!x) return;
+      fLog = fLog.filter(y => Math.abs(y[0] - s) >= 3000); fLogSave();
+      await hrsSaveDay(hs.at, day.ses.filter(y => y !== x));
+      if (hs.at === fDay()) grPushStatus();
+      renderHours();
+      return toast(`Deleted ${hrsPlain((x[1] - x[0]) / 1000)} of ${x[2]}`);
+    }
+  }
+}
 
 initStore().finally(() => { lhMigrate(); designMigrate(); h7Migrate(); if (S.ready) settingsRepair(); cloudBoot(); });
 render();
