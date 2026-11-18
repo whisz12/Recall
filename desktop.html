@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261118200822 min-shell:1.27.0 -->
+<!-- recall-build:20261118202851 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -3781,13 +3781,80 @@ html.examon,html.examon body{overflow:hidden !important;overscroll-behavior:none
 .exhold span{position:relative}
 @media (prefers-reduced-motion:reduce){ .exbar i{transition:none} }
 
+/* phone: every section in one bar along the bottom that scrolls sideways */
+@media (max-width:700px){
+  html:root body:not(.desktop) .toolbar nav{display:flex;flex-wrap:nowrap;gap:0;padding:4px 4px calc(4px + env(safe-area-inset-bottom,0px));overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+  html:root body:not(.desktop) .toolbar nav::-webkit-scrollbar{display:none}
+  html:root body:not(.desktop) .toolbar nav button{flex:0 0 auto;min-width:74px;padding:0 6px;scroll-snap-align:start}
+  html:root body:not(.desktop) .toolbar nav [data-nav="browse"],html:root body:not(.desktop) .toolbar nav [data-nav="papers"],html:root body:not(.desktop) .toolbar nav [data-nav="stats"],html:root body:not(.desktop) .toolbar nav [data-nav="exam"],html:root body:not(.desktop) .toolbar nav [data-nav="themes"]{display:flex}
+  html:root body:not(.desktop) .toolbar nav .navmore{display:none}
+  html:root body:not(.desktop) .toolbar nav button .ni{width:24px;height:24px;flex:none}
+  html:root body:not(.desktop) .toolbar nav button{position:relative}
+  html:root body:not(.desktop) .toolbar nav button .navn{position:absolute;top:3px;left:calc(50% + 7px);min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:8px;background:var(--accent);color:var(--btn-fg, #10201D);font:600 10px/16px var(--ui);text-align:center;margin:0}
+  html:root body:not(.desktop) .toolbar nav button .navn:empty{display:none}
+}
+/* Set up decks */
+.stabs .stabsetup{margin-left:auto;flex:none;color:var(--fg-3);font-size:13px;white-space:nowrap}
+.stabs .stabsetup:hover{color:var(--fg)}
+.h7go{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px}
+.sy{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:0 48px;max-width:1240px;margin:0 auto;padding:0 40px 48px}
+.symain>h1{margin:0;font:400 24px var(--ui)}
+.sysub{margin:6px 0 0;color:var(--fg-3);max-width:640px}
+.syyear{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:22px 0 4px}
+.syyear>span{color:var(--fg-3)}
+.syyear small{color:var(--fg-3)}
+.syyear [role="radiogroup"],.sylvl{display:flex;border:1px solid var(--border-2);border-radius:6px;overflow:hidden}
+.syyear [role="radio"]{padding:6px 16px;border:0;background:none;color:var(--fg-3);font:400 13px var(--ui);cursor:pointer}
+.syyear [role="radio"]+[role="radio"]{border-left:1px solid var(--border-2)}
+.syyear [role="radio"][aria-checked="true"]{background:var(--surface-2);color:var(--fg);font-weight:500}
+.sygrp{margin-top:26px}
+.sygrp>h2{margin:0 0 6px;font:400 13px var(--ui);color:var(--fg-3)}
+.sygrp>h2 small{font-size:13px}
+.sylvl{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.sylvl [role="radio"]{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:9px 12px;border:0;background:none;color:var(--fg-2);font:400 13px var(--ui);text-align:left;cursor:pointer}
+.sylvl [role="radio"]+[role="radio"]{border-left:1px solid var(--border-2)}
+.sylvl [role="radio"] small{color:var(--fg-3);font-size:11px}
+.sylvl [role="radio"][aria-checked="true"]{background:var(--surface-2);color:var(--fg);font-weight:500;box-shadow:inset 0 -2px 0 var(--accent)}
+.sysrc{margin:10px 0 2px;color:var(--fg-3);font-size:12px}
+.syind{padding:0 0 10px 26px;margin:0}
+.sycols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:0 36px}
+.sycols h3{margin:12px 0 2px;font:400 12px var(--ui);color:var(--fg-3)}
+.sycols h3.syopt{margin-top:16px}
+.syhsc{color:var(--accent)}
+.sys{border-bottom:1px solid var(--border)}
+.syrow{display:flex;align-items:center;gap:10px}
+.sysb{flex:1;display:flex;align-items:center;gap:10px;min-width:0;padding:10px 0;border:0;background:none;color:var(--fg-2);font:400 14px var(--ui);text-align:left;cursor:pointer}
+.sysb[aria-pressed="true"]{color:var(--fg);font-weight:500}
+.sysb small,.syt small{color:var(--fg-3);font-weight:400;font-size:12px;margin-left:auto}
+.syop{display:inline-flex;align-items:center;gap:6px;border:0;background:none;color:var(--fg-3);font:400 12px var(--ui);cursor:pointer;padding:6px 0}
+.syop svg{width:12px;height:12px;transition:transform .15s var(--ease)}
+.syop[aria-expanded="true"] svg{transform:rotate(90deg)}
+.synone{color:var(--fg-3);font-size:12px}
+.syin{padding:0 0 12px 26px}
+.syt{display:flex;align-items:center;gap:10px;width:100%;padding:6px 0;border:0;border-bottom:1px solid var(--border);background:none;color:var(--fg-3);font:400 13px var(--ui);text-align:left;cursor:pointer}
+.syt[aria-pressed="true"]{color:var(--fg-2)}
+.sytick{flex:none;width:16px;height:16px;box-sizing:border-box;border-radius:4px;border:1.5px solid var(--border-2);display:inline-grid;place-items:center}
+.sytick.on{border:0;background:var(--accent)}
+.sytick.on::after{content:"";width:8px;height:4px;border-left:2px solid var(--btn-fg, #10201D);border-bottom:2px solid var(--btn-fg, #10201D);transform:translateY(-1px) rotate(-45deg)}
+.sym .sycols{margin-top:4px}
+.syside{position:sticky;top:calc(var(--appbar, 52px) + 20px);align-self:start;display:flex;flex-direction:column;gap:10px;padding:18px 20px;border-radius:10px;background:var(--surface);border:1px solid var(--border)}
+.syside h2{margin:0;font:400 13px var(--ui);color:var(--fg-3)}
+.syside ul{list-style:none;margin:0;padding:0;max-height:50vh;overflow:auto}
+.syside li{display:flex;flex-direction:column;padding:7px 0;border-bottom:1px solid var(--border)}
+.syside li b{font-weight:500}
+.syside li span,.syempty{color:var(--fg-3);font-size:12px}
+.sycount{margin:4px 0 0;color:var(--fg-3);font-size:12px}
+.syside .btn.big{width:100%;justify-content:center}
+.syside .link{align-self:center}
+@media (max-width:900px){ .sy{grid-template-columns:1fr;padding:0 18px 120px} .syside{position:static;margin-top:28px} .sylvl{grid-template-columns:1fr 1fr} .sylvl [role="radio"]+[role="radio"]{border-left:0} .sylvl [role="radio"]{border-top:1px solid var(--border-2)} }
+
 </style>
 
 <header class="toolbar"><button class="sidetoggle" data-act="toggle-sidebar" aria-label="Hide sidebar" title="Hide sidebar (⌘S)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="3.5" width="15" height="13" rx="3"/><path d="M7.5 3.5v13"/></svg></button><div class="tin">
   <button class="brand" data-nav="decks" aria-label="Recall home"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lgbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c2c2c"/><stop offset="1" stop-color="#121212"/></linearGradient></defs><rect width="32" height="32" rx="7.5" fill="url(#lgbg)"/><rect x=".5" y=".5" width="31" height="31" rx="7" fill="none" stroke="rgba(255,255,255,.12)"/><path transform="translate(5.35 22.10) scale(0.01778 -0.01778)" d="M858 95C858 117 844 117 834 117C813 117 812 107 811 94C806 47 777 25 747 25C687 25 678 96 673 138C671 149 663 218 662 223C648 293 593 324 550 340C666 370 717 435 717 501C717 602 607 686 419 686H39V639H147V47H39V0C75 3 173 3 215 3C257 3 355 3 391 0V47H283V325H400C414 325 458 325 489 291C521 256 521 237 521 164C521 98 521 49 591 15C635 -7 697 -11 738 -11C845 -11 858 79 858 95ZM564 500C564 444 564 361 399 361H283V639H401C562 639 564 561 564 500Z" fill="#ececec"/><rect class="cur" x="21.69" y="20.44" width="4.27" height="1.60" rx=".4" style="fill:var(--accent-btn)"/></svg><span class="wordmark">Recall</span></button>
   <nav aria-label="Main">
-    <button data-nav="decks"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5.5" width="11" height="11" rx="2.5"/><path d="M6.5 3.5h8a2.5 2.5 0 0 1 2.5 2.5v8"/></svg><span>Today</span></button>
-    <button data-nav="todo"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5.5 5 7l2.5-3M3.5 12.5 5 14l2.5-3M10.5 5.5h6M10.5 12.5h6"/></svg><span>Plan</span></button>
+    <button data-nav="decks"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="12.8" height="12.8" rx="2.6"/><path d="M5.4 2.2h9.4a3 3 0 0 1 3 3v9.4"/></svg><span>Today</span></button>
+    <button data-nav="todo"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.2 4 7.2 7.6 3.2M2 13.2 4 15.2 7.6 11.2M10 5.6h8M10 13.6h8"/></svg><span>Plan</span></button>
     <button data-nav="add" class="navadd"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="7.2"/><path d="M10 6.8v6.4M6.8 10h6.4"/></svg><span>Add</span></button>
     <button data-nav="browse"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M7 5h10M7 10h10M7 15h10"/><circle cx="3.6" cy="5" r=".9" fill="currentColor"/><circle cx="3.6" cy="10" r=".9" fill="currentColor"/><circle cx="3.6" cy="15" r=".9" fill="currentColor"/></svg><span>Cards</span></button>
     <button data-nav="papers"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5 2.8h6.6L15.5 6.7V17.2H5z"/><path d="M11.4 2.8v4h4M7.8 10.5h4.8M7.8 13.6h4.8"/></svg><span>Papers</span></button>
@@ -4153,6 +4220,7 @@ function render(){
   else if (view.name === 'browse') renderBrowse();
   else if (view.name === 'stats') renderStats();
   else if (view.name === 'exam') renderExam();
+  else if (view.name === 'setup') renderSetup();
   else if (view.name === 'themes') renderThemes();
   else if (view.name === 'papers') renderPapers();
   else if (view.name === 'ppmark') renderPPMark();
@@ -4353,6 +4421,7 @@ function renderAppbar(){
   else if (view.name === 'papers' || view.name === 'ppmark'){ const r = ppAppbar(); title = r.title; act = r.act; }
   else if (view.name === 'stats') title = '<b>Progress</b>';
   else if (view.name === 'exam') title = '<b>Exam timer</b>';
+  else if (view.name === 'setup') title = '<b>Set up decks</b>';
   else if (view.name === 'todo') title = '<b>Plan</b>';
   else if (view.name === 'cal') title = '<b>Calendar</b>';
   else if (view.name === 'themes') title = '<b>Settings</b>';
@@ -4754,7 +4823,7 @@ function menuAt(html, at){
 }
 function homeMenu(at){
   const subjects = kids(null), anyOpen = subjects.some(x => !collapsed.has(x.id) || kids(x.id).some(t => !collapsed.has(t.id)));
-  menuAt(`<button data-act="new-deck">New subject or topic…</button><button data-nav="add">Add card…</button><hr>
+  menuAt(`<button data-act="new-deck">New subject or topic…</button><button data-act="sy-open">Set up decks from the syllabus…</button><button data-nav="add">Add card…</button><hr>
     <button data-act="import">Import decks…</button><button data-act="export-all">Export all…</button><hr>
     ${subjects.length ? `<button data-act="${anyOpen ? 'collapse-all' : 'expand-all'}">${anyOpen ? 'Collapse all' : 'Expand all'}</button>` : ''}${hasLayout() ? '<button data-act="layout-reset">Tidy up windows</button>' : ''}<button data-act="options">Options…</button>`, at);
 }
@@ -9317,7 +9386,7 @@ document.addEventListener('click', async e => {
   if (act.startsWith('pp-')) return ppAction(act, a, e);
   switch (act){
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
-    case 'side-subj': { if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; renderDecks(); return renderSideSubjects(); } ls.set('md-subj', id); study = null; return go('decks'); }
+    case 'side-subj': { scrollTo({ top: 0 }); if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; renderDecks(); return renderSideSubjects(); } ls.set('md-subj', id); study = null; return go('decks'); }
     case 'hist-back': return histGo(-1);
     case 'px-view': if (!pdfx) return; pdfx.view = a.dataset.v === 'pages' ? 'pages' : 'cards'; return pxDraw();
     case 'px-drawk': if (!pdfx) return; pdfx.drawSol = a.dataset.v === 's' && pdfx.sel != null; return pxDraw();
@@ -9411,7 +9480,7 @@ document.addEventListener('click', async e => {
     case 'th-cdone': thEdit = null; return renderThemes();
     case 'th-pattern': { const ts0 = themeSettings(), ts = { ...ts0, patterns: { ...(ts0.patterns || {}), [activeBase(ts0)]: a.dataset.p } }; return themeReveal(() => { saveTheme(ts); renderThemes(); }, e.clientX || null, e.clientY || null); }
     case 'hist-fwd': return histGo(1);
-    case 'subj-tab': { if (ls.get('md-subj', null) === id && $('.stab[aria-selected="true"]')?.dataset.id === id) return; const on = $('.stab[aria-selected="true"]'); tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; renderDecks(); renderSideSubjects(); return; }
+    case 'subj-tab': { scrollTo({ top: 0 }); if (ls.get('md-subj', null) === id && $('.stab[aria-selected="true"]')?.dataset.id === id) return; const on = $('.stab[aria-selected="true"]'); tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; renderDecks(); renderSideSubjects(); return; }
     case 'study-one': return startStudy(null, true, id);
     case 'practise-forgot': { const ids = forgotIn(id).map(c => c.id); return ids.length ? startStudy(id, true, null, ids) : null; }
     case 'timer-menu': { if ($('#tpop')){ $('#tpop').remove(); return; } return timerMenu(a); }
@@ -9559,6 +9628,13 @@ document.addEventListener('click', async e => {
     case 'sa-none': saPut(saRoot ? [...subtree(saRoot)] : Object.keys(S.nodes)); return saDraw();
     case 'study-pick': closeMenu(); return studyAllDialog('study', id);
     case 'study-mix': closeMenu(); return studyAllDialog('study', null, true);
+    case 'sy-open': sy = null; return go('setup');
+    case 'sy-y': sy.year = +a.dataset.v; return renderSetup();
+    case 'sy-m': sy.maths = a.dataset.v; return renderSetup();
+    case 'sy-s': { const v = a.dataset.v; if (sy.picks.has(v)){ sy.picks.delete(v); sy.open.delete(v); } else { sy.picks.add(v); sy.open.add(v); } return renderSetup(); }
+    case 'sy-o': { const v = a.dataset.v; sy.open.has(v) ? sy.open.delete(v) : sy.open.add(v); return renderSetup(); }
+    case 'sy-t': { const v = a.dataset.v; sy.off.has(v) ? sy.off.delete(v) : sy.off.add(v); return renderSetup(); }
+    case 'sy-go': return syGo();
     case 'ex-pre': { const p = EX_PRESETS.find(q => q[0] === a.dataset.v); if (!p) return; exSet = { ...exSet, name: p[0], read: p[1], work: p[2] }; ls.set('md-exam-set', exSet); return renderExam(); }
     case 'ex-start': return exStart();
     case 'ex-full': return exFull(true);
@@ -11663,14 +11739,14 @@ function h7CardRow(c, meta){
 function renderDecks(){
   const subjects = kids(null);
   const banner = S.mode === 'local' && !cloudOn() ? (cloudConfigured() ? '<div class="banner">Sign in to bring in your cards from your Mac and keep both in sync. <button class="link" data-act="cloud">Sign in</button></div>' : '<div class="banner">Cards are saved in this browser only. Open this page from claude.ai while signed in to keep them across devices.</div>') : '';
-  const foot = `<div class="hfoot h7foot"><button class="link" data-act="new-deck">New subject</button><button class="link" data-act="pdf-import">Cards from a PDF</button><button class="link" data-act="cd-edit">${cdManual() && cdOn() && !cdGet()?.auto ? 'Edit the exam countdown' : 'Exam countdown'}</button><button class="link" data-act="import">Import</button><button class="link" data-act="export-all">Export all</button><button class="link" data-act="options">Options</button><button class="link hfkeys" data-act="keys">Keyboard shortcuts</button></div>`;
+  const foot = `<div class="hfoot h7foot"><button class="link" data-act="sy-open">Set up decks</button><button class="link" data-act="new-deck">New subject</button><button class="link" data-act="pdf-import">Cards from a PDF</button><button class="link" data-act="cd-edit">${cdManual() && cdOn() && !cdGet()?.auto ? 'Edit the exam countdown' : 'Exam countdown'}</button><button class="link" data-act="import">Import</button><button class="link" data-act="export-all">Export all</button><button class="link" data-act="options">Options</button><button class="link hfkeys" data-act="keys">Keyboard shortcuts</button></div>`;
   if (!subjects.length){
-    $('#root').innerHTML = `<div class="h7home">${banner}<div class="h7empty"><h1>Start with a subject</h1><p>Make a subject such as Maths or Physics, then add topics inside it and the mistakes you want to stop making.</p><button class="btn primary big" data-act="new-deck">New subject</button></div>${foot}</div>`;
+    $('#root').innerHTML = `<div class="h7home">${banner}<div class="h7empty"><h1>Start with your subjects</h1><p>Tick the subjects you take for the HSC and Recall makes a deck for each, with its NESA syllabus topics inside. Then add the mistakes you want to stop making.</p><div class="h7go"><button class="btn primary big" data-act="sy-open">Set up decks</button><button class="link" data-act="new-deck">Make my own subject</button><button class="link" data-act="import">Import from Anki</button></div></div>${foot}</div>`;
     return;
   }
   const subj = curSubj(), c = counts(subj.id), cs = cardsIn(subj.id), n = cs.length, due = toStudy(c), known = h7Known(cs);
   const tabs = subjects.map(s => { const d = toStudy(counts(s.id)); return `<button class="stab" role="tab" aria-selected="${s.id === subj.id}" data-act="subj-tab" data-id="${s.id}" style="--sc:${scol(s.id)}">${esc(s.name)}${d ? `<span class="stabn">${d}</span>` : ''}</button>`; }).join('');
-  const tabsHtml = `<div class="stabs h7tabs" role="tablist" aria-label="Subjects">${tabs}<button class="stab stabadd" data-act="new-deck" aria-label="New subject" title="New subject"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button><span class="stabind" id="stabind" aria-hidden="true"></span></div>`;
+  const tabsHtml = `<div class="stabs h7tabs" role="tablist" aria-label="Subjects">${tabs}<button class="stab stabadd" data-act="new-deck" aria-label="New subject" title="New subject"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button><button class="stab stabsetup" data-act="sy-open">Set up decks</button><span class="stabind" id="stabind" aria-hidden="true"></span></div>`;
   const next = h7NextUp(subj.id), np = next ? pathOf(next.nodeId) : [], mk = next ? marksOf(next) : 0;
   const ex = h7Exam(subj.id);
   const topics = kids(subj.id), withCards = topics.filter(t => cardsIn(t.id).length), noCards = topics.filter(t => !cardsIn(t.id).length);
@@ -12153,6 +12229,118 @@ document.addEventListener('visibilitychange', () => {
 document.addEventListener('fullscreenchange', () => { if (exOn()) exShow(); });
 /* a reload or restart mid-exam carries straight on */
 if (exOn()) setTimeout(() => { exWakeOn(); exShow(); }, 400);
+
+/* ---------- Set up decks: tick your HSC subjects, Recall makes a deck for each with its NESA syllabus topics ----------
+   Topic names come from NESA's syllabus pages. HSC 2027: Maths and English are on the new 2024 syllabuses (Maths topics are
+   the areas of study); sciences, Economics, Business, Legal and History are on the current syllabuses. HSC 2028: sciences
+   and HSIE move to new 2025 syllabuses whose topics aren't loaded yet, so those decks start empty. Nothing is ever deleted:
+   topics you already have are left alone, and only missing ones are added. */
+const SY_MATHS = {
+  std2: { name: 'Standard 2', areas: ['Algebra', 'Financial mathematics', 'Measurement'], note: 'Only some areas of study are listed so far; add the rest yourself.' },
+  adv: { name: 'Advanced', areas: ['Functions', 'Trigonometric functions', 'Sequences and series', 'Calculus', 'Exponential and logarithmic functions', 'Statistical analysis', 'Financial mathematics'] },
+  x1: { name: 'Extension 1', areas: ['Functions', 'Proof', 'Vectors', 'Trigonometric functions', 'Combinatorics', 'Calculus', 'Statistical analysis'] },
+  x2: { name: 'Extension 2', areas: ['Proof', 'Vectors', 'Complex numbers', 'Calculus', 'Mechanics'] }
+};
+const SY_LEVELS = [['', 'None'], ['std2', 'Standard 2'], ['adv', 'Advanced'], ['x1', 'Extension 1'], ['x2', 'Extension 2']];
+const SY_UPTO = { std2: ['std2'], adv: ['adv'], x1: ['x1', 'adv'], x2: ['x2', 'x1', 'adv'] };
+const syMods = (pre, names, from = 1) => names.map((n, i) => `${pre} ${i + from} – ${n}`);
+const SY_SUBJ = [
+  // [id, deck name, group, { y11: [...], y12: [...], opt: [...] (unticked to start) } for HSC 2027, syllabus label, new in 2028]
+  ['eng-std', 'English Standard', 'English', null, 'English Standard 11–12 Syllabus (2024)'],
+  ['eng-adv', 'English Advanced', 'English', null, 'English Advanced 11–12 Syllabus (2024)'],
+  ['eng-x1', 'English Extension 1', 'English', null, 'English Extension 11–12 Syllabus (2024)'],
+  ['eng-x2', 'English Extension 2', 'English', null, 'English Extension 11–12 Syllabus (2024)'],
+  ['eng-eal', 'English EAL/D', 'English', null, 'English EAL/D 11–12 Syllabus (2024)'],
+  ['bio', 'Biology', 'Science', { y11: syMods('Module', ['Cells as the Basis of Life', 'Organisation of Living Things', 'Biological Diversity', 'Ecosystem Dynamics']), y12: syMods('Module', ['Heredity', 'Genetic Change', 'Infectious Disease', 'Non-infectious Disease and Disorders'], 5) }, 'Biology Stage 6 Syllabus (2017)', 1],
+  ['chem', 'Chemistry', 'Science', { y11: syMods('Module', ['Properties and Structure of Matter', 'Introduction to Quantitative Chemistry', 'Reactive Chemistry', 'Drivers of Reactions']), y12: syMods('Module', ['Equilibrium and Acid Reactions', 'Acid/Base Reactions', 'Organic Chemistry', 'Applying Chemical Ideas'], 5) }, 'Chemistry Stage 6 Syllabus (2017)', 1],
+  ['phys', 'Physics', 'Science', { y11: syMods('Module', ['Kinematics', 'Dynamics', 'Waves and Thermodynamics', 'Electricity and Magnetism']), y12: syMods('Module', ['Advanced Mechanics', 'Electromagnetism', 'The Nature of Light', 'From the Universe to the Atom'], 5) }, 'Physics Stage 6 Syllabus (2017)', 1],
+  ['ees', 'Earth and Environmental Science', 'Science', { y11: syMods('Module', ['Earth\'s Resources', 'Plate Tectonics', 'Energy Transformations', 'Human Impacts']), y12: syMods('Module', ['Earth\'s Processes', 'Hazards', 'Climate Science', 'Resource Management'], 5) }, 'Earth and Environmental Science Stage 6 Syllabus (2017)', 1],
+  ['inv', 'Investigating Science', 'Science', { y11: syMods('Module', ['Cause and Effect – Observing', 'Cause and Effect – Inferences and Generalisations', 'Scientific Models', 'Theories and Laws']), y12: syMods('Module', ['Scientific Investigations', 'Technologies', 'Fact or Fallacy?', 'Science and Society'], 5) }, 'Investigating Science Stage 6 Syllabus (2017)', 1],
+  ['eco', 'Economics', 'Humanities and business', { y11: ['Introduction to Economics', 'Consumers and Business', 'Markets', 'Labour Markets', 'Financial Markets', 'Government in the Economy'], y12: syMods('Topic', ['The Global Economy', 'Australia\'s Place in the Global Economy', 'Economic Issues', 'Economic Policies & Management']) }, 'Economics Stage 6 Syllabus (2009)', 1],
+  ['bus', 'Business Studies', 'Humanities and business', { y11: ['Nature of Business', 'Business Management', 'Business Planning'], y12: ['Operations', 'Marketing', 'Finance', 'Human Resources'] }, 'Business Studies Stage 6 Syllabus (2010)', 1],
+  ['leg', 'Legal Studies', 'Humanities and business', { y11: ['The Legal System', 'The Individual and the Law', 'Law in Practice'], y12: ['Crime', 'Human Rights'], opt: ['Consumers', 'Family', 'Global Environment and Protection', 'Indigenous Peoples', 'Shelter', 'Workplace', 'World Order'] }, 'Legal Studies Stage 6 Syllabus (2009)', 1],
+  ['mod', 'Modern History', 'Humanities and business', { y11: ['Investigating Modern History', 'Historical Investigation', 'The Shaping of the Modern World'], y12: ['Power and Authority in the Modern World 1919–1946', 'National Studies', 'Peace and Conflict', 'Change in the Modern World'] }, 'Modern History Stage 6 Syllabus (2017)', 1],
+  ['anc', 'Ancient History', 'Humanities and business', { y11: ['Investigating Ancient History', 'Features of Ancient Societies', 'Historical Investigation'], y12: ['Cities of Vesuvius – Pompeii and Herculaneum', 'Ancient Societies', 'Personalities in their Times', 'Historical Periods'] }, 'Ancient History Stage 6 Syllabus (2017)', 1]
+];
+/* names match loosely, so "Australia's" finds "Australia’s" and "&" finds "and": your own spelling of a topic is kept, never duplicated */
+const syKey = n => String(n).toLowerCase().replace(/[’‘`]/g, "'").replace(/&/g, 'and').replace(/[–—]/g, '-').replace(/\s+/g, ' ').trim();
+function syResolve(parts){ let pid = null; const out = []; for (const p of parts){ const k = pid === false ? null : kids(pid).find(n => syKey(n.name) === syKey(p)); out.push(k ? k.name : p); pid = k ? k.id : false; } return out; }
+function syFind(parts){ let pid = null, k = null; for (const p of parts){ k = kids(pid).find(n => syKey(n.name) === syKey(p)); if (!k) return null; pid = k.id; } return k; }
+let sy = null;
+function syInit(){
+  const have = n => !!syFind([n]);
+  const mathsDeck = syFind(['Maths']) || syFind(['Mathematics']);
+  const lvl = !mathsDeck ? '' : kids(mathsDeck.id).some(k => /ext(ension)?\.? ?2|4u/i.test(k.name)) ? 'x2' : kids(mathsDeck.id).some(k => /ext(ension)?\.? ?1|3u/i.test(k.name)) ? 'x1' : 'adv';
+  sy = { year: ls.get('md-sy-year', 2027), maths: mathsDeck && kids(mathsDeck.id).length ? '' : lvl, mathsHave: mathsDeck ? kids(mathsDeck.id).length : 0, picks: new Set(SY_SUBJ.filter(s => have(s[1])).map(s => s[0])), off: new Set(), open: new Set() };
+  SY_SUBJ.forEach(s => (s[3]?.opt || []).forEach(t => sy.off.add(s[0] + '|' + t)));
+}
+const syMathsDeck = () => (syFind(['Maths']) || syFind(['Mathematics']))?.name || 'Maths';
+/* the topic paths a choice will make, each as [path parts, label] */
+function syPlan(){
+  const out = [];
+  if (sy.maths) for (const k of SY_UPTO[sy.maths]){ const c = SY_MATHS[k]; out.push({ deck: syMathsDeck(), id: 'maths', topics: c.areas.filter(a => !sy.off.has('maths|' + c.name + '|' + a)).map(a => [c.name, a]) }); }
+  for (const s of SY_SUBJ){
+    if (!sy.picks.has(s[0])) continue;
+    const t = sy.year >= 2028 && s[5] ? null : s[3];
+    out.push({ deck: s[1], id: s[0], topics: t ? [...t.y11, ...t.y12, ...(t.opt || [])].filter(x => !sy.off.has(s[0] + '|' + x)).map(x => [x]) : [] });
+  }
+  return out;
+}
+function syCounts(){
+  let decks = new Set(), made = 0, have = 0;
+  for (const p of syPlan()){ decks.add(p.deck); for (const t of p.topics){ if (syFind([p.deck, ...t])) have++; else made++; } }
+  return { decks: decks.size, made, have };
+}
+function syTick(on, mixed){ return `<span class="sytick ${on ? 'on' : ''} ${mixed ? 'mixed' : ''}" aria-hidden="true"></span>`; }
+function syTopicRows(sid, list, deck, pre){
+  return list.map(t => { const key = sid + '|' + (pre ? pre + '|' : '') + t, on = !sy.off.has(key), got = !!syFind(pre ? [deck, pre, t] : [deck, t]);
+    return `<button class="syt" data-act="sy-t" data-v="${esc(key)}" aria-pressed="${on}">${syTick(on)}<span>${esc(t)}</span>${got ? '<small>already in your deck</small>' : ''}</button>`; }).join('');
+}
+function renderSetup(){
+  if (!sy) syInit();
+  const c = syCounts(), yr = sy.year;
+  const mathsBlock = `<section class="sygrp sym"><h2>Mathematics <small>pick your highest level</small></h2>${sy.mathsHave && !sy.maths ? `<p class="sysrc">Your ${esc(syMathsDeck())} deck already has ${sy.mathsHave} topic${sy.mathsHave === 1 ? '' : 's'}. Pick a level to add the syllabus areas of study beside them.</p>` : ''}
+    <div class="sylvl" role="radiogroup" aria-label="Maths level">${SY_LEVELS.map(([k, n]) => `<button role="radio" data-act="sy-m" data-v="${k}" aria-checked="${sy.maths === k}">${n}${k === 'x2' ? '<small>with Ext 1 and Advanced</small>' : k === 'x1' ? '<small>with Advanced</small>' : ''}</button>`).join('')}</div>
+    ${sy.maths ? `<p class="sysrc">Mathematics 11–12 Syllabuses (2024), first examined in the 2027 HSC. Each topic is an area of study.</p><div class="sycols">${SY_UPTO[sy.maths].map(k => `<div><h3>${SY_MATHS[k].name}</h3>${syTopicRows('maths', SY_MATHS[k].areas, syMathsDeck(), SY_MATHS[k].name)}${SY_MATHS[k].note ? `<p class="sysrc">${SY_MATHS[k].note}</p>` : ''}</div>`).join('')}</div>` : ''}
+  </section>`;
+  const groups = [...new Set(SY_SUBJ.map(s => s[2]))].map(g => `<section class="sygrp"><h2>${g}</h2>${SY_SUBJ.filter(s => s[2] === g).map(s => {
+    const on = sy.picks.has(s[0]), t = yr >= 2028 && s[5] ? null : s[3], open = on && !!t && sy.open.has(s[0]), exists = !!syFind([s[1]]);
+    const n = t ? t.y11.length + t.y12.length : 0;
+    return `<div class="sys ${open ? 'open' : ''}"><div class="syrow"><button class="sysb" data-act="sy-s" data-v="${s[0]}" aria-pressed="${on}">${syTick(on)}<span>${esc(s[1])}</span>${exists ? '<small>you have this deck</small>' : ''}</button>${on && t ? `<button class="syop" data-act="sy-o" data-v="${s[0]}" aria-expanded="${open}">${n} topics<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>` : on ? '<small class="synone">no syllabus topics yet</small>' : ''}</div>
+      ${open ? `<div class="syin"><p class="sysrc">${esc(s[4])}</p><div class="sycols"><div><h3>Year 11</h3>${syTopicRows(s[0], t.y11, s[1])}</div><div><h3>Year 12 <span class="syhsc">in the HSC exam</span></h3>${syTopicRows(s[0], t.y12, s[1])}${t.opt ? `<h3 class="syopt">Options, tick the ones you study</h3>${syTopicRows(s[0], t.opt, s[1])}` : ''}</div></div></div>` : ''}
+      ${on && !t ? `<p class="sysrc syind">${yr >= 2028 && s[5] ? `For the ${yr} HSC this subject is on NESA’s new 2025 syllabus. Its topics aren’t in Recall yet, so the deck starts empty and you add your own.` : `${esc(s[4])}. Its modules aren’t in Recall yet, so the deck starts empty and you add your own.`}</p>` : ''}
+    </div>`; }).join('')}</section>`).join('');
+  const byDeck = new Map(); for (const p of syPlan()){ const g = byDeck.get(p.deck) || []; g.push(...p.topics); byDeck.set(p.deck, g); }
+  const merged = [...byDeck].map(([d, ts]) => { const got = ts.filter(t => syFind([d, ...t])).length, nw = ts.length - got;
+    return `<li><b>${esc(d)}</b><span>${ts.length ? `${nw} new topic${nw === 1 ? '' : 's'}${got ? `, ${got} already there` : ''}` : syFind([d]) ? 'already there' : 'empty deck'}</span></li>`; });
+  $('#root').innerHTML = `<div class="sy">
+    <div class="symain">
+      <h1>Set up decks</h1>
+      <p class="sysub">Tick the subjects you take. Recall makes a deck for each with its NESA syllabus topics. Decks and topics you already have are kept as they are; only missing ones are added.</p>
+      <div class="syyear"><span>HSC year</span><div role="radiogroup" aria-label="HSC year">${[2027, 2028].map(y => `<button role="radio" data-act="sy-y" data-v="${y}" aria-checked="${yr === y}">${y}</button>`).join('')}</div><small>${yr === 2027 ? 'Maths and English on the new syllabuses; sciences and HSIE on the current ones' : 'Every subject on its new syllabus'}</small></div>
+      ${mathsBlock}${groups}
+    </div>
+    <aside class="syside">
+      <h2>Your decks</h2>
+      <ul>${merged.join('') || '<li class="syempty">Tick a subject to start</li>'}</ul>
+      <p class="sycount">${c.made ? `${c.made} topic${c.made === 1 ? '' : 's'} to add across ${c.decks} deck${c.decks === 1 ? '' : 's'}` : c.decks ? 'Everything ticked is already in your decks' : ''}</p>
+      <button class="btn primary big" data-act="sy-go" ${c.decks && (c.made || syPlan().some(p => !syFind([p.deck]))) ? '' : 'disabled'}>${kids(null).length ? 'Add to my decks' : 'Create decks'}</button>
+      <button class="link" data-act="nav-decks">Cancel</button>
+    </aside>
+  </div>`;
+}
+async function syGo(){
+  const plan = syPlan(); if (!plan.length) return;
+  undoTx = null; undoLabel = 'set up decks';
+  let made = 0, first = null;
+  for (const p of plan){
+    const d = await ensurePath(syResolve([p.deck])[0]); made += d.made; first = first || d.id;
+    for (const t of p.topics){ const r = await ensurePath(syResolve([p.deck, ...t]).join('::')); made += r.made; }
+  }
+  ls.set('md-sy-year', sy.year); sy = null;
+  if (first) ls.set('md-subj', first);
+  go('decks'); toast(made ? `Added ${made} deck${made === 1 ? '' : 's'} and topic${made === 1 ? '' : 's'}` : 'Nothing new to add', 2600);
+}
 
 initStore().finally(() => { lhMigrate(); designMigrate(); h7Migrate(); if (S.ready) settingsRepair(); cloudBoot(); });
 render();
