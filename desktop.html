@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261118160424 min-shell:1.27.0 -->
+<!-- recall-build:20261118200822 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -8720,7 +8720,8 @@ function todoAdd(){
   const inp = $('#tdoin'), t = (inp?.value || '').replace(/\s+/g, ' ').trim(); if (!t) return;
   if (todoNewKind === 'h'){ todoNewKind = ''; return todoAddMark('h', t.replace(/:\s*$/, '')); }
   const est = todoNewMin; todoNewMin = 0;
-  const page = $('#tdo')?.dataset.subj || null, fv = todoEff(page) || page, cat = fv?.startsWith('tc:') ? todoCat(fv.slice(3)) : null;
+  const page = $('#tdo')?.dataset.subj || null, nx = tdNextTc && todoCat(tdNextTc) ? 'tc:' + tdNextTc : null; tdNextTc = null;
+  const fv = nx || todoEff(page) || page, cat = fv?.startsWith('tc:') ? todoCat(fv.slice(3)) : null;
   const subj = cat ? cat.parent || null : fv, tcx = cat ? { tc: cat.id } : {};
   if (todoRepDays.size){
     const days = [...todoRepDays].sort(), r = { id: uid('r'), t: t.slice(0, 200), s: subj, ...tcx, days, at: Date.now(), ...(est ? { m: est } : {}) };
@@ -8825,7 +8826,7 @@ function todoSubjMenu(id, anchor){
   const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu tdfmenu'; m.setAttribute('role', 'menu');
   m.innerHTML = `<div class="mlabel">Subject</div>` + todoSubjOpts(x, `data-act="todo-subj" data-id="${id}"`)
     + `<button class="tdsubm" data-act="todo-subj" data-id="${id}" data-s="" role="menuitemradio" aria-checked="${!x.s && !x.tc}"><span class="sdot2" style="--sc:var(--fg-3)"></span>No subject${!x.s && !x.tc ? '<span class="grow"></span>✓' : ''}</button>`
-    + `<hr><button class="tdsubm tdcatnew" data-act="todo-catnew"><span class="tdcatplus">+</span>New subtopic…</button>`;
+    + `<hr><button class="tdsubm tdcatnew" data-act="todo-catnew" data-id="${id}"><span class="tdcatplus">+</span>New subtopic…</button>`;
   document.body.appendChild(m); const r = anchor.getBoundingClientRect(), w = m.offsetWidth;
   m.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px'; m.style.top = (r.bottom + 6 + m.offsetHeight > innerHeight - 8 ? Math.max(8, r.top - m.offsetHeight - 6) : r.bottom + 6) + 'px';
   (m.querySelector('[aria-checked="true"]') || m.querySelector('button'))?.focus();
@@ -8838,10 +8839,11 @@ function todoSetSubj(id, s){
 /* ---------- new / edit a to-do subtopic: name, colour, which subject it sits under ---------- */
 const TD_CAT_COLS = ['#e5534b', '#f0883e', '#d4a72c', '#57ab5a', '#2fb5a6', '#39a0e5', '#6c7ff2', '#a371f7', '#e275ad', '#8b949e'];
 let tdCat = null;
-function todoCatDialog(id){
-  closeMenu(); const old = id ? todoCat(id) : null, page = $('#tdo')?.dataset.subj || null, f = todoEff(page);
+let tdNextTc = null; // a subtopic just made from the new-task row: the next task you add goes in it, without filtering the list
+function todoCatDialog(id, forTask){
+  closeMenu(); const old = id ? todoCat(id) : null, page = $('#tdo')?.dataset.subj || null, f = todoEff(page), task = forTask ? todoAll().find(z => z.id === forTask) : null;
   const parent = old ? old.parent || '' : (f && !f.startsWith('tc:') ? f : f?.startsWith('tc:') ? todoCat(f.slice(3))?.parent || '' : '');
-  tdCat = { id: old?.id || null, color: old?.color || TD_CAT_COLS[6] };
+  tdCat = { id: old?.id || null, color: old?.color || TD_CAT_COLS[6], task: task?.id || null };
   openDialog(`<div class="dialog tdcatd" role="dialog" aria-modal="true" aria-labelledby="tdcath" style="max-width:440px"><header><h2 id="tdcath">${old ? 'Edit subtopic' : 'New subtopic'}</h2><button class="icon" data-act="close" aria-label="Close">${I.x}</button></header>
     <div class="body">
       <div class="field"><label for="tdcatn">Name</label><input class="in" id="tdcatn" maxlength="40" autocomplete="off" placeholder="3U Maths" value="${esc(old?.name || '')}"></div>
@@ -8872,9 +8874,11 @@ function todoCatSave(){
   /* tasks in it follow it if it moves to another subject */
   const todos = todoAll().map(z => z.tc === id ? { ...z, s: parent } : z);
   S.settings = { ...S.settings, todoCats: cats, todos }; saveSettings();
-  const wasNew = !tdCat.id; tdCat = null; closeDialog();
-  if (wasNew){ const page = $('#tdo')?.dataset.subj || null; todoF = { at: page, v: 'tc:' + id }; }
-  todoRefresh(); toast(wasNew ? `${name} added · new tasks here go in it` : `${name} saved`, 2200);
+  const wasNew = !tdCat.id, forTask = tdCat.task; tdCat = null; closeDialog();
+  // a new subtopic no longer switches the list to show only that subtopic: the view stays as it was
+  if (wasNew && forTask){ S.settings = { ...S.settings, todos: todoAll().map(z => z.id === forTask ? todoSubjApply(z, 'tc:' + id) : z) }; saveSettings(); }
+  else if (wasNew) tdNextTc = id;
+  todoRefresh(); toast(wasNew ? (forTask ? `${name} added, and the task moved into it` : `${name} added · the next task you add goes in it`) : `${name} saved`, 2400);
 }
 function todoCatDel(){
   const id = tdCat?.id, c = id && todoCat(id); if (!c) return closeDialog();
@@ -9361,7 +9365,7 @@ document.addEventListener('click', async e => {
     case 'todo-tick': return todoTick(id);
     case 'todo-fmenu': e.stopPropagation(); return $('#menu') ? closeMenu() : todoFMenu(a);
     case 'todo-sel': return todoSelToggle(id, e.shiftKey);
-    case 'todo-catnew': return todoCatDialog(null);
+    case 'todo-catnew': return todoCatDialog(null, id);
     case 'todo-subjmenu': e.stopPropagation(); return $('#menu') ? closeMenu() : todoSubjMenu(id, a);
     case 'todo-catedit': e.stopPropagation(); return todoCatDialog(a.dataset.c);
     case 'todo-catcol': return todoCatColour(a.dataset.c);
