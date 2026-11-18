@@ -1,5 +1,5 @@
-// Recall offline cache (20261119005011): the app loads even without internet; cards sync when you're back online
-const C = 'recall-20261119005011', SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js', 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js'];
+// Recall offline cache (20261119012612): the app loads even without internet; cards sync when you're back online
+const C = 'recall-20261119012612', SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js', 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js'];
 self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(C).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => {}))))); });
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C && !k.endsWith('-img')).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {
@@ -19,12 +19,15 @@ self.addEventListener('fetch', e => {
 // study group notifications (sent by the "notify" Supabase function)
 self.addEventListener('push', e => {
   let m = {}; try { m = e.data ? e.data.json() : {}; } catch { m = { body: e.data && e.data.text() }; }
-  e.waitUntil(self.registration.showNotification(m.title || 'Recall', { body: m.body || '', icon: 'icon-192.png', badge: 'icon-192.png', tag: m.kind === 'remind' ? 'remind' : (m.kind || 'n') + (m.group || ''), data: { url: m.url || './', group: m.group || null } }));
+  const tag = m.tag || (m.kind === 'remind' ? 'remind' : (m.kind || 'n') + (m.group || ''));
+  const show = self.registration.showNotification(m.title || 'Recall', { body: m.body || '', icon: 'icon-192.png', badge: 'icon-192.png', tag, data: { url: m.url || './', group: m.group || null, go: m.go || null } });
+  // "your timer stopped" arriving after you're already back in Recall: show it (a push must), then take it away
+  e.waitUntil(m.kind !== 'left' ? show : show.then(() => self.clients.matchAll({ type: 'window', includeUncontrolled: true })).then(cs => cs.some(c => c.visibilityState === 'visible') ? self.registration.getNotifications({ tag }).then(ns => ns.forEach(n => n.close())) : null));
 });
 self.addEventListener('notificationclick', e => {
   e.notification.close(); const d = e.notification.data || {};
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => {
-    const c = cs[0]; if (c){ c.postMessage({ go: d.group ? 'group' : 'decks', g: d.group }); return c.focus(); }
+    const c = cs[0]; if (c){ if (d.go !== 'stay') c.postMessage({ go: d.group ? 'group' : 'decks', g: d.group }); return c.focus(); }
     return self.clients.openWindow(d.url || './');
   }));
 });

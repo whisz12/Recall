@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261119005011 min-shell:1.27.0 -->
+<!-- recall-build:20261119012612 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -4021,6 +4021,13 @@ body:not(.desktop):has(#fpill) #root{padding-bottom:56px}
 .hlegend span:first-child{margin-right:4px}.hlegend span:last-child{margin-left:4px}
 .hrstimes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .hrsfoot{margin:30px 0 0;color:var(--fg-3);font-size:12px}
+/* Progress › Tasks */
+.tskl li{grid-template-columns:10px auto minmax(0,1fr) auto}
+.tsks{color:var(--fg-3);font-size:12px;white-space:nowrap}
+.tsk .hrsgrid .link{margin-top:10px;font-size:13px;padding-left:0;padding-right:0}
+.tskweek .hwbar i+i{border-top:1px solid var(--bg)}
+.tskline{display:block;margin:-8px 0 14px;padding-left:0;padding-right:0;font-size:13px;color:var(--fg-3);font-variant-numeric:tabular-nums}
+.tskline:hover{color:var(--fg)}
 @media (max-width:900px){ .hrs,.hrsswrap{padding-left:18px;padding-right:18px} .hrs{padding-bottom:140px} .hrsgrid{grid-template-columns:1fr} .hrsgrid>section+section{margin-top:28px} .hrsbig b{font-size:52px} .hplanner{grid-template-columns:1fr} .hrsfacts{gap:10px 24px} .hweek{height:200px;gap:6px} }
 
 /* the subject tabs stay at the top while you scroll on iPad and phone, so you can always switch */
@@ -4394,7 +4401,7 @@ function render(){
   renderSideSubjects(); h7NavCounts();
   $('.navmore')?.setAttribute('aria-current', String(['browse', 'papers', 'ppmark', 'stats', 'exam', 'themes'].includes(view.name)));
   document.querySelector('.sideset')?.setAttribute('aria-current', String(view.name === 'themes'));
-  document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'stats' && view.name === 'hours') || (b.dataset.nav === 'papers' && (view.name === 'ppmark' || (view.name === 'study' && study?.tag === 'Paper mistakes'))) || (b.dataset.nav === 'decks' && (view.name === 'overview' || (view.name === 'study' && study?.tag !== 'Paper mistakes'))))));
+  document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'stats' && (view.name === 'hours' || view.name === 'tasks')) || (b.dataset.nav === 'papers' && (view.name === 'ppmark' || (view.name === 'study' && study?.tag === 'Paper mistakes'))) || (b.dataset.nav === 'decks' && (view.name === 'overview' || (view.name === 'study' && study?.tag !== 'Paper mistakes'))))));
   applyTheme();
   const root = $('#root');
   if (!S.ready){ root.innerHTML = '<div class="loading">Loading your collection…</div>'; return; }
@@ -4408,6 +4415,7 @@ function render(){
   else if (view.name === 'setup') renderSetup();
   else if (view.name === 'group') renderGroup();
   else if (view.name === 'hours') renderHours();
+  else if (view.name === 'tasks') renderTasksDone();
   else if (view.name === 'themes') renderThemes();
   else if (view.name === 'papers') renderPapers();
   else if (view.name === 'ppmark') renderPPMark();
@@ -4610,7 +4618,7 @@ function renderAppbar(){
   else if (view.name === 'exam') title = '<b>Exam timer</b>';
   else if (view.name === 'setup') title = '<b>Set up decks</b>';
   else if (view.name === 'group') title = '<b>Group study</b>';
-  else if (view.name === 'hours') title = '<b>Progress</b>';
+  else if (view.name === 'hours' || view.name === 'tasks') title = '<b>Progress</b>';
   else if (view.name === 'todo') title = '<b>Plan</b>';
   else if (view.name === 'cal') title = '<b>Calendar</b>';
   else if (view.name === 'themes') title = '<b>Settings</b>';
@@ -8863,7 +8871,7 @@ function todoBatchAct(act, a){
   if (act === 'todo-btick'){
     const now = Date.now(), xs = todoAll().filter(z => ids.has(z.id) && !z.k && !z.done); if (!xs.length) return toast('Headings and spaces can’t be ticked', 1600);
     undoTx = null; undoLabel = 'tick off tasks'; undoRecordSettings(); const xi = new Set(xs.map(x => x.id));
-    S.settings = { ...S.settings, todos: todoAll().map(z => xi.has(z.id) ? { ...z, done: now } : z), todoDone: [...todoDoneLog(), ...xs.map(x => ({ id: x.id, s: x.s || null, t: now, l: todoL(x) }))].slice(-500) }; saveSettings();
+    S.settings = { ...S.settings, todos: todoAll().map(z => xi.has(z.id) ? { ...z, done: now } : z), todoDone: [...todoDoneLog(), ...xs.map(x => ({ id: x.id, s: x.s || null, t: now, l: todoL(x), n: String(x.t || '').slice(0, 120) }))].slice(-1000) }; saveSettings();
     xs.forEach(x => { if (x.pp) ppTodoTicked(x, true); });
     todoSel.clear(); todoSelMode = false; todoRefresh(); return toast(`Ticked off ${xs.length} · ⌘Z to undo`, 1800);
   }
@@ -9011,7 +9019,7 @@ function todoSetKind(id, k){
 function todoDone(id){
   const list = todoAll(), x = list.find(z => z.id === id); if (!x) return;
   undoTx = null; undoLabel = x.done ? 'untick task' : 'tick off task'; undoRecordSettings();
-  const now = Date.now(), log = x.done ? todoDoneLog().filter(d => d.id !== id) : [...todoDoneLog(), { id, s: x.s || null, t: now, l: todoL(x) }].slice(-500);
+  const now = Date.now(), log = x.done ? todoDoneLog().filter(d => d.id !== id) : [...todoDoneLog(), { id, s: x.s || null, t: now, l: todoL(x), n: String(x.t || '').slice(0, 120) }].slice(-1000);
   S.settings = { ...S.settings, todos: list.map(z => z.id === id ? (z.done ? (({ ppAuto, ...y }) => ({ ...y, done: 0 }))(z) : { ...z, done: now }) : z), todoDone: log }; saveSettings();
   if (x.pp) ppTodoTicked(x, !x.done);
 }
@@ -9575,6 +9583,7 @@ document.addEventListener('click', async e => {
   if (act.startsWith('pp-')) return ppAction(act, a, e);
   if (act.startsWith('gr-')) return grAction(act, a, e);
   if (act.startsWith('hrs-')) return hrsAction(act, a, e);
+  if (act.startsWith('tsk-')) return tskAction(act, a, e);
   switch (act){
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
     case 'side-subj': { if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; return subjSwapDraw(); } ls.set('md-subj', id); study = null; return go('decks'); }
@@ -12540,7 +12549,7 @@ async function syGo(){
    and your group sees that you left. */
 const GR_VAPID = 'BHyEy0bqZdCArv2t7TNewyloJdrY2JxIzZZkQQmhYhWHpmGtn8gMd-T4FPBlt17kncNohxpryHXissTJgt1j_cA';
 const gr = { groups: [], members: [], names: {}, status: {}, days: [], rooms: [], me: null, loaded: false, loading: null, err: '', chan: null, cur: ls.get('md-gr-cur', null), rank: 'today', poll: null, seen: {}, lastLoad: 0 };
-const grPrefs = () => ({ start: true, room: true, remind: -1, ...ls.get('md-gr-notif', {}) });
+const grPrefs = () => ({ start: true, room: true, remind: -1, left: true, ...ls.get('md-gr-notif', {}) });
 const fDay = (t = Date.now()) => { const d = new Date(t - 4 * 3600e3);   /* a study day runs 4 am to 4 am */ return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 let focus = { state: 'idle', subj: '', since: 0, acc: 0, subjAcc: {}, day: fDay(), by: '', leftAt: 0, room: null, ack: true, ...ls.get('md-focus', {}) };
 const fSave = () => ls.set('md-focus', focus);
@@ -12562,6 +12571,7 @@ function fBank(t = Date.now()){
   focus.since = t;
 }
 async function fStart(subj, room = null){
+  try { fAskNotify(); } catch {}
   fRoll();
   if (focus.state === 'studying'){ fBank(); }
   await grMergeDay();
@@ -12573,6 +12583,7 @@ function fPause(by = 'you', t = Date.now()){
   if (focus.state !== 'studying') return;
   fBank(t); focus = { ...focus, state: 'paused', by, leftAt: by === 'left' ? t : 0, ack: by !== 'left' }; fSave();
   fPaint(); grPushStatus(); grPushDay();
+  if (by === 'left') try { fLeftNote(); } catch {}
 }
 function fStop(){
   if (focus.state === 'studying') fBank();
@@ -12819,6 +12830,7 @@ function grNotifHtml(){
   return `<section class="grnotif"><h2>Notifications</h2>${head}${on ? `
     <label class="grsw"><input type="checkbox" data-gpref="start" ${p.start ? 'checked' : ''}><span>When someone starts studying</span></label>
     <label class="grsw"><input type="checkbox" data-gpref="room" ${p.room ? 'checked' : ''}><span>When a group session starts</span></label>
+    <label class="grsw"><input type="checkbox" data-gpref="left" ${p.left ? 'checked' : ''}><span>When leaving Recall stops my timer</span></label>
     ${window.desktop ? '' : `<label class="grsw grrem"><span>Remind me if I haven’t studied by</span><select class="in" data-gpref="remind"><option value="-1">Off</option>${[15, 16, 17, 18, 19, 20, 21].map(h => `<option value="${h}" ${p.remind === h ? 'selected' : ''}>${h > 12 ? h - 12 : h} pm</option>`).join('')}</select></label>`}
     ${window.desktop ? '<p class="grfine">On this computer they show while Recall is open.</p>' : ''}` : ''}</section>`;
 }
@@ -13020,7 +13032,7 @@ function hrsPlanner(d){
   return `<div class="hplanner" role="img" aria-label="When you studied on ${hrsDate(d.key, { weekday: 'long', day: 'numeric', month: 'long' })}"><div class="hpcol">${rows.slice(0, 12).join('')}</div><div class="hpcol">${rows.slice(12).join('')}</div></div>`;
 }
 function hrsSwitch(){
-  return `<div class="hrsswitch" role="tablist" aria-label="Progress"><button role="tab" data-act="hrs-cards" aria-selected="${view.name === 'stats'}">Cards</button><button role="tab" data-act="hrs-open" aria-selected="${view.name === 'hours'}">Study time</button></div>`;
+  return `<div class="hrsswitch" role="tablist" aria-label="Progress"><button role="tab" data-act="hrs-cards" aria-selected="${view.name === 'stats'}">Cards</button><button role="tab" data-act="hrs-open" aria-selected="${view.name === 'hours'}">Study time</button><button role="tab" data-act="tsk-open" aria-selected="${view.name === 'tasks'}">Tasks</button></div>`;
 }
 function renderHours(){
   const today = fDay();
@@ -13078,6 +13090,136 @@ function renderHours(){
 }
 /* the Cards / Study time switch on the Progress page */
 { const rs = renderStats; renderStats = function(...a){ const r = rs.apply(this, a); try { const root = $('#root'); if (!root.querySelector('.hrsswitch')){ const w = document.createElement('div'); w.className = 'hrsswrap'; w.innerHTML = hrsSwitch(); root.prepend(w); } } catch {} return r; }; }
+/* ---------- Progress › Tasks: how many to-do tasks you ticked off each day and each week (19 Nov 2026) ----------
+   Counts come from S.settings.todoDone (the tick log, which keeps cleared tasks) plus any ticked task the log missed
+   (older ticks, past papers ticked by marking). A day runs 4 am to 4 am, like study time. */
+const tsk = { mode: 'week', at: null };
+function tskAll(){
+  const tasks = todoAll(), byId = new Map(tasks.map(x => [x.id, x])), seen = new Set(), out = [];
+  for (const d of todoDoneLog()){
+    if (!d || !(d.t > 0) || seen.has(d.id)) continue; seen.add(d.id);
+    const x = byId.get(d.id); if (x && !x.done) continue;   // ticked, then unticked on another device
+    out.push({ id: d.id, t: d.t, s: d.s || x?.s || null, n: d.n || x?.t || '' });
+  }
+  for (const x of tasks) if (!x.k && x.done > 1e12 && !seen.has(x.id)){ seen.add(x.id); out.push({ id: x.id, t: x.done, s: x.s || null, n: x.t || '' }); }
+  return out.sort((a, b) => a.t - b.t);
+}
+function tskByDay(list = tskAll()){ const m = {}; for (const x of list){ const k = fDay(x.t); (m[k] ||= []).push(x); } return m; }
+const tskSubjName = s => !s ? 'No subject' : nodeOf(s)?.name || 'Other';
+const tskColor = s => s && nodeOf(s) ? scol(s) : 'var(--fg-3)';
+const tskN = n => `${n}<small> task${n === 1 ? '' : 's'}</small>`;
+function tskDelta(a, b, unit){
+  if (!a && !b) return '';
+  const d = a - b; if (!d) return `<span class="hdelta">same as the ${unit} before</span>`;
+  return `<span class="hdelta ${d > 0 ? 'up' : 'down'}">${Math.abs(d)} ${d > 0 ? 'more' : 'fewer'} than the ${unit} before</span>`;
+}
+function tskSplit(list){
+  const by = {}; for (const x of list){ const k = x.s || ''; by[k] = (by[k] || 0) + 1; }
+  const rows = Object.entries(by).sort((a, b) => b[1] - a[1]), tot = list.length;
+  if (!rows.length) return `<p class="hrsnone">Nothing ticked off.</p>`;
+  return `<div class="hrsbar" role="img" aria-label="${rows.map(([k, v]) => `${esc(tskSubjName(k))} ${v}`).join(', ')}">${rows.map(([k, v]) => `<i style="flex:${v};background:${tskColor(k)}"></i>`).join('')}</div>
+    <ul class="hrsalloc">${rows.map(([k, v]) => `<li><span class="hdot" style="background:${tskColor(k)}"></span><span class="hnm">${esc(tskSubjName(k))}</span><span class="hpc">${Math.round(v / tot * 100)}%</span><b>${v}</b></li>`).join('')}</ul>`;
+}
+function tskWeekOf(key){ const wd = (new Date(dayStartMs(key)).getDay() + 6) % 7; return keyAdd(key, -wd); }
+function renderTasksDone(){
+  const today = fDay(), by = tskByDay(), day = k => by[k] || [];
+  if (!tsk.at || tsk.at > today) tsk.at = today;
+  const mode = tsk.mode, at = tsk.at;
+  let head, body;
+  if (mode === 'day'){
+    const l = day(at), prev = day(keyAdd(at, -1)).length, mon = tskWeekOf(at);
+    const wk = [...Array(7)].map((_, i) => day(keyAdd(mon, i)).length).reduce((a, b) => a + b, 0);
+    const open = at === today ? todoAll().filter(x => !x.k && !x.done && todoL(x) === 'today').length : null;
+    head = at === today ? 'Today' : at === keyAdd(today, -1) ? 'Yesterday' : hrsDate(at, { weekday: 'long', day: 'numeric', month: 'long' });
+    body = `<div class="hrstop"><div class="hrsbig"><b>${tskN(l.length)}</b>${tskDelta(l.length, prev, 'day')}</div>
+      <dl class="hrsfacts"><div><dt>First ticked off</dt><dd>${l.length ? hrsTime(l[0].t) : '–'}</dd></div><div><dt>Last ticked off</dt><dd>${l.length ? hrsTime(l.at(-1).t) : '–'}</dd></div><div><dt>${at === today ? 'This week so far' : 'That week'}</dt><dd>${wk}</dd></div>${open !== null ? `<div><dt>Still on ${esc(todoTabName('today'))}</dt><dd>${open}</dd></div>` : ''}</dl></div>
+      <div class="hrsgrid"><section><h2>Ticked off</h2>${l.length ? `<ul class="hrsses tskl">${l.map(x => `<li><span class="hdot" style="background:${tskColor(x.s)}"></span><span class="htm">${hrsTime(x.t)}</span><span class="hnm">${esc(x.n || 'A task you’ve since deleted')}</span><span class="tsks">${x.s ? esc(tskSubjName(x.s)) : ''}</span></li>`).join('')}</ul>` : `<p class="hrsnone">Nothing ticked off ${at === today ? 'yet today' : 'on this day'}.</p>`}
+        <button class="link" data-act="tsk-plan">Open Plan</button></section>
+      <section><h2>Subjects</h2>${tskSplit(l)}</section></div>`;
+  } else {
+    const mon = tskWeekOf(at), keys = [...Array(7)].map((_, i) => keyAdd(mon, i)), lists = keys.map(day), all = lists.flat();
+    const prev = [...Array(7)].map((_, i) => day(keyAdd(mon, i - 7)).length).reduce((a, b) => a + b, 0);
+    const past = keys.filter(k => k <= today).length || 1, withAny = lists.filter((l, i) => l.length && keys[i] <= today).length;
+    const bi = lists.reduce((b, l, i) => l.length > (lists[b]?.length || 0) ? i : b, -1);
+    const top = Math.max(1, ...lists.map(l => l.length)), step = Math.max(1, Math.ceil(top / 6)), n = Math.max(1, Math.ceil(top / step)), mx = n * step;
+    head = `${hrsDate(mon, { day: 'numeric', month: 'short' })} – ${hrsDate(keys[6], { day: 'numeric', month: 'short' })}`;
+    body = `<div class="hrstop"><div class="hrsbig"><b>${tskN(all.length)}</b>${tskDelta(all.length, prev, 'week')}</div>
+      <dl class="hrsfacts"><div><dt>Daily average</dt><dd>${(all.length / past).toFixed(1).replace(/\.0$/, '')}</dd></div><div><dt>Days with a task done</dt><dd>${withAny} of ${past}</dd></div><div><dt>Best day</dt><dd>${bi >= 0 ? `${hrsDate(keys[bi], { weekday: 'short' })}, ${lists[bi].length}` : '–'}</dd></div></dl></div>
+      <div class="hrsgrid"><section><h2>Each day</h2><div class="hweek tskweek" style="--n:${n}">${keys.map((k, i) => { const l = lists[i], sp = {}; l.forEach(x => sp[x.s || ''] = (sp[x.s || ''] || 0) + 1);
+        return `<button class="hwd ${k === today ? 'today' : ''} ${k > today ? 'future' : ''}" data-act="tsk-day" data-v="${k}" aria-label="${hrsDate(k, { weekday: 'long' })}, ${h7Plural(l.length, 'task')}"><span class="hwv">${l.length || ''}</span><span class="hwbar">${Object.entries(sp).sort((a, b) => b[1] - a[1]).map(([s, v]) => `<i style="height:${(v / mx * 100).toFixed(2)}%;background:${tskColor(s)}"></i>`).join('')}</span><span class="hwl">${hrsDate(k, { weekday: 'short' })}</span></button>`; }).join('')}</div></section>
+      <section><h2>Subjects</h2>${tskSplit(all)}</section></div>`;
+  }
+  const canNext = mode === 'day' ? at < today : keyAdd(tskWeekOf(at), 7) <= today;
+  $('#root').innerHTML = `<div class="hrs tsk">${hrsSwitch()}
+    <div class="hrsnav"><div role="radiogroup" aria-label="Period" class="hrsmode">${[['day', 'Day'], ['week', 'Week']].map(([k, nm]) => `<button role="radio" data-act="tsk-mode" data-v="${k}" aria-checked="${mode === k}">${nm}</button>`).join('')}</div>
+      <div class="hrsstep"><button class="iconbtn" data-act="tsk-step" data-v="-1" aria-label="Earlier"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h1>${head}</h1><button class="iconbtn" data-act="tsk-step" data-v="1" aria-label="Later" ${canNext ? '' : 'disabled'}><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>${(mode === 'day' ? at !== today : tskWeekOf(at) !== tskWeekOf(today)) ? `<button class="link" data-act="tsk-today">${mode === 'day' ? 'Today' : 'This week'}</button>` : ''}</div></div>
+    ${body}
+    <p class="hrsfoot">Counts every to-do task you tick off, including ones you’ve cleared since. A day runs from 4 am to 4 am, like study time.</p>
+  </div>`;
+}
+function tskAction(act, a){
+  switch (act){
+    case 'tsk-open': study = null; return go('tasks');
+    case 'tsk-plan': return go('todo');
+    case 'tsk-mode': tsk.mode = a.dataset.v; return renderTasksDone();
+    case 'tsk-today': tsk.at = fDay(); return renderTasksDone();
+    case 'tsk-day': tsk.mode = 'day'; tsk.at = a.dataset.v; return renderTasksDone();
+    case 'tsk-step': { const d = +a.dataset.v, today = fDay(); tsk.at = keyAdd(tsk.at || today, tsk.mode === 'day' ? d : 7 * d); if (tsk.at > today) tsk.at = today; return renderTasksDone(); }
+  }
+}
+/* the quiet count under the date on Plan */
+function tskPlanLine(){
+  const by = tskByDay(), t = fDay(), mon = tskWeekOf(t), d = (by[t] || []).length, w = [...Array(7)].map((_, i) => (by[keyAdd(mon, i)] || []).length).reduce((a, b) => a + b, 0);
+  return w ? `<button class="link tskline" data-act="tsk-open">${d} done today · ${w} this week</button>` : '';
+}
+{ const rt = renderTodo; renderTodo = function(...a){ const r = rt.apply(this, a); try { const h = $('#root .h7pdate'); if (h && !$('#root .tskline')){ const x = tskPlanLine(); if (x) h.insertAdjacentHTML('afterend', x); } } catch {} return r; }; }
+
+/* ---------- leaving Recall with the timer running: a notification that the timer stopped (19 Nov 2026) ----------
+   The page shows one itself straight away. On a phone or iPad that is signed in with notifications on, the "notify"
+   function also sends a push to this device, because iOS can put Recall to sleep before the page gets to show it.
+   Both use the tag "f-left", so you only ever see one, and coming back clears it. */
+const F_LEFT_TAG = 'f-left';
+let fLeftN = null;
+function fLeftNote(){
+  if (!grPrefs().left || !window.Notification) return;
+  const at = fClock(fSecs()), title = 'Your study timer stopped', body = `It stopped at ${at} because you left Recall. Come back to carry on.`;
+  if (window.desktop){
+    if (Notification.permission === 'denied') return;
+    try { fLeftN?.close(); fLeftN = new Notification(title, { body, tag: F_LEFT_TAG, silent: false }); fLeftN.onclick = () => { try { window.focus(); } catch {} fBack(); }; } catch {}
+    return;
+  }
+  if (Notification.permission !== 'granted') return;
+  const ep = ls.get('md-gr-push', null);
+  if (ep && grOn()) (async () => { try {
+    const { data } = await cloud.sb.auth.getSession(), tok = data?.session?.access_token; if (!tok) return;
+    fetch(CLOUD_URL.replace(/\/$/, '') + '/functions/v1/notify', { method: 'POST', keepalive: true, headers: { Authorization: 'Bearer ' + tok, apikey: CLOUD_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ kind: 'left', endpoint: ep, clock: at }) }).catch(() => {});
+  } catch {} })();
+  const own = () => { try { fLeftN = new Notification(title, { body, tag: F_LEFT_TAG }); fLeftN.onclick = () => { try { window.focus(); } catch {} }; } catch {} };
+  if (navigator.serviceWorker?.controller) navigator.serviceWorker.ready.then(r => r.showNotification(title, { body, tag: F_LEFT_TAG, icon: 'icon-192.png', badge: 'icon-192.png', data: { url: './', go: 'stay' } })).catch(own);
+  else own();
+}
+function fLeftClear(){
+  try { fLeftN?.close(); } catch {} fLeftN = null;
+  try { navigator.serviceWorker?.getRegistration?.().then(r => r?.getNotifications?.({ tag: F_LEFT_TAG })).then(ns => (ns || []).forEach(n => n.close())).catch(() => {}); } catch {}
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) fLeftClear(); });
+addEventListener('focus', fLeftClear);
+/* starting the timer by hand asks once for permission (needs a tap on iPhone/iPad), and on a phone or iPad turns on pushes so the note still arrives */
+function fAskNotify(){
+  if (window.desktop || !window.Notification || !grPrefs().left || grIOSBrowser()) return;
+  if (Notification.permission === 'granted'){ if (grPushable() && grOn() && !ls.get('md-gr-push', null) && !ls.get('md-f-pushtry', 0)){ ls.set('md-f-pushtry', 1); fPushSub(); } return; }
+  if (Notification.permission !== 'default' || ls.get('md-f-asked', 0)) return;
+  ls.set('md-f-asked', 1);
+  try { Promise.resolve(Notification.requestPermission()).then(p => { if (p === 'granted') fPushSub(); }).catch(() => {}); } catch {}
+}
+async function fPushSub(){
+  if (!grPushable() || !grOn()) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64uBytes(GR_VAPID) });
+    ls.set('md-gr-push', sub.endpoint); await grSavePush(sub);
+  } catch {}
+}
 setInterval(() => { if (view.name === 'hours' && hs.mode === 'day' && hs.at === fDay() && focus.state === 'studying' && !dialogOpen()){ const b = $('[data-hrsnow]'); if (b) b.innerHTML = hrsFmt(hrsDay(hs.at).secs); } }, 15000);
 function hrsAddDialog(){
   const subs = [...new Set([...grSubjects(), ...Object.keys(hrsDay(hs.at).subj)])].filter(x => x !== 'Other');
