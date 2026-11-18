@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261117232551";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261118145115";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -3659,6 +3659,15 @@ html.lh body.hasbg .h7drag{background:color-mix(in srgb, var(--bg) 85%, transpar
 .ppdiag{margin:14px 0 0;color:var(--fg-3)}
 .ppdiag summary{cursor:pointer;font-size:12px}
 .ppdiag pre{margin:8px 0;padding:10px 12px;border-radius:6px;background:var(--surface-2);color:var(--fg-2);font:400 11px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;user-select:text}
+.sashuf{display:inline-flex;align-items:center;gap:6px;margin-left:14px;color:var(--fg-2);font-size:13px;cursor:pointer}
+/* full-screen scratchpad on iPad and iPhone: keep its buttons clear of the status bar and window controls at the top,
+   and of the home bar at the bottom */
+.padwrap.full .padtop{padding-top:var(--sat);min-height:calc(46px + var(--sat));padding-left:max(20px, env(safe-area-inset-left,0px));padding-right:max(12px, env(safe-area-inset-right,0px))}
+html.iosapp .padwrap.full .padtop{padding-left:max(20px, env(safe-area-inset-left,0px))}
+.padwrap.full .padbar{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+.padwrap.full .padfoot{padding-bottom:max(10px, env(safe-area-inset-bottom,0px))}
+@media (max-width:760px){ .padwrap.full .padtop{flex-wrap:wrap;row-gap:0} .padwrap.full .padtop .padtt{flex:1 0 100%;padding-top:4px} }
+
 
 /* iPad / browser tweaks */
 html.hosted body.desktop .toolbar{padding-top:max(22px, var(--sat))}
@@ -4426,7 +4435,7 @@ function renderOverview(){
 function nextDueText(id){ const now = Date.now(); const ds = cardsIn(id).filter(c => kind(c) !== 'new').map(c => c.srs.due).filter(d => d > now); return ds.length ? 'Next card is due in ' + fmtIvl(Math.min(...ds) - now) + '.' : ''; }
 
 /* ---------- study ---------- */
-let shuffleOn = ls.get('md-shuffle', false);
+let shuffleOn = false; ls.set('md-shuffle', false);
 function shuffled(a){ const b = [...a]; for (let i = b.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
 function buildQueue(){
   const now = Date.now(), cs = sortCards(cardsIn(study.node)).filter(c => (!study.ex || !study.ex.has(c.nodeId)) && (!study.keep || study.keep.has(c.id)));
@@ -4434,7 +4443,12 @@ function buildQueue(){
   cs.splice(0, cs.length, ...cs.filter(c => !snoozed(c)));
   const learn = cs.filter(c => kind(c) === 'learn' && c.srs.due <= now).sort((a,b) => a.srs.due - b.srs.due);
   const rev = cs.filter(c => kind(c) === 'review' && c.srs.due <= now).sort((a,b) => a.srs.due - b.srs.due);
-  const nw = cs.filter(c => kind(c) === 'new').slice(0, newLeft());
+  let nw0 = cs.filter(c => kind(c) === 'new');
+  if (!study.node){ // several subjects at once: today's new cards are shared out between them, not all taken from the first
+    const by = new Map(); nw0.forEach(c => { const s = pathOf(c.nodeId)[0]?.id || ''; if (!by.has(s)) by.set(s, []); by.get(s).push(c); });
+    const lists = [...by.values()], mixed = []; for (let i = 0; mixed.length < nw0.length; i++) lists.forEach(l => { if (l[i]) mixed.push(l[i]); }); nw0 = mixed;
+  }
+  const nw = nw0.slice(0, newLeft());
   const q = [...learn, ...rev, ...nw]; return (shuffleOn ? shuffled(q) : q).map(c => c.id);
 }
 function startStudy(node, practise=false, only=null, list=null, ex=null, keep=null, tag=null){
@@ -4486,7 +4500,7 @@ function saRows(ex){
 }
 function saFoot(ex){
   const due = saDue(ex), all = saCards(ex).length, practise = saMode === 'practise' || !due;
-  return `<span class="hint">${all ? `${all} card${all === 1 ? '' : 's'} picked` : 'Nothing picked'}</span><span class="grow"></span><button class="btn" data-act="close">Cancel</button>${saRoot && !practise ? `<button class="btn" data-act="sa-go" data-mode="practise">Practise all ${all}</button>` : ''}
+  return `<span class="hint">${all ? `${all} card${all === 1 ? '' : 's'} picked` : 'Nothing picked'}</span><label class="sashuf"><input type="checkbox" id="sashuf" ${saShuf ? 'checked' : ''}> Shuffle</label><span class="grow"></span><button class="btn" data-act="close">Cancel</button>${saRoot && !practise ? `<button class="btn" data-act="sa-go" data-mode="practise">Practise all ${all}</button>` : ''}
     <button class="btn primary" data-act="sa-go" data-mode="${practise ? 'practise' : 'study'}" ${all ? '' : 'disabled'}>${practise ? `Practise ${all}` : `Study ${due}`}</button>`;
 }
 function saDraw(){
@@ -4494,21 +4508,26 @@ function saDraw(){
   d.querySelector('.salist').innerHTML = saRows(ex); d.querySelector('footer').innerHTML = saFoot(ex);
   d.querySelectorAll('[data-mixed="true"]').forEach(i => { i.indeterminate = true; });
 }
-function studyAllDialog(mode, root){
+let saShuf = false;
+function studyAllDialog(mode, root, mix){
   saRoot = root && nodeOf(root) ? root : null; const rn = saRoot && nodeOf(saRoot), word = rn ? (rn.parentId ? 'subtopics' : 'topics') : '';
-  saMode = mode; if (!saOpen) saOpen = new Set(kids(null).map(n => n.id));
-  openDialog(`<div class="dialog sadlg" role="dialog" aria-modal="true" aria-labelledby="sah" style="max-width:520px"><header><h2 id="sah">${rn ? `${mode === 'practise' ? 'Practise' : 'Study'} ${esc(rn.name)}` : mode === 'practise' ? 'Practise all' : 'Study all'}</h2><span class="grow"></span><button class="link sm" data-act="sa-all">Pick all</button><button class="link sm" data-act="sa-none">Clear</button></header>
-    <div class="body"><p class="hint" style="margin:0 0 10px">${rn ? `Untick the ${word} you want to leave out this time. Recall remembers what you pick for ${esc(rn.name)}.` : 'Untick anything to leave it out. Recall remembers what you pick.'}</p><div class="salist"></div></div><footer></footer></div>`, d => {
+  saMode = mode; saShuf = false; if (!saRoot) saOpen = new Set(); else if (!saOpen) saOpen = new Set(kids(null).map(n => n.id));
+  openDialog(`<div class="dialog sadlg" role="dialog" aria-modal="true" aria-labelledby="sah" style="max-width:520px"><header><h2 id="sah">${rn ? `${mode === 'practise' ? 'Practise' : 'Study'} ${esc(rn.name)}` : mode === 'practise' ? 'Practise several subjects' : 'Study several subjects'}</h2><span class="grow"></span><button class="link sm" data-act="sa-all">Pick all</button><button class="link sm" data-act="sa-none">Clear</button></header>
+    <div class="body"><p class="hint" style="margin:0 0 10px">${rn ? `Untick the ${word} you want to leave out this time. Recall remembers what you pick for ${esc(rn.name)}.` : 'Tick the subjects you want to study together. Open a subject to pick its topics. Recall remembers what you pick.'}</p><div class="salist"></div></div><footer></footer></div>`, d => {
       d.addEventListener('change', e => { const i = e.target.closest('[data-sa]'); if (!i) return; const ex = saEx(), self = !!i.dataset.self, ids = self ? [i.dataset.sa] : [...subtree(i.dataset.sa)], on = self ? !ex.has(i.dataset.sa) : saState(i.dataset.sa, ex) === 'on'; ids.forEach(id => on ? ex.add(id) : ex.delete(id)); saPut([...ex]); saDraw(); d.querySelector(`[data-sa="${i.dataset.sa}"]`)?.focus(); });
       d.addEventListener('click', e => { const t = e.target.closest('[data-sa-tog]'); if (!t || t.classList.contains('blank')) return; e.preventDefault(); const id = t.dataset.saTog; saOpen.has(id) ? saOpen.delete(id) : saOpen.add(id); saDraw(); });
     });
   saDraw(); $('#layer .sadlg footer .btn.primary')?.focus();
 }
 function saGo(mode){
-  const ex = saEx(), root = saRoot; closeDialog(); study = null;
-  if (mode === 'practise') return startStudy(root, true, null, sortCards(saCards(ex)).map(c => c.id));
-  startStudy(root, false, null, null, ex);
+  const ex = saEx(), root = saRoot, shuf = saShuf; closeDialog(); study = null;
+  const was = shuffleOn; shuffleOn = shuf;
+  try {
+    if (mode === 'practise') return startStudy(root, true, null, sortCards(saCards(ex)).map(c => c.id));
+    startStudy(root, false, null, null, ex);
+  } finally { shuffleOn = was; }
 }
+document.addEventListener('change', e => { if (e.target.id === 'sashuf') saShuf = e.target.checked; });
 function nextCard(){
   const now = Date.now(); study.shown = false; study.pred = { conf: 50, think: '', set: false }; study.t0 = Date.now(); study.tShown = 0; study.timeUpToast = false; study.pausedMs = 0; study.pausedAt = 0; study.autoShown = false; const inScope0 = study.node ? new Set(cardsIn(study.node).map(c => c.id)) : null, inScope = (inScope0 || study.ex || study.keep) ? { has: id => (!inScope0 || inScope0.has(id)) && (!study.ex || !study.ex.has(S.cards[id]?.nodeId)) && (!study.keep || study.keep.has(id)) } : null;
   study.queue = study.queue.filter(id => S.cards[id]);
@@ -9405,6 +9424,11 @@ document.addEventListener('click', async e => {
     case 'sa-all': saPut([]); return saDraw();
     case 'sa-none': saPut(saRoot ? [...subtree(saRoot)] : Object.keys(S.nodes)); return saDraw();
     case 'study-pick': closeMenu(); return studyAllDialog('study', id);
+    case 'study-mix': closeMenu(); return studyAllDialog('study', null, true);
+    case 'study-shuffle': { // every press: a brand-new random order, straight into studying
+      const n0 = nodeOf(id); if (!n0) return; const c0 = counts(id), due0 = toStudy(c0); study = null;
+      const was = shuffleOn; shuffleOn = true; try { startStudy(id, !due0); } finally { shuffleOn = was; }
+      if (study) study.shuf = true; return; }
     case 'back-card': return goBack();
     case 'study-exit': { if (study?.tag && document.querySelector('[data-act="pp-back"]')) return document.querySelector('[data-act="pp-back"]').click(); const n = study?.node; study = null; return n ? go('overview', n) : go('decks'); }
     case 'shuffle-toggle': undoRecordUi(); shuffleOn = !shuffleOn; ls.set('md-shuffle', shuffleOn); render(); return toast(shuffleOn ? 'Shuffle on: cards come in a random order' : 'Shuffle off: cards come in order');
@@ -11523,7 +11547,8 @@ function renderDecks(){
         ${next ? `<p class="h7next"><span>Next up</span><b>${esc(next.label || (np.slice(-1)[0]?.name || 'A card'))}</b>${next.label ? ' ' + esc(np.slice(-1)[0]?.name || '') : ''}${mk ? `, ${h7Plural(mk, 'mark')}` : ''}</p>` : ''}
         <div class="h7go">${n ? `<button class="btn primary big" data-act="${due ? 'study' : 'practise'}" data-id="${subj.id}">${due ? 'Start studying' : 'Practise anyway'}</button>` : `<button class="btn primary big" data-act="add-here" data-id="${subj.id}">Add a card</button>`}
           ${kids(subj.id).length && c.total ? `<button class="link" data-act="study-pick" data-id="${subj.id}">Choose topics</button>` : ''}
-          ${n > 1 ? `<button class="link ${shuffleOn ? 'on' : ''}" data-act="shuffle-toggle" aria-pressed="${shuffleOn}">${shuffleOn ? 'Shuffle is on' : 'Shuffle'}</button>` : ''}</div>
+          ${kids(null).filter(s => cardsIn(s.id).length).length > 1 ? `<button class="link" data-act="study-mix">Mix subjects</button>` : ''}
+          ${n > 1 ? `<button class="link" data-act="study-shuffle" data-id="${subj.id}" title="Start studying in a new random order">Shuffle</button>` : ''}</div>
       </section>
       <section class="h7exam" aria-label="Next exam">
         ${ex ? `<button class="h7big h7exb" data-act="cd-edit" title="Change the exam countdown"><span class="h7n acc">${ex.days}</span><span class="h7bl"><span class="h7exn">${ex.days === 0 ? 'Today: ' + esc(ex.name) : `day${ex.days === 1 ? '' : 's'} to ${esc(ex.name)}`}</span><small>${esc(new Date(ex.date + 'T00:00').toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' }))}</small></span></button>${h7Strip(ex)}`
@@ -11569,7 +11594,7 @@ function renderOverview(){
       <div class="h7go"><button class="btn primary big" data-act="${any ? 'study' : 'practise'}" data-id="${esc(n.id)}" ${c.total ? '' : 'disabled'}>${any ? 'Study ' + any + ' due' : 'Practise'}</button>
         <button class="link" data-act="practise" data-id="${esc(n.id)}" ${c.total ? '' : 'disabled'}>Practise all ${c.total}</button>
         ${!n.virtual && kids(n.id).length && c.total ? `<button class="link ${saLeftOut(n.id) ? 'on' : ''}" data-act="study-pick" data-id="${esc(n.id)}">Choose ${n.parentId ? 'subtopics' : 'topics'}</button>` : ''}
-        ${cs.length > 1 ? `<button class="link ${shuffleOn ? 'on' : ''}" data-act="shuffle-toggle" aria-pressed="${shuffleOn}">${shuffleOn ? 'Shuffle is on' : 'Shuffle'}</button>` : ''}
+        ${cs.length > 1 ? `<button class="link" data-act="study-shuffle" data-id="${esc(n.id)}" title="Start studying in a new random order">Shuffle</button>` : ''}
         <button class="link" data-act="add-here" data-id="${esc(n.id)}">Add card</button>
         <button class="link" data-act="gear" data-id="${esc(n.id)}">Options</button></div>
     </div>
