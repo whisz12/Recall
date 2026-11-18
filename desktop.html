@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261118145115 min-shell:1.27.0 -->
+<!-- recall-build:20261118160424 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -3199,7 +3199,7 @@ html:root body .toolbar nav .navmore{display:none}
   html:root body:not(.desktop) .toolbar nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:48px;padding:0;font:500 11px var(--ui);color:var(--fg-3);background:none;box-shadow:none;border-radius:6px}
   html:root body:not(.desktop) .toolbar nav button[aria-current="true"]{color:var(--fg);background:none}
   html:root body:not(.desktop) .toolbar nav button .ni{display:block;width:22px;height:22px}
-  html:root body:not(.desktop) .toolbar nav [data-nav="browse"],html:root body:not(.desktop) .toolbar nav [data-nav="papers"],html:root body:not(.desktop) .toolbar nav [data-nav="stats"],html:root body:not(.desktop) .toolbar nav [data-nav="themes"]{display:none}
+  html:root body:not(.desktop) .toolbar nav [data-nav="browse"],html:root body:not(.desktop) .toolbar nav [data-nav="papers"],html:root body:not(.desktop) .toolbar nav [data-nav="stats"],html:root body:not(.desktop) .toolbar nav [data-nav="exam"],html:root body:not(.desktop) .toolbar nav [data-nav="themes"]{display:none}
   html:root body:not(.desktop):has(#root.v-study, #root.v-ppmark) .toolbar nav{display:none}
   html:root body:not(.desktop) .toast{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
   html:root body:not(.desktop):has(#root.v-study) .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
@@ -3733,6 +3733,54 @@ html.iosapp .padwrap.full .padtop{padding-left:max(20px, env(safe-area-inset-lef
 .padwrap.full .padfoot{padding-bottom:max(10px, env(safe-area-inset-bottom,0px))}
 @media (max-width:760px){ .padwrap.full .padtop{flex-wrap:wrap;row-gap:0} .padwrap.full .padtop .padtt{flex:1 0 100%;padding-top:4px} }
 
+/* Exam timer */
+.h7exm{max-width:1000px;margin:0 auto;padding:0 40px 48px}
+.h7exm>h1{margin:0;font:400 20px var(--ui)}
+.h7exsub{margin:6px 0 0;color:var(--fg-3);max-width:640px}
+.h7exlast{margin-top:26px;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.h7exlast h2,.h7exform h2{margin:0 0 6px;font:400 13px var(--ui);color:var(--fg-3)}
+.h7exlast p{margin:0;color:var(--fg-2)}
+.h7exform{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px 56px;margin-top:30px}
+.h7expre{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));border-top:1px solid var(--border)}
+.h7expre button{display:flex;flex-direction:column;gap:2px;padding:11px 12px 11px 0;border:0;border-bottom:1px solid var(--border);background:none;color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.h7expre button small{color:var(--fg-3);font-size:12px}
+.h7expre button b{font-weight:500}
+.h7expre button[aria-pressed="true"] b{color:var(--accent)}
+.h7expre button:hover b{text-decoration:underline}
+.h7exset{display:flex;flex-direction:column;gap:16px}
+.h7exset>label,.h7exmins label{display:flex;flex-direction:column;gap:6px;color:var(--fg-3);font-size:13px}
+.h7exmins{display:flex;gap:20px}
+.h7exmins span{display:flex;align-items:center;gap:8px;color:var(--fg-2)}
+.h7exmins input{width:90px;font-size:18px;font-variant-numeric:tabular-nums}
+.h7exlock{display:flex !important;flex-direction:row !important;align-items:flex-start;gap:10px;color:var(--fg) !important;cursor:pointer}
+.h7exlock input{margin-top:3px}
+.h7exlock span{display:flex;flex-direction:column;gap:3px;font-size:14px}
+.h7exlock small{color:var(--fg-3);font-size:12px;line-height:1.45}
+.h7extot{margin:0;color:var(--fg-3)}
+.h7exset .btn.big{align-self:flex-start}
+@media (max-width:760px){ .h7exm{padding:0 18px 40px} .h7exform{grid-template-columns:1fr} }
+html.examon,html.examon body{overflow:hidden !important;overscroll-behavior:none}
+.exov{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);color:var(--fg);padding:calc(var(--sat,0px) + 24px) 24px calc(env(safe-area-inset-bottom,0px) + 24px);touch-action:none;user-select:none;-webkit-user-select:none}
+.exin{display:flex;flex-direction:column;align-items:center;text-align:center;width:min(760px,100%)}
+.exname{margin:0;color:var(--fg-3);font-size:15px}
+.exph{margin:10px 0 0;font:500 18px var(--ui);color:var(--fg-2)}
+.exov.read .exph{color:var(--accent)}
+.exov.warn .exph{color:var(--again)}
+.exbig{margin:6px 0 0;font:200 clamp(72px,17vw,190px)/1 var(--ui);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.exbig.sm{font-size:clamp(56px,11vw,120px)}
+.exbar{width:100%;height:4px;margin-top:26px;background:var(--border-2)}
+.exbar i{display:block;height:4px;background:var(--fg-3);transition:width .25s linear}
+.exov.read .exbar i{background:var(--accent)}
+.exov.warn .exbar i{background:var(--again)}
+.exnote{margin:16px 0 0;color:var(--fg-3);font-size:15px}
+.exgo{display:flex;gap:12px;margin-top:30px}
+.exfoot{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);display:flex;justify-content:center;align-items:center;gap:22px}
+.exhold{position:relative;overflow:hidden;height:36px;padding:0 16px;border:1px solid var(--border-2);border-radius:8px;background:none;color:var(--fg-3);font:400 13px var(--ui);cursor:pointer;touch-action:none}
+.exhold i{position:absolute;inset:0 100% 0 0;background:var(--border-2);transition:none}
+.exhold.holding i{inset:0 0 0 0;transition:right 2s linear}
+.exhold span{position:relative}
+@media (prefers-reduced-motion:reduce){ .exbar i{transition:none} }
+
 </style>
 
 <header class="toolbar"><button class="sidetoggle" data-act="toggle-sidebar" aria-label="Hide sidebar" title="Hide sidebar (⌘S)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="3.5" width="15" height="13" rx="3"/><path d="M7.5 3.5v13"/></svg></button><div class="tin">
@@ -3743,6 +3791,7 @@ html.iosapp .padwrap.full .padtop{padding-left:max(20px, env(safe-area-inset-lef
     <button data-nav="add" class="navadd"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="7.2"/><path d="M10 6.8v6.4M6.8 10h6.4"/></svg><span>Add</span></button>
     <button data-nav="browse"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M7 5h10M7 10h10M7 15h10"/><circle cx="3.6" cy="5" r=".9" fill="currentColor"/><circle cx="3.6" cy="10" r=".9" fill="currentColor"/><circle cx="3.6" cy="15" r=".9" fill="currentColor"/></svg><span>Cards</span></button>
     <button data-nav="papers"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5 2.8h6.6L15.5 6.7V17.2H5z"/><path d="M11.4 2.8v4h4M7.8 10.5h4.8M7.8 13.6h4.8"/></svg><span>Papers</span></button>
+    <button data-nav="exam"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="11" r="6.5"/><path d="M10 7.5V11l2.5 1.6M8 2.5h4M15.2 5.4l1.2-1.2"/></svg><span>Exam timer</span></button>
     <button data-nav="stats"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 16V10M8.7 16V5M13.3 16v-4M18 16V7.5M2.5 16.5h16"/></svg><span>Progress</span></button>
     <button data-nav="themes"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.8a7.2 7.2 0 1 0 0 14.4c1.1 0 1.6-.8 1.3-1.7-.4-1.2.3-2.3 1.6-2.3h1.6a2.7 2.7 0 0 0 2.7-2.7C17.2 6.2 14 2.8 10 2.8Z"/><circle cx="6.3" cy="9.3" r="1" fill="currentColor"/><circle cx="8.6" cy="6" r="1" fill="currentColor"/><circle cx="12.4" cy="6.1" r="1" fill="currentColor"/></svg><span>Settings</span></button>
   <button class="navmore" data-act="nav-more" aria-haspopup="true"><svg class="ni" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4.5" cy="10" r="1.5" fill="currentColor"/><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="15.5" cy="10" r="1.5" fill="currentColor"/></svg><span>More</span></button>
@@ -4091,7 +4140,7 @@ document.addEventListener('keydown', e => {
 function render(){
   if (ppFull && view.name !== 'ppmark') ppFullSet(false, true);
   renderSideSubjects(); h7NavCounts();
-  $('.navmore')?.setAttribute('aria-current', String(['browse', 'papers', 'ppmark', 'stats', 'themes'].includes(view.name)));
+  $('.navmore')?.setAttribute('aria-current', String(['browse', 'papers', 'ppmark', 'stats', 'exam', 'themes'].includes(view.name)));
   document.querySelector('.sideset')?.setAttribute('aria-current', String(view.name === 'themes'));
   document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'papers' && (view.name === 'ppmark' || (view.name === 'study' && study?.tag === 'Paper mistakes'))) || (b.dataset.nav === 'decks' && (view.name === 'overview' || (view.name === 'study' && study?.tag !== 'Paper mistakes'))))));
   applyTheme();
@@ -4103,6 +4152,7 @@ function render(){
   else if (view.name === 'study') renderStudy();
   else if (view.name === 'browse') renderBrowse();
   else if (view.name === 'stats') renderStats();
+  else if (view.name === 'exam') renderExam();
   else if (view.name === 'themes') renderThemes();
   else if (view.name === 'papers') renderPapers();
   else if (view.name === 'ppmark') renderPPMark();
@@ -4302,6 +4352,7 @@ function renderAppbar(){
   else if (view.name === 'browse') title = '<b>Cards</b>';
   else if (view.name === 'papers' || view.name === 'ppmark'){ const r = ppAppbar(); title = r.title; act = r.act; }
   else if (view.name === 'stats') title = '<b>Progress</b>';
+  else if (view.name === 'exam') title = '<b>Exam timer</b>';
   else if (view.name === 'todo') title = '<b>Plan</b>';
   else if (view.name === 'cal') title = '<b>Calendar</b>';
   else if (view.name === 'themes') title = '<b>Settings</b>';
@@ -7508,8 +7559,8 @@ function editor(cardId, presetNode, pasted){
           <div class="field"><span class="lbl">Time limit <span class="hint">· when the timer is on</span></span><div class="mkrow"><div class="seg" id="etime"><button type="button" data-tm="auto" aria-pressed="${!own}" id="etauto">Auto</button><button type="button" data-tm="own" aria-pressed="${!!own}">Set own</button></div><input class="in mkn" id="etown" placeholder="m:ss" value="${own ? fmtSec(own * 1000) : ''}" aria-label="Time limit, minutes and seconds" ${own ? '' : 'hidden'}></div></div>
         </div>
         <div class="field"><label for="ehint">Hint <span class="hint">· optional, shown when you press Hint while studying</span></label><input class="in" id="ehint" maxlength="400" value="${esc(card.hint || '')}" placeholder="A nudge that doesn't give the answer away"></div>
-        <div class="field mistake-only ${card.noWhy ? 'whyoff' : ''}" id="ewhy"><div class="whyh"><label for="em">Why I got it wrong</label><button type="button" class="whyx" data-act="why-off" title="Leave this section off the card"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Leave out</button></div>${rteBox('em', card.mistake, 'What tripped you up, and what to do next time')}</div>
-        <button type="button" class="link whyon" data-act="why-on">Add why I got it wrong</button>
+        <div class="field mistake-only ${card.noWhy ? 'whyoff' : ''}" id="ewhy"><div class="whyh"><label for="em">Mistake</label><button type="button" class="whyx" data-act="why-off" title="Leave this section off the card"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Leave out</button></div>${rteBox('em', card.mistake, 'What tripped you up, and what to do next time')}</div>
+        <button type="button" class="link whyon" data-act="why-on">Add mistake</button>
         <div class="field"><span class="lbl"><span id="eslbl">${learn ? 'Explanation' : 'Worked solution'}</span> <span class="hint">· images and/or notes</span></span>
           <div class="drop" id="zs" tabindex="0" data-zone="s" aria-label="Solution images: click to choose, drop, or paste"><div class="dropcta">Drop or paste solution images, or <button type="button" class="btn sm" data-act="pick" data-zone="s">Choose images</button></div></div><div class="thumbs" id="ts"></div>
           ${rteBox('es', card.solText, 'Optional notes')}
@@ -9447,7 +9498,7 @@ document.addEventListener('click', async e => {
     case 'why-on': { const w = $('#ewhy'); if (w){ w.classList.remove('whyoff'); $('#em')?.focus(); edPreviewSoon(); } return; }
     case 'card-flag': { const c = S.cards[id]; if (!c) return; const y = { ...c }; if (c.flag) delete y.flag; else y.flag = true; undoTx = null; undoLabel = c.flag ? 'unflag card' : 'flag card'; await put('cards', y); return render(); }
     case 'keys': closeMenu(); return keysDialog();
-    case 'nav-more': { e.stopPropagation(); if ($('#menu')) return closeMenu(); const r = a.getBoundingClientRect(); menuAt(`<button data-nav="browse">Cards</button><button data-nav="papers">Papers</button><button data-nav="stats">Progress</button><button data-nav="themes">Settings</button>`, { x: r.right - 170, y: r.top - 168 }); return; }
+    case 'nav-more': { e.stopPropagation(); if ($('#menu')) return closeMenu(); const r = a.getBoundingClientRect(); menuAt(`<button data-nav="browse">Cards</button><button data-nav="papers">Papers</button><button data-nav="stats">Progress</button><button data-nav="exam">Exam timer</button><button data-nav="themes">Settings</button>`, { x: r.right - 170, y: r.top - 168 }); return; }
     case 'todo-tabshift': closeMenu(); return todoTabShift(a.dataset.v, +a.dataset.d);
     case 'study-del': return confirmCardDelete(id || study?.cur);
     case 'do-del-card': { $('#layer').innerHTML = ''; await del('cards', id);
@@ -9504,6 +9555,12 @@ document.addEventListener('click', async e => {
     case 'sa-none': saPut(saRoot ? [...subtree(saRoot)] : Object.keys(S.nodes)); return saDraw();
     case 'study-pick': closeMenu(); return studyAllDialog('study', id);
     case 'study-mix': closeMenu(); return studyAllDialog('study', null, true);
+    case 'ex-pre': { const p = EX_PRESETS.find(q => q[0] === a.dataset.v); if (!p) return; exSet = { ...exSet, name: p[0], read: p[1], work: p[2] }; ls.set('md-exam-set', exSet); return renderExam(); }
+    case 'ex-start': return exStart();
+    case 'ex-full': return exFull(true);
+    case 'ex-close': return exClose();
+    case 'ex-papers': return exClose('papers');
+    case 'ex-hold': return;
     case 'study-shuffle': { // every press: a brand-new random order, straight into studying
       const n0 = nodeOf(id); if (!n0) return; const c0 = counts(id), due0 = toStudy(c0); study = null;
       const was = shuffleOn; shuffleOn = true; try { startStudy(id, !due0); } finally { shuffleOn = was; }
@@ -11186,7 +11243,7 @@ function ppmPanel0(){
     <div class="seg ppres" role="group" aria-label="Result">${[['ok', 'Right', '1'], ['part', 'Part', '2'], ['bad', 'Wrong', '3']].map(([k, l, kb]) => `<button type="button" data-act="pp-res" data-v="${k}" aria-pressed="${r === k}"><i class="d ${k}"></i>${l}<kbd>${kb}</kbd></button>`).join('')}</div>
     <div class="pprl">Marks</div>
     <div class="ppmarks"><span class="ppstep" role="group" aria-label="Marks you got"><button type="button" data-act="pp-got" data-d="-1" aria-label="One mark less" ${got <= 0 ? 'disabled' : ''}>−</button><input class="ppnum" id="ppgot" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="2" value="${got}" aria-label="Marks you got"><button type="button" data-act="pp-got" data-d="1" aria-label="One mark more" ${got >= of ? 'disabled' : ''}>+</button></span><span class="ppof">out of</span><span class="ppstep" role="group" aria-label="Marks the question is worth"><button type="button" data-act="pp-of" data-d="-1" aria-label="Worth one mark less" ${of <= 1 ? 'disabled' : ''}>−</button><input class="ppnum" id="ppof" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="2" value="${of}" aria-label="Marks it's worth"><button type="button" data-act="pp-of" data-d="1" aria-label="Worth one mark more">+</button></span></div>
-    ${flag ? `<label class="pprl" for="ppwhy">Why I got it wrong</label><textarea class="in" id="ppwhy" rows="3" placeholder="What went wrong, in a line or two">${esc(m.why ?? card?.mistake ?? '')}</textarea>
+    ${flag ? `<label class="pprl" for="ppwhy">Mistake</label><textarea class="in" id="ppwhy" rows="3" placeholder="What went wrong, in a line or two">${esc(m.why ?? card?.mistake ?? '')}</textarea>
     <div class="pprl">Correct solution</div>
     <div class="ppsol">${m.locked ? `<span>${it.sol?.length ? 'Found. ' : ''}Opens when your time’s up (<span class="pplockt">${ppmLockLeft()}</span> left).</span>` : it.sol?.length ? `<span>Found ${it.sol.length > 1 ? 'on pages ' + [...new Set(it.sol.map(g => ppmPageName(g.p)))].join(', ') : 'on page ' + ppmPageName(it.sol[0].p)}</span><button class="link sm" data-act="pp-solgo">Show</button><button class="link sm" data-act="pp-draw" data-v="s">Redraw</button>` : `<span>${m.solMissing ? 'The solutions PDF isn’t on this device.' : p.sol ? 'Not matched yet.' : 'This paper has no solutions.'}</span><button class="link sm" data-act="pp-draw" data-v="s">${m.draw === 's' ? 'Drag across the page…' : 'Draw it on the page'}</button>${!p.solSep || m.solMissing ? `<button class="link sm" data-act="pp-addsol">${m.solMissing ? 'Add it again' : 'Add a solutions PDF'}</button>` : ''}`}</div>
     ${ppmSolPics(p, it)}
@@ -11984,6 +12041,114 @@ if (window.desktop?.appInfo){
   setTimeout(() => updWatch(true), 60e3); setInterval(() => updWatch(false), 30 * 60e3);
   addEventListener('focus', () => updWatch(false));
 }
+
+/* ---------- Exam timer: reading time, then working time, run like the real thing ----------
+   Once it starts, Recall covers the whole window with the clock. On the Mac and Windows the app can't be closed or quit
+   until the exam ends (the close is cancelled), and it asks to go full screen. iPad and iPhone don't let any app stop you
+   leaving it, so there Recall keeps the screen awake, notes every time you leave and for how long, and shows that at the end
+   (Guided Access in iPad settings is the way to lock it properly). State is saved, so a reload carries on with the same clock. */
+const EX_PRESETS = [
+  ['Maths Advanced', 10, 180], ['Maths Extension 1', 10, 120], ['Maths Extension 2', 10, 180], ['Maths Standard 2', 10, 150],
+  ['Physics', 5, 180], ['Chemistry', 5, 180], ['Biology', 5, 180], ['Economics', 5, 180],
+  ['English Paper 1', 10, 90], ['English Paper 2', 5, 120]
+];
+let exS = ls.get('md-exam-run', null), exTick = 0, exWake = null;
+let exSet = { name: 'Maths Extension 2', read: 10, work: 180, lock: true, ...ls.get('md-exam-set', {}) };
+const exOn = () => !!(exS && !exS.end);
+const exPhase = (now = Date.now()) => { if (!exS) return null; const r = exS.start + exS.read * 60e3, w = r + exS.work * 60e3; return exS.end ? 'done' : now < r ? 'read' : now < w ? 'work' : 'done'; };
+const exFmt = ms => { const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60, p = n => String(n).padStart(2, '0'); return h ? `${h}:${p(m)}:${p(x)}` : `${p(m)}:${p(x)}`; };
+const exClock = t => new Date(t).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+function exSaveRun(){ ls.set('md-exam-run', exS); }
+function renderExam(){
+  if (exOn()) return exShow();
+  const done = exS && exS.end ? exS : null;
+  $('#root').innerHTML = `<div class="h7exm">
+    <h1>Exam timer</h1>
+    <p class="h7exsub">Sit a paper under real conditions: reading time first, then working time. Once it starts, the clock takes over the screen until the exam ends.</p>
+    ${done ? `<section class="h7exlast"><h2>Last exam</h2><p><b>${esc(done.name || 'Exam')}</b>, ${new Date(done.start).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}. ${done.early ? `Finished ${exFmt(done.end - done.start - done.read * 60e3)} into working time, ${exFmt(done.start + (done.read + done.work) * 60e3 - done.end)} early.` : 'Ran the full time.'}${done.left?.length ? ` Left Recall ${done.left.length} time${done.left.length === 1 ? '' : 's'}, ${exFmt(done.left.reduce((a, l) => a + (l[1] - l[0]), 0))} in all.` : ''}</p></section>` : ''}
+    <div class="h7exform">
+      <section>
+        <h2>Paper</h2>
+        <div class="h7expre">${EX_PRESETS.map(([n, r, w]) => `<button type="button" data-act="ex-pre" data-v="${esc(n)}" aria-pressed="${exSet.name === n && exSet.read === r && exSet.work === w}"><b>${esc(n)}</b><small>${r} min reading, ${w >= 60 ? (w / 60 % 1 ? (w / 60).toFixed(1) : w / 60) + ' h' : w + ' min'} working</small></button>`).join('')}</div>
+      </section>
+      <section class="h7exset">
+        <label>Name<input class="in" id="exname" value="${esc(exSet.name || '')}" placeholder="e.g. 2019 HSC Ext 2"></label>
+        <div class="h7exmins"><label>Reading time<span><input class="in" id="exread" type="number" min="0" max="60" step="1" value="${exSet.read}"> min</span></label>
+        <label>Working time<span><input class="in" id="exwork" type="number" min="1" max="360" step="5" value="${exSet.work}"> min</span></label></div>
+        <label class="h7exlock"><input type="checkbox" id="exlock" ${exSet.lock ? 'checked' : ''}><span>Lock Recall until the exam ends<small>${window.desktop ? 'The window goes full screen and Recall can’t be closed or quit until time is up or you finish.' : 'The clock fills the screen and the screen stays awake. iPad and iPhone don’t let an app stop you leaving it, so Recall records any time you leave. To lock it fully, turn on Guided Access (Settings › Accessibility) and triple-click the side button.'}</small></span></label>
+        <p class="h7extot" id="extot"></p>
+        <button class="btn primary big" data-act="ex-start">Start reading time</button>
+      </section>
+    </div>
+  </div>`;
+  exTotal();
+}
+function exTotal(){ const r = +($('#exread')?.value || 0), w = +($('#exwork')?.value || 0), t = $('#extot'); if (!t) return; const end = Date.now() + (r + w) * 60e3; t.textContent = `${r + w} minutes in all. If you start now, pens down at ${exClock(end)}.`; }
+document.addEventListener('input', e => { if (['exread', 'exwork', 'exname'].includes(e.target.id)){ exSet = { ...exSet, name: $('#exname').value.trim(), read: Math.max(0, Math.min(60, Math.round(+$('#exread').value || 0))), work: Math.max(1, Math.min(360, Math.round(+$('#exwork').value || 1))) }; ls.set('md-exam-set', exSet); exTotal(); document.querySelectorAll('.h7expre button').forEach(b => b.setAttribute('aria-pressed', 'false')); } });
+document.addEventListener('change', e => { if (e.target.id === 'exlock'){ exSet = { ...exSet, lock: e.target.checked }; ls.set('md-exam-set', exSet); } });
+async function exStart(){
+  exS = { name: exSet.name || 'Exam', read: exSet.read, work: exSet.work, lock: exSet.lock, start: Date.now(), end: 0, left: [], warned: {} }; exSaveRun();
+  if (exS.lock) exFull(true);
+  exWakeOn(); exChime(1); exShow();
+}
+function exFull(on){ try { if (on && !document.fullscreenElement) document.documentElement.requestFullscreen?.({ navigationUI: 'hide' })?.catch?.(() => {}); else if (!on && document.fullscreenElement) document.exitFullscreen?.()?.catch?.(() => {}); } catch {} }
+async function exWakeOn(){ try { exWake = await navigator.wakeLock?.request('screen'); } catch {} }
+function exChime(n){ try { const ac = new (window.AudioContext || window.webkitAudioContext)(); for (let i = 0; i < n; i++){ const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = 880; o.connect(g); g.connect(ac.destination); const t = ac.currentTime + i * 0.45; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.25, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35); o.start(t); o.stop(t + 0.4); } setTimeout(() => ac.close(), n * 500 + 300); } catch {} }
+function exShow(){
+  let el = $('#exov');
+  if (!el){ el = document.createElement('div'); el.id = 'exov'; el.setAttribute('role', 'timer'); document.body.appendChild(el); document.documentElement.classList.add('examon'); }
+  const now = Date.now(), ph = exPhase(now), r = exS.start + exS.read * 60e3, w = r + exS.work * 60e3;
+  if (ph === 'done'){ return exFinish(false); }
+  const left = ph === 'read' ? r - now : w - now, total = ph === 'read' ? exS.read * 60e3 : exS.work * 60e3, pct = Math.min(100, (1 - left / total) * 100);
+  const warn = ph === 'work' && left <= 5 * 60e3;
+  el.className = 'exov ' + ph + (warn ? ' warn' : '');
+  el.innerHTML = `<div class="exin">
+    <p class="exname">${esc(exS.name)}</p>
+    <p class="exph">${ph === 'read' ? 'Reading time' : warn ? 'Five minutes to go' : 'Working time'}</p>
+    <p class="exbig">${exFmt(left)}</p>
+    <div class="exbar"><i style="width:${pct.toFixed(2)}%"></i></div>
+    <p class="exnote">${ph === 'read' ? `You can read the paper but not write. Working time starts at ${exClock(r)}.` : `Pens down at ${exClock(w)}.`}</p>
+  </div>
+  <div class="exfoot">${exS.lock && window.desktop && !document.fullscreenElement ? '<button class="link" data-act="ex-full">Full screen</button>' : ''}<button class="exhold" data-act="ex-hold" aria-label="Hold to finish the exam early"><i></i><span>Hold to finish early</span></button></div>`;
+  clearInterval(exTick); exTick = setInterval(exStep, 250);
+}
+function exStep(){
+  if (!exOn()){ clearInterval(exTick); return; }
+  const now = Date.now(), ph = exPhase(now), r = exS.start + exS.read * 60e3, w = r + exS.work * 60e3, el = $('#exov'); if (!el) return exShow();
+  if (ph === 'done') return exFinish(false);
+  const left = ph === 'read' ? r - now : w - now, total = ph === 'read' ? exS.read * 60e3 : exS.work * 60e3;
+  const want = 'exov ' + ph + (ph === 'work' && left <= 5 * 60e3 ? ' warn' : '');
+  if (el.className !== want){ if (ph === 'work' && !exS.warned.work){ exS.warned.work = 1; exSaveRun(); exChime(2); } if (want.includes('warn') && !exS.warned.five){ exS.warned.five = 1; exSaveRun(); exChime(1); } return exShow(); }
+  el.querySelector('.exbig').textContent = exFmt(left);
+  el.querySelector('.exbar i').style.width = Math.min(100, (1 - left / total) * 100).toFixed(2) + '%';
+}
+function exFinish(early){
+  if (!exS) return; clearInterval(exTick);
+  if (!exS.end){ exS.end = Date.now(); exS.early = !!early; exSaveRun(); if (!early) exChime(3); }
+  try { exWake?.release(); } catch {} exWake = null; exFull(false);
+  const el = $('#exov'); if (!el) { document.documentElement.classList.remove('examon'); return; }
+  const used = Math.min(exS.work * 60e3, exS.end - exS.start - exS.read * 60e3), lv = exS.left || [];
+  el.className = 'exov done';
+  el.innerHTML = `<div class="exin"><p class="exname">${esc(exS.name)}</p><p class="exph">${early ? 'Finished early' : 'Pens down'}</p>
+    <p class="exbig sm">${exFmt(Math.max(0, used))}</p><p class="exnote">of working time used, out of ${exFmt(exS.work * 60e3)}.${lv.length ? ` You left Recall ${lv.length} time${lv.length === 1 ? '' : 's'} (${exFmt(lv.reduce((a, l) => a + (l[1] - l[0]), 0))} in all).` : ''}</p>
+    <div class="exgo"><button class="btn primary big" data-act="ex-close">Done</button>${typeof go === 'function' ? '<button class="btn big" data-act="ex-papers">Mark it in Papers</button>' : ''}</div></div>`;
+}
+function exClose(to){ $('#exov')?.remove(); document.documentElement.classList.remove('examon'); to ? go(to) : (view.name === 'exam' ? renderExam() : render()); }
+/* hold to finish early: 2 seconds, so it can't happen by accident */
+let exHoldT = 0;
+document.addEventListener('pointerdown', e => { const b = e.target.closest?.('.exhold'); if (!b) return; e.preventDefault(); b.classList.add('holding'); exHoldT = setTimeout(() => { b.classList.remove('holding'); exFinish(true); }, 2000); });
+['pointerup', 'pointercancel', 'pointerleave'].forEach(t => document.addEventListener(t, e => { if (!exHoldT) return; clearTimeout(exHoldT); exHoldT = 0; document.querySelector('.exhold.holding')?.classList.remove('holding'); }, true));
+/* while it runs: the app can't close (desktop), keys don't reach the rest of Recall, and leaving is recorded */
+addEventListener('beforeunload', e => { if (exOn() && exS.lock){ e.preventDefault(); e.returnValue = 'Your exam is still running.'; return e.returnValue; } });
+document.addEventListener('keydown', e => { if (!exOn()) return; if (e.target.closest?.('#exov')) return; e.stopImmediatePropagation(); if (!['Tab', 'Shift'].includes(e.key)) e.preventDefault(); }, true);
+document.addEventListener('visibilitychange', () => {
+  if (!exOn()) return;
+  if (document.hidden){ exS.away = Date.now(); exSaveRun(); }
+  else { if (exS.away){ exS.left = [...(exS.left || []), [exS.away, Date.now()]]; exS.away = 0; exSaveRun(); } exWakeOn(); exShow(); }
+});
+document.addEventListener('fullscreenchange', () => { if (exOn()) exShow(); });
+/* a reload or restart mid-exam carries straight on */
+if (exOn()) setTimeout(() => { exWakeOn(); exShow(); }, 400);
 
 initStore().finally(() => { lhMigrate(); designMigrate(); h7Migrate(); if (S.ready) settingsRepair(); cloudBoot(); });
 render();
