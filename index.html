@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261118202851";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261118212447";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -3783,6 +3783,98 @@ html.examon,html.examon body{overflow:hidden !important;overscroll-behavior:none
 .syside .link{align-self:center}
 @media (max-width:900px){ .sy{grid-template-columns:1fr;padding:0 18px 120px} .syside{position:static;margin-top:28px} .sylvl{grid-template-columns:1fr 1fr} .sylvl [role="radio"]+[role="radio"]{border-left:0} .sylvl [role="radio"]{border-top:1px solid var(--border-2)} }
 
+/* Group study */
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.grpage{max-width:1180px;margin:0 auto;padding:0 40px 56px}
+.grwait{color:var(--fg-3);padding:40px 0}
+.grempty{max-width:620px;padding:24px 0}
+.grempty h1{margin:0;font:400 26px var(--ui)}
+.grempty p{color:var(--fg-2);line-height:1.55;margin:10px 0 20px}
+.grrow{display:flex;gap:10px;align-items:center}
+.grrow .in{flex:1;min-width:0}
+.grcode{text-transform:uppercase;letter-spacing:.12em;font-variant-numeric:tabular-nums}
+.grstart{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:8px}
+.grstart h2,.grpage section>h2,.grside h2{margin:0 0 10px;font:400 13px var(--ui);color:var(--fg-3)}
+.grtabs{margin-bottom:22px}
+.grgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:0 48px;align-items:start}
+.grmain>section{padding:22px 0;border-bottom:1px solid var(--border)}
+.grmain>section:first-child{padding-top:4px}
+/* the clock: the one big thing on the page */
+.grclock{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.grclock b{font:300 64px/1 var(--ui);font-variant-numeric:tabular-nums;letter-spacing:-.02em;color:var(--fg)}
+.grclock span{color:var(--fg-3);font-size:15px}
+.grtimer[data-fstate="studying"] .grclock b{color:var(--accent)}
+.grtimer[data-fstate="paused"] .grclock b{color:var(--fg-3)}
+.grctl{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:20px}
+.grsubj select{min-width:200px}
+.grrule{margin:14px 0 0;color:var(--fg-3);font-size:12px}
+.grrhead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.grrhead h2{margin:0;font:500 16px var(--ui);color:var(--fg)}
+.grrhead p{margin:4px 0 0;color:var(--fg-3);font-size:13px}
+.grrleft{font:400 28px/1 var(--ui);font-variant-numeric:tabular-nums;color:var(--fg)}
+.grrbar{height:3px;border-radius:2px;background:var(--surface-2);margin:0 0 14px;overflow:hidden}
+.grrbar i{display:block;height:100%;background:var(--accent);transition:width 1s linear}
+.grin{margin:0;color:var(--fg-2);display:flex;gap:14px;align-items:center}
+.grppl ul{list-style:none;margin:0;padding:0}
+.grppl li{display:grid;grid-template-columns:10px minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.grppl li:last-child{border-bottom:0}
+.grppl li div{display:flex;flex-direction:column;min-width:0}
+.grppl li div b{font-weight:500}
+.grppl li div b small{font-weight:400;color:var(--fg-3);font-size:12px;margin-left:4px}
+.grppl li div span{color:var(--fg-3);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gdot{width:8px;height:8px;border-radius:50%;background:var(--border-2)}
+.grppl li.on .gdot{background:var(--good);box-shadow:0 0 0 3px color-mix(in srgb, var(--good) 22%, transparent)}
+.grppl li.on div span{color:var(--fg-2)}
+.grppl li.away .gdot{background:var(--hard)}
+.gtime{font-weight:400;font-variant-numeric:tabular-nums;color:var(--fg-3)}
+.grppl li.on .gtime{color:var(--fg)}
+.grside>section{padding:18px 0;border-bottom:1px solid var(--border)}
+.grside>section:first-child{padding-top:4px}
+.grside>section:last-child{border-bottom:0}
+.grside p{margin:0 0 12px;color:var(--fg-3);font-size:13px;line-height:1.5}
+.grrankh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.grrankh h2{margin:0}
+.grrankh [role="radiogroup"]{display:flex;border:1px solid var(--border-2);border-radius:6px;overflow:hidden}
+.grrankh [role="radio"]{border:0;background:none;color:var(--fg-3);font:400 12px var(--ui);padding:4px 10px;cursor:pointer}
+.grrankh [role="radio"]+[role="radio"]{border-left:1px solid var(--border-2)}
+.grrankh [role="radio"][aria-checked="true"]{background:var(--surface-2);color:var(--fg)}
+.grrank ol{list-style:none;margin:0;padding:0}
+.grrank li{display:grid;grid-template-columns:18px minmax(0,7em) minmax(0,1fr) 56px;align-items:center;gap:10px;padding:6px 0;font-size:13px}
+.grpos{color:var(--fg-3);font-variant-numeric:tabular-nums}
+.grnm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grrank li.me .grnm{font-weight:500}
+.grbar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.grbar i{display:block;height:100%;border-radius:3px;background:var(--fg-3)}
+.grrank li.me .grbar i{background:var(--accent)}
+.grsec{text-align:right;color:var(--fg-2);font-variant-numeric:tabular-nums}
+.grcodebox{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px 10px 14px;border:1px solid var(--border-2);border-radius:8px}
+.grcodebox b{font:500 20px var(--ui);letter-spacing:.14em;font-variant-numeric:tabular-nums}
+.grsw{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13px;color:var(--fg-2);cursor:pointer}
+.grsw input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.grrem{justify-content:space-between}
+.grrem select{width:auto;padding-top:4px;padding-bottom:4px}
+.grfine{margin-top:8px!important;font-size:12px!important}
+.grmore{display:flex;flex-wrap:wrap;gap:6px 18px}
+.grmore .link{font-size:13px}
+.grmins{display:flex;flex-wrap:wrap;gap:6px}
+.grmins [role="radio"]{border:1px solid var(--border-2);background:none;color:var(--fg-2);border-radius:6px;padding:7px 12px;font:400 13px var(--ui);cursor:pointer}
+.grmins [role="radio"][aria-checked="true"]{border-color:var(--accent);color:var(--fg);box-shadow:inset 0 0 0 1px var(--accent)}
+.flabel{display:block;margin-bottom:6px;color:var(--fg-2);font-size:13px}
+/* the running clock outside the group page */
+.fpill{position:fixed;z-index:35;display:flex;align-items:center;gap:8px;border:1px solid var(--border-2);background:var(--side-solid, var(--surface));color:var(--fg-2);font:400 13px var(--ui);border-radius:999px;padding:6px 14px 6px 12px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.fpill b{font-weight:500;color:var(--fg);font-variant-numeric:tabular-nums}
+.fpill span:last-child{max-width:12em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fdot{width:7px;height:7px;border-radius:50%;background:var(--good);flex:none}
+.fpill.paused .fdot{background:var(--hard)}
+.fpill.paused b{color:var(--fg-3)}
+body.desktop .fpill{left:12px;bottom:14px;width:calc(var(--sidew) - 24px);box-sizing:border-box;border-radius:8px;box-shadow:none}
+body.desktop.sidebar-hidden .fpill{width:auto}
+body:not(.desktop) .fpill{left:50%;transform:translateX(-50%);bottom:calc(74px + env(safe-area-inset-bottom,0px))}
+html.examon .fpill{display:none}
+@media (max-width:900px){ .grpage{padding:0 18px 140px} .grgrid{grid-template-columns:1fr} .grside{margin-top:12px} .grstart{grid-template-columns:1fr} .grclock b{font-size:52px} }
+
+body:not(.desktop):has(#fpill) #root{padding-bottom:56px}
+
 
 /* iPad / browser tweaks */
 html.hosted body.desktop .toolbar{padding-top:max(22px, var(--sat))}
@@ -3799,6 +3891,7 @@ html.hosted body{-webkit-tap-highlight-color:transparent}
   <nav aria-label="Main">
     <button data-nav="decks"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="12.8" height="12.8" rx="2.6"/><path d="M5.4 2.2h9.4a3 3 0 0 1 3 3v9.4"/></svg><span>Today</span></button>
     <button data-nav="todo"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.2 4 7.2 7.6 3.2M2 13.2 4 15.2 7.6 11.2M10 5.6h8M10 13.6h8"/></svg><span>Plan</span></button>
+    <button data-nav="group"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.4" cy="6.6" r="2.9"/><path d="M1.9 17c.4-3.2 2.6-5.2 5.5-5.2s5.1 2 5.5 5.2"/><path d="M12.9 3.9a2.9 2.9 0 0 1 0 5.4M14.6 12.1c2 .6 3.2 2.4 3.5 4.9"/></svg><span>Group</span></button>
     <button data-nav="add" class="navadd"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="7.2"/><path d="M10 6.8v6.4M6.8 10h6.4"/></svg><span>Add</span></button>
     <button data-nav="browse"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M7 5h10M7 10h10M7 15h10"/><circle cx="3.6" cy="5" r=".9" fill="currentColor"/><circle cx="3.6" cy="10" r=".9" fill="currentColor"/><circle cx="3.6" cy="15" r=".9" fill="currentColor"/></svg><span>Cards</span></button>
     <button data-nav="papers"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5 2.8h6.6L15.5 6.7V17.2H5z"/><path d="M11.4 2.8v4h4M7.8 10.5h4.8M7.8 13.6h4.8"/></svg><span>Papers</span></button>
@@ -4148,6 +4241,7 @@ function render(){
   else if (view.name === 'stats') renderStats();
   else if (view.name === 'exam') renderExam();
   else if (view.name === 'setup') renderSetup();
+  else if (view.name === 'group') renderGroup();
   else if (view.name === 'themes') renderThemes();
   else if (view.name === 'papers') renderPapers();
   else if (view.name === 'ppmark') renderPPMark();
@@ -4349,6 +4443,7 @@ function renderAppbar(){
   else if (view.name === 'stats') title = '<b>Progress</b>';
   else if (view.name === 'exam') title = '<b>Exam timer</b>';
   else if (view.name === 'setup') title = '<b>Set up decks</b>';
+  else if (view.name === 'group') title = '<b>Group study</b>';
   else if (view.name === 'todo') title = '<b>Plan</b>';
   else if (view.name === 'cal') title = '<b>Calendar</b>';
   else if (view.name === 'themes') title = '<b>Settings</b>';
@@ -9305,6 +9400,7 @@ document.addEventListener('click', async e => {
   if (act.startsWith('cl-')) return clAction(act, a);
   if (act === 'pp-back'){ study = null; return go('papers'); }
   if (act.startsWith('pp-')) return ppAction(act, a, e);
+  if (act.startsWith('gr-')) return grAction(act, a, e);
   switch (act){
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
     case 'side-subj': { scrollTo({ top: 0 }); if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; renderDecks(); return renderSideSubjects(); } ls.set('md-subj', id); study = null; return go('decks'); }
@@ -12262,6 +12358,391 @@ async function syGo(){
   if (first) ls.set('md-subj', first);
   go('decks'); toast(made ? `Added ${made} deck${made === 1 ? '' : 's'} and topic${made === 1 ? '' : 's'}` : 'Nothing new to add', 2600);
 }
+
+/* ---------- Study groups: friends see who's studying, a shared session timer, rankings, and push notifications ----------
+   Data lives in Supabase (supabase/groups.sql): profiles, study_groups, group_members, study_status, study_days, group_rooms, push_subs.
+   Pushes go through the "notify" edge function. Everything needs sync turned on (a Recall account).
+   The focus timer belongs to this device: it pauses the moment you leave Recall (another app, home screen, another window),
+   and your group sees that you left. */
+const GR_VAPID = 'BHyEy0bqZdCArv2t7TNewyloJdrY2JxIzZZkQQmhYhWHpmGtn8gMd-T4FPBlt17kncNohxpryHXissTJgt1j_cA';
+const gr = { groups: [], members: [], names: {}, status: {}, days: [], rooms: [], me: null, loaded: false, loading: null, err: '', chan: null, cur: ls.get('md-gr-cur', null), rank: 'today', poll: null, seen: {}, lastLoad: 0 };
+const grPrefs = () => ({ start: true, room: true, remind: -1, ...ls.get('md-gr-notif', {}) });
+const fDay = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+let focus = { state: 'idle', subj: '', since: 0, acc: 0, subjAcc: {}, day: fDay(), by: '', leftAt: 0, room: null, ack: true, ...ls.get('md-focus', {}) };
+const fSave = () => ls.set('md-focus', focus);
+const fRun = (t = Date.now()) => focus.state === 'studying' ? Math.max(0, (t - focus.since) / 1000) : 0;
+const fSecs = (t) => focus.acc + fRun(t);
+const fClock = s => { s = Math.floor(s); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return `${h}:${String(m).padStart(2, '0')}:${String(x).padStart(2, '0')}`; };
+const fShort = s => { s = Math.round(s / 60); return s < 60 ? `${s}m` : `${Math.floor(s / 60)}h ${String(s % 60).padStart(2, '0')}m`; };
+function fRoll(){
+  const d = fDay(); if (focus.day === d) return;
+  // a new day: yesterday's total stays in study_days, today starts from zero
+  if (focus.state === 'studying'){ const mid = new Date(); mid.setHours(0, 0, 0, 0); focus.since = Math.max(focus.since, +mid); }
+  focus = { ...focus, acc: 0, subjAcc: {}, day: d }; fSave();
+}
+function fBank(t = Date.now()){
+  // move the running time into today's total
+  if (focus.state !== 'studying') return;
+  const s = fRun(t); focus.acc = Math.min(86400, focus.acc + s); const k = focus.subj || 'Other'; focus.subjAcc[k] = Math.round((focus.subjAcc[k] || 0) + s); focus.since = t;
+}
+async function fStart(subj, room = null){
+  fRoll();
+  if (focus.state === 'studying'){ fBank(); }
+  await grMergeDay();
+  focus = { ...focus, state: 'studying', subj: subj ?? focus.subj ?? '', since: Date.now(), by: '', leftAt: 0, room, ack: true }; fSave();
+  fPaint(); grPushStatus(); grPushDay();
+  if (!room) grNotify('start', { subject: focus.subj });
+}
+function fPause(by = 'you', t = Date.now()){
+  if (focus.state !== 'studying') return;
+  fBank(t); focus = { ...focus, state: 'paused', by, leftAt: by === 'left' ? t : 0, ack: by !== 'left' }; fSave();
+  fPaint(); grPushStatus(); grPushDay();
+}
+function fStop(){
+  if (focus.state === 'studying') fBank();
+  focus = { ...focus, state: 'idle', by: '', leftAt: 0, room: null, ack: true }; fSave();
+  fPaint(); grPushStatus(); grPushDay();
+}
+/* leaving Recall pauses the timer. On the Mac/PC app a window losing focus counts after 10 seconds (time to glance at a notification). */
+let fBlurT = null;
+document.addEventListener('visibilitychange', () => { if (document.hidden) fPause('left'); else fBack(); });
+addEventListener('pagehide', () => fPause('left'));
+if (window.desktop){
+  addEventListener('blur', () => { if (focus.state !== 'studying') return; const at = Date.now(); clearTimeout(fBlurT); fBlurT = setTimeout(() => { if (!document.hasFocus()) fPause('left', at); }, 10000); });
+  addEventListener('focus', () => { clearTimeout(fBlurT); fBack(); });
+}
+function fBack(){
+  if (focus.state !== 'paused' || focus.by !== 'left' || focus.ack || dialogOpen()) return;
+  const away = Date.now() - focus.leftAt;
+  focus.ack = true; fSave();
+  openDialog(`<div class="dialog grback" role="dialog" aria-modal="true" aria-labelledby="grbh" style="max-width:400px"><header><h2 id="grbh">Your timer paused</h2></header>
+    <div class="body"><p>You left Recall ${away < 90e3 ? 'for a moment' : `for ${fShort(away / 1000)}`}, so the clock stopped at <b>${fClock(fSecs())}</b>.${gr.groups.length ? ' Your group can see you stepped away.' : ''}</p></div>
+    <footer><button class="btn" data-act="gr-stop">Stop for now</button><span class="grow"></span><button class="btn primary" data-act="gr-resume">Carry on</button></footer></div>`, d => d.querySelector('.primary')?.focus());
+}
+/* the little running clock: in the sidebar on Mac/iPad, above the tab bar on phones */
+function fPaint(){
+  let el = $('#fpill');
+  const on = focus.state !== 'idle' && !['study', 'group'].includes(view.name);
+  document.querySelectorAll('[data-fstate]').forEach(x => x.dataset.fstate = focus.state);
+  if (!on){ el?.remove(); return; }
+  if (!el){ el = document.createElement('button'); el.id = 'fpill'; el.dataset.act = 'gr-open'; document.body.appendChild(el); }
+  el.className = 'fpill ' + focus.state; el.setAttribute('aria-label', `${focus.state === 'studying' ? 'Studying' : 'Paused'} ${fClock(fSecs())}. Open group study`);
+  el.innerHTML = `<span class="fdot"></span><b data-ftick>${fClock(fSecs())}</b><span>${focus.state === 'paused' ? 'Paused' : esc(focus.subj || 'Studying')}</span>`;
+  document.querySelectorAll('[data-fstate]').forEach(x => x.dataset.fstate = focus.state);
+}
+setInterval(() => {
+  if (focus.state === 'studying'){ fRoll(); document.querySelectorAll('[data-ftick]').forEach(x => x.textContent = fClock(fSecs())); }
+  document.querySelectorAll('[data-gtick]').forEach(x => { const s = gr.status[x.dataset.gtick]; if (s) x.textContent = fClock(grLive(s)); });
+  document.querySelectorAll('[data-rtick]').forEach(x => { const r = gr.rooms.find(r => r.id === x.dataset.rtick); if (!r) return; const left = grRoomLeft(r); x.textContent = left > 0 ? fClock(left / 1000).replace(/^0:/, '') : 'done'; if (left <= 0 && !gr.seen['end' + r.id]){ gr.seen['end' + r.id] = 1; grRoomEnded(r); } });
+}, 1000);
+setInterval(() => { if (focus.state === 'studying'){ grPushStatus(); grPushDay(); } }, 60000);
+
+/* ---------- cloud ---------- */
+const grOn = () => cloudOn();
+const grUid = () => cloud.user?.id;
+async function grPushStatus(){
+  if (!grOn()) return;
+  try { await cloud.sb.from('study_status').upsert({ user_id: grUid(), state: focus.state, subject: (focus.subj || '').slice(0, 80) || null, since: focus.state === 'studying' ? new Date(focus.since).toISOString() : null, today_secs: Math.round(Math.min(86400, focus.acc)), day: focus.day, left_at: focus.leftAt ? new Date(focus.leftAt).toISOString() : null, room: focus.room, updated_at: new Date().toISOString() }); } catch {}
+}
+async function grPushDay(){
+  if (!grOn()) return;
+  const subjects = { ...focus.subjAcc }; if (focus.state === 'studying'){ const k = focus.subj || 'Other'; subjects[k] = Math.round((subjects[k] || 0) + fRun()); }
+  try { await cloud.sb.from('study_days').upsert({ user_id: grUid(), day: focus.day, secs: Math.round(Math.min(86400, fSecs())), subjects, updated_at: new Date().toISOString() }); } catch {}
+}
+async function grMergeDay(){
+  // studied on another device today? start from the bigger total so nothing is lost
+  if (!grOn()) return;
+  try {
+    const { data } = await cloud.sb.from('study_days').select('secs,subjects').eq('user_id', grUid()).eq('day', focus.day).maybeSingle();
+    if (data && data.secs > focus.acc + fRun()){ focus.acc = data.secs - fRun(); for (const [k, v] of Object.entries(data.subjects || {})) focus.subjAcc[k] = Math.max(focus.subjAcc[k] || 0, v); fSave(); }
+  } catch {}
+}
+async function grNotify(kind, extra = {}){
+  if (!grOn()) return;
+  const groups = kind === 'room' ? [extra.group] : gr.groups.map(g => g.id);
+  try {
+    const { data } = await cloud.sb.auth.getSession(), tok = data?.session?.access_token; if (!tok) return;
+    for (const g of groups) fetch(CLOUD_URL.replace(/\/$/, '') + '/functions/v1/notify', { method: 'POST', headers: { Authorization: 'Bearer ' + tok, apikey: CLOUD_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ kind, group: g, ...extra }) }).catch(() => {});
+  } catch {}
+}
+async function grLoad(force = false){
+  if (!grOn()) return;
+  if (gr.loading) return gr.loading;
+  if (!force && Date.now() - gr.lastLoad < 8000) return;
+  gr.loading = (async () => {
+    try {
+      const sb = cloud.sb, uid = grUid();
+      const [me, gs] = await Promise.all([sb.from('profiles').select('name').eq('user_id', uid).maybeSingle(), sb.from('study_groups').select('*').order('created_at')]);
+      if (gs.error) throw gs.error;
+      gr.me = me.data?.name || null; gr.groups = gs.data || [];
+      const gids = gr.groups.map(g => g.id);
+      const ms = gids.length ? (await sb.from('group_members').select('group_id,user_id,joined_at').in('group_id', gids)).data || [] : [];
+      gr.members = ms;
+      const ids = [...new Set([uid, ...ms.map(m => m.user_id)])], since = fDay(Date.now() - 7 * DAY);
+      const [pr, st, dy, rm] = await Promise.all([
+        sb.from('profiles').select('user_id,name').in('user_id', ids),
+        sb.from('study_status').select('*').in('user_id', ids),
+        sb.from('study_days').select('user_id,day,secs').in('user_id', ids).gte('day', since),
+        gids.length ? sb.from('group_rooms').select('*').in('group_id', gids).is('ended_at', null).gte('starts_at', new Date(Date.now() - 6 * HOUR).toISOString()) : { data: [] }
+      ]);
+      gr.names = Object.fromEntries((pr.data || []).map(p => [p.user_id, p.name]));
+      const old = gr.status; gr.status = Object.fromEntries((st.data || []).map(s => [s.user_id, s]));
+      if (gr.loaded) for (const s of Object.values(gr.status)) grSawStatus(s, old[s.user_id]);
+      gr.days = dy.data || []; gr.rooms = (rm.data || []).filter(r => grRoomLeft(r) > -10 * 60e3);
+      if (!gr.groups.some(g => g.id === gr.cur)) gr.cur = gr.groups[0]?.id || null;
+      gr.loaded = true; gr.err = ''; gr.lastLoad = Date.now();
+      grSubscribe();
+    } catch (e){ gr.err = /relation|does not exist|schema cache|404/i.test(String(e?.message || e?.code || e)) ? 'setup' : String(e?.message || e); gr.loaded = true; }
+    gr.loading = null;
+    if (view.name === 'group' && !dialogOpen()) renderGroup();
+  })();
+  return gr.loading;
+}
+function grSubscribe(){
+  if (gr.chan || !grOn() || !gr.groups.length) return;
+  gr.chan = cloud.sb.channel('groups-' + grUid())
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'study_status' }, p => { const s = p.new; if (!s?.user_id) return; const o = gr.status[s.user_id]; gr.status[s.user_id] = s; grSawStatus(s, o); grRepaint(); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'group_rooms' }, p => { const r = p.new; if (!r?.id) return; const had = gr.rooms.some(x => x.id === r.id); gr.rooms = gr.rooms.filter(x => x.id !== r.id); if (!r.ended_at) gr.rooms.push(r); if (!had && !r.ended_at && r.started_by !== grUid()) grLocalNote('room', r); grRepaint(); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members' }, () => grLoad(true))
+    .subscribe();
+}
+function grRepaint(){ if (view.name === 'group' && !dialogOpen() && !document.activeElement?.closest?.('.grpage input, .grpage select')) renderGroup(); }
+/* someone else just started studying: a toast if Recall is in front, a system notification if it isn't (unless a push is coming anyway) */
+function grSawStatus(s, o){
+  if (!s || s.user_id === grUid() || s.state !== 'studying' || (o && o.state === 'studying' && o.since === s.since)) return;
+  if (Date.now() - new Date(s.since).getTime() > 5 * 60e3) return;
+  grLocalNote('start', s);
+}
+function grLocalNote(kind, x){
+  const p = grPrefs(); if (kind === 'start' && !p.start) return; if (kind === 'room' && !p.room) return;
+  const who = esc(gr.names[kind === 'room' ? x.started_by : x.user_id] || 'Someone');
+  const g = kind === 'room' ? gr.groups.find(g => g.id === x.group_id) : gr.groups.find(g => gr.members.some(m => m.group_id === g.id && m.user_id === x.user_id));
+  const text = kind === 'room' ? `${gr.names[x.started_by] || 'Someone'} started a ${x.minutes} minute group session` : `${gr.names[x.user_id] || 'Someone'} started studying${x.subject ? ' ' + x.subject : ''}`;
+  const away = document.hidden || !document.hasFocus();
+  if (!away){ toast(text); return; }
+  if (ls.get('md-gr-push', null)) return;   // this device gets real pushes
+  if (window.Notification && Notification.permission === 'granted'){ try { const n = new Notification(g?.name || 'Recall', { body: text, tag: kind + (x.id || x.user_id), silent: false }); n.onclick = () => { try { window.focus(); } catch {} gr.cur = g?.id || gr.cur; go('group'); }; } catch {} }
+  void who;
+}
+setInterval(() => { if (grOn() && (view.name === 'group' || (gr.groups.length && (window.desktop || document.hasFocus())))) grLoad(view.name === 'group'); }, 30000);
+
+/* ---------- rooms (group sessions) ---------- */
+const grRoomEnd = r => new Date(r.starts_at).getTime() + r.minutes * 60e3;
+const grRoomLeft = r => grRoomEnd(r) - Date.now();
+function grRoomEnded(r){
+  if (focus.room === r.id && focus.state === 'studying'){ fPause('done'); focus.room = null; fSave(); toast(`Session finished. ${fShort(fSecs())} today.`, 4000); try { exChime?.(2); } catch {} }
+  grRepaint();
+}
+function grLive(s){
+  // a member's study time today, ticking while they study
+  if (!s || s.day !== fDay()) return s?.state === 'studying' ? Math.max(0, (Date.now() - new Date(s.since).getTime()) / 1000) : 0;
+  return (s.today_secs || 0) + (s.state === 'studying' && s.since ? Math.max(0, (Date.now() - new Date(s.since).getTime()) / 1000) : 0);
+}
+const grStale = s => s?.state === 'studying' && Date.now() - new Date(s.updated_at).getTime() > 3 * 60e3;
+
+/* ---------- the page ---------- */
+const grSubjects = () => kids(null).map(n => n.name);
+function grPeople(gid){ return gr.members.filter(m => m.group_id === gid).map(m => m.user_id); }
+function grRank(gid, mode){
+  const ids = grPeople(gid), today = fDay(), from = mode === 'week' ? fDay(Date.now() - 6 * DAY) : today;
+  return ids.map(id => {
+    let secs = gr.days.filter(d => d.user_id === id && d.day >= from && (mode === 'week' || d.day === today) && d.day !== today).reduce((a, d) => a + d.secs, 0);
+    const td = gr.days.find(d => d.user_id === id && d.day === today)?.secs || 0;
+    const live = id === grUid() ? fSecs() : grLive(gr.status[id]);
+    secs += Math.max(td, id === grUid() || gr.status[id]?.day === today ? live : 0);
+    return { id, secs };
+  }).sort((a, b) => b.secs - a.secs);
+}
+function grStatusLine(id){
+  const s = gr.status[id];
+  if (id === grUid()) return focus.state === 'studying' ? { cls: 'on', t: `Studying${focus.subj ? ' ' + esc(focus.subj) : ''}` } : focus.state === 'paused' ? { cls: 'away', t: focus.by === 'left' ? 'Left Recall' : 'On a break' } : { cls: '', t: 'Not studying' };
+  if (!s || s.state === 'idle') return { cls: '', t: s?.updated_at ? `Last seen ${relTime(new Date(s.updated_at).getTime())}` : 'Hasn’t studied yet' };
+  if (grStale(s)) return { cls: 'away', t: `Went quiet ${relTime(new Date(s.updated_at).getTime())}` };
+  if (s.state === 'paused') return { cls: 'away', t: s.left_at ? `Left Recall ${relTime(new Date(s.left_at).getTime())}` : 'On a break' };
+  return { cls: 'on', t: `Studying${s.subject ? ' ' + esc(s.subject) : ''}` };
+}
+function renderGroup(){
+  const root = $('#root');
+  if (!cloudConfigured()){ root.innerHTML = `<div class="grpage"><div class="grempty"><h1>Group study</h1><p>Groups need the Recall app or the web version at whisz12.github.io/Recall.</p></div></div>`; return; }
+  if (!grOn()){ root.innerHTML = `<div class="grpage"><div class="grempty"><h1>Study with your friends</h1><p>See who’s studying right now, start a session together and see who’s put in the most time this week. Groups use your Recall account, so turn on sync first.</p><button class="btn primary big" data-act="cloud">Turn on sync</button></div></div>`; return; }
+  if (!gr.loaded){ root.innerHTML = `<div class="grpage"><p class="grwait">Loading your groups…</p></div>`; grLoad(true); return; }
+  if (gr.err === 'setup'){ root.innerHTML = `<div class="grpage"><div class="grempty"><h1>Groups aren’t switched on yet</h1><p>The group tables haven’t been added to Recall’s sync service. Run <b>supabase/groups.sql</b> in the Supabase dashboard (see HANDOVER.md), then come back.</p><button class="btn" data-act="gr-reload">Try again</button></div></div>`; return; }
+  if (gr.err){ root.innerHTML = `<div class="grpage"><div class="grempty"><h1>Couldn’t load your groups</h1><p>${esc(gr.err)}</p><button class="btn" data-act="gr-reload">Try again</button></div></div>`; return; }
+  if (!gr.me){
+    root.innerHTML = `<div class="grpage"><div class="grempty"><h1>What should your group call you?</h1><p>Your name shows next to your study time. Only people in your groups see it.</p>
+      <div class="grrow"><input class="in" id="grname" maxlength="40" placeholder="Your first name" value="${esc((cloud.user?.email || '').split('@')[0].split(/[._\d+-]/)[0].replace(/^\w/, c => c.toUpperCase()))}" data-enter="#grnamego"><button class="btn primary" id="grnamego" data-act="gr-name">Continue</button></div></div></div>`;
+    return;
+  }
+  if (!gr.groups.length){
+    root.innerHTML = `<div class="grpage"><div class="grempty"><h1>Study with your friends</h1><p>Make a group and send your friends its code. You’ll see who’s studying right now, start sessions together, and see who put in the most time. While your timer runs, leaving Recall pauses it, and your group sees that.</p>
+      <div class="grstart"><section><h2>Make a group</h2><div class="grrow"><input class="in" id="grnew" maxlength="60" placeholder="e.g. Ext 2 grind" data-enter="#grnewgo"><button class="btn primary" id="grnewgo" data-act="gr-create">Make group</button></div></section>
+      <section><h2>Join a group</h2><div class="grrow"><input class="in grcode" id="grjoin" maxlength="7" placeholder="6 letter code" autocapitalize="characters" autocomplete="off" data-enter="#grjoingo"><button class="btn" id="grjoingo" data-act="gr-join">Join</button></div></section></div></div></div>`;
+    return;
+  }
+  const g = gr.groups.find(x => x.id === gr.cur) || gr.groups[0]; gr.cur = g.id;
+  const ids = grPeople(g.id), room = gr.rooms.filter(r => r.group_id === g.id && grRoomLeft(r) > 0).sort((a, b) => grRoomEnd(b) - grRoomEnd(a))[0];
+  const inRoom = room ? ids.filter(id => id === grUid() ? focus.room === room.id && focus.state === 'studying' : gr.status[id]?.room === room.id && gr.status[id]?.state === 'studying' && !grStale(gr.status[id])) : [];
+  const studying = ids.filter(id => grStatusLine(id).cls === 'on');
+  const rank = grRank(g.id, gr.rank), top = Math.max(1, rank[0]?.secs || 1);
+  const subs = grSubjects(), sub = focus.subj && !subs.includes(focus.subj) ? [focus.subj, ...subs] : subs;
+  if (!focus.subj && focus.state === 'idle' && subs.length && !focus.noSubj) focus.subj = subs[0];
+  const tabs = gr.groups.length > 1 || true ? `<div class="stabs h7tabs grtabs" role="tablist" aria-label="Groups">${gr.groups.map(x => `<button class="stab" role="tab" data-act="gr-tab" data-id="${x.id}" aria-selected="${x.id === g.id}">${esc(x.name)}</button>`).join('')}<button class="stab stabadd" data-act="gr-add" aria-label="Make or join another group" title="Make or join another group"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></div>` : '';
+  const fs = focus.state;
+  root.innerHTML = `<div class="grpage">${tabs}
+    <div class="grgrid">
+      <div class="grmain">
+        <section class="grtimer" data-fstate="${fs}">
+          <div class="grclock"><b data-ftick>${fClock(fSecs())}</b><span>${fs === 'studying' ? `studying${focus.subj ? ' ' + esc(focus.subj) : ''}` : fs === 'paused' ? (focus.by === 'left' ? 'paused when you left Recall' : focus.by === 'done' ? 'session finished' : 'on a break') : 'studied today'}</span></div>
+          <div class="grctl">
+            ${fs === 'studying' ? '' : `<label class="grsubj"><span class="vh">Subject</span><select class="in" id="grsubj">${sub.map(s => `<option ${s === focus.subj ? 'selected' : ''}>${esc(s)}</option>`).join('')}<option value="" ${!focus.subj ? 'selected' : ''}>No subject</option></select></label>`}
+            ${fs === 'studying' ? `<button class="btn big" data-act="gr-pause">Take a break</button><button class="link" data-act="gr-stop">Stop</button>` : `<button class="btn primary big" data-act="gr-go">${fs === 'paused' ? 'Carry on' : 'Start studying'}</button>${fs === 'paused' ? '<button class="link" data-act="gr-stop">Stop</button>' : ''}`}
+          </div>
+          <p class="grrule">Leaving Recall pauses your timer${window.desktop ? ' (after 10 seconds in another app)' : ''}. Studying cards starts it for you.</p>
+        </section>
+        <section class="grroom">
+          ${room ? `<div class="grrhead"><div><h2>${esc(room.title || 'Group session')}</h2><p>${esc(gr.names[room.started_by] || 'Someone')} started it. ${inRoom.length} studying in it.</p></div><b class="grrleft" data-rtick="${room.id}">${fClock(grRoomLeft(room) / 1000).replace(/^0:/, '')}</b></div>
+            <div class="grrbar"><i style="width:${Math.min(100, (1 - grRoomLeft(room) / (room.minutes * 60e3)) * 100).toFixed(1)}%"></i></div>
+            ${focus.room === room.id && fs === 'studying' ? `<p class="grin">You’re in. ${room.started_by === grUid() ? '<button class="link" data-act="gr-room-end" data-id="' + room.id + '">End session for everyone</button>' : ''}</p>` : `<button class="btn primary" data-act="gr-room-join" data-id="${room.id}">Join session</button>`}`
+          : `<div class="grrhead"><div><h2>Study together</h2><p>Start a session and everyone in ${esc(g.name)} gets a notification to join.</p></div></div><button class="btn" data-act="gr-room-new">Start a group session</button>`}
+        </section>
+        <section class="grppl">
+          <h2>${studying.length ? `${studying.length} of ${ids.length} studying now` : `${ids.length} ${ids.length === 1 ? 'person' : 'people'}`}</h2>
+          <ul>${ids.slice().sort((a, b) => (grStatusLine(b).cls === 'on') - (grStatusLine(a).cls === 'on') || (gr.names[a] || '').localeCompare(gr.names[b] || '')).map(id => { const l = grStatusLine(id), live = id === grUid() ? fSecs() : grLive(gr.status[id]);
+            return `<li class="${l.cls}"><span class="gdot"></span><div><b>${esc(gr.names[id] || 'Someone')}${id === grUid() ? ' <small>you</small>' : ''}${id === g.owner ? ' <small>owner</small>' : ''}</b><span>${l.t}</span></div><b class="gtime" ${l.cls === 'on' && id !== grUid() ? `data-gtick="${id}"` : id === grUid() && focus.state === 'studying' ? 'data-ftick' : ''}>${fClock(live)}</b></li>`; }).join('')}</ul>
+        </section>
+      </div>
+      <aside class="grside">
+        <section class="grrank">
+          <div class="grrankh"><h2>${gr.rank === 'week' ? 'This week' : 'Today'}</h2><div role="radiogroup" aria-label="Ranking period"><button role="radio" data-act="gr-rank" data-v="today" aria-checked="${gr.rank === 'today'}">Today</button><button role="radio" data-act="gr-rank" data-v="week" aria-checked="${gr.rank === 'week'}">Week</button></div></div>
+          <ol>${rank.map((r, i) => `<li class="${r.id === grUid() ? 'me' : ''}"><span class="grpos">${i + 1}</span><span class="grnm">${esc(gr.names[r.id] || 'Someone')}</span><span class="grbar"><i style="width:${(r.secs / top * 100).toFixed(1)}%"></i></span><span class="grsec">${fShort(r.secs)}</span></li>`).join('')}</ol>
+        </section>
+        <section class="grinv">
+          <h2>Invite friends</h2>
+          <p>They tap the + next to their groups, choose Join and type this code.</p>
+          <div class="grcodebox"><b>${esc(g.code.slice(0, 3))} ${esc(g.code.slice(3))}</b><button class="btn sm" data-act="gr-share" data-id="${g.id}">${navigator.share ? 'Share' : 'Copy'}</button></div>
+        </section>
+        ${grNotifHtml()}
+        <section class="grmore"><button class="link" data-act="gr-rename" data-id="${g.id}" ${g.owner === grUid() ? '' : 'hidden'}>Rename group</button><button class="link" data-act="gr-myname">Change your name</button><button class="link danger" data-act="gr-leave" data-id="${g.id}">Leave group</button></section>
+      </aside>
+    </div></div>`;
+}
+/* ---------- notifications on this device ---------- */
+const grPushable = () => !window.desktop && 'serviceWorker' in navigator && 'PushManager' in window && window.Notification;
+const grIOSBrowser = () => /iP(hone|ad|od)|Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 0 && !(navigator.standalone || matchMedia('(display-mode: standalone)').matches);
+function grNotifHtml(){
+  const p = grPrefs(), perm = window.Notification ? Notification.permission : 'unsupported', on = perm === 'granted' && (window.desktop || !!ls.get('md-gr-push', null) || !grPushable());
+  let head;
+  if (grIOSBrowser()) head = `<p>To get notifications on an iPhone or iPad, add Recall to your Home Screen (Share › Add to Home Screen), open it from there and turn them on here.</p>`;
+  else if (perm === 'unsupported') head = `<p>This browser can’t show notifications.</p>`;
+  else if (perm === 'denied') head = `<p>Notifications are blocked for Recall. Allow them in ${window.desktop ? 'System Settings › Notifications' : 'your device’s settings'}, then come back.</p>`;
+  else if (!on) head = `<p>Get told when a friend starts studying or a group session begins${window.desktop ? '' : ', even when Recall is closed'}.</p><button class="btn" data-act="gr-notif-on">Turn on notifications</button>`;
+  else head = '';
+  return `<section class="grnotif"><h2>Notifications</h2>${head}${on ? `
+    <label class="grsw"><input type="checkbox" data-gpref="start" ${p.start ? 'checked' : ''}><span>When someone starts studying</span></label>
+    <label class="grsw"><input type="checkbox" data-gpref="room" ${p.room ? 'checked' : ''}><span>When a group session starts</span></label>
+    ${window.desktop ? '' : `<label class="grsw grrem"><span>Remind me if I haven’t studied by</span><select class="in" data-gpref="remind"><option value="-1">Off</option>${[15, 16, 17, 18, 19, 20, 21].map(h => `<option value="${h}" ${p.remind === h ? 'selected' : ''}>${h > 12 ? h - 12 : h} pm</option>`).join('')}</select></label>`}
+    ${window.desktop ? '<p class="grfine">On this computer they show while Recall is open.</p>' : ''}` : ''}</section>`;
+}
+const b64uBytes = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - s.length % 4) % 4)), c => c.charCodeAt(0));
+async function grNotifOn(){
+  if (!window.Notification) return;
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted'){ renderGroup(); return; }
+  if (grPushable()){
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64uBytes(GR_VAPID) });
+      ls.set('md-gr-push', sub.endpoint); await grSavePush(sub);
+    } catch (e){ toast('Couldn’t turn on notifications: ' + (e?.message || e), 5000); }
+  } else toast('Notifications on');
+  renderGroup();
+}
+async function grSavePush(sub){
+  if (!grOn()) return;
+  sub ||= await (await navigator.serviceWorker?.ready)?.pushManager?.getSubscription?.(); if (!sub) return;
+  const p = grPrefs(), j = sub.toJSON();
+  const { error } = await cloud.sb.from('push_subs').upsert({ endpoint: j.endpoint, user_id: grUid(), sub: j, tz: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Australia/Sydney', on_start: p.start, on_room: p.room, remind_hour: p.remind >= 0 ? p.remind : null });
+  if (error) throw error;
+}
+document.addEventListener('change', e => {
+  const k = e.target?.dataset?.gpref; if (!k) return;
+  ls.set('md-gr-notif', { ...grPrefs(), [k]: k === 'remind' ? +e.target.value : e.target.checked });
+  if (ls.get('md-gr-push', null)) grSavePush().catch(() => {});
+});
+/* a tapped notification opens the group (the service worker passes it on, or the page opens with ?go=group) */
+navigator.serviceWorker?.addEventListener?.('message', e => { if (e.data?.go === 'group'){ if (e.data.g) gr.cur = e.data.g; if (S.ready) go('group'); } });
+{ const q = new URLSearchParams(location.search); if (q.get('go') === 'group'){ if (q.get('g')) gr.cur = q.get('g'); const t = setInterval(() => { if (S.ready){ clearInterval(t); go('group'); history.replaceState(null, '', location.pathname); } }, 200); setTimeout(() => clearInterval(t), 15000); } }
+
+/* ---------- actions ---------- */
+async function grCall(fn, args){ const { data, error } = await cloud.sb.rpc(fn, args); if (error) throw new Error(error.message); return data; }
+function grAskDialog(title, label, val, act, extra = ''){
+  openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="grah" style="max-width:400px"><header><h2 id="grah">${title}</h2></header>
+    <div class="body"><div class="field"><label for="graskin">${label}</label><input class="in" id="graskin" maxlength="60" value="${esc(val || '')}" data-enter="#graskgo"></div>${extra}</div>
+    <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" id="graskgo" data-act="${act}">Save</button></footer></div>`, () => { const i = $('#graskin'); i.focus(); i.select(); });
+}
+function grRoomDialog(){
+  const last = ls.get('md-gr-mins', 50);
+  openDialog(`<div class="dialog grroomdlg" role="dialog" aria-modal="true" aria-labelledby="grrh" style="max-width:420px"><header><h2 id="grrh">Start a group session</h2></header>
+    <div class="body"><div class="field"><span class="flabel">How long?</span><div class="grmins" role="radiogroup" aria-label="Length">${[25, 50, 60, 90, 120].map(m => `<button role="radio" data-act="gr-mins" data-v="${m}" aria-checked="${m === last}">${m < 60 ? m + ' min' : m === 60 ? '1 hour' : m === 90 ? '1½ hours' : '2 hours'}</button>`).join('')}</div></div>
+      <div class="field"><label for="grrtitle">Name it (optional)</label><input class="in" id="grrtitle" maxlength="60" placeholder="e.g. 2022 Ext 2 paper" data-enter="#grrgo"></div>
+      <p class="sub" style="margin:0">Everyone in the group gets a notification. Your timer starts now.</p></div>
+    <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" id="grrgo" data-act="gr-room-go">Start session</button></footer></div>`);
+}
+async function grAction(act, a){
+  const id = a.dataset.id, busy = async f => { a.disabled = true; try { await f(); } catch (e){ toast(String(e?.message || e).replace(/^.*?:\s*(?=[A-Z])/, ''), 4500); } a.disabled = false; };
+  switch (act){
+    case 'gr-open': study = null; return go('group');
+    case 'gr-reload': gr.loaded = false; gr.err = ''; return renderGroup();
+    case 'gr-tab': gr.cur = id; ls.set('md-gr-cur', id); return renderGroup();
+    case 'gr-rank': gr.rank = a.dataset.v; return renderGroup();
+    case 'gr-go': { const s = $('#grsubj'); return fStart(s ? s.value : focus.subj, focus.state === 'paused' ? focus.room : null).then(renderGroup); }
+    case 'gr-resume': closeDialog(); return fStart(focus.subj, focus.room);
+    case 'gr-pause': fPause('you'); return renderGroup();
+    case 'gr-stop': if (dialogOpen()) closeDialog(); fStop(); if (view.name === 'group') renderGroup(); return toast(`${fShort(fSecs())} studied today`);
+    case 'gr-name': return busy(async () => { const v = $('#grname').value.trim(); if (!v) return $('#grname').focus(); const { error } = await cloud.sb.from('profiles').upsert({ user_id: grUid(), name: v.slice(0, 40), updated_at: new Date().toISOString() }); if (error) throw error; gr.me = v; gr.names[grUid()] = v; renderGroup(); });
+    case 'gr-myname': return grAskDialog('Your name', 'Shown to people in your groups', gr.me, 'gr-myname-go');
+    case 'gr-myname-go': return busy(async () => { const v = $('#graskin').value.trim(); if (!v) return; const { error } = await cloud.sb.from('profiles').upsert({ user_id: grUid(), name: v.slice(0, 40), updated_at: new Date().toISOString() }); if (error) throw error; gr.me = v; gr.names[grUid()] = v; closeDialog(); });
+    case 'gr-create': return busy(async () => { const v = $('#grnew').value.trim(); if (!v) return $('#grnew').focus(); const g = await grCall('create_group', { p_name: v }); gr.cur = g.id; ls.set('md-gr-cur', g.id); await grLoad(true); toast(`Made ${g.name}. Its code is ${g.code}`, 4000); });
+    case 'gr-join': return busy(async () => { const v = $('#grjoin').value.replace(/[^A-Za-z0-9]/g, ''); if (v.length !== 6) return toast('Codes are 6 letters and numbers'); const g = await grCall('join_group', { p_code: v }); gr.cur = g.id; ls.set('md-gr-cur', g.id); await grLoad(true); toast(`You’re in ${g.name}`); });
+    case 'gr-add': {
+      openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="grah2" style="max-width:420px"><header><h2 id="grah2">Another group</h2></header>
+        <div class="body"><div class="field"><label for="grjoin">Join with a code</label><div class="grrow"><input class="in grcode" id="grjoin" maxlength="7" placeholder="6 letter code" autocapitalize="characters" autocomplete="off" data-enter="#grjoingo2"><button class="btn primary" id="grjoingo2" data-act="gr-join2">Join</button></div></div>
+        <div class="field"><label for="grnew">Or make a new one</label><div class="grrow"><input class="in" id="grnew" maxlength="60" placeholder="Group name" data-enter="#grnewgo2"><button class="btn" id="grnewgo2" data-act="gr-create2">Make group</button></div></div></div>
+        <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button></footer></div>`, () => $('#grjoin').focus());
+      return;
+    }
+    case 'gr-join2': case 'gr-create2': return busy(async () => { const join = act === 'gr-join2'; const v = join ? $('#grjoin').value.replace(/[^A-Za-z0-9]/g, '') : $('#grnew').value.trim(); if (!v || (join && v.length !== 6)) return toast(join ? 'Codes are 6 letters and numbers' : 'Give the group a name'); const g = await grCall(join ? 'join_group' : 'create_group', join ? { p_code: v } : { p_name: v }); gr.cur = g.id; ls.set('md-gr-cur', g.id); closeDialog(); await grLoad(true); toast(join ? `You’re in ${g.name}` : `Made ${g.name}. Its code is ${g.code}`, 4000); });
+    case 'gr-share': { const g = gr.groups.find(x => x.id === id); if (!g) return; const text = `Study with me on Recall. Join my group "${g.name}" with the code ${g.code}.`; if (navigator.share){ try { await navigator.share({ text }); } catch {} } else { try { await navigator.clipboard.writeText(g.code); toast(`Copied ${g.code}`); } catch { toast(g.code); } } return; }
+    case 'gr-rename': { const g = gr.groups.find(x => x.id === id); return grAskDialog('Rename group', 'Group name', g?.name, 'gr-rename-go'); }
+    case 'gr-rename-go': return busy(async () => { const v = $('#graskin').value.trim(); if (!v) return; const { error } = await cloud.sb.from('study_groups').update({ name: v.slice(0, 60) }).eq('id', gr.cur); if (error) throw error; closeDialog(); await grLoad(true); });
+    case 'gr-leave': {
+      const g = gr.groups.find(x => x.id === id); if (!g) return;
+      openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="grlh" style="max-width:400px"><header><h2 id="grlh">Leave ${esc(g.name)}?</h2></header><div class="body"><p>You’ll stop seeing who’s studying in it. You can join again with the code ${esc(g.code)}.${g.owner === grUid() ? ' Someone else in the group becomes its owner.' : ''}</p></div>
+        <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn danger" data-act="gr-leave-go" data-id="${g.id}">Leave group</button></footer></div>`);
+      return;
+    }
+    case 'gr-leave-go': return busy(async () => { await grCall('leave_group', { p_group: id }); closeDialog(); if (gr.chan){ cloud.sb.removeChannel(gr.chan); gr.chan = null; } await grLoad(true); });
+    case 'gr-room-new': return grRoomDialog();
+    case 'gr-mins': a.parentElement.querySelectorAll('[role="radio"]').forEach(b => b.setAttribute('aria-checked', String(b === a))); ls.set('md-gr-mins', +a.dataset.v); return;
+    case 'gr-room-go': return busy(async () => {
+      const minutes = ls.get('md-gr-mins', 50), title = $('#grrtitle').value.trim() || null;
+      const { data, error } = await cloud.sb.from('group_rooms').insert({ group_id: gr.cur, started_by: grUid(), minutes, title }).select().single(); if (error) throw error;
+      gr.rooms.push(data); closeDialog(); await fStart(focus.subj || grSubjects()[0] || '', data.id); grNotify('room', { group: gr.cur, minutes }); renderGroup();
+    });
+    case 'gr-room-join': { const r = gr.rooms.find(x => x.id === id); if (!r) return; const s = $('#grsubj'); await fStart(s ? s.value : focus.subj, r.id); return renderGroup(); }
+    case 'gr-room-end': return busy(async () => { await cloud.sb.from('group_rooms').update({ ended_at: new Date().toISOString() }).eq('id', id); gr.rooms = gr.rooms.filter(r => r.id !== id); if (focus.room === id){ focus.room = null; fSave(); grPushStatus(); } renderGroup(); });
+    case 'gr-notif-on': return busy(grNotifOn);
+  }
+}
+/* studying cards starts the timer when you're in a group (the subject is the deck's subject) */
+{ const ss = startStudy; startStudy = function(...args){ const r = ss.apply(this, args); try { if (gr.groups.length && focus.state !== 'studying' && ls.get('md-focus-auto', true)){ const top = study?.node ? pathOf(study.node)[0]?.name : ''; fStart(top || focus.subj || ''); } } catch {} return r; }; }
+/* signing in: load groups so notifications and rankings work everywhere; keep the push subscription tied to this account */
+setInterval(() => { if (grOn() && !gr.loaded && !gr.loading) grLoad(true).then(() => { if (ls.get('md-gr-push', null)) grSavePush().catch(() => {}); if (focus.state !== 'idle') grPushStatus(); }); if (!grOn() && gr.loaded){ gr.loaded = false; gr.groups = []; if (gr.chan){ try { cloud.sb?.removeChannel(gr.chan); } catch {} gr.chan = null; } } }, 3000);
+setTimeout(fPaint, 500);
+document.addEventListener('keydown', e => { if (e.key !== 'Enter' || dialogOpen()) return; const t = e.target; if (t?.tagName === 'INPUT' && t.dataset.enter && t.closest('.grpage')){ e.preventDefault(); $(t.dataset.enter)?.click(); } });
+navigator.serviceWorker?.addEventListener?.('message', e => { if (e.data?.go === 'decks' && S.ready) go('decks'); });
+{ const r0 = render; render = function(...a){ const r = r0.apply(this, a); try { fPaint(); } catch {} return r; }; }
+{ const t = setInterval(() => { if (S.ready){ clearInterval(t); setTimeout(fBack, 800); } }, 300); }
 
 initStore().finally(() => { lhMigrate(); designMigrate(); h7Migrate(); if (S.ready) settingsRepair(); cloudBoot(); });
 render();
