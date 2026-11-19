@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261119225706 min-shell:1.27.0 -->
+<!-- recall-build:20261120010016 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -3199,7 +3199,7 @@ html:root body .toolbar nav .navmore{display:none}
   html:root body:not(.desktop) .toolbar nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:48px;padding:0;font:500 11px var(--ui);color:var(--fg-3);background:none;box-shadow:none;border-radius:6px}
   html:root body:not(.desktop) .toolbar nav button[aria-current="true"]{color:var(--fg);background:none}
   html:root body:not(.desktop) .toolbar nav button .ni{display:block;width:22px;height:22px}
-  html:root body:not(.desktop) .toolbar nav [data-nav="browse"],html:root body:not(.desktop) .toolbar nav [data-nav="papers"],html:root body:not(.desktop) .toolbar nav [data-nav="stats"],html:root body:not(.desktop) .toolbar nav [data-nav="exam"],html:root body:not(.desktop) .toolbar nav [data-nav="themes"]{display:none}
+  html:root body:not(.desktop) .toolbar nav [data-nav="browse"],html:root body:not(.desktop) .toolbar nav [data-nav="papers"],html:root body:not(.desktop) .toolbar nav [data-nav="mistakes"],html:root body:not(.desktop) .toolbar nav [data-nav="stats"],html:root body:not(.desktop) .toolbar nav [data-nav="exam"],html:root body:not(.desktop) .toolbar nav [data-nav="themes"]{display:none}
   html:root body:not(.desktop):has(#root.v-study, #root.v-ppmark) .toolbar nav{display:none}
   html:root body:not(.desktop) .toast{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
   html:root body:not(.desktop):has(#root.v-study) .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
@@ -3786,7 +3786,7 @@ html.examon,html.examon body{overflow:hidden !important;overscroll-behavior:none
   html:root body:not(.desktop) .toolbar nav{display:flex;flex-wrap:nowrap;gap:0;padding:4px 4px calc(4px + env(safe-area-inset-bottom,0px));overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
   html:root body:not(.desktop) .toolbar nav::-webkit-scrollbar{display:none}
   html:root body:not(.desktop) .toolbar nav button{flex:0 0 auto;min-width:74px;padding:0 6px;scroll-snap-align:start}
-  html:root body:not(.desktop) .toolbar nav [data-nav="browse"],html:root body:not(.desktop) .toolbar nav [data-nav="papers"],html:root body:not(.desktop) .toolbar nav [data-nav="stats"],html:root body:not(.desktop) .toolbar nav [data-nav="exam"],html:root body:not(.desktop) .toolbar nav [data-nav="themes"]{display:flex}
+  html:root body:not(.desktop) .toolbar nav [data-nav="browse"],html:root body:not(.desktop) .toolbar nav [data-nav="papers"],html:root body:not(.desktop) .toolbar nav [data-nav="mistakes"],html:root body:not(.desktop) .toolbar nav [data-nav="stats"],html:root body:not(.desktop) .toolbar nav [data-nav="exam"],html:root body:not(.desktop) .toolbar nav [data-nav="themes"]{display:flex}
   html:root body:not(.desktop) .toolbar nav .navmore{display:none}
   html:root body:not(.desktop) .toolbar nav button .ni{width:24px;height:24px;flex:none}
   html:root body:not(.desktop) .toolbar nav button{position:relative}
@@ -4021,6 +4021,163 @@ body:not(.desktop):has(#fpill) #root{padding-bottom:56px}
 .hlegend span:first-child{margin-right:4px}.hlegend span:last-child{margin-left:4px}
 .hrstimes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .hrsfoot{margin:30px 0 0;color:var(--fg-3);font-size:12px}
+/* Sidebar: six places, subjects with dots, group bar, settings row (20 Nov 2026) */
+html.lh body.desktop .toolbar .tin{display:flex;flex-direction:column;min-height:calc(100vh - var(--appbar, 52px))}
+html.lh body.desktop .toolbar nav{gap:2px}
+html.lh body.desktop .toolbar nav button{height:32px}
+html.lh body.desktop .toolbar nav [data-nav="group"],html.lh body.desktop .toolbar nav [data-nav="exam"]{display:none}
+html.lh body.desktop .sidesubs{margin-top:22px}
+html.lh body.desktop .toolbar .sidesub{display:flex;align-items:center;padding:0 10px;height:30px;min-height:30px;flex:0 0 30px}
+html.lh body.desktop .toolbar .sidesub .sbarw,html.lh body.desktop .toolbar .sidesub .sring{display:none}
+html.lh body.desktop .toolbar .sidesub .nm{flex:1;text-align:left;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html.lh body.desktop .toolbar .sidesub::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--sc);flex:0 0 7px;margin:0 6px 0 2px}
+#gbar{display:none}
+html.lh body.desktop #gbar{order:30;margin-top:auto;display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:6px 10px;box-sizing:border-box;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--fg-2);font:400 13px var(--ui);text-align:left;cursor:pointer;-webkit-app-region:no-drag}
+html.lh body.desktop #gbar:hover,html.lh body.desktop #gbar[aria-expanded="true"]{background:var(--surface-2);border-color:var(--border-2)}
+.gbt{display:flex;flex-direction:column;min-width:0;flex:1}
+.gb1{color:var(--fg);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gb1 b{font-weight:600;font-variant-numeric:tabular-nums;margin-right:2px}
+.gb2{font-size:12px;color:var(--fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gbic{width:28px;height:28px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;color:var(--fg-3);flex:0 0 28px}
+.gbic svg{width:16px;height:16px}
+#gbar[data-fstate="studying"] .gbic{color:var(--accent)}
+.gbavs{display:inline-flex;flex:0 0 auto}
+.gbav{width:24px;height:24px;border-radius:50%;display:inline-grid;place-items:center;font:600 11px var(--ui);background:var(--surface-2);color:var(--fg-2);box-shadow:0 0 0 2px var(--surface);flex:0 0 24px}
+.gbavs .gbav+.gbav{margin-left:-6px}
+.gblv{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:0 0 7px}
+.sidefoot{display:none}
+html.lh body.desktop .sidefoot{order:31;display:flex;align-items:center;gap:6px;margin-top:6px}
+html.lh body.desktop .sidefoot .sideset{order:0;margin-top:0;flex:1}
+html.lh body.desktop .sidefoot #cloudpill{order:1;margin:0;height:30px;padding:0 8px;border:0;background:none;box-shadow:none;color:var(--fg-3);font:400 12px var(--ui);width:auto;flex:0 1 auto;min-width:0}
+html.lh body.desktop .sidefoot #cloudpill:hover{color:var(--fg);background:var(--hover)}
+html.lh body.desktop .sidefoot #cloudpill svg{width:14px;height:14px}
+body.desktop:not(.sidebar-hidden) .fpill{display:none}
+#gbpop{position:fixed;z-index:60;width:330px;max-width:calc(100vw - 16px);max-height:calc(100vh - 120px);overflow:auto;box-sizing:border-box;padding:16px;background:var(--surface-2);border:1px solid var(--border-2);border-radius:12px;box-shadow:0 18px 44px rgba(0,0,0,.4);color:var(--fg);font:400 13px var(--ui);animation:fade .12s ease-out}
+.gbhd{display:flex;align-items:baseline;gap:8px}
+.gbhd h3{margin:0;font:600 15px var(--ui)}
+.gbhd span{font-size:12px;color:var(--fg-3)}
+.gbme{margin-top:12px;padding:12px;border-radius:10px;background:var(--surface);border:1px solid var(--border)}
+.gbclk b{display:block;font:300 30px/1.1 var(--ui);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.gbme[data-fstate="studying"] .gbclk b{color:var(--accent)}
+.gbclk span{font-size:12px;color:var(--fg-3)}
+.gbctl{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.gbctl select{flex:1 1 120px;min-width:0;height:30px;padding:0 8px;font-size:13px}
+.gbppl{list-style:none;margin:10px 0 0;padding:0}
+.gbppl li{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border)}
+.gbppl li:first-child{border-top:0}
+.gbppl .gbav{box-shadow:none}
+.gbppl li.on .gbav{box-shadow:0 0 0 1.5px var(--accent)}
+.gbn{display:flex;flex-direction:column;min-width:0;flex:1}
+.gbn b{font-weight:500;color:var(--fg)}
+.gbn span{font-size:12px;color:var(--fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gbtm{font-weight:500;font-variant-numeric:tabular-nums;color:var(--fg-3)}
+.gbppl li.on .gbtm{color:var(--fg)}
+.gbnone{color:var(--fg-3);font-size:12px}
+.gbfoot{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.gbhint{font-size:12px;color:var(--fg-3)}
+/* Papers: Sit it timed */
+.ppsit{margin:18px 0 6px;padding:14px 16px;border:1px solid var(--border);border-radius:10px;background:var(--surface);max-width:560px}
+.ppsit1{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.ppsit1>div{flex:1 1 220px}
+.ppsit h2{margin:0;font:600 15px var(--ui);color:var(--fg)}
+.ppsit p{margin:3px 0 0;font-size:13px;color:var(--fg-2)}
+.ppsitl{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--fg-3)}
+.ppsitl input{accent-color:var(--accent)}
+/* ⌘K */
+#cmdk{position:fixed;inset:0;z-index:90}
+.ckscrim{position:absolute;inset:0;background:rgba(5,7,10,.45)}
+.ckbox{position:absolute;left:50%;top:12vh;transform:translateX(-50%);width:600px;max-width:calc(100vw - 24px);background:var(--surface-2);border:1px solid var(--border-2);border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.45);overflow:hidden;animation:fade .1s ease-out}
+.ckin{display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--border)}
+.ckin svg{width:16px;height:16px;color:var(--fg-3);flex:0 0 16px}
+.ckin input{flex:1;height:52px;border:0;background:none;color:var(--fg);font:400 16px var(--ui);outline:none;min-width:0}
+.ckin input::placeholder{color:var(--fg-3)}
+#cmdk .ckin input,#cmdk .ckin input:focus,#cmdk .ckin input:focus-visible{outline:none !important;box-shadow:none !important;border:0 !important;background:none !important;padding:0 !important}
+.ckin kbd,.ckr kbd{font:400 11px var(--ui);color:var(--fg-3);border:1px solid var(--border-2);border-radius:4px;padding:1px 5px}
+.cklist{max-height:min(420px,60vh);overflow:auto;padding:6px}
+.ckg{padding:8px 10px 4px;font-size:12px;color:var(--fg-3)}
+.ckr{display:flex;align-items:center;gap:10px;width:100%;min-height:34px;padding:0 10px;border:0;border-radius:6px;background:none;color:var(--fg-2);font:400 14px var(--ui);text-align:left;cursor:pointer}
+.ckr span{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ckr small{flex:1;min-width:0;font-size:12px;color:var(--fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ckr kbd{margin-left:auto}
+.ckr[aria-selected="true"]{background:var(--hover);color:var(--fg)}
+.cknone{margin:0;padding:18px 12px;color:var(--fg-3);font-size:13px}
+/* Mistakes */
+.mkl{max-width:1180px;margin:0 auto;padding:8px 40px 56px}
+.mkl .dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex:0 0 7px}
+.mklfind{margin:22px 0 22px;max-width:780px;font-size:20px;line-height:28px;color:var(--fg);letter-spacing:-.01em}
+.mklfind b{font-weight:600}
+.mklbar{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-top:18px}
+.mklbar .stabs.h7tabs{flex:1 1 auto;border-bottom:0;min-width:0;overflow-x:auto;scrollbar-width:none}
+.mklper{margin-bottom:8px}
+.mklcols{display:flex;flex-wrap:wrap;gap:32px 40px;align-items:flex-start;margin-top:24px}
+.mklmain{flex:999 1 520px;min-width:0}
+.mklside{flex:1 1 300px;min-width:0}
+.mkladd{margin:0 0 6px}
+#mklnew{display:block;width:100%;box-sizing:border-box;resize:none;overflow:hidden;border:1px solid var(--border-2);background:var(--surface);color:var(--fg);border-radius:10px;padding:12px 16px;font:inherit;font-size:15px;line-height:22px;min-height:48px}
+#mklnew::placeholder{color:var(--fg-3)}
+#mklnew:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.mklhint{display:flex;justify-content:space-between;gap:12px;margin:8px 2px 0;font-size:12px;color:var(--fg-3)}
+.mklhint .link{font-size:12px}
+.mklg{margin:22px 0 8px;font-size:12px;font-weight:500;color:var(--fg-3)}
+.mkllist{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.mkllist li+li{border-top:1px solid var(--border)}
+.mklr{display:grid;grid-template-columns:7px minmax(0,1fr) auto;gap:4px 14px;align-items:start;width:100%;box-sizing:border-box;padding:12px 16px;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.mklr:hover{background:var(--hover)}
+.mklr .dot{margin-top:7px}
+.mklm{min-width:0}
+.mklt{display:block;font-size:14px;line-height:21px;color:var(--fg);white-space:pre-wrap;overflow-wrap:anywhere}
+.mklmeta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:6px;font-size:12px;color:var(--fg-3)}
+.mklpill{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:4px;background:var(--surface-2);color:var(--fg-2)}
+.mklr2{display:flex;flex-direction:column;align-items:flex-end;gap:4px;white-space:nowrap}
+.mklmk{font-size:13px;color:var(--fg-2);font-variant-numeric:tabular-nums}
+.mkld{font-size:12px;color:var(--fg-3);font-variant-numeric:tabular-nums}
+.mklnone{margin:16px 0 0;font-size:13px;line-height:19px;color:var(--fg-3)}
+.mklmore,.mklfoot{margin:14px 0 0;font-size:13px}
+.mklfoot{margin-top:28px}
+.mklside h2{margin:0 0 10px;font-size:15px;font-weight:600;color:var(--fg)}
+.mkle{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.mkle button{height:28px;padding:0 10px;border-radius:6px;border:1px solid var(--border-2);background:none;color:var(--fg-2);font:inherit;font-size:12px;cursor:pointer}
+.mkle button span{color:var(--fg-3);margin-left:4px;font-variant-numeric:tabular-nums}
+.mkle button[aria-selected="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.mkle button[aria-selected="true"] span{color:inherit;opacity:.75}
+.mklrules{list-style:none;margin:0;padding:0 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.mklrules li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:12px;padding:13px 0}
+.mklrules li+li{border-top:1px solid var(--border)}
+.mklck{width:16px;height:16px;margin:3px 0 0;accent-color:var(--accent)}
+.mkln{font-size:13px;color:var(--fg-3);font-variant-numeric:tabular-nums;line-height:21px}
+.mklrt{display:block;font-size:14px;line-height:21px;color:var(--fg)}
+.mklrules li:has(.mklck:checked) .mklrt{color:var(--fg-3)}
+.mklrm{display:block;margin-top:3px;font-size:12px;color:var(--fg-3)}
+.mklra{display:flex;gap:18px;margin:10px 2px 0;font-size:13px}
+.mklchips{display:flex;flex-wrap:wrap;gap:8px}
+.mklchip{height:30px;padding:0 11px;border-radius:6px;border:1px solid var(--border-2);background:var(--surface-2);color:var(--fg-2);font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.mklchip small{font-size:12px;opacity:.7;font-variant-numeric:tabular-nums}
+.mklchip:hover{color:var(--fg)}
+.mklchip[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg);font-weight:500}
+#mkdhn{margin-top:8px}
+.mklrow2{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:12px}
+.mkldlg footer .link{font-size:13px}
+.mklhab{display:flex;flex-direction:column;gap:0;margin-top:8px}
+.mklhr{display:flex;flex-direction:column;gap:8px;padding:14px 0;border-top:1px solid var(--border)}
+.mklhr1{display:flex;align-items:center;gap:12px}
+.mklhr1 [data-hn]{flex:1;font-weight:500}
+.mklhs{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--fg-3);white-space:nowrap}
+.mklhc{font-size:12px;color:var(--fg-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+.mklhr2{display:flex;align-items:center;gap:12px;font-size:13px}
+.link.danger{color:var(--again)}
+.mklpp{margin-top:12px}
+.mklpp .mklchips{margin-top:6px}
+.mklppok{margin:8px 0 0}
+.mkltoday{margin:4px 0 30px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;max-width:620px}
+.mkltoh{display:flex;align-items:baseline;gap:16px;font-size:13px}
+.mkltoh h2{margin:0;font-size:17px;font-weight:600}
+.mkltos{margin:10px 0 4px;font-size:13px;color:var(--fg-3)}
+.mkltoday ol,.mklexr ol{list-style:none;margin:0;padding:0}
+.mkltoday li,.mklexr li{display:flex;gap:12px;padding:8px 0;border-top:1px solid var(--border);font-size:14px;line-height:21px}
+.mkltoday li span,.mklexr li span{color:var(--fg-3);width:12px;font-variant-numeric:tabular-nums}
+.mklexr{margin:0 0 24px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:12px;max-width:620px}
+.mklexr h2{margin:0 0 6px;font-size:15px;font-weight:600}
+@media (max-width:760px){.mkl{padding:4px 18px 40px}.mklfind{font-size:17px;line-height:24px;margin:16px 0}.mklper{margin-bottom:10px}.mklrow2{grid-template-columns:minmax(0,1fr) 96px}}
 /* Progress › Tasks */
 .tskl li{grid-template-columns:10px auto minmax(0,1fr) auto}
 .tsks{color:var(--fg-3);font-size:12px;white-space:nowrap}
@@ -4050,6 +4207,7 @@ body:not(.desktop) header.toolbar{top:0;padding-top:var(--sat)}
     <button data-nav="add" class="navadd"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="7.2"/><path d="M10 6.8v6.4M6.8 10h6.4"/></svg><span>Add</span></button>
     <button data-nav="browse"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M7 5h10M7 10h10M7 15h10"/><circle cx="3.6" cy="5" r=".9" fill="currentColor"/><circle cx="3.6" cy="10" r=".9" fill="currentColor"/><circle cx="3.6" cy="15" r=".9" fill="currentColor"/></svg><span>Cards</span></button>
     <button data-nav="papers"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5 2.8h6.6L15.5 6.7V17.2H5z"/><path d="M11.4 2.8v4h4M7.8 10.5h4.8M7.8 13.6h4.8"/></svg><span>Papers</span></button>
+    <button data-nav="mistakes"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M4.5 3.2h8.3l2.7 2.7v10.9H4.5z"/><path d="M7.6 8.4l4.8 4.8M12.4 8.4l-4.8 4.8"/></svg><span>Mistakes</span></button>
     <button data-nav="exam"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="11" r="6.5"/><path d="M10 7.5V11l2.5 1.6M8 2.5h4M15.2 5.4l1.2-1.2"/></svg><span>Exam timer</span></button>
     <button data-nav="stats"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 16V10M8.7 16V5M13.3 16v-4M18 16V7.5M2.5 16.5h16"/></svg><span>Progress</span></button>
     <button data-nav="themes"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.8a7.2 7.2 0 1 0 0 14.4c1.1 0 1.6-.8 1.3-1.7-.4-1.2.3-2.3 1.6-2.3h1.6a2.7 2.7 0 0 0 2.7-2.7C17.2 6.2 14 2.8 10 2.8Z"/><circle cx="6.3" cy="9.3" r="1" fill="currentColor"/><circle cx="8.6" cy="6" r="1" fill="currentColor"/><circle cx="12.4" cy="6.1" r="1" fill="currentColor"/></svg><span>Settings</span></button>
@@ -4387,6 +4545,8 @@ function sideSearch(q){
   if (decks.length || types.length) html += `<div class="sidelabel">Decks</div>` + [...decks, ...types].map(id => row('side-go', id, nodeOf(id)?.name || '', pathOf(id).slice(0, -1).map(p => p.name).join(' › ') || 'Subject')).join('');
   if (cards.length) html += `<div class="sidelabel" style="margin-top:12px">Cards · ${cards.length}</div>` + cards.slice(0, 6).map(c => row('side-card', c.id, snip(c), pathOf(c.nodeId).map(p => p.name).slice(-2).join(' › '))).join('')
     + (cards.length > 6 ? `<button class="siderec" data-act="side-cards"><span class="nm">See all ${cards.length} cards</span><span class="meta">open in Browse</span></button>` : '');
+  const mks = typeof mklEntries === 'function' ? mklEntries('all').filter(x => hit([x.t, x.w, x.h && mhab(x.h)?.n, x.h && mhab(x.h)?.r].join(' '))) : [];
+  if (mks.length) html += `<div class="sidelabel" style="margin-top:12px">Mistakes · ${mks.length}</div>` + mks.slice(0, 5).map(x => row('mkl-find', x.id, x.t.replace(/\s+/g, ' ').slice(0, 60), (nodeOf(x.s)?.name || '') + (x.w ? ' · ' + x.w : ''))).join('');
   if (!html) html = `<p class="sideempty">Nothing matches “${esc(q)}”. Search looks at deck names, the text on your cards and the text inside their pictures.</p>`;
   box.innerHTML = html; box.hidden = false; subs.hidden = !document.body.classList.contains('desktop');
 }
@@ -4399,7 +4559,7 @@ document.addEventListener('keydown', e => {
 function render(){
   if (ppFull && view.name !== 'ppmark') ppFullSet(false, true);
   renderSideSubjects(); h7NavCounts();
-  $('.navmore')?.setAttribute('aria-current', String(['browse', 'papers', 'ppmark', 'stats', 'exam', 'themes'].includes(view.name)));
+  $('.navmore')?.setAttribute('aria-current', String(['browse', 'papers', 'ppmark', 'mistakes', 'stats', 'exam', 'themes'].includes(view.name)));
   document.querySelector('.sideset')?.setAttribute('aria-current', String(view.name === 'themes'));
   document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'stats' && (view.name === 'hours' || view.name === 'tasks')) || (b.dataset.nav === 'papers' && (view.name === 'ppmark' || (view.name === 'study' && study?.tag === 'Paper mistakes'))) || (b.dataset.nav === 'decks' && (view.name === 'overview' || (view.name === 'study' && study?.tag !== 'Paper mistakes'))))));
   applyTheme();
@@ -4412,6 +4572,7 @@ function render(){
   else if (view.name === 'browse') renderBrowse();
   else if (view.name === 'stats') renderStats();
   else if (view.name === 'exam') renderExam();
+  else if (view.name === 'mistakes') renderMistakes();
   else if (view.name === 'setup') renderSetup();
   else if (view.name === 'group') renderGroup();
   else if (view.name === 'hours') renderHours();
@@ -4616,6 +4777,7 @@ function renderAppbar(){
   else if (view.name === 'papers' || view.name === 'ppmark'){ const r = ppAppbar(); title = r.title; act = r.act; }
   else if (view.name === 'stats') title = '<b>Progress</b>';
   else if (view.name === 'exam') title = '<b>Exam timer</b>';
+  else if (view.name === 'mistakes'){ title = '<b>Mistakes</b><span class="abmeta">What keeps costing you marks</span>'; act = `<button class="btn primary" data-act="mkl-new">Log a mistake<kbd>L</kbd></button>`; }
   else if (view.name === 'setup') title = '<b>Set up decks</b>';
   else if (view.name === 'group') title = '<b>Group study</b>';
   else if (view.name === 'hours' || view.name === 'tasks') title = '<b>Progress</b>';
@@ -5498,7 +5660,7 @@ function dockHtml(c){
   const now = Date.now(), s = c.srs || freshSrs(), p = study.pred || { conf: 50, think: '', set: false };
   if (study.shown) return `<div class="dock dock-rate">
       <div class="lhrates" role="group" aria-label="How well did you know it?">${[['Again','again'],['Hard','hard'],['Good','good'],['Easy','easy']].map(([l],i) => `<button class="lhrate r${i+1}" data-act="rate" data-r="${i+1}" title="${l} (${i+1})"><span>${l}</span><small>${fmtIvl(schedule(s, i+1, now).due - now)}</small><kbd>${i+1}</kbd></button>`).join('')}</div>
-      <p class="dhint">Space picks Good · Z goes back</p></div>`;
+      <p class="dhint">Space picks Good · Z goes back · <button class="link" data-act="mkl-from-card">Log as a mistake</button> (M)</p></div>`;
   return `<div class="dock dock-show">
       <span class="hintm">${c.kind === 'learn' ? 'Explain it to yourself first' : 'Work it out first'}</span>
       <button class="btn big dhintb" data-act="study-hint" aria-pressed="${study.hintFor === c.id}" title="A nudge before you look at the answer (H)">Hint<kbd>H</kbd></button>
@@ -7739,7 +7901,7 @@ function keysDialog(){
   const sec = (h, rows) => `<section><h3>${h}</h3>${rows.map(([l, t]) => `<div class="kyr"><span>${l}</span><span class="kyk">${k(t)}</span></div>`).join('')}</section>`;
   openDialog(`<div class="dialog keysdlg" role="dialog" aria-modal="true" aria-labelledby="kyh" style="max-width:720px"><header><h2 id="kyh">Keyboard shortcuts</h2></header>
     <div class="body"><div class="kygrid"><div>${sec('Studying', [['Show the answer', 'Space'], ['Rate Again, Hard, Good, Easy', '1 2 3 4'], ['Rate Good', 'Space'], ['Back one step', 'Z or ⌫'], ['Edit this card', 'E'], ['Hint', 'H'], ['Flag this card', 'F'], ['Skip until tomorrow', 'S'], ['Delete this card', 'X'], ['Scratchpad', 'P'], ['Pause the timer', 'T'], ['Leave', 'Esc']])}</div>
-      <div>${sec('Anywhere', [['Add a card', 'A'], ['Decks', 'D'], ['Browse', 'B'], ['To-do', 'T'], ['Calendar', 'C'], ['Search', '⌘K'], ['Undo', '⌘Z'], ['Redo', '⇧⌘Z'], ['Back, forward', '⌘[ ⌘]'], ['Show or hide the sidebar', '⌘S'], ['This list', '?']])}
+      <div>${sec('Anywhere', [['Add a card', 'A'], ['Decks', 'D'], ['Browse', 'B'], ['To-do', 'T'], ['Calendar', 'C'], ['Go to or do anything', '⌘K'], ['Search', '⌘F'], ['Undo', '⌘Z'], ['Redo', '⇧⌘Z'], ['Back, forward', '⌘[ ⌘]'], ['Show or hide the sidebar', '⌘S'], ['This list', '?']])}
       ${sec('On a deck', [['Study it', 'S'], ['See its cards in Browse', 'B']])}
       ${sec('Browse', [['Move up and down', '↑ ↓'], ['Show the answer', 'Space'], ['Edit', 'Enter'], ['Select all', '⌘A']])}</div></div></div>
     <footer><span class="grow"></span><button class="btn primary" data-act="close">Done</button></footer></div>`, d => d.querySelector('.btn.primary').focus());
@@ -9640,6 +9802,9 @@ document.addEventListener('click', async e => {
   if (act.startsWith('gr-')) return grAction(act, a, e);
   if (act.startsWith('hrs-')) return hrsAction(act, a, e);
   if (act.startsWith('tsk-')) return tskAction(act, a, e);
+  if (act.startsWith('mkl-')) return mklAction(act, a, e);
+  if (act.startsWith('gb-')) return gbAction(act, a, e);
+  if (act === 'sit-paper') return ppSit(a.dataset.k);
   switch (act){
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
     case 'side-subj': { if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; return subjSwapDraw(); } ls.set('md-subj', id); study = null; return go('decks'); }
@@ -9827,7 +9992,7 @@ document.addEventListener('click', async e => {
     case 'why-on': { const w = $('#ewhy'); if (w){ w.classList.remove('whyoff'); $('#em')?.focus(); edPreviewSoon(); } return; }
     case 'card-flag': { const c = S.cards[id]; if (!c) return; const y = { ...c }; if (c.flag) delete y.flag; else y.flag = true; undoTx = null; undoLabel = c.flag ? 'unflag card' : 'flag card'; await put('cards', y); return render(); }
     case 'keys': closeMenu(); return keysDialog();
-    case 'nav-more': { e.stopPropagation(); if ($('#menu')) return closeMenu(); const r = a.getBoundingClientRect(); menuAt(`<button data-nav="browse">Cards</button><button data-nav="papers">Papers</button><button data-nav="stats">Progress</button><button data-nav="exam">Exam timer</button><button data-nav="themes">Settings</button>`, { x: r.right - 170, y: r.top - 168 }); return; }
+    case 'nav-more': { e.stopPropagation(); if ($('#menu')) return closeMenu(); const r = a.getBoundingClientRect(); menuAt(`<button data-nav="browse">Cards</button><button data-nav="papers">Papers</button><button data-nav="mistakes">Mistakes</button><button data-nav="stats">Progress</button><button data-nav="exam">Exam timer</button><button data-nav="themes">Settings</button>`, { x: r.right - 170, y: r.top - 202 }); return; }
     case 'todo-tabshift': closeMenu(); return todoTabShift(a.dataset.v, +a.dataset.d);
     case 'study-del': return confirmCardDelete(id || study?.cur);
     case 'do-del-card': { $('#layer').innerHTML = ''; await del('cards', id);
@@ -9985,7 +10150,7 @@ function confirmCardDelete(id){
 let lpress = null, lpressAt = 0;
 document.addEventListener('pointerdown', e => {
   clearTimeout(lpress?.t); lpress = null;
-  if (e.pointerType !== 'touch' || (view.name !== 'decks' && view.name !== 'papers') || !e.target.closest('#root .home') || dialogOpen()) return;
+  if (e.pointerType !== 'touch' || !['decks', 'papers', 'overview'].includes(view.name) || !e.target.closest('#root .home, #root .h7home, #root .h7ov') || dialogOpen()) return;
   const x = e.clientX, y = e.clientY, tgt = e.target;
   lpress = { x, y, t: setTimeout(() => { lpress = null; lpressAt = Date.now(); tgt.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: x, clientY: y })); }, 520) };
 }, true);
@@ -10033,6 +10198,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'x' || e.key === 'X'){ e.preventDefault(); return confirmCardDelete(study.cur); }
     if (e.key === 's' || e.key === 'S'){ e.preventDefault(); return studySkip(); }
     if (e.key === 'f' || e.key === 'F'){ e.preventDefault(); return studyFlag(); }
+    if ((e.key === 'm' || e.key === 'M') && study.shown){ e.preventDefault(); return mklFromCard(); }
     if ((e.key === 'h' || e.key === 'H') && !study.shown){ e.preventDefault(); return studyHint(); }
     if (e.key === 'p' || e.key === 'P'){ e.preventDefault(); return padToggle(); }
     if (e.key === 't' || e.key === 'T'){ e.preventDefault(); return tmrPause(); }
@@ -11580,7 +11746,7 @@ function ppmPanel0(){
     <div class="seg ppres" role="group" aria-label="Result">${[['ok', 'Right', '1'], ['part', 'Part', '2'], ['bad', 'Wrong', '3']].map(([k, l, kb]) => `<button type="button" data-act="pp-res" data-v="${k}" aria-pressed="${r === k}"><i class="d ${k}"></i>${l}<kbd>${kb}</kbd></button>`).join('')}</div>
     <div class="pprl">Marks</div>
     <div class="ppmarks"><span class="ppstep" role="group" aria-label="Marks you got"><button type="button" data-act="pp-got" data-d="-1" aria-label="One mark less" ${got <= 0 ? 'disabled' : ''}>−</button><input class="ppnum" id="ppgot" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="2" value="${got}" aria-label="Marks you got"><button type="button" data-act="pp-got" data-d="1" aria-label="One mark more" ${got >= of ? 'disabled' : ''}>+</button></span><span class="ppof">out of</span><span class="ppstep" role="group" aria-label="Marks the question is worth"><button type="button" data-act="pp-of" data-d="-1" aria-label="Worth one mark less" ${of <= 1 ? 'disabled' : ''}>−</button><input class="ppnum" id="ppof" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="2" value="${of}" aria-label="Marks it's worth"><button type="button" data-act="pp-of" data-d="1" aria-label="Worth one mark more">+</button></span></div>
-    ${flag ? `<label class="pprl" for="ppwhy">Mistake</label><textarea class="in" id="ppwhy" rows="3" placeholder="What went wrong, in a line or two">${esc(m.why ?? card?.mistake ?? '')}</textarea>
+    ${flag ? `<label class="pprl" for="ppwhy">Mistake</label><textarea class="in" id="ppwhy" rows="3" placeholder="What went wrong, in a line or two">${esc(m.why ?? card?.mistake ?? '')}</textarea>${mklPPChips(p, it, got, of)}
     <div class="pprl">Correct solution</div>
     <div class="ppsol">${m.locked ? `<span>${it.sol?.length ? 'Found. ' : ''}Opens when your time’s up (<span class="pplockt">${ppmLockLeft()}</span> left).</span>` : it.sol?.length ? `<span>Found ${it.sol.length > 1 ? 'on pages ' + [...new Set(it.sol.map(g => ppmPageName(g.p)))].join(', ') : 'on page ' + ppmPageName(it.sol[0].p)}</span><button class="link sm" data-act="pp-solgo">Show</button><button class="link sm" data-act="pp-draw" data-v="s">Redraw</button>` : `<span>${m.solMissing ? 'The solutions PDF isn’t on this device.' : p.sol ? 'Not matched yet.' : 'This paper has no solutions.'}</span><button class="link sm" data-act="pp-draw" data-v="s">${m.draw === 's' ? 'Drag across the page…' : 'Draw it on the page'}</button>${!p.solSep || m.solMissing ? `<button class="link sm" data-act="pp-addsol">${m.solMissing ? 'Add it again' : 'Add a solutions PDF'}</button>` : ''}`}</div>
     ${ppmSolPics(p, it)}
@@ -11985,7 +12151,7 @@ function h7Topic(t, maxN){
       <span class="h7tk">${k} of ${n} known</span><span class="h7td">${d ? d + ' due' : ''}</span>
     </button>
     ${open ? `<div class="h7subs">${inner.map(s => { const sd = toStudy(counts(s.id)), sn = cardsIn(s.id).length; return `<button class="h7s" data-act="open" data-id="${esc(s.id)}" data-drop="${esc(s.id)}"><span>${esc(s.name)}</span><small>${h7Plural(sn, 'card')}</small><b>${sd ? sd + ' due' : ''}</b></button>`; }).join('')}
-      <div class="h7sl"><button class="link" data-act="open" data-id="${t.id}">Open ${esc(t.name)}</button><button class="link" data-act="add-child" data-id="${t.id}">New subtopic</button><button class="link" data-act="gear" data-id="${t.id}">Options</button></div></div>` : ''}
+      <div class="h7sl"><button class="link" data-act="open" data-id="${t.id}">Open ${esc(t.name)}</button><button class="link" data-act="add-child" data-id="${t.id}">New subtopic</button>${kids(t.id).length ? `<button class="link" data-act="manage" data-id="${t.id}">Rename or delete subtopics</button>` : ''}<button class="link" data-act="gear" data-id="${t.id}">Options</button></div></div>` : ''}
   </div>`;
 }
 const h7Thumb = c => c.qImg ? `<span class="h7th"><img src="${esc(imgSrc(c.qImg))}" alt="" data-col="${esc(c.qImg.col || '')}"></span>` : `<span class="h7th txt">${esc(plainMd(c.qText || '').slice(0, 90))}</span>`;
@@ -12028,7 +12194,7 @@ function renderDecks(){
           : `<div class="h7noex"><p>No exam coming up</p><button class="link" data-act="cd-edit">Add your next exam</button><span>It counts down here, with your plan on the days in between.</span></div>`}
       </section>
     </div>
-    <div class="h7sech"><h2>Topics</h2><span><button class="link" data-act="add-child" data-id="${subj.id}">New topic</button><button class="link" data-act="pdf-import">Cards from a PDF</button><button class="link" data-act="gear" data-id="${subj.id}">${esc(subj.name)} options</button></span></div>
+    <div class="h7sech"><h2>Topics</h2><span><button class="link" data-act="add-child" data-id="${subj.id}">New topic</button>${kids(subj.id).length ? `<button class="link" data-act="manage" data-id="${subj.id}">Rename or delete topics</button>` : ''}<button class="link" data-act="pdf-import">Cards from a PDF</button><button class="link" data-act="gear" data-id="${subj.id}">${esc(subj.name)} options</button></span></div>
     <div class="h7topics">${topics.map(t => h7Topic(t, maxN)).join('') || `<p class="h7none">No topics yet. <button class="link" data-act="add-child" data-id="${subj.id}">Make the first one</button></p>`}</div>
     ${wrongToday.length || forgot.length || recent.length ? `<div class="h7lower">
       ${wrongToday.length ? `<section><div class="h7lh"><h2>Got wrong today</h2><span>flagged, back in 10 minutes</span></div>${wrongToday.slice(0, 5).map(x => h7CardRow(x, esc(atTime(x)))).join('')}</section>` : ''}
@@ -12074,7 +12240,7 @@ function renderOverview(){
     ${next && !any ? `<p class="h7ovnext">${esc(next)}</p>` : ''}
     <div class="h7ovb">
       <div class="h7ovm">
-        <div class="h7sech"><h2>${n.parentId ? 'Subtopics' : 'Topics'}</h2><span>${n.virtual ? '' : `<button class="link" data-act="add-child" data-id="${esc(n.id)}">New ${n.parentId ? 'subtopic' : 'topic'}</button>`}</span></div>
+        <div class="h7sech"><h2>${n.parentId ? 'Subtopics' : 'Topics'}</h2><span>${n.virtual ? '' : `<button class="link" data-act="add-child" data-id="${esc(n.id)}">New ${n.parentId ? 'subtopic' : 'topic'}</button>${kids(n.id).length ? `<button class="link" data-act="manage" data-id="${esc(n.id)}">Rename or delete ${n.parentId ? 'subtopics' : 'topics'}</button>` : ''}`}</span></div>
         ${chips.length ? chips.map(s => { const sc = cardsIn(s.id), sn = sc.length, sd = toStudy(counts(s.id)), sk = h7Known(sc); return `<button class="h7ovr" data-act="open" data-id="${esc(s.id)}" data-drop="${esc(s.id)}"><b>${esc(s.name)}</b><span class="h7bar" aria-hidden="true"><span style="width:${Math.max(4, sn / maxN * 100)}%"><i style="width:${sn ? sk / sn * 100 : 0}%"></i></span></span><span class="h7tk">${sk} of ${sn} known</span><span class="h7td">${sd ? sd + ' due' : ''}</span></button>`; }).join('') : `<p class="h7none">Nothing inside ${esc(n.name)} yet.</p>`}
         ${bubbles.length ? `<div class="h7types"><span>By question type</span>${bubbles.map(b => `<button class="link" data-act="open" data-id="${esc(b.id)}">${esc(b.name)} <small>${cardsIn(b.id).length}</small></button>`).join('')}</div>` : ''}
         ${wrong.length ? `<section class="h7wrong"><div class="h7lh"><h2>Got wrong lately</h2><button class="link" data-act="practise-forgot" data-id="${esc(n.id)}">Practise these</button></div>${wrong.map(x => h7CardRow(x, `Again ${failCount(x)} time${failCount(x) === 1 ? '' : 's'}${lastMissed(x) ? ', last ' + esc(dayWord(lastMissed(x))) : ''}`)).join('')}</section>` : ''}
@@ -12124,6 +12290,7 @@ function ppPreview(it){
         ${cards.length ? `<p class="h7ppm">${h7Plural(cards.length, 'mistake')} saved as cards${s?.flagged ? `, ${s.flagged} flagged` : ''}</p>` : ''}
         <div class="h7go"><button class="btn primary" data-act="pp-open" data-k="${k}">${go1}</button>${cards.length ? `<button class="btn" data-act="pp-m-review" data-k="${k}">Review the ${h7Plural(cards.length, 'mistake')}</button>` : ''}</div>
         <div class="h7ppl">${todo ? `<button class="link" data-act="pp-m-todogo" data-k="${k}">On your to-do list</button>` : `<button class="link" data-act="pp-m-todo" data-k="${k}">Add to my to-do</button>`}${where ? `<button class="link" data-act="pp-m-web" data-k="${k}">Open on ${where}</button>` : ''}<button class="link" data-act="pp-h7menu" data-k="${k}">More</button></div>
+        ${ppSitHtml(it)}
         <dl class="h7ppdl"><dt>Solutions</dt><dd>${it.sol ? 'Included' : 'Paper only'}</dd><dt>From</dt><dd>${it.src === 'nesa' ? 'NESA, with marking guidelines' : it.src === 'thsc' ? 'THSC Online' : 'You uploaded it'}</dd>${p?.done ? `<dt>Finished</dt><dd>${esc(dayWordShort(p.done))}</dd>` : ''}</dl>
       </div>
     </div>
@@ -13316,6 +13483,314 @@ function tskPlanLine(){
 }
 { const rt = renderTodo; renderTodo = function(...a){ const r = rt.apply(this, a); try { const h = $('#root .h7pdate'); if (h && !$('#root .tskline')){ const x = tskPlanLine(); if (x) h.insertAdjacentHTML('afterend', x); } } catch {} return r; }; }
 
+/* ---------- Mistakes (20 Nov 2026): write down mistakes per subject, link repeats into habits, and keep a "next time I will…" rule
+   for each habit. Rules show beside the list, on Today just before an exam, and before you start the Exam timer.
+   S.settings.mlog = { [subject id]: [{ id, t, at, h?, w?, m?, pp?: { p, q }, c? }] }  (h = habit id, w = where, m = marks lost,
+                                                                                         pp = the paper question it came from, c = a card)
+   S.settings.mhab = [{ id, s, n, r, at, fx? }]  (s = subject, n = the habit in your words, r = your rule, fx = when you marked it fixed)
+   Both sync like the to-do lists (settings, merged per key) and ⌘Z undoes changes. */
+const MKL_PERIODS = [['30', '30 days'], ['term', 'This term'], ['all', 'All time']];
+const mkl = { subj: ls.get('md-mkl-subj', 'all'), per: ls.get('md-mkl-per', 'term'), exam: null };
+const mlogAll = () => S.settings.mlog || {};
+const mlogOf = sid => mlogAll()[sid] || [];
+const mhabAll = () => S.settings.mhab || [];
+const mhab = id => mhabAll().find(h => h.id === id);
+function mklSet(patch, label){ undoTx = null; undoLabel = label || 'mistake'; S.settings = { ...S.settings, ...patch }; saveSettings(); }
+function mlogPut(sid, list, label, extra = {}){ mklSet({ mlog: { ...mlogAll(), [sid]: list }, ...extra }, label); }
+const mklSubjects = () => kids(null);
+const mklSubjOk = id => id === 'all' || !!S.nodes[id];
+function mklEntries(sid = mkl.subj, since = 0){
+  const out = [];
+  for (const s of mklSubjects()) if (sid === 'all' || s.id === sid) for (const x of mlogOf(s.id)) if (x.at >= since) out.push({ ...x, s: s.id });
+  return out.sort((a, b) => b.at - a.at);
+}
+function mklSince(per = mkl.per){
+  if (per === '30') return Date.now() - 30 * DAY;
+  if (per === 'term'){ // NSW terms start roughly late Jan, late Apr, mid Jul and mid Oct
+    const now = new Date(), y = now.getFullYear(), starts = [[0, 27], [3, 27], [6, 20], [9, 12]].map(([m, d]) => new Date(y, m, d).getTime()).filter(t => t <= now.getTime());
+    return starts.length ? starts[starts.length - 1] : new Date(y - 1, 9, 12).getTime();
+  }
+  return 0;
+}
+const mklPerWord = () => ({ '30': 'in the last 30 days', term: 'this term', all: '' })[mkl.per];
+function mklStats(list){ // per habit: count, marks, papers, last
+  const by = {};
+  for (const x of list){ if (!x.h || !mhab(x.h)) continue; const b = by[x.h] ||= { k: 0, m: 0, papers: new Set(), last: 0 }; b.k++; b.m += +x.m || 0; if (x.w || x.pp) b.papers.add(x.pp?.p || x.w); b.last = Math.max(b.last, x.at); }
+  return by;
+}
+const mklByCost = (a, b) => (b.m - a.m) || (b.k - a.k) || (b.last - a.last);
+function mklFinding(list){
+  const st = Object.entries(mklStats(list)).map(([h, v]) => ({ h, ...v })).filter(v => v.k > 1 || v.m > 0).sort(mklByCost);
+  const w = mklPerWord(), t = st[0];
+  if (t){ const nm = esc(mhab(t.h).n), np = t.papers.size;
+    return t.m ? `“${nm}” has cost you <b>${h7Plural(t.m, 'mark')}</b>${np > 1 ? ` across ${np} papers` : ''}${w ? ' ' + w : ''}. It’s your most expensive habit.`
+               : `“${nm}” has happened <b>${t.k} times</b>${w ? ' ' + w : ''}, more than anything else.`; }
+  if (list.length) return `You’ve written down ${h7Plural(list.length, 'mistake')}${w ? ' ' + w : ''}. Link the ones that keep happening to a habit and Recall tracks them.`;
+  return '';
+}
+/* the exams coming up, from the countdown, the calendar and any deck with an exam date */
+function mklExams(){
+  const out = [], seen = new Set(), add = (name, date, s) => { if (!date) return; const ts = new Date(date + 'T09:00').getTime(); if (ts < Date.now() - DAY / 2) return; const k = name + date; if (seen.has(k)) return; seen.add(k); out.push({ name, date, ts, s: s && S.nodes[s] ? pathOf(s)[0]?.id : null }); };
+  try { const cd = cdGet(); (cd?.exams || []).forEach(x => add(x.name || (x.subj && nodeOf(x.subj)?.name) || cd.name || 'Exam', x.date, x.subj)); } catch {}
+  try { upcomingExams().forEach(e => add(e.name, e.node ? e.node.exam.date : e.gen.date, e.node?.id || e.gen?.subj)); } catch {}
+  return out.sort((a, b) => a.ts - b.ts);
+}
+const mklDays = ts => Math.max(0, Math.round((new Date(ts).setHours(0, 0, 0, 0) - today0()) / DAY));
+/* rules for a subject (or every subject), most costly first; fixed habits are left out */
+function mklRules(sid){
+  const st = mklStats(mklEntries('all'));
+  return mhabAll().filter(h => !h.fx && (!sid || sid === 'all' || h.s === sid) && S.nodes[h.s])
+    .map(h => ({ ...h, ...(st[h.id] || { k: 0, m: 0, papers: new Set(), last: 0 }) })).sort(mklByCost);
+}
+const mklDate = t => { const d = new Date(t); return d.toLocaleDateString(undefined, d.getFullYear() === new Date().getFullYear() ? { day: 'numeric', month: 'short' } : { day: 'numeric', month: 'short', year: 'numeric' }); };
+function mklGroup(t){ const d0 = today0(), wd = (new Date().getDay() + 6) % 7, mon = d0 - wd * DAY; return t >= mon ? 'This week' : t >= mon - 7 * DAY ? 'Last week' : t >= new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime() ? 'Earlier this month' : 'Earlier'; }
+function mklRow(x){
+  const h = x.h && mhab(x.h), n = h ? mklEntries('all').filter(y => y.h === h.id).length : 0;
+  return `<li><button type="button" class="mklr" data-act="mkl-open" data-id="${esc(x.id)}" data-s="${esc(x.s)}">
+    <span class="dot" style="background:${scol(x.s)}" aria-hidden="true"></span>
+    <span class="mklm"><span class="mklt">${esc(x.t)}</span>${x.w || (h && (n > 1 || h.n !== x.t)) || mkl.subj === 'all' ? `<span class="mklmeta">${mkl.subj === 'all' ? `<span>${esc(nodeOf(x.s)?.name || '')}</span>` : ''}${x.w ? `<span>${esc(x.w)}</span>` : ''}${h && (n > 1 || h.n !== x.t) ? `<span class="mklpill">${esc(h.n)}${n > 1 ? ` · ${n}×` : ''}</span>` : ''}</span>` : ''}</span>
+    <span class="mklr2">${+x.m ? `<span class="mklmk">−${+x.m} mark${+x.m === 1 ? '' : 's'}</span>` : ''}<span class="mkld">${esc(mklDate(x.at))}</span></span></button></li>`;
+}
+function mklRulesHtml(){
+  const ex = mklExams().slice(0, 3);
+  let cur = ex.find(e => e.date + e.name === mkl.exam) || ex.find(e => mkl.subj !== 'all' && e.s === mkl.subj) || ex[0];
+  const sid = cur ? (cur.s || 'all') : mkl.subj, rules = mklRules(sid), sn = sid !== 'all' ? nodeOf(sid)?.name : '';
+  const tabs = ex.length ? `<div class="mkle" role="tablist" aria-label="Exams">${ex.map(e => { const d = mklDays(e.ts); return `<button role="tab" aria-selected="${e === cur}" data-act="mkl-exam" data-v="${esc(e.date + e.name)}">${esc(e.name)} <span>${d === 0 ? 'today' : d === 1 ? 'tomorrow' : d + ' days'}</span></button>`; }).join('')}</div>` : '';
+  const head = cur ? `${mklDays(cur.ts) <= 1 ? 'Before you go in' : `Your rules for ${esc(cur.s ? sn : cur.name)}`}` : `Your rules${sn ? ' for ' + esc(sn) : ''}`;
+  const tick = ls.get('md-mkl-tick', {}), tk = cur ? cur.date + cur.name : '', ticked = new Set(tick[tk] || []);
+  const body = rules.length ? `<ol class="mklrules">${rules.slice(0, 8).map((r, i) => `<li>${cur ? `<input type="checkbox" class="mklck" data-tk="${esc(tk)}" data-id="${r.id}" ${ticked.has(r.id) ? 'checked' : ''} aria-label="Read: ${esc(r.r || r.n)}">` : `<span class="mkln">${i + 1}</span>`}
+      <span><span class="mklrt">${r.r ? esc(r.r) : `<button class="link" data-act="mkl-habits" data-v="${esc(r.s)}">Write your fix for “${esc(r.n)}”</button>`}</span><span class="mklrm">${r.r ? `${esc(r.n)} · ` : ''}${r.k > 0 ? `${h7Plural(r.k, 'time')}` : 'not logged yet'}${r.m ? ` · cost ${h7Plural(r.m, 'mark')}` : ''}</span></span></li>`).join('')}</ol>
+      <div class="mklra"><button class="link" data-act="mkl-print" data-v="${esc(sid)}" data-x="${esc(cur ? cur.name : '')}">Print</button><button class="link" data-act="mkl-habits" data-v="${esc(sid)}">Edit rules</button></div>`
+    : `<p class="mklnone">${mhabAll().length ? `No rules ${sn ? 'for ' + esc(sn) + ' ' : ''}yet.` : 'When a mistake happens again, link it to a habit and write what you’ll do next time.'} Your rules show up here, and on Today the day before an exam.</p>`;
+  return `<aside class="mklside" aria-label="Rules">${tabs}<h2>${head}</h2>${body}</aside>`;
+}
+function renderMistakes(){
+  const subs = mklSubjects();
+  if (!subs.length){ $('#root').innerHTML = `<div class="mkl"><p class="mklnone" style="margin-top:48px">Add a subject first, then you can write down mistakes for it here. <button class="link" data-act="sy-open">Set up decks</button></p></div>`; return; }
+  if (!mklSubjOk(mkl.subj)) mkl.subj = 'all';
+  const since = mklSince(), list = mklEntries(mkl.subj, since), all = mklEntries(mkl.subj), sn = mkl.subj !== 'all' ? nodeOf(mkl.subj)?.name : '';
+  const tabs = [{ id: 'all', name: 'All' }, ...subs].map(x => { const n = mklEntries(x.id, since).length; return `<button class="stab" role="tab" aria-selected="${x.id === mkl.subj}" data-act="mkl-tab" data-id="${x.id}" ${x.id !== 'all' ? `style="--sc:${scol(x.id)}"` : ''}>${esc(x.name)}${n ? `<span class="stabn">${n}</span>` : ''}</button>`; }).join('');
+  const groups = []; for (const x of list){ const g = mklGroup(x.at); if (!groups.length || groups[groups.length - 1].g !== g) groups.push({ g, xs: [] }); groups[groups.length - 1].xs.push(x); }
+  const finding = mklFinding(list), older = all.length - list.length;
+  $('#root').innerHTML = `<div class="mkl">
+    ${finding ? `<p class="mklfind">${finding}</p>` : ''}
+    <div class="mklbar"><div class="stabs h7tabs" role="tablist" aria-label="Subjects">${tabs}<span class="stabind" id="stabind" aria-hidden="true"></span></div>
+      <div class="seg mklper" role="group" aria-label="Period">${MKL_PERIODS.map(([k, l]) => `<button type="button" aria-pressed="${mkl.per === k}" data-act="mkl-per" data-v="${k}">${l}</button>`).join('')}</div></div>
+    <div class="mklcols">
+      <section class="mklmain" aria-label="Mistakes">
+        <div class="mkladd"><textarea id="mklnew" rows="1" placeholder="Write down a mistake${sn ? ' in ' + esc(sn) : ''}" aria-label="New mistake${sn ? ' in ' + esc(sn) : ''}"></textarea>
+          <div class="mklhint"><span>Enter to add${mkl.subj === 'all' ? ' (then pick the subject)' : ''}</span><button class="link" data-act="mkl-details">Add with details</button></div></div>
+        ${groups.map(g => `<h3 class="mklg">${g.g}</h3><ol class="mkllist">${g.xs.map(mklRow).join('')}</ol>`).join('')}
+        ${!list.length && all.length ? `<p class="mklnone">Nothing ${mklPerWord()}. <button class="link" data-act="mkl-per" data-v="all">Show all ${all.length}</button></p>` : older > 0 && list.length ? `<p class="mklmore"><button class="link" data-act="mkl-per" data-v="all">${h7Plural(older, 'older mistake')}</button></p>` : ''}
+        ${mklEntries('all').length ? `<p class="mklfoot"><button class="link" data-act="mkl-export">Export as text</button></p>` : ''}
+      </section>
+      ${mklRulesHtml()}
+    </div>
+  </div>`;
+  placeTabInd(); const n = $('#mklnew'); if (n) mklFit(n);
+}
+function mklFit(el){ el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+
+/* ---------- the log dialog: new, or editing one ---------- */
+let mkd = null;
+function mklWords(t){ return new Set(String(t || '').toLowerCase().replace(/[^a-z0-9±√²³+\-=\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !MKL_STOP.has(w))); }
+const MKL_STOP = new Set('the and for with was that this when then than but not from into out got lost wrote forgot did didnt didn’t its it’s you your have had'.split(' '));
+function mklSuggest(sid, text, cur){
+  const tw = mklWords(text), ent = mklEntries('all');
+  return mhabAll().filter(h => h.s === sid && !h.fx).map(h => {
+    const mine = ent.filter(x => x.h === h.id), words = mklWords([h.n, h.r, ...mine.map(x => x.t)].join(' '));
+    let sim = 0; tw.forEach(w => { if (words.has(w)) sim++; });
+    return { h, sim, n: mine.length };
+  }).sort((a, b) => (b.h.id === cur) - (a.h.id === cur) || b.sim - a.sim || b.n - a.n).slice(0, 5);
+}
+function mklDialog(o = {}){
+  // o: { id, s, t, w, m, pp, c, h }
+  const ex = o.id ? mklEntries('all').find(x => x.id === o.id) : null, subs = mklSubjects();
+  const sid = ex?.s || o.s || (mkl.subj !== 'all' ? mkl.subj : null) || curSubj()?.id || subs[0]?.id;
+  mkd = { id: ex?.id || null, s: sid, h: ex?.h ?? o.h ?? null, newH: false, pp: ex?.pp || o.pp || null, c: ex?.c || o.c || null, at: ex?.at || Date.now() };
+  const t = ex?.t ?? o.t ?? '', w = ex?.w ?? o.w ?? '', m = ex?.m ?? o.m ?? '';
+  openDialog(`<div class="dialog mkldlg" role="dialog" aria-modal="true" aria-labelledby="mklh" style="max-width:600px"><header><h2 id="mklh">${ex ? 'Mistake' : 'Log a mistake'}</h2></header>
+    <div class="body">
+      <div class="field"><label for="mkdt">What happened</label><textarea class="in" id="mkdt" rows="2" placeholder="e.g. Solved z² = −4 as z = 2i and forgot −2i">${esc(t)}</textarea></div>
+      <div class="field"><label for="mkds">Subject</label><select class="in" id="mkds">${subs.map(s => `<option value="${s.id}" ${s.id === sid ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></div>
+      <div class="field"><span class="lbl">Same as a mistake you’ve made before?</span><div class="mklchips" id="mkdh"></div><input class="in" id="mkdhn" maxlength="60" placeholder="Name the habit, e.g. Dropped the ±" hidden></div>
+      <div class="mklrow2"><div class="field"><label for="mkdw">Where</label><input class="in" id="mkdw" maxlength="80" value="${esc(w)}" placeholder="e.g. 2023 Ext 2 trial, Q12(a)"></div>
+        <div class="field mklmf"><label for="mkdm">Marks lost</label><input class="in" id="mkdm" type="number" inputmode="numeric" min="0" max="40" value="${esc(String(m))}" placeholder="–"></div></div>
+      <div class="field"><label for="mkdr">Next time I will…</label><input class="in" id="mkdr" maxlength="120" placeholder="e.g. Square-root both sides, write ± straight away"><span class="hint" id="mkdrh"></span></div>
+    </div>
+    <footer>${ex ? `<button class="btn danger" data-act="mkl-del">Delete</button>` : ''}${!mkd.c ? `<button class="link" data-act="mkl-card">Also make a card from this</button>` : `<button class="link" data-act="edit" data-id="${esc(mkd.c)}">Open its card</button>`}<span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="mkl-save">Save<kbd>⌘↵</kbd></button></footer></div>`,
+    d => { mklChips(); const f = $('#mkdt'); f.focus(); f.setSelectionRange(f.value.length, f.value.length); });
+}
+function mklChips(){
+  const box = $('#mkdh'); if (!box || !mkd) return;
+  const sg = mklSuggest(mkd.s, $('#mkdt')?.value, mkd.h), cnt = id => mklEntries('all').filter(x => x.h === id && x.id !== mkd.id).length;
+  box.innerHTML = sg.map(({ h }) => `<button type="button" class="mklchip" data-act="mkl-h" data-v="${h.id}" aria-pressed="${mkd.h === h.id && !mkd.newH}">${esc(h.n)}${cnt(h.id) ? `<small>${cnt(h.id)}×</small>` : ''}</button>`).join('')
+    + `<button type="button" class="mklchip" data-act="mkl-h" data-v="new" aria-pressed="${mkd.newH}">+ New habit</button>`;
+  $('#mkdhn').hidden = !mkd.newH;
+  const h = !mkd.newH && mkd.h && mhab(mkd.h), r = $('#mkdr'), rh = $('#mkdrh');
+  if (r && !r.dataset.touched) r.value = h?.r || '';
+  if (rh) rh.textContent = h ? `Your rule for “${h.n}”. Change it here and it changes everywhere.` : mkd.newH ? 'Saved with the new habit.' : 'Optional. Writing one makes this mistake a habit you can track.';
+}
+async function mklSave(andCard){
+  const t = ($('#mkdt')?.value || '').trim(); if (!t){ $('#mkdt')?.focus(); return; }
+  const s = $('#mkds').value, w = $('#mkdw').value.trim(), mv = $('#mkdm').value.trim(), m = mv === '' ? undefined : Math.max(0, Math.min(40, Math.round(+mv) || 0)), r = $('#mkdr').value.trim();
+  let habs = mhabAll(), h = mkd.newH ? null : mkd.h;
+  if (mkd.newH || (!h && r)){ const n = ($('#mkdhn')?.value || '').trim() || t.slice(0, 60); h = uid('h'); habs = [...habs, { id: h, s, n, r, at: Date.now() }]; }
+  else if (h){ habs = habs.map(x => x.id === h ? { ...x, s: x.s || s, r } : x); }
+  const e = { id: mkd.id || uid('m'), t, at: mkd.at }; if (h) e.h = h; if (w) e.w = w; if (m !== undefined) e.m = m; if (mkd.pp) e.pp = mkd.pp; if (mkd.c) e.c = mkd.c;
+  const log = { ...mlogAll() }; for (const k of Object.keys(log)) log[k] = log[k].filter(x => x.id !== e.id);
+  log[s] = [e, ...(log[s] || [])].sort((a, b) => b.at - a.at);
+  mklSet({ mlog: log, mhab: habs }, mkd.id ? 'edit mistake' : 'log mistake');
+  const sid = s; closeDialog(); if (view.name === 'mistakes') renderMistakes(); else if (view.name === 'ppmark') try { ppmSide(); } catch {}
+  toast(mkd.id ? 'Saved' : `Logged to Mistakes${h ? ': ' + (mhab(h)?.n || '') : ''}`);
+  if (andCard){ ls.set('md-draft', { q: '', m: t, s: '', l: w }); editor(null, sid); }
+  mkd = null;
+}
+function mklDelete(id, s){
+  const ent = mklEntries('all').find(x => x.id === id); if (!ent) return;
+  mlogPut(ent.s, mlogOf(ent.s).filter(x => x.id !== id), 'delete mistake');
+  closeDialog(); if (view.name === 'mistakes') renderMistakes(); toast('Deleted · ⌘Z to undo');
+}
+function mklQuick(){
+  const el = $('#mklnew'), t = (el?.value || '').trim(); if (!t) return;
+  if (mkl.subj === 'all'){ el.value = ''; return mklDialog({ t }); }
+  mlogPut(mkl.subj, [{ id: uid('m'), t, at: Date.now() }, ...mlogOf(mkl.subj)], 'log mistake');
+  renderMistakes(); $('#mklnew')?.focus();
+}
+/* ---------- habits and rules ---------- */
+function mklHabitsDialog(sid){
+  const subs = mklSubjects(), st = mklStats(mklEntries('all')), hs = mhabAll().filter(h => S.nodes[h.s] && (!sid || sid === 'all' || h.s === sid));
+  openDialog(`<div class="dialog mkldlg" role="dialog" aria-modal="true" aria-labelledby="mkhh" style="max-width:640px"><header><h2 id="mkhh">Habits and rules${sid && sid !== 'all' ? ' · ' + esc(nodeOf(sid)?.name || '') : ''}</h2></header>
+    <div class="body">${hs.length ? `<p class="hint" style="margin:0 0 4px">A habit is a mistake that keeps happening, in your words. The rule is what you’ll do next time. Mark one fixed when it stops happening; it leaves your rules but keeps its history.</p>
+      <div class="mklhab">${hs.map(h => { const v = st[h.id] || { k: 0, m: 0 }; return `<div class="mklhr" data-hid="${h.id}"><div class="mklhr1"><input class="in" data-hn value="${esc(h.n)}" aria-label="Habit" maxlength="60">${sid === 'all' || !sid ? `<span class="mklhs"><span class="dot" style="background:${scol(h.s)}"></span>${esc(nodeOf(h.s)?.name || '')}</span>` : ''}<span class="mklhc">${h7Plural(v.k, 'time')}${v.m ? `, ${h7Plural(v.m, 'mark')}` : ''}</span></div>
+        <input class="in" data-hr value="${esc(h.r || '')}" placeholder="Next time I will…" aria-label="Rule for ${esc(h.n)}" maxlength="120">
+        <div class="mklhr2"><label class="check"><input type="checkbox" data-hf ${h.fx ? 'checked' : ''}> Fixed</label><span class="grow"></span><button class="link danger" data-act="mkl-hdel" data-id="${h.id}">Delete habit</button></div></div>`; }).join('')}</div>`
+      : '<p class="mklnone" style="margin:0">No habits yet. When you log a mistake, pick “+ New habit” or write a rule, and it shows up here.</p>'}</div>
+    <footer><span class="grow"></span><button class="btn primary" data-act="mkl-hsave">Done</button></footer></div>`);
+}
+function mklHabitsSave(){
+  const rows = [...document.querySelectorAll('.mklhr')], by = new Map(rows.map(r => [r.dataset.hid, r]));
+  let changed = false;
+  const hs = mhabAll().map(h => { const r = by.get(h.id); if (!r) return h; const n = r.querySelector('[data-hn]').value.trim() || h.n, rr = r.querySelector('[data-hr]').value.trim(), fx = r.querySelector('[data-hf]').checked ? (h.fx || Date.now()) : 0;
+    const nh = { ...h, n, r: rr }; if (fx) nh.fx = fx; else delete nh.fx; if (stable(nh) !== stable(h)) changed = true; return nh; });
+  if (changed) mklSet({ mhab: hs }, 'edit rules');
+  closeDialog(); if (view.name === 'mistakes') renderMistakes();
+}
+function mklHabitDelete(id){
+  const log = { ...mlogAll() }; for (const k of Object.keys(log)) log[k] = log[k].map(x => x.h === id ? (({ h, ...y }) => y)(x) : x);
+  mklSet({ mhab: mhabAll().filter(h => h.id !== id), mlog: log }, 'delete habit');
+  document.querySelector(`.mklhr[data-hid="${id}"]`)?.remove(); toast('Habit deleted. Its mistakes stay · ⌘Z to undo');
+}
+/* print the rules as a one-page checklist */
+function mklPrint(sid, examName){
+  const rules = mklRules(sid), sn = sid && sid !== 'all' ? nodeOf(sid)?.name : '';
+  const title = examName ? `Before ${examName}` : `My rules${sn ? ' · ' + sn : ''}`;
+  const doc = `<!doctype html><html><head><meta charset="utf-8"><title>${esc(title)}</title><style>body{font:15px/1.5 -apple-system,'Segoe UI',system-ui,sans-serif;color:#111;margin:48px}h1{font-size:24px;margin:0 0 4px}p{color:#555;margin:0 0 24px}ol{list-style:none;padding:0;margin:0}li{display:flex;gap:14px;padding:14px 0;border-top:1px solid #ddd}li span{width:16px;height:16px;border:1.5px solid #333;border-radius:3px;flex:0 0 16px;margin-top:3px}b{font-weight:600;font-size:17px;display:block}small{color:#666}</style></head><body><h1>${esc(title)}</h1><p>${esc(sn || 'All subjects')} · ${new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}</p><ol>${rules.map(r => `<li><span></span><div><b>${esc(r.r || r.n)}</b><small>${r.r ? esc(r.n) + ' · ' : ''}${h7Plural(r.k, 'time')}${r.m ? ', cost ' + h7Plural(r.m, 'mark') : ''}</small></div></li>`).join('')}</ol></body></html>`;
+  const f = document.createElement('iframe'); f.style.cssText = 'position:fixed;width:0;height:0;border:0;right:0;bottom:0'; document.body.appendChild(f);
+  f.contentDocument.open(); f.contentDocument.write(doc); f.contentDocument.close();
+  setTimeout(() => { try { f.contentWindow.focus(); f.contentWindow.print(); } catch { toast('Couldn’t open printing'); } setTimeout(() => f.remove(), 60000); }, 150);
+}
+async function mklExport(){
+  const lines = [`Recall · Mistakes · ${new Date().toLocaleDateString()}`, ''];
+  for (const s of mklSubjects()){
+    const es = mklEntries(s.id), rs = mklRules(s.id); if (!es.length && !rs.length) continue;
+    lines.push(`# ${s.name}`, '');
+    if (rs.length){ lines.push('Rules:'); rs.forEach(r => lines.push(`- ${r.r || '(no rule yet)'}  [${r.n}: ${h7Plural(r.k, 'time')}${r.m ? ', ' + h7Plural(r.m, 'mark') : ''}]`)); lines.push(''); }
+    es.forEach(x => lines.push(`- ${mklDate(x.at)}: ${x.t.replace(/\n/g, ' ')}${x.w ? ` (${x.w})` : ''}${+x.m ? ` −${x.m}` : ''}${x.h && mhab(x.h) ? ` [${mhab(x.h).n}]` : ''}`));
+    lines.push('');
+  }
+  const r = await saveBytes('Recall mistakes.txt', new TextEncoder().encode(lines.join('\n')), 'text/plain'); if (r === 'saved') toast('Exported Recall mistakes.txt');
+}
+function mklAction(act, a){
+  switch (act){
+    case 'mkl-tab': { const on = $('.stab[aria-selected="true"]'), prev = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; mkl.subj = a.dataset.id; ls.set('md-mkl-subj', mkl.subj); mkl.exam = null; renderMistakes(); placeTabInd(prev); return; }
+    case 'mkl-per': mkl.per = a.dataset.v; ls.set('md-mkl-per', mkl.per); return renderMistakes();
+    case 'mkl-exam': mkl.exam = a.dataset.v; return renderMistakes();
+    case 'mkl-open': return mklDialog({ id: a.dataset.id });
+    case 'mkl-details': { const t = ($('#mklnew')?.value || '').trim(); return mklDialog({ t }); }
+    case 'mkl-new': return mklDialog(a.dataset.s ? { s: a.dataset.s } : {});
+    case 'mkl-h': { if (!mkd) return; const v = a.dataset.v; if (v === 'new'){ mkd.newH = !mkd.newH; if (mkd.newH){ mkd.h = null; const r = $('#mkdr'); if (r && !r.dataset.touched) r.value = ''; } } else { mkd.newH = false; mkd.h = mkd.h === v ? null : v; } mklChips(); if (mkd.newH) $('#mkdhn')?.focus(); return; }
+    case 'mkl-save': return mklSave(false);
+    case 'mkl-card': return mklSave(true);
+    case 'mkl-del': { if (a.dataset.confirm !== '1'){ a.dataset.confirm = '1'; a.textContent = 'Delete?'; return; } return mklDelete(mkd?.id); }
+    case 'mkl-habits': return mklHabitsDialog(a.dataset.v);
+    case 'mkl-hsave': return mklHabitsSave();
+    case 'mkl-hdel': { if (a.dataset.confirm !== '1'){ a.dataset.confirm = '1'; a.textContent = 'Delete it?'; return; } return mklHabitDelete(a.dataset.id); }
+    case 'mkl-print': return mklPrint(a.dataset.v, a.dataset.x);
+    case 'mkl-export': return mklExport();
+    case 'mkl-from-card': return mklFromCard();
+    case 'mkl-pp': return mklFromPaper(a.dataset.v);
+    case 'mkl-find': { const x = mklEntries('all').find(y => y.id === a.dataset.id); if (!x) return; mkl.subj = x.s; ls.set('md-mkl-subj', x.s); go('mistakes'); return mklDialog({ id: x.id }); }
+  }
+}
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  if (t.id === 'mklnew' && e.key === 'Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); return mklQuick(); }
+  if (mkd && $('.mkldlg') && (e.metaKey || e.ctrlKey) && e.key === 'Enter'){ e.preventDefault(); e.stopPropagation(); return mklSave(false); }
+  if (mkd && t.id === 'mkdhn' && e.key === 'Enter'){ e.preventDefault(); $('#mkdr')?.focus(); }
+}, true);
+document.addEventListener('input', e => {
+  if (e.target.id === 'mklnew') mklFit(e.target);
+  if (e.target.id === 'mkdt' && mkd){ clearTimeout(mklChips.t); mklChips.t = setTimeout(mklChips, 250); }
+  if (e.target.id === 'mkdr') e.target.dataset.touched = '1';
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'mkds' && mkd){ mkd.s = e.target.value; mkd.h = null; mkd.newH = false; mklChips(); }
+  if (e.target.classList?.contains('mklck')){ const tick = ls.get('md-mkl-tick', {}), k = e.target.dataset.tk, set = new Set(tick[k] || []); e.target.checked ? set.add(e.target.dataset.id) : set.delete(e.target.dataset.id); tick[k] = [...set]; for (const kk of Object.keys(tick)) if (kk.slice(0, 10) < dayKey(Date.now() - 7 * DAY)) delete tick[kk]; ls.set('md-mkl-tick', tick); }
+});
+/* from Study: the card you're on, as a mistake (M, or the link under the rating buttons) */
+function mklFromCard(){
+  const c = study?.cur && S.cards[study.cur]; if (!c) return;
+  const sid = pathOf(c.nodeId)[0]?.id, t = plainMd(c.mistake || '').trim() || (c.label ? `Got ${c.label} wrong` : '');
+  mklDialog({ s: sid, t, w: [c.label, pathOf(c.nodeId).slice(1).map(n => n.name).join(' › ')].filter(Boolean).join(' · ').slice(0, 80), c: c.id });
+}
+/* from marking a paper: one tap on one of your habits logs this question */
+function mklPaperSubj(p){
+  const d = ppmDeck(); if (d && S.nodes[d]) return pathOf(d)[0]?.id;
+  const key = PP_COURSE[p.c]?.s || ''; return mklSubjects().find(s => s.name.toLowerCase().startsWith(key.slice(0, 4)))?.id || null;
+}
+function mklPPChips(p, it, got, of){
+  try {
+    const sid = mklPaperSubj(p); if (!sid) return '';
+    const ent = mklEntries('all').find(x => x.pp?.p === p.id && x.pp?.q === it.key);
+    const hs = mklSuggest(sid, $('#ppwhy')?.value || ppm.why || '', ent?.h).slice(0, 3);
+    return `<div class="mklpp"><span class="pprl">Was it one of your habits?</span><div class="mklchips">${hs.map(({ h }) => `<button type="button" class="mklchip" data-act="mkl-pp" data-v="${h.id}" aria-pressed="${ent?.h === h.id}">${esc(h.n)}</button>`).join('')}<button type="button" class="mklchip" data-act="mkl-pp" data-v="new">${hs.length ? 'Something new…' : 'Log it as a mistake…'}</button></div>
+      ${ent ? `<p class="hint mklppok">Logged to Mistakes${ent.h && mhab(ent.h) ? ': ' + esc(mhab(ent.h).n) : ''}${+ent.m ? ` · −${ent.m}` : ''}. <button class="link sm" data-act="mkl-open" data-id="${ent.id}">Edit</button></p>` : ''}</div>`;
+  } catch { return ''; }
+}
+function mklFromPaper(v){
+  const p = ppmP(), it = ppm?.items?.[ppm.sel]; if (!p || !it) return;
+  const q = p.q?.[it.key] || {}, r = ppm.res ?? q.r ?? '', of = ppm.of ?? q.of ?? (it.marks || 1), got = ppm.got ?? q.got ?? (r === 'bad' ? 0 : Math.floor(of / 2));
+  const sid = mklPaperSubj(p), why = ($('#ppwhy')?.value ?? ppm.why ?? '').trim(), where = `${ppTitle(p)} · ${ppm.label ?? it.label}`.slice(0, 80), lost = Math.max(0, of - got);
+  const ent = mklEntries('all').find(x => x.pp?.p === p.id && x.pp?.q === it.key);
+  if (v === 'new') return mklDialog(ent ? { id: ent.id } : { s: sid, t: why, w: where, m: lost, pp: { p: p.id, q: it.key }, c: q.card || null });
+  if (ent && ent.h === v){ mlogPut(ent.s, mlogOf(ent.s).filter(x => x.id !== ent.id), 'unlog mistake'); toast('Taken out of Mistakes'); return ppmSide(); }
+  const h = mhab(v), e = { id: ent?.id || uid('m'), t: why || h?.n || 'Mistake', at: ent?.at || Date.now(), h: v, w: where, m: lost, pp: { p: p.id, q: it.key } }; if (q.card) e.c = q.card;
+  const log = { ...mlogAll() }; for (const k of Object.keys(log)) log[k] = log[k].filter(x => x.id !== e.id);
+  log[sid] = [e, ...(log[sid] || [])]; mklSet({ mlog: log }, 'log mistake'); toast(`Logged to Mistakes: ${h?.n || ''}`); ppmSide();
+}
+/* Today: the day before an exam (or on the day), your rules for it */
+function mklTodayCard(subjId){
+  const ex = mklExams().find(e => mklDays(e.ts) <= 1 && (!e.s || e.s === subjId)); if (!ex) return '';
+  const rules = mklRules(ex.s || subjId).slice(0, 3); if (!rules.length) return '';
+  const d = mklDays(ex.ts), when = d === 0 ? 'today' : 'tomorrow';
+  return `<section class="mkltoday" aria-label="Before ${esc(ex.name)}"><div class="mkltoh"><h2>${esc(ex.name)} ${when}</h2><span class="grow"></span><button class="link" data-act="mkl-print" data-v="${esc(ex.s || subjId)}" data-x="${esc(ex.name)}">Print</button><button class="link" data-nav="mistakes">All mistakes</button></div>
+    <p class="mkltos">Before you go in</p><ol>${rules.map((r, i) => `<li><span>${i + 1}</span>${esc(r.r || r.n)}</li>`).join('')}</ol></section>`;
+}
+{ const rd = renderDecks; renderDecks = function(...a){ const r = rd.apply(this, a); try { const hero = $('#root .h7hero'), s = curSubj(); if (hero && s && !$('#root .mkltoday')){ const x = mklTodayCard(s.id); if (x) hero.insertAdjacentHTML('afterend', x); } } catch {} return r; }; }
+/* Exam timer: your rules before you start */
+function mklGuessSubj(name){
+  const n = String(name || '').toLowerCase(), subs = mklSubjects();
+  return subs.find(s => n.includes(s.name.toLowerCase()))?.id || (/(ext|adv|math|standard|4u|3u|2u)/.test(n) ? subs.find(s => /math/i.test(s.name))?.id : null) || null;
+}
+{ const re = renderExam; renderExam = function(...a){ const r = re.apply(this, a); try { if (!exOn() && !$('#root .mklexr')){ const sid = mklGuessSubj(exSet?.name), rules = mklRules(sid || 'all').slice(0, 3), sub = $('#root .h7exsub');
+  if (rules.length && sub) sub.insertAdjacentHTML('afterend', `<section class="mklexr"><h2>Before you start${sid ? ' · ' + esc(nodeOf(sid)?.name || '') : ''}</h2><ol>${rules.map((x, i) => `<li><span>${i + 1}</span>${esc(x.r || x.n)}</li>`).join('')}</ol></section>`); } } catch {} return r; }; }
+
+document.addEventListener('keydown', e => {
+  if (view.name !== 'mistakes' || dialogOpen() || isTyping(document.activeElement) || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'l' || e.key === 'L'){ e.preventDefault(); mklDialog(); }
+});
+
 /* ---------- leaving Recall with the timer running: a notification that the timer stopped (19 Nov 2026) ----------
    The page shows one itself straight away. On a phone or iPad that is signed in with notifications on, the "notify"
    function also sends a push to this device, because iOS can put Recall to sleep before the page gets to show it.
@@ -13532,6 +14007,152 @@ setInterval(() => {
 }, 15000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden){ fsConnect(); fsSend('hello'); if (!fsChan) return; setTimeout(() => { if (grOn()) fsAdopt(); }, 600); } });
 setTimeout(fsConnect, 1500); setInterval(fsConnect, 3000);
+
+/* ---------- Sidebar, 20 Nov 2026: six places (Today, Plan, Cards, Papers, Mistakes, Progress) and subjects. Group and the study timer
+   live in one bar at the bottom ("group bar"); the Exam timer starts from a paper ("Sit it timed") or from ⌘K; Settings and sync
+   sit in one quiet row under the bar. Phones keep their tab bar and More menu as before. ---------- */
+const gbOpen = () => !!$('#gbpop');
+const gbInit = n => (n || '?').trim().slice(0, 1).toUpperCase();
+function gbGroup(){ if (!grOn() || !gr.loaded || !gr.groups.length) return null; return gr.groups.find(x => x.id === gr.cur) || gr.groups[0]; }
+function gbHtml(){
+  const fs = focus.state, g = gbGroup(), ids = g ? grPeople(g.id).filter(id => id !== grUid()) : [], live = ids.filter(id => grStatusLine(id).cls === 'on');
+  const av = g && ids.length ? `<span class="gbavs" aria-hidden="true">${ids.slice(0, 3).map(id => `<span class="gbav ${grStatusLine(id).cls === 'on' ? 'on' : ''}">${esc(gbInit(gr.names[id]))}</span>`).join('')}</span>`
+    : `<span class="gbic" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="11" r="6.3"/><path d="M10 7.6V11l2.2 1.6M8 2.8h4"/></svg></span>`;
+  const l1 = fs === 'studying' ? `<b data-ftick>${fClock(fSecs())}</b> ${esc(focus.subj || 'Studying')}` : fs === 'paused' ? `<b data-ftick>${fClock(fSecs())}</b> ${focus.by === 'left' ? 'Paused' : 'On a break'}` : esc(g ? g.name : 'Study timer');
+  const l2 = g ? (live.length ? `${live.length} studying now` : `${ids.length + 1} ${ids.length ? 'people' : 'person'}`) : fs !== 'idle' ? 'Tap for the controls' : fSecs() > 59 ? `${fShort(fSecs())} today` : 'Start a session';
+  return `${av}<span class="gbt"><span class="gb1">${l1}</span><span class="gb2">${l2}</span></span>${live.length || fs === 'studying' ? '<span class="gblv" aria-hidden="true"></span>' : ''}`;
+}
+function gbPopHtml(){
+  if (focus.state === 'idle' && !focus.subj && !focus.noSubj && grSubjects().length) focus.subj = grSubjects()[0];
+  const fs = focus.state, g = gbGroup(), ids = g ? grPeople(g.id) : [], subs = grSubjects(), sub = focus.subj && !subs.includes(focus.subj) ? [focus.subj, ...subs] : subs;
+  const room = g ? gr.rooms.filter(r => r.group_id === g.id && grRoomLeft(r) > 0).sort((a, b) => grRoomEnd(b) - grRoomEnd(a))[0] : null;
+  const me = `<div class="gbme" data-fstate="${fs}"><div class="gbclk"><b data-ftick>${fClock(fSecs())}</b><span>${fs === 'studying' ? `studying${focus.subj ? ' ' + esc(focus.subj) : ''}` : fs === 'paused' ? (focus.by === 'left' ? 'paused when you left Recall' : 'on a break') : 'studied today'}</span></div>
+    <div class="gbctl">${fs === 'studying' ? `<button class="btn" data-act="gb-pause">Take a break</button><button class="link" data-act="gb-stop">Stop</button>`
+      : `${sub.length ? `<select class="in" id="gbsubj" aria-label="Subject">${sub.map(s => `<option ${s === focus.subj ? 'selected' : ''}>${esc(s)}</option>`).join('')}<option value="" ${!focus.subj ? 'selected' : ''}>No subject</option></select>` : ''}<button class="btn primary" data-act="gb-go">${fs === 'paused' ? 'Carry on' : 'Start studying'}</button>${fs === 'paused' ? '<button class="link" data-act="gb-stop">Stop</button>' : ''}`}</div></div>`;
+  const ppl = g ? `<ul class="gbppl">${ids.filter(id => id !== grUid()).sort((a, b) => (grStatusLine(b).cls === 'on') - (grStatusLine(a).cls === 'on') || (gr.names[a] || '').localeCompare(gr.names[b] || '')).map(id => { const l = grStatusLine(id);
+      return `<li class="${l.cls}"><span class="gbav ${l.cls === 'on' ? 'on' : ''}" aria-hidden="true">${esc(gbInit(gr.names[id]))}</span><span class="gbn"><b>${esc(gr.names[id] || 'Someone')}</b><span>${l.t}</span></span><b class="gbtm" ${l.cls === 'on' ? `data-gtick="${id}"` : ''}>${fClock(grLive(gr.status[id]))}</b></li>`; }).join('') || '<li class="gbnone">Nobody else yet. Send your friends the group code.</li>'}</ul>` : '';
+  const foot = g ? `<div class="gbfoot">${room ? `<button class="btn sm" data-act="gb-room" data-id="${room.id}">Join ${esc(room.title || 'the group session')}</button>` : `<button class="btn sm" data-act="gb-room">Start a group session</button>`}<span class="grow"></span><button class="link" data-act="gb-group">Open group</button></div>`
+    : `<div class="gbfoot"><span class="gbhint">${grOn() ? (gr.loaded ? 'Make a group to see your friends’ timers here.' : 'Loading your groups…') : 'Turn on sync to study with friends.'}</span><span class="grow"></span><button class="link" data-act="gb-group">Group study</button></div>`;
+  return `<div class="gbhd"><h3>${esc(g ? g.name : 'Study timer')}</h3>${g ? `<span>${ids.length} ${ids.length === 1 ? 'person' : 'people'}</span>` : ''}</div>${me}${ppl}${foot}`;
+}
+function gbPaint(){
+  const tin = $('.toolbar .tin'); if (!tin || !document.body.classList.contains('desktop')) return;
+  let bar = $('#gbar');
+  if (!bar){
+    bar = document.createElement('button'); bar.id = 'gbar'; bar.type = 'button'; bar.dataset.act = 'gb-toggle'; bar.setAttribute('aria-haspopup', 'dialog'); tin.appendChild(bar);
+    const ft = document.createElement('div'); ft.className = 'sidefoot'; tin.appendChild(ft);
+    const st = $('.toolbar .sideset'), cp = $('#cloudpill'); if (st) ft.appendChild(st); if (cp) ft.appendChild(cp);
+  }
+  bar.innerHTML = gbHtml(); bar.setAttribute('aria-expanded', String(gbOpen())); bar.dataset.fstate = focus.state;
+  if (gbOpen()){ const sel = $('#gbsubj')?.value; $('#gbpop').innerHTML = gbPopHtml(); if (sel != null && $('#gbsubj')) $('#gbsubj').value = sel; gbPlace(); }
+  if (grOn() && !gr.loaded && !gr.loading && !gbPaint.tried){ gbPaint.tried = 1; Promise.resolve(grLoad()).finally(() => setTimeout(gbPaint, 50)); }
+}
+function gbPlace(){ const p = $('#gbpop'), b = $('#gbar'); if (!p || !b) return; const r = b.getBoundingClientRect(); p.style.left = Math.max(8, r.left) + 'px'; p.style.bottom = Math.max(8, innerHeight - r.top + 8) + 'px'; }
+function gbToggle(force){
+  const on = force ?? !gbOpen();
+  if (!on){ $('#gbpop')?.remove(); $('#gbar')?.setAttribute('aria-expanded', 'false'); return; }
+  if (!gbOpen()){ const p = document.createElement('div'); p.id = 'gbpop'; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', 'Study timer and group'); document.body.appendChild(p); }
+  $('#gbpop').innerHTML = gbPopHtml(); gbPlace(); $('#gbar')?.setAttribute('aria-expanded', 'true');
+  if (grOn()) Promise.resolve(grLoad()).then(() => gbPaint());
+  ($('#gbpop .btn.primary') || $('#gbpop .btn'))?.focus({ preventScroll: true });
+}
+function gbAction(act, a){
+  switch (act){
+    case 'gb-toggle': return gbToggle();
+    case 'gb-go': { const s = $('#gbsubj'); return fStart(s ? s.value : focus.subj, focus.state === 'paused' ? focus.room : null).then(() => { gbPaint(); if (view.name === 'group') renderGroup(); }); }
+    case 'gb-pause': fPause('you'); gbPaint(); if (view.name === 'group') renderGroup(); return;
+    case 'gb-stop': fStop(); gbPaint(); if (view.name === 'group') renderGroup(); return toast(`${fShort(fSecs())} studied today`);
+    case 'gb-group': gbToggle(false); study = null; return go('group');
+    case 'gb-room': { gbToggle(false); study = null; go('group'); const id = a.dataset.id; return setTimeout(() => { const b = id ? $(`[data-act="gr-room-join"][data-id="${id}"]`) : null; if (b) b.click(); else grRoomDialog(); }, 60); }
+  }
+}
+document.addEventListener('click', e => { if (gbOpen() && !e.target.closest('#gbpop, #gbar')) gbToggle(false); }, true);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && gbOpen()){ e.preventDefault(); e.stopPropagation(); gbToggle(false); $('#gbar')?.focus(); } }, true);
+addEventListener('resize', () => gbPlace());
+{ const fp = fPaint; fPaint = function(...a){ const r = fp.apply(this, a); try { gbPaint(); } catch {} return r; }; }
+{ const rn = render; render = function(...a){ const r = rn.apply(this, a); try { gbPaint(); } catch {} return r; }; }
+setInterval(() => { if (document.hidden || !grOn()) return; if (gr.loaded && Date.now() - (gr.lastLoad || 0) > 60e3) Promise.resolve(grLoad()).then(() => gbPaint()); }, 30e3);
+
+/* ---------- Papers: "Sit it timed" starts the full-screen Exam timer with this paper's reading and writing time ---------- */
+function ppSitTimes(c){
+  const name = PP_COURSE[c]?.name || '', pre = EX_PRESETS.find(([n]) => n === name) || EX_PRESETS.find(([n]) => name && (n.startsWith(name) || name.startsWith(n)));
+  return pre ? { read: pre[1], work: pre[2] } : { read: 5, work: 180 };
+}
+const ppDur = m => m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ' ' + (m % 60) + ' min' : ''}` : `${m} min`;
+function ppSitHtml(it){
+  const t = ppSitTimes(it.c), end = Date.now() + (t.read + t.work) * 60e3;
+  return `<section class="ppsit" aria-label="Sit it timed"><div class="ppsit1"><div><h2>Sit it timed</h2><p>${t.read} min reading, ${ppDur(t.work)} writing. Pens down at ${exClock(end)} if you start now.</p></div><button class="btn" data-act="sit-paper" data-k="${esc(it.key)}">Start reading time</button></div>
+    <label class="ppsitl"><input type="checkbox" id="ppsitlock" ${exSet.lock ? 'checked' : ''}> Lock Recall until the time is up</label></section>`;
+}
+function ppSit(k){
+  const it = ppFind(k); if (!it) return;
+  const t = ppSitTimes(it.c), title = it.school === 'NSW HSC' ? `${it.year} HSC` : `${it.school} ${it.year}`;
+  exSet = { ...exSet, name: `${title} ${PP_COURSE[it.c]?.short || ''}`.trim(), read: t.read, work: t.work, lock: !!$('#ppsitlock')?.checked }; ls.set('md-exam-set', exSet);
+  study = null; go('exam'); exStart();
+}
+
+/* ---------- ⌘K: go anywhere or do anything ---------- */
+let ck = null;
+const CK_PAGES = [['Today', 'decks'], ['Plan', 'todo'], ['Cards', 'browse'], ['Papers', 'papers'], ['Mistakes', 'mistakes'], ['Progress', 'stats'], ['Study time', 'hours'], ['Tasks done', 'tasks'], ['Group study', 'group'], ['Exam timer', 'exam'], ['Settings', 'themes']];
+function ckActions(){
+  const s = curSubj(), fs = focus.state, mac = /Mac|iP/.test(navigator.platform) ? '⌘' : 'Ctrl ';
+  return [
+    s && { t: `Study ${s.name}`, k: '', run: { act: 'study', id: s.id } },
+    { t: 'Add a card', k: 'A', run: { nav: 'add' } },
+    { t: 'Log a mistake', k: 'L', run: { fn: () => mklDialog() } },
+    fs === 'studying' ? { t: 'Take a break from the study timer', run: { act: 'gb-pause' } } : { t: fs === 'paused' ? 'Carry on with the study timer' : 'Start the study timer', run: { fn: () => fStart(focus.subj || grSubjects()[0] || '', fs === 'paused' ? focus.room : null).then(() => gbPaint()) } },
+    fs !== 'idle' && { t: 'Stop the study timer', run: { act: 'gb-stop' } },
+    { t: 'Start the exam timer', k: '', run: { nav: 'exam' } },
+    { t: 'Rules for your next exam', run: { nav: 'mistakes' } },
+    { t: 'New subject or topic', run: { act: 'new-deck' } },
+    { t: 'Exam countdown', run: { act: 'cd-edit' } },
+    { t: 'Import decks', run: { act: 'import' } },
+    { t: 'Export all', run: { act: 'export-all' } },
+    { t: grOn() ? 'Sync' : 'Turn on sync', run: { act: 'cloud' } },
+    { t: 'Keyboard shortcuts', k: '?', run: { fn: () => keysDialog() } },
+  ].filter(Boolean);
+}
+function ckItems(q){
+  q = q.trim().toLowerCase(); const words = q.split(/\s+/).filter(Boolean);
+  const hit = t => { t = t.toLowerCase(); return words.every(w => t.includes(w)); }, score = t => (t.toLowerCase().startsWith(q) ? 2 : 0) + (t.toLowerCase().split(/\s+/).some(w => w.startsWith(words[0] || '')) ? 1 : 0);
+  const pages = CK_PAGES.map(([t, v]) => ({ t, run: { nav: v } }));
+  if (!q) return [{ g: 'Do', xs: ckActions().slice(0, 5) }, { g: 'Go to', xs: pages.slice(0, 7) }];
+  const by = (xs, n) => xs.filter(x => hit(x.t + ' ' + (x.m || ''))).sort((a, b) => score(b.t) - score(a.t)).slice(0, n);
+  const decks = Object.values(S.nodes).filter(n => !n.virtual).map(n => ({ t: n.name, m: pathOf(n.id).slice(0, -1).map(p => p.name).join(' › ') || 'Subject', run: { act: 'open', id: n.id } }));
+  const mk = typeof mklEntries === 'function' ? mklEntries('all').map(x => ({ t: x.t.replace(/\s+/g, ' ').slice(0, 70), m: 'Mistake · ' + (nodeOf(x.s)?.name || ''), run: { act: 'mkl-find', id: x.id } })) : [];
+  const out = [{ g: 'Do', xs: by(ckActions(), 4) }, { g: 'Go to', xs: by(pages, 4) }, { g: 'Decks', xs: by(decks, 5) }, { g: 'Mistakes', xs: by(mk, 3) }];
+  out.push({ g: 'Search', xs: [{ t: `Search cards for “${q}”`, run: { fn: () => { const i = $('#sidesq'); if (i){ i.value = q; i.focus(); sideSearch(q); } } } }] });
+  return out.filter(x => x.xs.length);
+}
+function ckOpen(){
+  if (ck) return ckClose();
+  closeMenu(); gbToggle(false);
+  const el = document.createElement('div'); el.id = 'cmdk'; el.innerHTML = `<div class="ckscrim" data-ck="close"></div><div class="ckbox" role="dialog" aria-modal="true" aria-label="Go to or do anything"><div class="ckin"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input id="ckq" placeholder="Go to or do anything" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="cklist"><kbd>Esc</kbd></div><div class="cklist" id="cklist" role="listbox"></div></div>`;
+  document.body.appendChild(el); ck = { i: 0, flat: [], back: document.activeElement }; ckDraw(); $('#ckq').focus();
+}
+function ckClose(){ $('#cmdk')?.remove(); const b = ck?.back; ck = null; try { b?.focus?.({ preventScroll: true }); } catch {} }
+function ckDraw(){
+  if (!ck) return; const groups = ckItems($('#ckq').value); ck.flat = groups.flatMap(g => g.xs); ck.i = Math.min(ck.i, Math.max(0, ck.flat.length - 1));
+  let n = 0; $('#cklist').innerHTML = groups.map(g => `<div class="ckg">${esc(g.g)}</div>` + g.xs.map(x => { const i = n++; return `<button type="button" class="ckr" role="option" id="ckr${i}" data-ck="${i}" aria-selected="${i === ck.i}"><span>${esc(x.t)}</span>${x.m ? `<small>${esc(x.m)}</small>` : ''}${x.k ? `<kbd>${esc(x.k)}</kbd>` : ''}</button>`; }).join('')).join('') || '<p class="cknone">Nothing matches.</p>';
+  $('#ckq').setAttribute('aria-activedescendant', 'ckr' + ck.i);
+}
+function ckRun(i){
+  const x = ck?.flat[i]; if (!x) return; ckClose(); const r = x.run;
+  if (r.fn) return r.fn();
+  if (dialogOpen()) closeDialog();
+  const b = document.createElement('button'); if (r.nav) b.dataset.nav = r.nav; if (r.act) b.dataset.act = r.act; if (r.id) b.dataset.id = r.id; b.hidden = true;
+  document.body.appendChild(b); study = view.name === 'study' && (r.nav || r.act === 'open') ? null : study; b.click(); b.remove();
+}
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'k'){ e.preventDefault(); e.stopPropagation(); return ckOpen(); }
+  if (!ck) return;
+  if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); return ckClose(); }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){ e.preventDefault(); e.stopPropagation(); ck.i = (ck.i + (e.key === 'ArrowDown' ? 1 : -1) + ck.flat.length) % Math.max(1, ck.flat.length); ckDraw(); $('#ckr' + ck.i)?.scrollIntoView({ block: 'nearest' }); return; }
+  if (e.key === 'Enter'){ e.preventDefault(); e.stopPropagation(); return ckRun(ck.i); }
+}, true);
+document.addEventListener('input', e => { if (e.target.id === 'ckq' && ck){ ck.i = 0; ckDraw(); } });
+document.addEventListener('click', e => { const t = e.target.closest?.('[data-ck]'); if (!t || !ck) return; e.preventDefault(); e.stopPropagation(); if (t.dataset.ck === 'close') return ckClose(); ckRun(+t.dataset.ck); }, true);
+document.addEventListener('mousemove', e => { const t = e.target.closest?.('.ckr'); if (!t || !ck) return; const i = +t.dataset.ck; if (i !== ck.i){ ck.i = i; document.querySelectorAll('.ckr').forEach(x => x.setAttribute('aria-selected', String(+x.dataset.ck === i))); } });
 
 initStore().finally(() => { lhMigrate(); designMigrate(); h7Migrate(); if (S.ready) settingsRepair(); cloudBoot(); });
 render();
