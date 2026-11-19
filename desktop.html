@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261119012612 min-shell:1.27.0 -->
+<!-- recall-build:20261119124840 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -624,7 +624,7 @@ textarea.in{resize:vertical;min-height:72px;line-height:1.45}
 .lightbox figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;max-height:100%;min-height:0}
 .lightbox img{max-width:min(100%,1400px);max-height:calc(100vh - 140px);border-radius:10px;background:#fff;cursor:default;object-fit:contain}
 .lightbox{touch-action:none;overflow:hidden}
-.lightbox figure img{cursor:zoom-in;transform-origin:50% 50%;will-change:transform;user-select:none;-webkit-user-select:none}
+.lightbox figure img{cursor:zoom-in;transform-origin:50% 50%;will-change:transform;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .lightbox.zoomed figure img{cursor:grab}
 .lightbox .lbnav,.lightbox .lbclose{z-index:2}
 .lightbox.zoomed figure img:active{cursor:grabbing}
@@ -9553,6 +9553,61 @@ function lbzStep(d){ lbzTo(d > 0 ? LBZ_STEPS.find(z => z > lbz.s + .01) || LBZ_M
   ['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => { if ($('.lightbox')) e.preventDefault(); }, { passive: false }));
 })();
 function stepGallery(d){ if (!gallery) return; const n = gallery.i + d; if (n < 0 || n >= gallery.items.length) return; gallery.i = n; drawGallery(); }
+/* right-click (or press and hold on iPad, or ⌘C) the picture in the image viewer to copy it, 19 Nov 2026.
+   Copies the original, not the theme-recoloured version, as a PNG (the type every app can paste). */
+function lbPng(src){
+  return fetch(src).then(r => { if (!r.ok) throw new Error('fetch'); return r.blob(); }).then(async b => {
+    if (b.type === 'image/png') return b;
+    const bm = await createImageBitmap(b), c = document.createElement('canvas'); c.width = bm.width; c.height = bm.height; c.getContext('2d').drawImage(bm, 0, 0);
+    return new Promise((ok, no) => c.toBlob(x => x ? ok(x) : no(new Error('png')), 'image/png'));
+  });
+}
+const lbSrc = () => { const im = $('.lightbox figure img'); return im ? im.currentSrc || im.src : ''; };
+const lbName = () => (gallery?.items[gallery.i]?.label || 'Recall image').replace(/[\\/:*?"<>|]+/g, '-').replace(/\s*·\s*/g, ' ').trim() + '.png';
+function lbCopy(){
+  const src = lbSrc(); if (!src) return;
+  try {
+    if (!navigator.clipboard?.write || !window.ClipboardItem) throw new Error('no clipboard');
+    // the PNG is handed over as a promise so Safari still counts it as part of the click
+    navigator.clipboard.write([new ClipboardItem({ 'image/png': lbPng(src) })]).then(() => toast('Image copied'), () => toast('Couldn’t copy this image'));
+  } catch { toast('Copying images isn’t supported here'); }
+}
+function lbShare(){
+  const src = lbSrc(); if (!src) return;
+  lbPng(src).then(b => navigator.share({ files: [new File([b], lbName(), { type: 'image/png' })] })).catch(e => { if (e?.name !== 'AbortError') toast('Couldn’t share this image'); });
+}
+const lbCanShare = () => !window.desktop && !!navigator.share && !!navigator.canShare?.({ files: [new File([''], 'x.png', { type: 'image/png' })] });
+let lbHeldAt = 0;
+function lbMenu(at){
+  menuAt(`<button data-lbm="copy">Copy image</button>${lbCanShare() ? '<button data-lbm="share">Share image…</button>' : ''}`, at);
+  const m = $('#menu'); if (m){ m.classList.add('lbmenu'); m.style.zIndex = 70; }
+}
+document.addEventListener('contextmenu', e => { if (!e.target.closest?.('.lightbox figure img')) return; e.preventDefault(); e.stopPropagation(); lbMenu({ x: e.clientX, y: e.clientY }); }, true);
+// the menu's own clicks, and a click away from it only closes the menu (not the viewer behind it)
+document.addEventListener('click', e => {
+  const m = $('#menu.lbmenu'); if (!m) return;
+  const b = e.target.closest?.('[data-lbm]');
+  if (!b && Date.now() - lbHeldAt < 700){ e.preventDefault(); e.stopPropagation(); return; }   // the lift of the finger that opened it
+  e.preventDefault(); e.stopPropagation(); closeMenu();
+  if (b?.dataset.lbm === 'copy') lbCopy(); else if (b?.dataset.lbm === 'share') lbShare();
+}, true);
+document.addEventListener('keydown', e => {
+  if (!$('.lightbox')) return;
+  if (e.key === 'Escape' && $('#menu.lbmenu')){ e.preventDefault(); e.stopPropagation(); return closeMenu(); }
+  if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'c' && !String(getSelection() || '').trim()){ e.preventDefault(); e.stopPropagation(); lbCopy(); }
+}, true);
+// press and hold on a touch screen (iOS's own hold menu is switched off on the picture so they don't both appear)
+(() => {
+  let h = null;
+  const stop = () => { if (h){ clearTimeout(h.t); h = null; } };
+  document.addEventListener('pointerdown', e => {
+    stop(); if (e.pointerType !== 'touch' || !e.target.closest?.('.lightbox figure img') || !e.isPrimary) return;
+    const x = e.clientX, y = e.clientY; h = { x, y, t: setTimeout(() => { h = null; if (navigator.vibrate) try { navigator.vibrate(8); } catch {} lbHeldAt = Date.now(); lbMenu({ x, y }); }, 520) };
+  }, true);
+  document.addEventListener('pointermove', e => { if (h && (!e.isPrimary || Math.hypot(e.clientX - h.x, e.clientY - h.y) > 10)) stop(); }, true);
+  ['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, stop, true));
+  document.addEventListener('pointerdown', e => { if (h && !e.isPrimary) stop(); }, true);
+})();
 
 /* ---------- events ---------- */
 document.addEventListener('click', async e => {
