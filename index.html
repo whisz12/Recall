@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261119124840";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261119225706";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -7674,6 +7674,7 @@ function keysDialog(){
 function optionsDialog(){
   openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="od" style="max-width:420px"><header><h2 id="od">Options</h2></header>
     <div class="body"><div class="field"><label for="npd">New cards per day</label><input class="in" id="npd" type="number" min="0" max="999" value="${S.settings.newPerDay ?? 20}"><span class="hint">How many unseen questions Study Now introduces each day, across all decks. Practise all ignores this.</span></div>
+      ${fTouchDev() ? `<div class="field"><span class="lbl">Study timer</span><button class="btn" style="align-self:flex-start" data-act="ltest">Test on this phone…</button><span class="hint">The timer keeps going when the screen turns off and stops when you swipe out. This checks Recall can tell which is which on your phone.</span></div>` : ''}
       <div class="field"><span class="lbl">Reset</span><button class="btn danger" style="align-self:flex-start" data-act="reset-all">Reset</button><span class="hint">Marks every card as not done and clears all ratings and review counts. Your cards, images and notes stay.</span></div></div>
     <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="save-options">Save</button></footer></div>`);
 }
@@ -9781,6 +9782,7 @@ document.addEventListener('click', async e => {
     case 'do-del-deck': { $('#layer').innerHTML = ''; await deleteDeck(id); if (view.node && !nodeOf(view.node)) view = { name:'decks', node:null }; render(); return toast('Deleted'); }
     case 'do-del-keep': { $('#layer').innerHTML = ''; const parent = S.nodes[id]?.parentId; const moved = await deleteKeepCards(id); if (view.node && !nodeOf(view.node)) view = { name:'overview', node: parent }; if (browse.node && !nodeOf(browse.node)) browse.node = parent; render(); return toast(`Deleted, ${moved} card${moved===1?'':'s'} moved to ${S.nodes[parent]?.name || 'the topic'}`); }
     case 'options': return optionsDialog();
+    case 'ltest': return ltDialog();
     case 'save-options': { const v = parseInt($('#npd').value, 10); S.settings.newPerDay = isNaN(v) ? 20 : Math.max(0, Math.min(999, v)); await saveSettings(); closeDialog(); return toast('Saved'); }
     case 'add-here': return editor(null, id);
     case 'browse-here': browse.node = id; browse.q = ''; browse.status = 'all'; browse.rate = 0; return go('browse');
@@ -12551,7 +12553,7 @@ async function fStart(subj, room = null){
   fRoll();
   if (focus.state === 'studying'){ fBank(); }
   await grMergeDay();
-  focus = { ...focus, state: 'studying', subj: subj ?? focus.subj ?? '', since: Date.now(), by: '', leftAt: 0, room, ack: true }; fSave();
+  focus = { ...focus, state: 'studying', subj: subj ?? focus.subj ?? '', since: Date.now(), by: '', leftAt: 0, room, ack: true, asleep: 0 }; fSave();
   fPaint(); grPushStatus(); grPushDay();
   if (!room) grNotify('start', { subject: focus.subj });
 }
@@ -12568,8 +12570,93 @@ function fStop(){
 }
 /* leaving Recall pauses the timer. On the Mac/PC app a window losing focus counts after 10 seconds (time to glance at a notification). */
 let fBlurT = null;
-document.addEventListener('visibilitychange', () => { if (document.hidden) fPause('left'); else fBack(); });
-addEventListener('pagehide', () => fPause('left'));
+/* What happened just before Recall was hidden (19 Nov 2026). A swipe out of the app can leave traces a screen lock doesn't:
+   a touch iOS cancelled as it took the gesture over, a finger still down, or a touch that started at the bottom edge.
+   Any of those in the last 2 s means you left, however long the screen sat untouched before. */
+const fEv = { cancelAt: 0, edgeAt: 0, down: 0, blurAt: 0, focusAt: 0, log: [] };
+const fEvLog = (k, x) => { const t = Date.now(); fEv.log.push([k, t, x]); if (fEv.log.length > 40) fEv.log.splice(0, fEv.log.length - 40); };
+addEventListener('touchstart', e => { fEv.down = e.touches.length; const y = e.changedTouches[0]?.clientY; if (y > innerHeight - 48) fEv.edgeAt = Date.now(); fEvLog('touchstart', Math.round(innerHeight - y)); }, { capture: true, passive: true });
+addEventListener('touchend', e => { fEv.down = e.touches.length; fEvLog('touchend'); }, { capture: true, passive: true });
+addEventListener('touchcancel', e => { fEv.down = e.touches.length; fEv.cancelAt = Date.now(); fEvLog('touchcancel'); }, { capture: true, passive: true });
+addEventListener('pointercancel', () => { fEv.cancelAt = Date.now(); fEvLog('pointercancel'); }, true);
+addEventListener('blur', () => { fEv.blurAt = Date.now(); fEvLog('blur'); });
+addEventListener('focus', () => { fEv.focusAt = Date.now(); fEvLog('focus'); });
+addEventListener('pagehide', () => fEvLog('pagehide')); addEventListener('pageshow', () => fEvLog('pageshow')); addEventListener('resize', () => fEvLog('resize', innerWidth + 'x' + innerHeight));
+const fSwipeSign = () => { const t = Date.now(); return fEv.down > 0 || t - fEv.cancelAt < 2000 || t - fEv.edgeAt < 2000; };
+
+/* Settings › Studying › "Test on this phone": records what iOS shows Recall when you swipe out, press the side button or let
+   the screen go off, and asks which one it was, so the rule above can be tuned from real presses. Copy results → paste to Claude. */
+const LT_KEY = 'md-ltest';
+const ltGet = () => ls.get(LT_KEY, { on: 0, s: [] });
+let ltCur = null, ltTick = null;
+function ltHide(){
+  const lt = ltGet(); if (!lt.on) return;
+  const t = Date.now();
+  ltCur = { at: t, touch: t - fTouchAt, cancel: fEv.cancelAt ? t - fEv.cancelAt : null, edge: fEv.edgeAt ? t - fEv.edgeAt : null, down: fEv.down, blur: fEv.blurAt ? t - fEv.blurAt : null, focused: document.hasFocus(),
+    rule: fSwipeSign() ? 'left (swipe sign)' : t - fTouchAt >= F_IDLE_OFF ? 'screen off (idle)' : 'left (touched recently)', ev: fEv.log.filter(x => t - x[1] < 4000).map(x => [x[0], x[1] - t, x[2]]) };
+  ls.set('md-ltest-run', t);
+  clearInterval(ltTick); ltTick = setInterval(() => { try { localStorage.setItem('md-ltest-run', String(Date.now())); } catch {} }, 40);
+}
+function ltShow(){
+  clearInterval(ltTick); const lt = ltGet(); if (!lt.on || !ltCur) return;
+  const t = Date.now(), ran = (+localStorage.getItem('md-ltest-run') || ltCur.at) - ltCur.at;
+  ltCur = { ...ltCur, ran, away: t - ltCur.at, after: fEv.log.filter(x => x[1] > ltCur.at).map(x => [x[0], x[1] - ltCur.at, x[2]]) };
+  openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="lth" style="max-width:380px"><header><h2 id="lth">What did you just do?</h2></header>
+    <div class="body"><p style="margin:0;color:var(--fg-2)">Test ${lt.s.length + 1}. Away for ${Math.round(ltCur.away / 1000)} s.</p></div>
+    <footer style="flex-direction:column;align-items:stretch;gap:8px"><button class="btn" data-lt="swipe">Swiped out of Recall</button><button class="btn" data-lt="button">Pressed the side button</button><button class="btn" data-lt="auto">Let the screen turn off by itself</button><button class="btn" data-lt="other">Something else</button></footer></div>`);
+}
+function ltDialog(){
+  const lt = ltGet(), n = k => lt.s.filter(x => x.did === k).length;
+  openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="ltd" style="max-width:420px"><header><h2 id="ltd">Test on this phone</h2></header>
+    <div class="body"><p style="margin:0 0 10px;color:var(--fg-2)">iOS tells Recall the same thing when you swipe out and when the screen goes off, so Recall guesses from what happened just before. This records what your phone shows Recall, so the guess can be tuned.</p>
+      <p style="margin:0 0 10px;color:var(--fg-2)">With the test on, do each of these about three times, coming back to Recall after each: swipe out of Recall, press the side button, and put the phone down until the screen turns off by itself. Each time you come back, say which you did.</p>
+      <p style="margin:0;font-variant-numeric:tabular-nums">${lt.on ? 'Test is on. ' : ''}${lt.s.length} recorded · swiped out ${n('swipe')} · side button ${n('button')} · by itself ${n('auto')}</p></div>
+    <footer>${lt.s.length ? '<button class="btn" data-lt="clear">Clear</button>' : ''}<span class="grow"></span>${lt.s.length ? '<button class="btn" data-lt="copy">Copy results</button>' : ''}<button class="btn primary" data-lt="${lt.on ? 'off' : 'on'}">${lt.on ? 'Stop test' : 'Start test'}</button></footer></div>`);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest?.('[data-lt]'); if (!b) return; e.preventDefault(); e.stopPropagation();
+  const k = b.dataset.lt, lt = ltGet();
+  if (['swipe', 'button', 'auto', 'other'].includes(k)){ if (ltCur){ lt.s.push({ did: k, ...ltCur }); ltCur = null; ls.set(LT_KEY, lt); } $('#layer').innerHTML = ''; return toast(`Saved test ${lt.s.length}`); }
+  if (k === 'on' || k === 'off'){ ls.set(LT_KEY, { ...lt, on: k === 'on' ? 1 : 0 }); $('#layer').innerHTML = ''; return toast(k === 'on' ? 'Test on. Swipe out, press the side button or let the screen go off, then come back.' : 'Test off', 4000); }
+  if (k === 'clear'){ ls.set(LT_KEY, { on: lt.on, s: [] }); return ltDialog(); }
+  if (k === 'copy'){ const txt = JSON.stringify({ ua: navigator.userAgent, standalone: !!navigator.standalone || matchMedia('(display-mode: standalone)').matches, idleOff: F_IDLE_OFF, s: lt.s }); navigator.clipboard.writeText(txt).then(() => toast('Copied. Paste it to Claude.'), () => toast('Couldn’t copy')); }
+}, true);
+/* Phone/iPad (19 Nov 2026): the screen turning itself off is not leaving. iOS reports both the same way, so Recall goes by
+   when you last touched it: Auto-Lock needs at least 30 s with no touch, while swiping out is a touch. Hidden after 25 s
+   untouched = the screen went off, and the timer keeps running (focus.asleep). Hidden sooner = you left, and it pauses. */
+let fTouchAt = Date.now();
+['pointerdown', 'touchstart', 'keydown', 'wheel', 'scroll'].forEach(t => addEventListener(t, () => { fTouchAt = Date.now(); }, { capture: true, passive: true }));
+const F_IDLE_OFF = 25e3, F_SLEEP_ASK = 60 * 60e3;
+const fTouchDev = () => !window.desktop && (navigator.maxTouchPoints > 0 || matchMedia('(pointer:coarse)').matches);
+const fScreenOff = () => fTouchDev() && focus.state === 'studying' && (!focus.dev || focus.dev === FDEV) && Date.now() - fTouchAt >= F_IDLE_OFF && !fSwipeSign();
+document.addEventListener('visibilitychange', () => {
+  fEvLog(document.hidden ? 'hidden' : 'visible');
+  if (document.hidden) try { ltHide(); } catch {}
+  else setTimeout(() => { try { ltShow(); } catch {} }, 60);
+  if (document.hidden){
+    if (focus.asleep && focus.state === 'studying') return;
+    if (fScreenOff()){ focus.asleep = Date.now(); fSave(); try { fsSend('beat'); } catch {} return; }
+    return fPause('left');
+  }
+  fTouchAt = Date.now(); fEv.down = 0;
+  if (focus.asleep) return fWake();
+  fBack();
+});
+addEventListener('pagehide', () => { if (!(focus.asleep && focus.state === 'studying')) fPause('left'); });
+/* back from the screen being off: carry straight on, unless it was off long enough that you may have stopped studying */
+function fWake(){
+  const a = focus.asleep; focus.asleep = 0; fSave(); try { fsSend('beat'); } catch {}
+  if (focus.state !== 'studying' || !a || Date.now() - a < F_SLEEP_ASK || dialogOpen()) return;
+  openDialog(`<div class="dialog grback" role="dialog" aria-modal="true" aria-labelledby="fslh" style="max-width:400px"><header><h2 id="fslh">Still studying?</h2></header>
+    <div class="body"><p>Your screen was off for ${fShort((Date.now() - a) / 1000)} and the timer kept going. It’s at <b>${fClock(fSecs())}</b>.</p></div>
+    <footer><button class="btn" data-fslept="drop" data-v="${a}">Don’t count that time</button><span class="grow"></span><button class="btn primary" data-fslept="keep">Count it</button></footer></div>`, d => d.querySelector('.primary')?.focus());
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest?.('[data-fslept]'); if (!b) return; e.preventDefault(); e.stopPropagation(); closeDialog();
+  if (b.dataset.fslept === 'drop' && focus.state === 'studying'){ fPause('you', Math.min(Date.now(), +b.dataset.v || Date.now())); toast(`Timer paused at ${fClock(fSecs())}, when your screen went off`); }
+}, true);
+// Recall was closed by iOS while the screen was off: same as coming back
+setTimeout(() => { if (focus.asleep && !document.hidden) fWake(); }, 1500);
 if (window.desktop){
   addEventListener('blur', () => { if (focus.state !== 'studying') return; const at = Date.now(); clearTimeout(fBlurT); fBlurT = setTimeout(() => { if (!document.hasFocus()) fPause('left', at); }, 10000); });
   addEventListener('focus', () => { clearTimeout(fBlurT); fBack(); });
@@ -13274,7 +13361,7 @@ function subjSwapDraw(){
 const FDEV = ls.get('md-devid', null) || (() => { const d = Math.random().toString(36).slice(2, 10); ls.set('md-devid', d); return d; })();
 const fMirror = () => !!focus.dev && focus.dev !== FDEV && focus.state !== 'idle';
 let fsChan = null, fsHeard = 0, fsUid = null;
-const fsState = () => ({ state: focus.state, subj: focus.subj, since: focus.since, acc: focus.acc, subjAcc: focus.subjAcc, day: focus.day, by: focus.by, leftAt: focus.leftAt, room: focus.room, dev: focus.dev || FDEV, t: focus.t || Date.now() });
+const fsState = () => ({ state: focus.state, subj: focus.subj, since: focus.since, acc: focus.acc, subjAcc: focus.subjAcc, day: focus.day, by: focus.by, leftAt: focus.leftAt, room: focus.room, dev: focus.dev || FDEV, t: focus.t || Date.now(), asleep: focus.asleep || 0 });
 function fsSend(kind = 'focus', extra = {}){
   fsConnect(); if (!fsChan) return;
   try { fsChan.send({ type: 'broadcast', event: 'focus', payload: { kind, from: FDEV, ...(kind === 'focus' || kind === 'beat' ? fsState() : {}), ...extra } }); } catch {}
@@ -13296,6 +13383,7 @@ function fsRecv(p){
   }
   if (p.kind !== 'focus' && p.kind !== 'beat') return;
   fsHeard = Date.now();
+  if (focus.dev === p.dev && focus.dev !== FDEV && (focus.asleep || 0) !== (+p.asleep || 0)){ focus.asleep = +p.asleep || 0; fSave(); }
   if (p.kind === 'beat' && focus.dev === p.dev && focus.state === p.state && focus.since === p.since) return;
   // this device is running and the other one just paused or stopped: keep running, but take its banked time
   if (focus.dev === FDEV && focus.state === 'studying' && p.state !== 'studying'){
@@ -13305,7 +13393,7 @@ function fsRecv(p){
   if ((p.t || 0) < (focus.t || 0)) return;
   // another device's timer is newer: if this one was running, bank its time first, then follow the other
   if (focus.dev === FDEV && focus.state === 'studying') fBank();
-  focus = { ...focus, state: p.state, subj: p.subj || '', since: +p.since || 0, acc: +p.acc || 0, subjAcc: p.subjAcc || {}, day: p.day || fDay(), by: p.by || '', leftAt: +p.leftAt || 0, room: p.room || null, dev: p.dev, t: p.t, ack: true };
+  focus = { ...focus, state: p.state, subj: p.subj || '', since: +p.since || 0, acc: +p.acc || 0, subjAcc: p.subjAcc || {}, day: p.day || fDay(), by: p.by || '', leftAt: +p.leftAt || 0, room: p.room || null, dev: p.dev, t: p.t, ack: true, asleep: +p.asleep || 0 };
   fSave(); fsRepaint();
 }
 function fsConnect(){
@@ -13361,7 +13449,7 @@ setInterval(() => {
   fsConnect();
   if (focus.dev === FDEV && focus.state === 'studying') fsSend('beat');
   // the running device went quiet: show it as paused here (it will correct itself when that device is back)
-  if (fMirror() && focus.state === 'studying' && Date.now() - Math.max(fsHeard, focus.t || 0) > 75e3){ focus = { ...focus, state: 'paused', by: 'left', leftAt: Math.max(fsHeard, focus.t || 0), acc: Math.min(86400, focus.acc + Math.max(0, (Math.max(fsHeard, focus.t || 0) - focus.since) / 1000)), since: 0 }; fSave(); fsRepaint(); }
+  if (fMirror() && focus.state === 'studying' && !(focus.asleep && Date.now() - focus.asleep < 4 * 3600e3) && Date.now() - Math.max(fsHeard, focus.t || 0) > 75e3){ focus = { ...focus, state: 'paused', by: 'left', leftAt: Math.max(fsHeard, focus.t || 0), acc: Math.min(86400, focus.acc + Math.max(0, (Math.max(fsHeard, focus.t || 0) - focus.since) / 1000)), since: 0 }; fSave(); fsRepaint(); }
 }, 15000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden){ fsConnect(); fsSend('hello'); if (!fsChan) return; setTimeout(() => { if (grOn()) fsAdopt(); }, 600); } });
 setTimeout(fsConnect, 1500); setInterval(fsConnect, 3000);
