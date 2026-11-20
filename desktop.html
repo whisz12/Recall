@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261120010016 min-shell:1.27.0 -->
+<!-- recall-build:20261120234914 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -1428,6 +1428,10 @@ html.hosted body.desktop .navcl{top:max(10px, var(--sat));left:12px}
 .ncb svg{width:16px;height:16px}
 .ncb:hover:not(:disabled){background:rgba(var(--ovr),.08);color:var(--fg)}
 .ncb:disabled{color:var(--fg-3);opacity:.45;cursor:default}
+/* the sidebar button with back and forward, in one group (20 Nov 2026) */
+body.desktop .navcl{gap:0;padding:1px;border:1px solid var(--border-2);border-radius:8px;background:var(--side-solid)}
+body.desktop .navcl .ncb{width:28px;height:26px}
+.ncsep{width:1px;height:16px;background:var(--border-2);margin:0 3px}
 html.lh body.desktop .sidetoggle{display:none}
 html.lh body.desktop .toolbar{padding-top:56px}
 html.win body.desktop .toolbar,html.lh html.win body.desktop .toolbar{padding-top:44px}
@@ -1435,10 +1439,10 @@ html.lh.win body.desktop .toolbar{padding-top:44px}
 html.lh.hosted body.desktop .toolbar{padding-top:max(52px, calc(var(--sat) + 42px))}
 
 body.desktop .appbar{display:flex;align-items:center;gap:var(--s3);position:fixed;top:0;left:var(--sidew);right:0;height:var(--appbar);padding:0 var(--s4) 0 var(--s6);z-index:30;background:var(--side-solid);border-bottom:1px solid var(--border-2);-webkit-app-region:drag;transition:left .25s var(--ease),padding .25s var(--ease)}
-body.desktop.sidebar-hidden .appbar{left:0;padding-left:128px}
+body.desktop.sidebar-hidden .appbar{left:0;padding-left:196px}
 html.fs body.desktop .navcl{left:12px}
-html.fs body.desktop.sidebar-hidden .appbar{padding-left:56px}
-html.win body.desktop.sidebar-hidden .appbar,html.hosted body.desktop.sidebar-hidden .appbar{padding-left:56px}
+html.fs body.desktop.sidebar-hidden .appbar{padding-left:124px}
+html.win body.desktop.sidebar-hidden .appbar,html.hosted body.desktop.sidebar-hidden .appbar{padding-left:124px}
 html.win body.desktop .appbar{padding-right:150px}
 html.hosted body.desktop .appbar{top:0;height:calc(var(--appbar) + var(--sat));padding-top:var(--sat)}
 .appbar button,.appbar select,.appbar input,.appbar .seg{-webkit-app-region:no-drag}
@@ -3947,6 +3951,67 @@ body:not(.desktop):has(#fpill) #root{padding-bottom:56px}
 .hrsswitch [role="tab"]+[role="tab"]{border-left:1px solid var(--border-2)}
 .hrsswitch [role="tab"][aria-selected="true"]{background:var(--surface-2);color:var(--fg);font-weight:500}
 .hrsswrap{max-width:1180px;margin:0 auto;padding:0 40px}
+/* Papers: All / Yours / Done switch, and Progress › Papers results (20 Nov 2026) */
+.h7ppshow{display:flex;border:1px solid var(--border-2);border-radius:7px;overflow:hidden}
+.h7ppshow button{flex:1;border:0;background:none;color:var(--fg-3);font:400 12.5px var(--ui);padding:6px 8px;cursor:pointer;display:inline-flex;align-items:baseline;justify-content:center;gap:6px}
+.h7ppshow button+button{border-left:1px solid var(--border-2)}
+.h7ppshow button[aria-pressed="true"]{background:var(--surface-2);color:var(--fg);font-weight:500}
+.h7ppshow small{font-size:11px;color:var(--fg-3);font-weight:400;font-variant-numeric:tabular-nums}
+.h7ppsum{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:12px 16px 4px;color:var(--fg-2);font-size:13px}
+.h7ppsum b{color:var(--fg);font-weight:500}
+.h7ppmk{display:flex;flex-direction:column;align-items:flex-end;line-height:1.2}
+.h7ppmk b{font-weight:500}
+.h7ppmk small{font-size:11px;color:var(--fg-3)}
+.prsfil{display:flex;flex-direction:column;gap:12px;margin-bottom:26px}
+.prsfil .h7ppsubj button{font-size:14px}
+.prsnav{margin-bottom:0}
+.prsdates{display:flex;align-items:center;gap:10px;color:var(--fg-3);font-size:13px}
+.prsdates label{display:flex;align-items:center;gap:8px}
+.prsdates input{height:30px;padding:0 8px;font:400 13px var(--ui);width:auto}
+.prschartw{margin:6px 0 34px}
+.prschartw h2,.prs .hrsgrid h2{font:500 13px var(--ui);color:var(--fg-2);margin:0 0 12px}
+.prschart{width:100%;min-height:220px}
+.prschart svg{display:block;overflow:visible}
+.prsgl{stroke:var(--border);stroke-width:1}
+.prsgl.base{stroke:var(--border-2)}
+.prstk{stroke:var(--border-2)}
+.prsax{fill:var(--fg-3);font:400 11px var(--ui);font-variant-numeric:tabular-nums}
+.prsln{stroke-width:1.5;opacity:.55;stroke-linejoin:round}
+.prsdot{cursor:pointer;outline:none}
+.prshit{fill:transparent}
+.prsdot:hover .prshit,.prsdot:focus-visible .prshit{fill:var(--hover)}
+.prsleg{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;color:var(--fg-2);font-size:12px}
+.prsleg span{display:inline-flex;align-items:center;gap:6px}
+.prsleg i{width:8px;height:8px;border-radius:50%}
+.prsl{list-style:none;margin:0 0 10px;padding:0;border-top:1px solid var(--border)}
+.prsl li{display:flex;align-items:center;border-bottom:1px solid var(--border)}
+.prsl li.off{opacity:.5}
+.prsrow{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:9px 4px;border:0;background:none;color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.prsrow:hover{background:var(--hover)}
+.prsrow .htm{width:84px;flex:none;color:var(--fg-3);font-size:12.5px;font-variant-numeric:tabular-nums}
+.prsrow .hnm{flex:1;min-width:0;display:flex;flex-direction:column}
+.prsrow .hnm b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prsrow .hnm small{color:var(--fg-3);font-size:12px}
+.prsmk{color:var(--fg-3);font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.prspc{width:46px;text-align:right;font-weight:500;font-variant-numeric:tabular-nums}
+.prsl .hx{width:30px;height:30px;display:grid;place-items:center;border:0;background:none;color:var(--fg-3);border-radius:6px;cursor:pointer;flex:none}
+.prsl .hx:hover{background:var(--hover);color:var(--fg)}
+.prsl .hx svg{width:16px;height:16px}
+.prsby{list-style:none;margin:0;padding:0}
+.prsby li{display:grid;grid-template-columns:minmax(0,1fr) auto 90px 44px;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.prsby .prsn{color:var(--fg-3);font-size:12px}
+.prsbar{height:4px;border-radius:2px;background:var(--border);overflow:hidden}
+.prsbar i{display:block;height:100%;background:var(--accent)}
+.prsby b{text-align:right;font-weight:500;font-variant-numeric:tabular-nums}
+.prsempty{max-width:460px;padding:30px 0}
+.prsempty h2{font:400 22px var(--ui);margin:0 0 8px}
+.prsempty p{color:var(--fg-2);margin:0 0 18px}
+.prsfoot{color:var(--fg-3)}
+.prs .hrsh2b{margin-top:28px}
+.prs .hrsmode [role="radio"]{white-space:nowrap}
+@media (max-width:600px){ .prs .hrsmode [role="radio"]{padding:5px 10px;font-size:12.5px} .prsdates{flex-wrap:nowrap;gap:6px} .prsdates input{width:132px;padding:0 6px} }
+@media (max-width:900px){ .prsrow .htm{width:56px} .prsmk{display:none} .prsby li{grid-template-columns:minmax(0,1fr) 60px 40px} .prsby .prsn{display:none} .prsdates{flex-wrap:wrap} }
+
 .hrsnav{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:26px}
 .hrsmode{display:flex;border:1px solid var(--border-2);border-radius:6px;overflow:hidden}
 .hrsmode [role="radio"]{border:0;background:none;color:var(--fg-3);font:400 13px var(--ui);padding:5px 14px;cursor:pointer}
@@ -4101,6 +4166,12 @@ body.desktop:not(.sidebar-hidden) .fpill{display:none}
 .ckr kbd{margin-left:auto}
 .ckr[aria-selected="true"]{background:var(--hover);color:var(--fg)}
 .cknone{margin:0;padding:18px 12px;color:var(--fg-3);font-size:13px}
+/* Papers: boxes per question, Sit it timed */
+.ppboxrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:2px 0 10px;font-size:13px;color:var(--fg-3)}
+.ppboxrow span{flex:1 1 auto}
+.ppboxhint{margin:-4px 0 10px}
+.ppsit{cursor:context-menu}
+.ppsit button,.ppsit label{cursor:pointer}
 /* Mistakes */
 .mkl{max-width:1180px;margin:0 auto;padding:8px 40px 56px}
 .mkl .dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex:0 0 7px}
@@ -4220,7 +4291,7 @@ body:not(.desktop) header.toolbar{top:0;padding-top:var(--sat)}
   <button class="sideset" data-nav="themes"><svg class="ni" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="2.6"/><path d="M10 2.8v2.4M10 14.8v2.4M2.8 10h2.4M14.8 10h2.4M4.9 4.9l1.7 1.7M13.4 13.4l1.7 1.7M4.9 15.1l1.7-1.7M13.4 6.6l1.7-1.7"/></svg><span>Settings</span></button>
   <button class="btn sideadd" data-nav="add" title="Add a card (A)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Add card</span><kbd>A</kbd></button>
 </div></header>
-<div class="appbar" id="appbar" role="toolbar" aria-label="Page"></div><div class="navcl" id="navcl"><button class="ncb" data-act="toggle-sidebar" aria-label="Show or hide the sidebar" title="Sidebar (⌘S)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="3"/><path d="M7.5 3.5v13"/></svg></button></div>
+<div class="appbar" id="appbar" role="toolbar" aria-label="Page"></div><div class="navcl" id="navcl"><button class="ncb" data-act="toggle-sidebar" aria-label="Show or hide the sidebar" title="Sidebar (⌘S)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="3"/><path d="M7.5 3.5v13"/></svg></button><span class="ncsep" aria-hidden="true"></span><button class="ncb" data-act="hist-back" aria-label="Back" title="Back (Esc, ⌘←)" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="ncb" data-act="hist-fwd" aria-label="Forward" title="Forward (⌘→)" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
 <main class="page" id="root"><div class="loading">Loading your collection…</div></main>
 <div id="bgimg" aria-hidden="true"></div>
 <div id="layer"></div>
@@ -4561,7 +4632,7 @@ function render(){
   renderSideSubjects(); h7NavCounts();
   $('.navmore')?.setAttribute('aria-current', String(['browse', 'papers', 'ppmark', 'mistakes', 'stats', 'exam', 'themes'].includes(view.name)));
   document.querySelector('.sideset')?.setAttribute('aria-current', String(view.name === 'themes'));
-  document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'stats' && (view.name === 'hours' || view.name === 'tasks')) || (b.dataset.nav === 'papers' && (view.name === 'ppmark' || (view.name === 'study' && study?.tag === 'Paper mistakes'))) || (b.dataset.nav === 'decks' && (view.name === 'overview' || (view.name === 'study' && study?.tag !== 'Paper mistakes'))))));
+  document.querySelectorAll('nav [data-nav]').forEach(b => b.setAttribute('aria-current', String(b.dataset.nav === view.name || (b.dataset.nav === 'stats' && (view.name === 'hours' || view.name === 'tasks' || view.name === 'ppres')) || (b.dataset.nav === 'papers' && (view.name === 'ppmark' || (view.name === 'study' && study?.tag === 'Paper mistakes'))) || (b.dataset.nav === 'decks' && (view.name === 'overview' || (view.name === 'study' && study?.tag !== 'Paper mistakes'))))));
   applyTheme();
   const root = $('#root');
   if (!S.ready){ root.innerHTML = '<div class="loading">Loading your collection…</div>'; return; }
@@ -4577,6 +4648,7 @@ function render(){
   else if (view.name === 'group') renderGroup();
   else if (view.name === 'hours') renderHours();
   else if (view.name === 'tasks') renderTasksDone();
+  else if (view.name === 'ppres') renderPPRes();
   else if (view.name === 'themes') renderThemes();
   else if (view.name === 'papers') renderPapers();
   else if (view.name === 'ppmark') renderPPMark();
@@ -4745,6 +4817,15 @@ function tickCounts(){
 /* ---------- page toolbar (Mac, Windows, iPad landscape): title on the left, this page's actions on the right ---------- */
 const navH = { back: [], fwd: [] };
 let navSkip = false;
+/* Back for Esc / Alt+← / ⌘←: the last page you were on, or, with no history, up from a topic to its parent.
+   Never from pages where leaving would lose work or a running exam. */
+const NAV_STAY = new Set(['decks', 'add', 'edit', 'setup']);
+function navCanBack(){ if (NAV_STAY.has(view.name) || (view.name === 'exam' && typeof exOn === 'function' && exOn())) return false; return navH.back.length > 0 || view.name === 'overview' || view.name === 'study'; }
+function navBack(){
+  if (!navCanBack()) return;
+  if (view.name === 'study' || navH.back.some(v => !v.node || nodeOf(v.node))) return histGo(-1);
+  if (view.name === 'overview'){ const n = nodeOf(view.node); return n?.parentId && nodeOf(n.parentId) ? go('overview', n.parentId) : go('decks'); }
+}
 function histGo(dir){
   if (view.name === 'study' && dir < 0){ const n = study?.node; study = null; return n ? go('overview', n) : go('decks'); }
   const from = dir < 0 ? navH.back : navH.fwd, to = dir < 0 ? navH.fwd : navH.back;
@@ -4765,7 +4846,7 @@ const IC = {
 };
 function renderAppbar(){
   const el = $('#appbar'); if (!el) return;
-  const nb = $('#navcl'); if (nb){ const b = nb.querySelector('[data-act="hist-back"]'), f = nb.querySelector('[data-act="hist-fwd"]'); if (b) b.disabled = !(navH.back.length || view.name === 'study'); if (f) f.disabled = !navH.fwd.length; }
+  const nb = $('#navcl'); if (nb){ const b = nb.querySelector('[data-act="hist-back"]'), f = nb.querySelector('[data-act="hist-fwd"]'); if (b) b.disabled = !(navH.back.length || view.name === 'study' || view.name === 'overview'); if (f) f.disabled = !navH.fwd.length; }
   if (!document.body.classList.contains('desktop')) return cdMobile();
   if (!$('#abt')){ el.innerHTML = '<div class="abt" id="abt"></div><div class="abmid" id="abmid"></div><div class="abr" id="abr"></div><span class="abprog" id="abprog" hidden></span><span class="abline" aria-hidden="true"></span>'; const ss = $('.sidesearch'), sr = $('#sidesres'); if (ss) $('#abmid').append(ss); if (sr) $('#abmid').append(sr); const q = $('#sidesq'); if (q) q.placeholder = 'Search cards, decks, mistakes'; }
   if (!S.ready){ $('#abt').innerHTML = ''; $('#abr').innerHTML = ''; return; }
@@ -4781,6 +4862,7 @@ function renderAppbar(){
   else if (view.name === 'setup') title = '<b>Set up decks</b>';
   else if (view.name === 'group') title = '<b>Group study</b>';
   else if (view.name === 'hours' || view.name === 'tasks') title = '<b>Progress</b>';
+  else if (view.name === 'ppres'){ title = '<b>Progress</b><span class="abmeta">Past paper results</span>'; act = `<button class="btn" data-nav="papers">Past papers</button>`; }
   else if (view.name === 'todo') title = '<b>Plan</b>';
   else if (view.name === 'cal') title = '<b>Calendar</b>';
   else if (view.name === 'themes') title = '<b>Settings</b>';
@@ -7901,7 +7983,7 @@ function keysDialog(){
   const sec = (h, rows) => `<section><h3>${h}</h3>${rows.map(([l, t]) => `<div class="kyr"><span>${l}</span><span class="kyk">${k(t)}</span></div>`).join('')}</section>`;
   openDialog(`<div class="dialog keysdlg" role="dialog" aria-modal="true" aria-labelledby="kyh" style="max-width:720px"><header><h2 id="kyh">Keyboard shortcuts</h2></header>
     <div class="body"><div class="kygrid"><div>${sec('Studying', [['Show the answer', 'Space'], ['Rate Again, Hard, Good, Easy', '1 2 3 4'], ['Rate Good', 'Space'], ['Back one step', 'Z or ⌫'], ['Edit this card', 'E'], ['Hint', 'H'], ['Flag this card', 'F'], ['Skip until tomorrow', 'S'], ['Delete this card', 'X'], ['Scratchpad', 'P'], ['Pause the timer', 'T'], ['Leave', 'Esc']])}</div>
-      <div>${sec('Anywhere', [['Add a card', 'A'], ['Decks', 'D'], ['Browse', 'B'], ['To-do', 'T'], ['Calendar', 'C'], ['Go to or do anything', '⌘K'], ['Search', '⌘F'], ['Undo', '⌘Z'], ['Redo', '⇧⌘Z'], ['Back, forward', '⌘[ ⌘]'], ['Show or hide the sidebar', '⌘S'], ['This list', '?']])}
+      <div>${sec('Anywhere', [['Add a card', 'A'], ['Decks', 'D'], ['Browse', 'B'], ['To-do', 'T'], ['Calendar', 'C'], ['Go to or do anything', '⌘K'], ['Search', '⌘F'], ['Undo', '⌘Z'], ['Redo', '⇧⌘Z'], ['Back to the last page', 'Esc'], ['Back, forward', '⌘← ⌘→'], ['Also back, forward', '⌥← ⌥→  ⌘[ ⌘]'], ['Show or hide the sidebar', '⌘S'], ['This list', '?']])}
       ${sec('On a deck', [['Study it', 'S'], ['See its cards in Browse', 'B']])}
       ${sec('Browse', [['Move up and down', '↑ ↓'], ['Show the answer', 'Space'], ['Edit', 'Enter'], ['Select all', '⌘A']])}</div></div></div>
     <footer><span class="grow"></span><button class="btn primary" data-act="close">Done</button></footer></div>`, d => d.querySelector('.btn.primary').focus());
@@ -9802,13 +9884,14 @@ document.addEventListener('click', async e => {
   if (act.startsWith('gr-')) return grAction(act, a, e);
   if (act.startsWith('hrs-')) return hrsAction(act, a, e);
   if (act.startsWith('tsk-')) return tskAction(act, a, e);
+  if (act.startsWith('prs-')) return prsAction(act, a, e);
   if (act.startsWith('mkl-')) return mklAction(act, a, e);
   if (act.startsWith('gb-')) return gbAction(act, a, e);
   if (act === 'sit-paper') return ppSit(a.dataset.k);
   switch (act){
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
     case 'side-subj': { if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; return subjSwapDraw(); } ls.set('md-subj', id); study = null; return go('decks'); }
-    case 'hist-back': return histGo(-1);
+    case 'hist-back': return navH.back.length || view.name === 'study' ? histGo(-1) : view.name === 'overview' ? navBack() : undefined;
     case 'px-view': if (!pdfx) return; pdfx.view = a.dataset.v === 'pages' ? 'pages' : 'cards'; return pxDraw();
     case 'px-drawk': if (!pdfx) return; pdfx.drawSol = a.dataset.v === 's' && pdfx.sel != null; return pxDraw();
     case 'px-show': { if (!pdfx) return; pdfx.view = 'pages'; pdfx.sel = +a.dataset.i; pxDraw(); return document.querySelector(`.pxbox[data-i="${a.dataset.i}"]`)?.scrollIntoView({ block: 'center' }); }
@@ -10147,16 +10230,16 @@ function confirmCardDelete(id){
     <div class="body"><p style="margin:0;color:var(--fg-2)">“${esc(c.label || (c.qText || 'Card').slice(0, 60))}” is removed from every deck it's in. You can undo with ⌘Z.</p></div>
     <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn danger" data-act="do-del-card" data-id="${id}">Delete</button></footer></div>`, d => d.querySelector('.btn.danger').focus());
 }
-let lpress = null, lpressAt = 0;
+let lpress = null, lpressAt = 0, lpressXY = [0, 0];
 document.addEventListener('pointerdown', e => {
   clearTimeout(lpress?.t); lpress = null;
-  if (e.pointerType !== 'touch' || !['decks', 'papers', 'overview'].includes(view.name) || !e.target.closest('#root .home, #root .h7home, #root .h7ov') || dialogOpen()) return;
+  if (e.pointerType !== 'touch' || !['decks', 'papers', 'overview'].includes(view.name) || !e.target.closest('#root .home, #root .h7home, #root .h7ov, #root .ppsit') || dialogOpen()) return;
   const x = e.clientX, y = e.clientY, tgt = e.target;
-  lpress = { x, y, t: setTimeout(() => { lpress = null; lpressAt = Date.now(); tgt.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: x, clientY: y })); }, 520) };
+  lpress = { x, y, t: setTimeout(() => { lpress = null; lpressAt = Date.now(); lpressXY = [x, y]; tgt.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: x, clientY: y })); }, 520) };
 }, true);
 document.addEventListener('pointermove', e => { if (lpress && Math.hypot(e.clientX - lpress.x, e.clientY - lpress.y) > 10){ clearTimeout(lpress.t); lpress = null; } }, true);
 ['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, () => { if (lpress){ clearTimeout(lpress.t); lpress = null; } }, true));
-document.addEventListener('click', e => { if (Date.now() - lpressAt < 700 && !e.target.closest('#menu')){ e.preventDefault(); e.stopPropagation(); lpressAt = 0; } }, true);
+document.addEventListener('click', e => { if (Date.now() - lpressAt < 700 && !e.target.closest('#menu') && (!e.clientX && !e.clientY || Math.hypot(e.clientX - lpressXY[0], e.clientY - lpressXY[1]) < 30)){ e.preventDefault(); e.stopPropagation(); lpressAt = 0; } }, true);
 document.addEventListener('contextmenu', e => {
   const row = e.target.closest('[data-card]');
   if (row && !$('#layer .dialog')){ e.preventDefault(); return cardMenu(row.dataset.card, { x: e.clientX, y: e.clientY }); }
@@ -10179,7 +10262,11 @@ document.addEventListener('keydown', e => {
     if (lbz.s > 1 && /^Arrow/.test(e.key)){ e.preventDefault(); const d = 80; lbz.x += e.key === 'ArrowLeft' ? d : e.key === 'ArrowRight' ? -d : 0; lbz.y += e.key === 'ArrowUp' ? d : e.key === 'ArrowDown' ? -d : 0; return lbzApply(true); } }
   if (e.key === 'Escape' && $('#tpop')){ e.preventDefault(); return $('#tpop').remove(); }
   if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && (e.key === '[' || e.key === ']') && !dialogOpen() && !isTyping(document.activeElement)){ e.preventDefault(); return histGo(e.key === '[' ? -1 : 1); }
-  if (e.key === 'Escape'){ const lb = $('.lightbox'); if (lb){ gallery = null; return lb.remove(); } if ($('#menu')) return closeMenu(); if (dialogOpen()) return closeDialog(); if ($('#padwrap.full')) return padAction('full'); if (view.name === 'study'){ const n = study?.node; study = null; return n ? go('overview', n) : go('decks'); } if (view.name === 'ppmark' && ppm){ if (ppFull) return ppFullSet(false, true); if (ppm.draw){ ppm.draw = null; return ppmSide(); } if (!isTyping(document.activeElement) && !$('.pickpop') && !$('#tpop')) return go('papers'); } return; }
+  /* Alt+← / ⌘← (Ctrl+← on Windows) go back, Alt+→ / ⌘→ forward. Not while typing, where they move the cursor. */
+  if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !e.shiftKey && (e.altKey !== (e.metaKey || e.ctrlKey)) && !e.defaultPrevented && !dialogOpen() && !isTyping(document.activeElement) && !$('#menu') && !$('.lightbox') && view.name !== 'study' && view.name !== 'ppmark'){
+    e.preventDefault(); return e.key === 'ArrowLeft' ? navBack() : histGo(1);
+  }
+  if (e.key === 'Escape'){ const lb = $('.lightbox'); if (lb){ gallery = null; return lb.remove(); } if ($('#menu')) return closeMenu(); if (dialogOpen()) return closeDialog(); if ($('#padwrap.full')) return padAction('full'); if (view.name === 'study'){ const n = study?.node; study = null; return n ? go('overview', n) : go('decks'); } if (view.name === 'ppmark' && ppm){ if (ppFull) return ppFullSet(false, true); if (ppm.draw){ ppm.draw = null; return ppmSide(); } if (!isTyping(document.activeElement) && !$('.pickpop') && !$('#tpop')) return go('papers'); } if (!e.defaultPrevented && !isTyping(document.activeElement) && !$('.pickpop') && navCanBack()){ e.preventDefault(); return navBack(); } return; }
   if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 's' && document.body.classList.contains('desktop')){ e.preventDefault(); return toggleSidebar(); }
   if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && (e.key.toLowerCase() === 'k' || (e.key.toLowerCase() === 'f' && view.name !== 'browse')) && $('#sidesq') && view.name !== 'study' && !dialogOpen()){ e.preventDefault(); if (!document.body.classList.contains('desktop') && getComputedStyle($('.sidesearch')).display === 'none') return; const q = $('#sidesq'); q.focus(); q.select(); return; }
   if (ed && (e.metaKey || e.ctrlKey) && e.key === 'Enter'){ e.preventDefault(); return saveCard(); }
@@ -10494,8 +10581,8 @@ function ppGuess(name){
 const ppSubjCur = () => { const sh = ppShown(); return sh.find(s => s.k === pp.s) || sh[0]; };
 const ppCourseCur = () => { const s = ppSubjCur(), c = pp.c?.[s.k]; return s.courses.includes(c) ? c : s.courses[0]; };
 const ppDot = s => { const n = ppNode(s); return n ? scol(n.id) : 'var(--fg-3)'; };
-function ppFilter(items){
-  return items.filter(i => (!pp.sec || i.sec === pp.sec) && (!pp.school || i.school === pp.school) && (!pp.y || i.year === +pp.y) && (!pp.sol || i.sol) && (!pp.todo || !i.paper || i.paper.st !== 'done'));
+function ppFilter(items, keepDone){
+  return items.filter(i => (!pp.sec || i.sec === pp.sec) && (!pp.school || i.school === pp.school) && (!pp.y || i.year === +pp.y) && (!pp.sol || i.sol) && (keepDone || !pp.todo || !i.paper || i.paper.st !== 'done'));
 }
 function ppYearBtn(i){
   const p = i.paper, sc0 = p?.st === 'done' ? ppScore(p) : null, sc = sc0 && sc0.of ? sc0 : null, dn = p?.st === 'done', cls = 'ppyr' + (i.sol ? '' : ' nosol') + (p?.st === 'done' ? ' ppdone' : p ? ' ppmy' : '');
@@ -10900,7 +10987,7 @@ async function ppMenuAct(act, a){
     case 'pp-m-removego': { const ps = { ...ppPapers() }; delete ps[p.id]; undoTx = null; undoLabel = 'remove paper'; S.settings = { ...S.settings, papers: ps }; await saveSettings(); ppDelPdf(p.id); ppDelPdf(ppSolKey(p.id)); ppDelPdf(ppOcrKey(p.id)); if (ppm?.pid === p.id) ppm = null; closeDialog(); toast('Paper removed · ⌘Z to undo'); return view.name === 'ppmark' ? go('papers') : ppRefresh(); }
   }
 }
-function ppRefresh(){ if (view.name === 'papers') renderPapers(); else if (view.name === 'ppmark') ppmSide(); else if (view.name === 'decks' || view.name === 'overview') todoRefresh(); renderAppbar(); }
+function ppRefresh(){ if (view.name === 'papers') renderPapers(); else if (view.name === 'ppres') renderPPRes(); else if (view.name === 'ppmark') ppmSide(); else if (view.name === 'decks' || view.name === 'overview') todoRefresh(); renderAppbar(); }
 document.addEventListener('contextmenu', e => {
   if (!(view.name === 'papers' || view.name === 'ppmark') || $('#layer .dialog')) return;
   const t = e.target.closest('[data-k], .ppcard[data-id]'); if (!t || !t.closest('#root')) return;
@@ -11217,6 +11304,7 @@ async function ppmLoad(p){
     const hid = new Set(p.hid || []); m.gone = items.filter(it => hid.has(it.key)); items = items.filter(it => !hid.has(it.key));
     for (const b of p.man || []) items.push({ key: b.key, q: 0, label: b.label, marks: b.marks || 1, segs: b.segs.map(g => ({ ...g, hand: true })), sol: null, man: true });
     for (const [k, segs] of Object.entries(p.msol || {})){ const it = items.find(x => x.key === k); if (it) it.sol = segs.map(g => ({ ...g, hand: true })); }
+    for (const [k, segs] of Object.entries(p.mseg || {})){ const it = items.find(x => x.key === k); if (it && segs?.length){ it.segs = segs.map(g => ({ ...g, hand: true })); it.stem = null; } }
     for (const [k, mk] of Object.entries(p.mk || {})){ const it = items.find(x => x.key === k); if (it) it.marks = mk; }
     items.sort((a, b) => ppmAt(a) - ppmAt(b));
     m.items = items; m.busy = ''; m.scanned = !R.textLines;
@@ -11601,7 +11689,8 @@ function ppmBoxes(){
     const b = document.createElement('button'); b.type = 'button'; b.className = `ppbox ${sol ? 'sol' : ''} ${i === m.sel ? 'sel' : ''} ${r ? 'r-' + r : ''}`; b.dataset.act = 'pp-q'; b.dataset.i = i;
     b.style.cssText = `left:${x0 / pg.w * 100}%;top:${g.y0 / pg.h * 100}%;width:${(x1 - x0) / pg.w * 100}%;height:${(g.y1 - g.y0) / pg.h * 100}%`;
     b.setAttribute('aria-label', `${it.label}${sol ? ' solution' : ''}`);
-    if (i === m.sel && !sol && g === it.segs[0] && !m.draw){ const x = document.createElement('button'); x.type = 'button'; x.className = 'ppx'; x.dataset.act = 'pp-qdel'; x.dataset.i = i; x.setAttribute('aria-label', 'Remove box ' + it.label); x.title = 'Remove this box (⌫)'; x.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'; x.style.cssText = `left:${x1 / pg.w * 100}%;top:${g.y0 / pg.h * 100}%`; o.appendChild(x); }
+    if (i === m.sel && !sol && it.segs.length > 1 && !m.draw){ const x = document.createElement('button'); x.type = 'button'; x.className = 'ppx'; x.dataset.act = 'pp-segdel'; x.dataset.j = it.segs.indexOf(g); x.setAttribute('aria-label', 'Remove this box from ' + it.label); x.title = 'Remove this box'; x.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'; b.appendChild(x); }
+    else if (i === m.sel && !sol && g === it.segs[0] && !m.draw){ const x = document.createElement('button'); x.type = 'button'; x.className = 'ppx'; x.dataset.act = 'pp-qdel'; x.dataset.i = i; x.setAttribute('aria-label', 'Remove box ' + it.label); x.title = 'Remove this box (⌫)'; x.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'; x.style.cssText = `left:${x1 / pg.w * 100}%;top:${g.y0 / pg.h * 100}%`; o.appendChild(x); }
     if (i === m.sel && g === (sol ? it.sol[0] : it.segs[0])) b.innerHTML = `<span class="pptag">${esc(it.label)}${sol ? ' · solution' : it.marks ? ` · ${it.marks} mark${it.marks === 1 ? '' : 's'}` : ''}</span>`;
     o.appendChild(b);
   };
@@ -11742,20 +11831,21 @@ function ppmPanel0(){
     <div class="pphd" title="${ppWide() ? 'Drag to move · double-click to put it back' : ''}"><h2>${it.man ? `<input class="pplabel" id="pplabel" value="${esc(m.label ?? it.label)}" aria-label="Question name" maxlength="60" autocomplete="off">` : esc(it.label)}</h2><span class="ppnote">${it.segs?.[0] ? 'page ' + it.segs[0].p : ''}</span>
       <span class="ppminst">${r ? `<i class="d ${r}"></i>${got} / ${of}` : `${of} mark${of === 1 ? '' : 's'}`}</span>
       ${ppWide() ? `<span class="ppcardbtns"><button type="button" class="ppcardb" data-act="pp-card-min" title="${ppCardMin ? 'Show all of it' : 'Make it small'}" aria-label="${ppCardMin ? 'Expand' : 'Minimise'}" aria-expanded="${!ppCardMin}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="${ppCardMin ? 'M4 9.5 8 5.5 12 9.5' : 'M4 6.5 8 10.5 12 6.5'}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="ppcardb" data-act="pp-card-x" title="Close (click off the question)" aria-label="Close">${I.x}</button></span>` : ''}</div>
+    ${ppmBoxRow(it)}
     <div class="pprl">Result</div>
     <div class="seg ppres" role="group" aria-label="Result">${[['ok', 'Right', '1'], ['part', 'Part', '2'], ['bad', 'Wrong', '3']].map(([k, l, kb]) => `<button type="button" data-act="pp-res" data-v="${k}" aria-pressed="${r === k}"><i class="d ${k}"></i>${l}<kbd>${kb}</kbd></button>`).join('')}</div>
     <div class="pprl">Marks</div>
     <div class="ppmarks"><span class="ppstep" role="group" aria-label="Marks you got"><button type="button" data-act="pp-got" data-d="-1" aria-label="One mark less" ${got <= 0 ? 'disabled' : ''}>−</button><input class="ppnum" id="ppgot" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="2" value="${got}" aria-label="Marks you got"><button type="button" data-act="pp-got" data-d="1" aria-label="One mark more" ${got >= of ? 'disabled' : ''}>+</button></span><span class="ppof">out of</span><span class="ppstep" role="group" aria-label="Marks the question is worth"><button type="button" data-act="pp-of" data-d="-1" aria-label="Worth one mark less" ${of <= 1 ? 'disabled' : ''}>−</button><input class="ppnum" id="ppof" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="2" value="${of}" aria-label="Marks it's worth"><button type="button" data-act="pp-of" data-d="1" aria-label="Worth one mark more">+</button></span></div>
     ${flag ? `<label class="pprl" for="ppwhy">Mistake</label><textarea class="in" id="ppwhy" rows="3" placeholder="What went wrong, in a line or two">${esc(m.why ?? card?.mistake ?? '')}</textarea>${mklPPChips(p, it, got, of)}
     <div class="pprl">Correct solution</div>
-    <div class="ppsol">${m.locked ? `<span>${it.sol?.length ? 'Found. ' : ''}Opens when your time’s up (<span class="pplockt">${ppmLockLeft()}</span> left).</span>` : it.sol?.length ? `<span>Found ${it.sol.length > 1 ? 'on pages ' + [...new Set(it.sol.map(g => ppmPageName(g.p)))].join(', ') : 'on page ' + ppmPageName(it.sol[0].p)}</span><button class="link sm" data-act="pp-solgo">Show</button><button class="link sm" data-act="pp-draw" data-v="s">Redraw</button>` : `<span>${m.solMissing ? 'The solutions PDF isn’t on this device.' : p.sol ? 'Not matched yet.' : 'This paper has no solutions.'}</span><button class="link sm" data-act="pp-draw" data-v="s">${m.draw === 's' ? 'Drag across the page…' : 'Draw it on the page'}</button>${!p.solSep || m.solMissing ? `<button class="link sm" data-act="pp-addsol">${m.solMissing ? 'Add it again' : 'Add a solutions PDF'}</button>` : ''}`}</div>
+    <div class="ppsol">${m.locked ? `<span>${it.sol?.length ? 'Found. ' : ''}Opens when your time’s up (<span class="pplockt">${ppmLockLeft()}</span> left).</span>` : it.sol?.length ? `<span>Found ${it.sol.length > 1 ? 'on pages ' + [...new Set(it.sol.map(g => ppmPageName(g.p)))].join(', ') : 'on page ' + ppmPageName(it.sol[0].p)}</span><button class="link sm" data-act="pp-solgo">Show</button><button class="link sm" data-act="pp-draw" data-v="s">Redraw</button><button class="link sm" data-act="pp-draw" data-v="sa">Add a box</button>` : `<span>${m.solMissing ? 'The solutions PDF isn’t on this device.' : p.sol ? 'Not matched yet.' : 'This paper has no solutions.'}</span><button class="link sm" data-act="pp-draw" data-v="s">${m.draw === 's' ? 'Drag across the page…' : 'Draw it on the page'}</button>${!p.solSep || m.solMissing ? `<button class="link sm" data-act="pp-addsol">${m.solMissing ? 'Add it again' : 'Add a solutions PDF'}</button>` : ''}`}</div>
     ${ppmSolPics(p, it)}
     <div class="pprl">Deck</div>
     <div class="field ppdeckf"><button type="button" class="brdeck pickbtn ${deck ? 'on' : ''}" id="ppdeck" aria-haspopup="true" aria-expanded="false">${deck ? `<span class="sdot2" style="--sc:${scol(deck)}"></span>${esc(pathOf(deck).map(n => n.name).join(' › '))}` : 'Choose a deck'}<span class="pkcar">▾</span></button></div>
     <p class="hint" style="margin:6px 0 0">It also goes in Paper mistakes.</p>` : ''}
     <button class="btn ppsave" data-act="pp-save" ${r ? '' : 'disabled'}>${flag ? (card ? 'Update card' : 'Save card') : 'Save'} and next<kbd>↩</kbd></button>
     ${card ? `<p class="hint" style="margin:8px 0 0">Card saved in ${esc(pathOf(card.nodeId).map(n => n.name).join(' › '))}. <button class="link sm" data-act="edit" data-id="${card.id}">Edit card</button></p>` : ''}
-    <button class="link sm danger-link" data-act="pp-qdel" style="margin-top:12px">Remove this box<kbd>⌫</kbd></button>
+    <button class="link sm danger-link" data-act="pp-qdel" style="margin-top:12px">${it.segs?.length > 1 ? 'Remove this question' : 'Remove this box'}<kbd>⌫</kbd></button>
   </div>`;
 }
 const ppmPageName = n => ppm?.solFrom && n >= ppm.solFrom ? 'S' + (n - ppm.solFrom + 1) : n;
@@ -11847,7 +11937,9 @@ async function ppmSaveQ(){
     const ref = ppmDeck(); if (!ref) return toast('Pick a deck for the card first.');
     const [nodeId, qtype] = String(ref).split('::'), old = q.card && S.cards[q.card];
     const src = `${ppTitle(p0)} · ${label} · ${of} mark${of === 1 ? '' : 's'}`;
-    if (old){ const have = new Set((old.solImgs || []).map(imgKey)), nc = { ...old, nodeId, mistake: why || old.mistake, marks: of, label, source: src, paper: { id: p0.id, q: it.key, got, of }, solImgs: [...(old.solImgs || []), ...ppSimg(p0, it.key).filter(x => !have.has(imgKey(x)))] }; if (qtype) nc.qtype = qtype; else delete nc.qtype; await put('cards', nc); }
+    let reQ = null;
+    if (old && m.reboxed?.has(it.key)){ try { const copy = { ...it, segs: (it.segs || []).map(g => ({ ...g, blob: null, url: null, skip: false })), sol: null }; const [cut] = await pxCrop(m.R, [copy]); reQ = []; for (const g of cut?.segs || []){ reQ.push(await storeImage(new File([g.blob], 'cleaned-paper.png', { type: 'image/png' }))); if (g.url) URL.revokeObjectURL(g.url); } } catch { reQ = null; } }
+    if (old){ const have = new Set((old.solImgs || []).map(imgKey)), nc = { ...old, nodeId, mistake: why || old.mistake, marks: of, label, source: src, paper: { id: p0.id, q: it.key, got, of }, solImgs: [...(old.solImgs || []), ...ppSimg(p0, it.key).filter(x => !have.has(imgKey(x)))] }; if (qtype) nc.qtype = qtype; else delete nc.qtype; if (reQ?.length){ setQImgs(nc, reQ); m.reboxed.delete(it.key); } await put('cards', nc); }
     else {
       const btn = $('.ppsave'); if (btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
       try {
@@ -11898,6 +11990,11 @@ document.addEventListener('pointerup', async e => {
   const p0 = ppmP(); if (!p0) return; const p = { ...p0 };
   if (ppm.draw === 's'){
     const it = ppm.items[ppm.sel]; if (!it) return; it.sol = [{ ...g, hand: true }]; p.msol = { ...(p.msol || {}), [it.key]: [g] }; ppm.draw = null;
+  } else if (ppm.draw === 'sa'){
+    const it = ppm.items[ppm.sel]; if (!it) return; const segs = [...(it.sol || []).map(ppSegClean), g]; it.sol = segs.map(x => ({ ...x, hand: true })); p.msol = { ...(p.msol || {}), [it.key]: segs }; ppm.draw = null;
+  } else if (ppm.draw === 'a' || ppm.draw === 'r'){
+    const it = ppm.items[ppm.sel]; if (!it) return; ppmSetSegs(p, it, ppm.draw === 'r' ? [g] : [...(it.segs || []), g]); ppm.draw = 'a';
+    S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; await saveSettings(); ppmSide(); ppmBoxes(); return;
   } else {
     const n = ppm.items.filter(x => x.man).length + 1, key = 'm' + Date.now().toString(36), label = 'Question ' + (ppm.items.length + 1);
     p.man = [...(p.man || []), { key, label, marks: 1, segs: [g] }];
@@ -11937,7 +12034,7 @@ document.addEventListener('keydown', e => {
 function ppAppbar(){
   if (view.name === 'papers'){
     const cs = ppCards(), due = ppDueOf(cs);
-    return { title: '<b>Past papers</b><span class="abmeta">Trials, tasks and HSC papers since 2016</span>', act: `<button class="btn" data-act="pp-upload">${IC.card}Import papers</button>${cs.length ? `<button class="btn" data-act="pp-browse" title="See all your paper mistakes in Browse">Browse mistakes</button>` : ''}${cs.length ? `<button class="btn primary" data-act="pp-review">${due ? `Review paper mistakes<span class="abn">${due}</span>` : `Practise paper mistakes<span class="abn">${cs.length}</span>`}</button>` : ''}` };
+    return { title: '<b>Past papers</b><span class="abmeta">Trials, tasks and HSC papers since 2016</span>', act: `<button class="btn" data-nav="exam" title="Time any exam, not just a paper here">${IC.clock}Exam timer</button><button class="btn" data-act="prs-open" title="Your marks over time">Results</button><button class="btn" data-act="pp-upload">${IC.card}Import papers</button>${cs.length ? `<button class="btn" data-act="pp-browse" title="See all your paper mistakes in Browse">Browse mistakes</button>` : ''}${cs.length ? `<button class="btn primary" data-act="pp-review">${due ? `Review paper mistakes<span class="abn">${due}</span>` : `Practise paper mistakes<span class="abn">${cs.length}</span>`}</button>` : ''}` };
   }
   const p = ppPapers()[view.node]; if (!p) return { title: '<b>Past papers</b>', act: '' };
   const s = ppScore(p), m = ppm;
@@ -11962,6 +12059,8 @@ async function ppAction(act, a, e){
     case 'pp-copydiag': return ppDiagText().then(s => navigator.clipboard.writeText(s)).then(() => toast('Copied. Paste it to Jeremy.'), () => toast('Couldn’t copy. Select the text and copy it.'));
     case 'pp-grp': { ppOpen.has(v) ? ppOpen.delete(v) : ppOpen.add(v); ls.set('md-pp-open', [...ppOpen].slice(-60)); return h7ppRefresh(); }
     case 'pp-by': ppBy = v; ls.set('md-pp-by', v); return h7ppRefresh();
+    case 'pp-show': pp.show = v === 'all' ? '' : v; ppQ = ''; ppSave(); return renderPapers();
+    case 'pp-mall': pp.mall = true; ppSave(); return renderPapers();
     case 'pp-h7menu': { const r = a.getBoundingClientRect(); return ppMenu(a.dataset.k, { x: r.left, y: r.bottom + 4 }); }
     case 'pp-ipick': return ppPickFiles(fs => ppImportDialog(fs));
     case 'pp-irm': ppImp = ppImp.filter(r => r.id !== a.dataset.id); return ppImpDraw();
@@ -11973,7 +12072,7 @@ async function ppAction(act, a, e){
     case 'pp-delsolgo': closeDialog(); return ppSolDelete(a.dataset.id);
     case 'pp-igo': return ppImpGo(!!a.dataset.open);
     case 'pp-subj': { if (pp.s === v) return; const on = $('.pphome .stab[aria-selected="true"]'); ppTabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; pp.s = v; ppSave(); return renderPapers(); }
-    case 'pp-course': pp.c = { ...(pp.c || {}), [ppSubjCur().k]: v }; ppSave(); return renderPapers();
+    case 'pp-course': pp.c = { ...(pp.c || {}), [ppSubjCur().k]: v }; pp.mall = false; ppSave(); return renderPapers();
     case 'pp-tog': pp[v] = !pp[v]; ppSave(); a.setAttribute('aria-pressed', String(!!pp[v])); return h7ppRefresh();
     case 'pp-clear': pp.school = ''; pp.y = ''; pp.sec = ''; pp.sol = false; pp.todo = false; ppSave(); document.querySelectorAll('.pptog[data-act="pp-tog"]').forEach(b => b.setAttribute('aria-pressed', 'false')); return h7ppRefresh();
     case 'pp-col': ppCol.has(v) ? ppCol.delete(v) : ppCol.add(v); ls.set('md-pp-col', [...ppCol]); return renderPapers();
@@ -11992,7 +12091,7 @@ async function ppAction(act, a, e){
     case 'pp-got': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}, of = ppm.of ?? q.of ?? (it.marks || 1), r = ppm.res ?? q.r; const g0 = ppm.got ?? q.got ?? (r === 'ok' ? of : r === 'bad' ? 0 : Math.floor(of / 2)); ppm.got = Math.max(0, Math.min(of, a.dataset.set != null ? +a.dataset.set : g0 + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (!r || r === 'ok') ppm.res = ppm.got >= of ? 'ok' : ppm.got ? 'part' : 'bad'; else if (ppm.got >= of) ppm.res = 'ok'; else if (r === 'bad' && ppm.got) ppm.res = 'part'; else if (r === 'part' && !ppm.got) ppm.res = 'bad'; return ppmSide(); }
     case 'pp-of': { if (!ppm) return; const p = ppmP(), it = ppm.items[ppm.sel], q = p.q?.[it.key] || {}; ppm.of = Math.max(1, Math.min(40, a.dataset.set != null ? +a.dataset.set : (ppm.of ?? q.of ?? (it.marks || 1)) + +a.dataset.d)); ppm.why = $('#ppwhy')?.value ?? ppm.why; if (ppm.got != null) ppm.got = Math.min(ppm.got, ppm.of); return ppmSide(); }
     case 'pp-save': return ppmSaveQ();
-    case 'pp-draw': if (!ppm?.R) return; ppm.why = $('#ppwhy')?.value ?? ppm.why; ppm.draw = ppm.draw === v ? null : v; ppmSide(); if (ppm.draw) toast(v === 's' ? 'Drag across the page round the solution' : 'Drag across the page round the question', 1800); return;
+    case 'pp-draw': if (!ppm?.R) return; ppm.why = $('#ppwhy')?.value ?? ppm.why; ppm.draw = ppm.draw === v ? null : v; ppmSide(); if (ppm.draw) toast(({ s: 'Drag across the page round the solution', sa: 'Drag round the next part of the solution', a: 'Drag round the other part of this question', r: 'Drag round just the part you want' })[v] || 'Drag across the page round the question', 1800); return;
     case 'pp-solgo': { const g = ppm?.items[ppm.sel]?.sol?.[0]; if (g) ppmReveal(g, true); return; }
     case 'pp-split': ppSplitSet(!ppSplitOn()); return;
     case 'pp-view': ppViewSet(v); return;
@@ -12012,6 +12111,9 @@ async function ppAction(act, a, e){
     case 'pp-full': return ppFullSet(!ppFull);
     case 'pp-tm': case 'pp-tm-step': case 'pp-tm-rstep': case 'pp-tm-start': case 'pp-tm-pause': case 'pp-tm-stop': case 'pp-tm-reset': return ppTmAct(act, a);
     case 'pp-simg-del': return ppmDelSolPic(+a.dataset.i);
+    case 'pp-segdel': { const it = ppm?.items[ppm.sel], p0 = ppmP(); if (!it || !p0) return; const j = +a.dataset.j; if (!(it.segs?.length > 1)) return; const p = { ...p0 }; ppmSetSegs(p, it, it.segs.filter((_, k) => k !== j)); undoTx = null; undoLabel = 'remove box'; S.settings = { ...S.settings, papers: { ...ppPapers(), [p.id]: p } }; saveSettings(); ppmSide(); ppmBoxes(); return toast('Box removed · ⌘Z to undo'); }
+    case 'pp-sit-save': return ppSitSave(a.dataset.c);
+    case 'pp-sit-reset': return ppSitSave(a.dataset.c, true);
     case 'pp-qdel': { if (!ppm) return; const i = a.dataset.i != null ? +a.dataset.i : ppm.sel; if (i == null) return; return ppmRemoveQ(i); }
     case 'pp-finish': return ppmFinish();
     case 'pp-reopen': { const p0 = ppmP(); if (!p0) return; await ppSavePaper({ ...p0, st: 'marking' }, 'reopen paper'); return ppmSide(); }
@@ -12281,7 +12383,7 @@ function ppPreview(it){
   const go1 = p ? (done ? 'Open it again' : hasQs ? 'Carry on marking' : 'Start marking') : ((it.src === 'thsc' && ppCanFetch()) || (it.src === 'nesa' && ppCanNesa()) ? 'Get it and start marking' : 'Add the PDF and start');
   const todo = todoAll().find(x => x.pp === it.key && !x.done);
   return `<div class="h7ppv">
-    <p class="h7ppk">${esc(course)}, ${esc(ppSecName(it.sec, true).toLowerCase())}</p>
+    <p class="h7ppk">${esc(course)}, ${esc(ppSecName(it.sec, true).replace(/^(?!HSC|CT)\w/, ch => ch.toLowerCase()))}</p>
     <h1>${esc(title)}</h1>
     <div class="h7ppb">
       <div class="h7cover" aria-hidden="true"><b>${esc(it.school === 'NSW HSC' ? 'NSW Education Standards Authority' : it.school)}</b><span>${it.year} ${esc(it.school === 'NSW HSC' ? 'Higher School Certificate Examination' : ppSecName(it.sec, true))}</span><em>${esc(course)}</em><i></i><i></i><i class="s"></i><i></i><i class="s"></i></div>
@@ -12299,11 +12401,25 @@ function ppPreview(it){
 function renderPapers(partial){
   if (!ppIdxP) ppLoad();
   const keepTop = $('#h7pplist')?.scrollTop || 0;
-  const s = ppSubjCur(), c = ppCourseCur(), all = ppItems(c), items = ppFilter(all), q = ppQ.trim();
+  const s = ppSubjCur(), c = ppCourseCur(), all = ppItems(c), q = ppQ.trim();
   ppNesaWarm(c);
-  const list = q ? ppFilter(ppSearch(q).filter(i => i.c === c)) : items, byY = (a, b) => b.year - a.year || a.school.localeCompare(b.school);
-  const carry = list.filter(i => i.paper && i.paper.st !== 'done').sort(byY);
-  const groups = q ? [['Matches', 'q', list.slice().sort(byY)]] : [['Carry on', 'carry', carry], ...PP_SECS.map(([k, name]) => [name, k, list.filter(i => i.sec === k).sort(byY)])].filter(g => g[2].length);
+  /* what the list shows: every paper, the ones you've added (yours), or the ones you've finished with their marks */
+  const show = ['mine', 'done'].includes(pp.show) ? pp.show : 'all', wide = show !== 'all' && pp.mall && s.courses.length > 1;
+  const cs = wide ? s.courses : [c], own = cs.flatMap(ppItems).filter(i => i.paper), keep = i => show === 'all' || (i.paper && (show === 'mine' || i.paper.st === 'done'));
+  const nMine = own.length, nDone = own.filter(i => i.paper.st === 'done').length;
+  const items = ppFilter(show === 'all' ? all : own, show === 'done').filter(keep);
+  const list = q ? ppFilter(ppSearch(q).filter(i => cs.includes(i.c)), show === 'done').filter(keep) : items, byY = (a, b) => b.year - a.year || a.school.localeCompare(b.school);
+  const recent = i => i.paper?.done || i.paper?.at || 0, byR = (a, b) => recent(b) - recent(a) || byY(a, b);
+  const carry = show === 'all' ? list.filter(i => i.paper && i.paper.st !== 'done').sort(byY) : [];
+  const months = () => { const m = new Map(); list.slice().sort(byR).forEach(i => { const d = new Date(recent(i)), k = d.getFullYear() * 12 + d.getMonth(); if (!m.has(k)) m.set(k, [d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }), 'my-mo' + k, []]); m.get(k)[2].push(i); }); return [...m.values()]; };
+  const groups = (q ? [['Matches', 'q', list.slice().sort(show === 'all' ? byY : byR)]]
+    : show === 'mine' ? [['Marking', 'my-m', list.filter(i => i.paper.st !== 'done' && i.paper.qs?.length).sort(byR)], ['Not started', 'my-n', list.filter(i => i.paper.st !== 'done' && !i.paper.qs?.length).sort(byR)], ['Done', 'my-d', list.filter(i => i.paper.st === 'done').sort(byR)]]
+    : show === 'done' ? months()
+    : [['Carry on', 'carry', carry], ...PP_SECS.map(([k, name]) => [name, k, list.filter(i => i.sec === k).sort(byY)])]).filter(g => g[2].length);
+  const doneSum = show === 'done' && list.length ? (() => { const sc = list.map(i => ppScore(i.paper)).filter(x => x.of), av = sc.length ? Math.round(sc.reduce((a, x) => a + x.got / x.of * 100, 0) / sc.length) : null;
+    return `<div class="h7ppsum"><span><b>${list.length}</b> done${av !== null ? ` · average <b>${av}%</b>` : ''}</span><button class="link" data-act="prs-open" data-s="${s.k}" data-c="${wide ? '' : c}">Results over time</button></div>`; })() : '';
+  const empty = show === 'mine' ? `<p class="h7none">${q || pp.school || pp.y || pp.sec || pp.sol ? 'None of your papers match.' : `You haven’t added any ${esc(wide ? s.name : PP_COURSE[c].name)} papers yet. Open one from All papers, or import your own.`} <button class="link" data-act="pp-show" data-v="all">All papers</button></p>`
+    : show === 'done' ? `<p class="h7none">${q || pp.school || pp.y || pp.sec || pp.sol ? 'None of your finished papers match.' : `No ${esc(wide ? s.name : PP_COURSE[c].name)} papers done yet. When you finish marking one, it shows up here with your mark.`}</p>` : '';
   if (!pp.sel || !list.some(i => i.key === pp.sel)) pp.sel = (carry[0] || groups[0]?.[2][0])?.key || '';
   const sel = pp.sel ? ppItemOf(pp.sel) : null;
   const schools = [...new Set(all.filter(i => i.sec !== 'hsc').map(i => i.school))].sort((a, b) => a.localeCompare(b)), years = [...new Set(all.map(i => i.year))].sort((a, b) => b - a);
@@ -12311,21 +12427,24 @@ function renderPapers(partial){
   const selF = (id, label, cur, opts) => `<select id="${id}" class="h7ppf" aria-label="${label}">${opts.map(([v, l]) => `<option value="${esc(v)}" ${String(cur) === String(v) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
   const status = !ppLoaded(c) && ppIdxP ? '<p class="h7none">Getting the list of papers from THSC…</p>' : !ppLoaded(c) ? `<p class="h7none">${ppIdxErr === 'offline' ? 'You’re offline, so the THSC list can’t load yet.' : 'Couldn’t reach THSC for the list of papers.'} You can still upload papers. <button class="link" data-act="pp-reload">Try again</button></p>` : '';
   const row = (i, only) => { const p = i.paper, sc = p?.st === 'done' ? ppScore(p) : null, mk = p && p.st !== 'done' && p.qs?.length ? ppScore(p) : null;
+    if (show !== 'all') return ppMineRow(i, sc, mk, wide);
     const st = sc ? (sc.of ? sc.pct + '%' : 'Done') : mk ? `Q${mk.marked} of ${p.qs.length}` : p ? 'In your papers' : '';
     return `<button class="h7ppr ${i.key === pp.sel ? 'on' : ''}" data-act="pp-sel" data-k="${esc(i.key)}" aria-current="${i.key === pp.sel}"><span class="h7ppt"><b>${esc(only === 'year' ? String(i.year) : only === 'school' ? i.school : i.school === 'NSW HSC' ? `${i.year} HSC` : `${i.school} ${i.year}`)}</b><small>${i.old ? 'Old syllabus, ' + (i.sol ? 'with marking guidelines' : 'paper only') : `${esc(ppSecName(i.sec, true))}, ${i.sol ? 'with solutions' : 'paper only'}`}</small></span>${st ? `<span class="h7ppst ${sc || mk ? 'acc' : ''}">${esc(st)}</span>` : ''}</button>`; };
   const subTabs = ppShown().map(x => `<button type="button" data-act="pp-subj" data-v="${x.k}" aria-pressed="${x.k === s.k}">${esc(x.name)}</button>`).join('') + `<button type="button" class="h7ppadd" data-act="pp-subjects" aria-label="Choose subjects" title="Choose subjects">+</button>`;
-  const courseTabs = s.courses.length > 1 ? `<div class="h7pptabs" role="group" aria-label="Course">${s.courses.map(k => `<button type="button" data-act="pp-course" data-v="${k}" aria-pressed="${k === c}">${esc(PP_COURSE[k].short)}</button>`).join('')}</div>` : '';
+  const courseTabs = s.courses.length > 1 ? `<div class="h7pptabs" role="group" aria-label="Course">${show !== 'all' ? `<button type="button" data-act="pp-mall" aria-pressed="${wide}">All</button>` : ''}${s.courses.map(k => `<button type="button" data-act="pp-course" data-v="${k}" aria-pressed="${!wide && k === c}">${esc(PP_COURSE[k].short)}</button>`).join('')}</div>` : '';
+  const showTabs = `<div class="h7ppshow" role="group" aria-label="Show">${[['all', 'All papers', ''], ['mine', 'Your papers', nMine], ['done', 'Done', nDone]].map(([k, l, n]) => `<button type="button" data-act="pp-show" data-v="${k}" aria-pressed="${show === k}">${l}${n !== '' ? `<small>${n}</small>` : ''}</button>`).join('')}</div>`;
   const html = `<div class="h7pp">
     <section class="h7ppl1" aria-label="Papers">
       <div class="h7pph">
+        ${showTabs}
         <div class="h7ppsubj" role="group" aria-label="Subject">${subTabs}</div>
         ${courseTabs}
         <input id="ppq" class="in" type="search" placeholder="Search, e.g. ruse 2023 trial" value="${esc(ppQ)}" autocomplete="off" spellcheck="false" aria-label="Search past papers">
         <div class="h7ppfs">${selF('ppsecf', 'Section', pp.sec || '', [['', 'Any section'], ...PP_SECS.filter(([k]) => all.some(i => i.sec === k)).map(([k, l]) => [k, l.replace(/ assessments$/, '')])])}${selF('ppyear', 'Year', pp.y, [['', 'Any year'], ...years.map(y => [y, String(y)])])}${selF('ppschool', 'School', pp.school, [['', 'Any school'], ...schools.map(x => [x, x])])}</div>
-        <div class="h7ppfs"><button class="pptog" data-act="pp-tog" data-v="sol" aria-pressed="${!!pp.sol}">Has solutions</button><button class="pptog" data-act="pp-tog" data-v="todo" aria-pressed="${!!pp.todo}">Not done yet</button><button class="link" id="ppclear" data-act="pp-clear" ${pp.school || pp.y || pp.sec || pp.sol || pp.todo ? '' : 'hidden'}>Clear</button><span class="grow"></span><button class="link" data-act="pp-ipick">Import</button></div>
+        <div class="h7ppfs"><button class="pptog" data-act="pp-tog" data-v="sol" aria-pressed="${!!pp.sol}">Has solutions</button>${show === 'all' ? `<button class="pptog" data-act="pp-tog" data-v="todo" aria-pressed="${!!pp.todo}">Not done yet</button>` : ''}<button class="link" id="ppclear" data-act="pp-clear" ${pp.school || pp.y || pp.sec || pp.sol || pp.todo ? '' : 'hidden'}>Clear</button><span class="grow"></span><button class="link" data-act="pp-ipick">Import</button></div>
       </div>
-      <div class="h7pplist" id="h7pplist">${status}${q ? '' : `<div class="h7ppby" role="group" aria-label="Group papers"><span>Group by</span><button type="button" data-act="pp-by" data-v="school" aria-pressed="${ppBy === 'school'}">School</button><button type="button" data-act="pp-by" data-v="year" aria-pressed="${ppBy === 'year'}">Year</button><button type="button" data-act="pp-by" data-v="none" aria-pressed="${ppBy === 'none'}">Nothing</button></div>`}${groups.map(([name, k, xs]) => h7ppGroup(name, k, xs, q, row)).join('') || (ppLoaded(c) ? `<p class="h7none">No papers match. <button class="link" data-act="pp-clear">Clear the filters</button></p>` : '')}
-        <p class="ppcredit">Trial papers and assessment tasks are listed from <a href="https://thsconline.github.io/s/" target="_blank" rel="noopener">THSC Online</a>; HSC papers link to NESA. Recall keeps the list on this device and never re-hosts the papers.</p></div>
+      <div class="h7pplist" id="h7pplist">${show === 'all' ? status : ''}${doneSum}${q || show !== 'all' ? '' : `<div class="h7ppby" role="group" aria-label="Group papers"><span>Group by</span><button type="button" data-act="pp-by" data-v="school" aria-pressed="${ppBy === 'school'}">School</button><button type="button" data-act="pp-by" data-v="year" aria-pressed="${ppBy === 'year'}">Year</button><button type="button" data-act="pp-by" data-v="none" aria-pressed="${ppBy === 'none'}">Nothing</button></div>`}${groups.map(([name, k, xs]) => h7ppGroup(name, k, xs, q, row)).join('') || (show !== 'all' ? empty : ppLoaded(c) ? `<p class="h7none">No papers match. <button class="link" data-act="pp-clear">Clear the filters</button></p>` : '')}
+        ${show !== 'all' ? '' : `<p class="ppcredit">Trial papers and assessment tasks are listed from <a href="https://thsconline.github.io/s/" target="_blank" rel="noopener">THSC Online</a>; HSC papers link to NESA. Recall keeps the list on this device and never re-hosts the papers.</p>`}</div>
     </section>
     <main class="h7ppr1">${ppPreview(sel)}</main>
   </div>`;
@@ -12491,6 +12610,137 @@ setInterval(() => { if (!document.hidden) cdTick(); }, 250);
 
 /* ---------- Papers: typing in the search box or changing a filter redraws the list only ---------- */
 let ppQT = 0;
+/* a row in Your papers / Done: course (when all courses show), kind, when, and the mark */
+const ppWhen = t => { if (!t) return ''; const d = new Date(t); return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', ...(d.getFullYear() !== new Date().getFullYear() ? { year: 'numeric' } : {}) }); };
+function ppMineRow(i, sc, mk, wide){
+  const p = i.paper, title = i.school === 'NSW HSC' ? `${i.year} HSC` : `${i.school} ${i.year}`;
+  const sub = [wide ? PP_COURSE[i.c]?.short : '', ppSecName(i.sec, true), sc ? 'done ' + ppWhen(p.done || p.at) : mk ? `marked ${mk.marked} of ${p.qs.length}` : p.at ? 'added ' + ppWhen(p.at) : ''].filter(Boolean).join(' · ');
+  const st = sc ? (sc.of ? `<span class="h7ppst acc h7ppmk"><b>${sc.pct}%</b><small>${sc.got} / ${sc.of}</small></span>` : '<span class="h7ppst">Done</span>') : mk ? `<span class="h7ppst acc">Q${mk.marked} of ${p.qs.length}</span>` : '';
+  return `<button class="h7ppr ${i.key === pp.sel ? 'on' : ''}" data-act="pp-sel" data-k="${esc(i.key)}" aria-current="${i.key === pp.sel}"><span class="h7ppt"><b>${esc(title)}</b><small>${esc(sub)}</small></span>${st}</button>`;
+}
+
+/* ---------- Progress › Papers: every paper you've finished, by the date you finished it, with your mark (20 Nov 2026) ----------
+   Comes from S.settings.papers (st 'done', done = when). Range and subject are kept on this device (md-ppres); "Start fresh"
+   (S.settings.ppResFrom, synced) hides everything finished before a date without touching the papers or marks, and a
+   paper can be left out on its own (p.resOff). */
+let prs = { s: '', c: '', range: 'all', from: '', to: '', ...ls.get('md-ppres', {}) }, prsOld = false, prsOff = false;
+const prsSave = () => { const { s, c, range, from, to } = prs; ls.set('md-ppres', { s, c, range, from, to }); };
+const PRS_COL = ['#58b4c2', '#e2a552', '#a291f2', '#e47d90', '#7fc483', '#6aa2ec', '#d6be55', '#c88ad6', '#9aa7b8'];
+const prsDay = t => { const d = new Date(t); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const prsMs = k => { const [y, m, d] = String(k).split('-').map(Number); return y ? new Date(y, m - 1, d).getTime() : 0; };
+function prsAll(){
+  return Object.values(ppPapers()).filter(p => p.st === 'done' && PP_COURSE[p.c] && (p.done || p.at)).map(p => { const s = ppScore(p); return { p, t: p.done || p.at, got: s.got, of: s.of, pct: s.of ? s.got / s.of * 100 : null }; }).sort((a, b) => a.t - b.t);
+}
+function prsRange(){
+  const now = new Date(), end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime();
+  const r = prs.range, lo = r === '3m' ? new Date(now.getFullYear(), now.getMonth() - 3, now.getDate()).getTime() : r === '6m' ? new Date(now.getFullYear(), now.getMonth() - 6, now.getDate()).getTime() : r === 'year' ? new Date(now.getFullYear(), 0, 1).getTime() : r === 'custom' ? prsMs(prs.from) : 0;
+  const hi = r === 'custom' && prs.to ? prsMs(prs.to) + DAY : end;
+  const fresh = S.settings?.ppResFrom || 0;
+  return { lo: !prsOld && fresh > lo ? fresh : lo, hi, fresh };
+}
+function prsList(){
+  const { lo, hi } = prsRange();
+  return prsAll().filter(x => x.t >= lo && x.t < hi && (!prs.s || PP_COURSE[x.p.c].s === prs.s) && (!prs.c || x.p.c === prs.c));
+}
+const prsName = p => ppTitle(p) || 'Paper';
+const prsPct = n => n === null ? '–' : Math.round(n) + '%';
+const prsAvg = xs => xs.length ? xs.reduce((a, x) => a + x.pct, 0) / xs.length : null;
+function prsChart(xs, cols){
+  const el = $('#prschart'); if (!el) return;
+  const W = Math.max(280, el.clientWidth || 700), mob = W < 520, H = mob ? 220 : 280, L = 36, R = 14, T = 14, B = 28;
+  const pts = xs.filter(x => x.pct !== null);
+  if (!pts.length){ el.innerHTML = `<p class="hrsnone">No marks in this range yet.</p>`; return; }
+  let t0 = pts[0].t, t1 = pts[pts.length - 1].t; if (t1 - t0 < 14 * DAY){ const m = (t0 + t1) / 2; t0 = m - 7 * DAY; t1 = m + 7 * DAY; }
+  const pad = (t1 - t0) * .04; t0 -= pad; t1 += pad;
+  const X = t => L + (t - t0) / (t1 - t0) * (W - L - R), Y = v => T + (100 - v) / 100 * (H - T - B);
+  let g = '';
+  for (const v of [0, 25, 50, 75, 100]) g += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" class="prsgl${v === 0 ? ' base' : ''}"/><text x="${L - 8}" y="${Y(v) + 4}" text-anchor="end" class="prsax">${v}</text>`;
+  /* month ticks, thinned so labels don't collide */
+  const ms = []; const d = new Date(t0); d.setDate(1); d.setHours(0, 0, 0, 0); d.setMonth(d.getMonth() + 1);
+  while (d.getTime() <= t1){ ms.push(d.getTime()); d.setMonth(d.getMonth() + 1); }
+  const room = Math.max(1, Math.floor((W - L - R) / (mob ? 46 : 58))), step = [1, 2, 3, 4, 6, 12].find(s => ms.length / s <= room) || 12;
+  let lastY = null;
+  ms.forEach((t, i) => { const dt = new Date(t); if (dt.getMonth() % step && step > 1) return; if (step === 1 || true){ const y = dt.getFullYear(), lab = dt.toLocaleDateString(undefined, { month: 'short' }) + (y !== lastY ? ' ' + y : ''); lastY = y; g += `<line x1="${X(t)}" x2="${X(t)}" y1="${H - B}" y2="${H - B + 4}" class="prstk"/><text x="${X(t)}" y="${H - B + 17}" text-anchor="middle" class="prsax">${esc(lab)}</text>`; } void i; });
+  if (!ms.length) g += `<text x="${(L + W - R) / 2}" y="${H - B + 17}" text-anchor="middle" class="prsax">${esc(new Date((t0 + t1) / 2).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }))}</text>`;
+  const by = new Map(); pts.forEach(x => { if (!by.has(x.p.c)) by.set(x.p.c, []); by.get(x.p.c).push(x); });
+  for (const [c, ys] of by){ const col = cols[c]; if (ys.length > 1) g += `<polyline points="${ys.map(x => `${X(x.t).toFixed(1)},${Y(x.pct).toFixed(1)}`).join(' ')}" fill="none" stroke="${col}" class="prsln"/>`; }
+  for (const [c, ys] of by){ const col = cols[c]; for (const x of ys) g += `<g class="prsdot" data-act="prs-go" data-id="${esc(x.p.id)}" tabindex="0" role="button" aria-label="${esc(`${prsName(x.p)}, ${PP_COURSE[c].name}, ${Math.round(x.pct)}%, ${ppWhen(x.t)}`)}"><title>${esc(`${prsName(x.p)} · ${PP_COURSE[c].short}\n${x.got} / ${x.of} (${Math.round(x.pct)}%) · ${ppWhen(x.t)}`)}</title><circle cx="${X(x.t).toFixed(1)}" cy="${Y(x.pct).toFixed(1)}" r="11" class="prshit"/><circle cx="${X(x.t).toFixed(1)}" cy="${Y(x.pct).toFixed(1)}" r="4.5" fill="${col}"/></g>`; }
+  el.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Your marks over time">${g}</svg>`;
+}
+function renderPPRes(){
+  const allDone = prsAll(), { lo, fresh } = prsRange(), xs = prsList(), marked = xs.filter(x => x.pct !== null);
+  const off = xs.filter(x => x.p.resOff), shown = prsOff ? xs : xs.filter(x => !x.p.resOff), pts = shown.filter(x => x.pct !== null);
+  /* subjects and courses that have any finished paper (in any range), so the tabs don't jump about */
+  const subs = PP_SUBJ.filter(s => allDone.some(x => PP_COURSE[x.p.c].s === s.k));
+  if (prs.s && !subs.some(s => s.k === prs.s)) prs.s = '';
+  const sObj = PP_SUBJ.find(s => s.k === prs.s), courses = sObj ? sObj.courses.filter(c => allDone.some(x => x.p.c === c)) : [];
+  if (prs.c && !courses.includes(prs.c)) prs.c = '';
+  const order = [...new Set(allDone.map(x => x.p.c))].sort((a, b) => Object.keys(PP_COURSE).indexOf(a) - Object.keys(PP_COURSE).indexOf(b)), cols = Object.fromEntries(order.map((c, i) => [c, PRS_COL[i % PRS_COL.length]]));
+  const av = prsAvg(pts), best = pts.reduce((b, x) => !b || x.pct > b.pct ? x : b, null), last = pts[pts.length - 1];
+  const k = Math.min(5, Math.floor(pts.length / 2)), early = prsAvg(pts.slice(0, k)), late = prsAvg(pts.slice(-k)), diff = k >= 2 ? Math.round(late - early) : null;
+  const trend = diff === null ? '' : !diff ? `<span class="hdelta">about the same as your first ${k}</span>` : `<span class="hdelta ${diff > 0 ? 'up' : 'down'}">${diff > 0 ? 'up' : 'down'} ${Math.abs(diff)} point${Math.abs(diff) === 1 ? '' : 's'}: your last ${k} against your first ${k}</span>`;
+  const rangeBtns = [['3m', '3 months'], ['6m', '6 months'], ['year', 'This year'], ['all', 'All time']].map(([v, l]) => `<button role="radio" data-act="prs-range" data-v="${v}" aria-checked="${prs.range === v}">${l}</button>`).join('');
+  const now = Date.now(), fromV = prs.range === 'custom' ? prs.from : lo ? prsDay(lo) : allDone.length ? prsDay(allDone[0].t) : '', toV = prs.range === 'custom' && prs.to ? prs.to : prsDay(now);
+  const by = (key, name) => { const m = new Map(); pts.forEach(x => { const kk = key(x); if (!m.has(kk)) m.set(kk, []); m.get(kk).push(x); }); return [...m.entries()].map(([kk, ys]) => ({ kk, name: name(kk), n: ys.length, av: prsAvg(ys), best: Math.max(...ys.map(y => y.pct)) })).sort((a, b) => b.n - a.n); };
+  const courseRows = by(x => x.p.c, c => PP_COURSE[c].name), secRows = by(x => x.p.sec === 'hsc' ? 'hsc' : x.p.sec === 'trial' ? 'trial' : 'task', k2 => ({ hsc: 'HSC papers', trial: 'Trial papers', task: 'School assessments' })[k2]);
+  const table = rows => `<ul class="prsby">${rows.map(r => `<li><span class="hnm">${esc(r.name)}</span><span class="prsn">${h7Plural(r.n, 'paper')}</span><span class="prsbar"><i style="width:${r.av.toFixed(1)}%"></i></span><b>${prsPct(r.av)}</b></li>`).join('')}</ul>`;
+  const rows = shown.slice().reverse().map(x => { const c = x.p.c; return `<li class="${x.p.resOff ? 'off' : ''}"><button class="prsrow" data-act="prs-go" data-id="${esc(x.p.id)}"><span class="hdot" style="background:${cols[c]}"></span><span class="htm">${esc(ppWhen(x.t))}</span><span class="hnm"><b>${esc(prsName(x.p))}</b><small>${esc(PP_COURSE[c].short)} · ${esc(ppSecName(x.p.sec, true))}</small></span><span class="prsmk">${x.of ? `${x.got} / ${x.of}` : 'no mark'}</span><b class="prspc">${x.pct === null ? '' : Math.round(x.pct) + '%'}</b></button><button class="hx" data-act="prs-menu" data-id="${esc(x.p.id)}" aria-label="More for ${esc(prsName(x.p))}" title="Change the date or mark, or leave it out"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.2" fill="currentColor"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><circle cx="12.5" cy="8" r="1.2" fill="currentColor"/></svg></button></li>`; }).join('');
+  const body = !allDone.length ? `<div class="prsempty"><h2>No papers done yet</h2><p>When you finish marking a paper in Past papers, the day you finished it and your mark show up here, so you can see how you’re going over time.</p><button class="btn primary" data-nav="papers">Open Past papers</button></div>`
+    : `<div class="hrstop"><div class="hrsbig"><b>${av === null ? '–' : Math.round(av)}<small>%</small></b>${trend || `<span class="hdelta">${pts.length ? `average over ${h7Plural(pts.length, 'paper')}` : 'no marks in this range'}</span>`}</div>
+      <dl class="hrsfacts"><div><dt>Papers done</dt><dd>${shown.length}</dd></div><div><dt>Best</dt><dd>${best ? `${prsPct(best.pct)}, ${esc(prsName(best.p))}` : '–'}</dd></div><div><dt>Latest</dt><dd>${last ? `${prsPct(last.pct)}, ${esc(ppWhen(last.t))}` : '–'}</dd></div></dl></div>
+      <section class="prschartw"><h2>Your marks</h2><div id="prschart" class="prschart"></div>${order.filter(c => pts.some(x => x.p.c === c)).length > 1 ? `<div class="prsleg">${order.filter(c => pts.some(x => x.p.c === c)).map(c => `<span><i style="background:${cols[c]}"></i>${esc(PP_COURSE[c].name)}</span>`).join('')}</div>` : ''}</section>
+      <div class="hrsgrid"><section><h2>Every paper</h2>${rows ? `<ul class="prsl">${rows}</ul>` : `<p class="hrsnone">No papers finished in this range.</p>`}
+        ${off.length ? `<button class="link" data-act="prs-showoff">${prsOff ? 'Hide the ones left out' : `${h7Plural(off.length, 'paper')} left out. Show ${off.length === 1 ? 'it' : 'them'}`}</button>` : ''}</section>
+      <section>${courseRows.length > 1 ? `<h2>By course</h2>${table(courseRows)}` : ''}${secRows.length ? `<h2 ${courseRows.length > 1 ? 'class="hrsh2b"' : ''}>By kind of paper</h2>${table(secRows)}` : ''}</section></div>`;
+  $('#root').innerHTML = `<div class="hrs prs">${hrsSwitch()}
+    ${allDone.length ? `<div class="prsfil">
+      <div class="h7ppsubj" role="group" aria-label="Subject"><button type="button" data-act="prs-subj" data-v="" aria-pressed="${!prs.s}">All subjects</button>${subs.map(s => `<button type="button" data-act="prs-subj" data-v="${s.k}" aria-pressed="${prs.s === s.k}">${esc(s.name)}</button>`).join('')}</div>
+      ${courses.length > 1 ? `<div class="h7pptabs" role="group" aria-label="Course"><button type="button" data-act="prs-course" data-v="" aria-pressed="${!prs.c}">All</button>${courses.map(c => `<button type="button" data-act="prs-course" data-v="${c}" aria-pressed="${prs.c === c}">${esc(PP_COURSE[c].short)}</button>`).join('')}</div>` : ''}
+      <div class="hrsnav prsnav"><div role="radiogroup" aria-label="Range" class="hrsmode">${rangeBtns}</div>
+        <div class="prsdates"><label>From <input type="date" id="prsf" class="in" value="${fromV}" max="${toV}"></label><label>to <input type="date" id="prst" class="in" value="${toV}" ${fromV ? `min="${fromV}"` : ''}></label></div></div>
+    </div>` : ''}
+    ${body}
+    ${allDone.length ? `<p class="hrsfoot prsfoot">${fresh ? `${prsOld ? 'Showing everything, including papers before' : 'Starting from'} ${esc(new Date(fresh).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' }))}. <button class="link" data-act="prs-old">${prsOld ? 'Only show from then on' : 'Show older ones too'}</button> · <button class="link" data-act="prs-unfresh">Bring the older ones back</button>` : `Click a dot or a paper to open it. Done with this year’s results? <button class="link" data-act="prs-fresh">Start fresh…</button>`}</p>` : ''}
+  </div>`;
+  prsChart(shown, cols);
+}
+addEventListener('resize', () => { if (view.name === 'ppres'){ clearTimeout(prsChart.t); prsChart.t = setTimeout(() => { const xs = prsList(), shown = prsOff ? xs : xs.filter(x => !x.p.resOff), order = [...new Set(prsAll().map(x => x.p.c))].sort((a, b) => Object.keys(PP_COURSE).indexOf(a) - Object.keys(PP_COURSE).indexOf(b)); prsChart(shown, Object.fromEntries(order.map((c, i) => [c, PRS_COL[i % PRS_COL.length]]))); }, 120); } });
+document.addEventListener('change', e => {
+  const id = e.target.id; if (id !== 'prsf' && id !== 'prst' && id !== 'prsdd') return;
+  if (id === 'prsdd') return;
+  const f = $('#prsf')?.value || '', t = $('#prst')?.value || '';
+  prs = { ...prs, range: 'custom', from: f, to: t && f && t < f ? f : t }; prsSave(); renderPPRes();
+});
+async function prsSetPaper(id, patch, label){ const p = ppPapers()[id]; if (!p) return; const p2 = { ...p, ...patch }; Object.keys(patch).forEach(k => patch[k] === undefined && delete p2[k]); undoTx = null; undoLabel = label; S.settings = { ...S.settings, papers: { ...ppPapers(), [id]: p2 } }; await saveSettings(); }
+function prsDateDialog(id){
+  const p = ppPapers()[id]; if (!p) return;
+  openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="prsdh" style="max-width:380px"><header><h2 id="prsdh">When did you finish it?</h2></header>
+    <div class="body"><p class="hint" style="margin:0 0 4px">${esc(prsName(p))} · ${esc(PP_COURSE[p.c]?.name || '')}</p><div class="field"><label for="prsdd">Date finished</label><input class="in" id="prsdd" type="date" value="${prsDay(p.done || p.at)}" max="${prsDay(Date.now())}"></div></div>
+    <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="prs-datesave" data-id="${esc(id)}">Save</button></footer></div>`, () => $('#prsdd')?.focus());
+}
+async function prsAction(act, a, e){
+  const v = a.dataset.v, id = a.dataset.id;
+  switch (act){
+    case 'prs-open': study = null; if (a.dataset.s !== undefined){ prs.s = a.dataset.s || ''; prs.c = a.dataset.c || ''; prsSave(); } return go('ppres');
+    case 'prs-subj': prs.s = v; prs.c = ''; prsSave(); return renderPPRes();
+    case 'prs-course': prs.c = v; prsSave(); return renderPPRes();
+    case 'prs-range': prs.range = v; prsSave(); return renderPPRes();
+    case 'prs-go': study = null; return go('ppmark', id);
+    case 'prs-showoff': prsOff = !prsOff; return renderPPRes();
+    case 'prs-old': prsOld = !prsOld; return renderPPRes();
+    case 'prs-menu': { const p = ppPapers()[id]; if (!p) return; const r = a.getBoundingClientRect(), it = ppItemOf(p.key || 'p:' + p.id);
+      return menuAt(`<button data-act="prs-go" data-id="${esc(id)}">Open the paper</button><button data-act="prs-date" data-id="${esc(id)}">Change the date…</button>${it ? `<button data-act="pp-m-score" data-k="${esc(it.key)}">Change the mark…</button>` : ''}<hr><button data-act="prs-off" data-id="${esc(id)}">${p.resOff ? 'Put back in results' : 'Leave out of results'}</button>`, e?.clientX ? { x: e.clientX, y: e.clientY } : { x: r.left, y: r.bottom + 4 }); }
+    case 'prs-date': closeMenu(); return prsDateDialog(id);
+    case 'prs-datesave': { const p = ppPapers()[id], k = $('#prsdd')?.value; if (!p || !k) return closeDialog(); const t0 = prsMs(k), old = new Date(p.done || p.at), t = t0 + (old.getHours() * 60 + old.getMinutes()) * 60e3; if (t > Date.now() + DAY) return toast('That date hasn’t happened yet.');
+      closeDialog(); await prsSetPaper(id, { done: t }, 'date finished'); render(); return toast(`Moved to ${ppWhen(t)} · ⌘Z to undo`); }
+    case 'prs-off': { closeMenu(); const p = ppPapers()[id]; if (!p) return; await prsSetPaper(id, { resOff: p.resOff ? undefined : true }, 'results'); render(); return toast(p.resOff ? 'Back in your results' : 'Left out of your results · ⌘Z to undo'); }
+    case 'prs-fresh': return openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="prsfh" style="max-width:440px"><header><h2 id="prsfh">Start fresh?</h2></header>
+      <div class="body"><p style="margin:0">Results will only count papers you finish from today on, so older marks stop pulling your averages and the graph.</p><p class="hint" style="margin:10px 0 0">Nothing is deleted. Your papers and marks stay in Past papers, and you can bring the older results back here any time.</p></div>
+      <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="prs-freshgo">Start fresh from today</button></footer></div>`);
+    case 'prs-freshgo': { const d = new Date(); closeDialog(); undoTx = null; undoLabel = 'start fresh'; S.settings = { ...S.settings, ppResFrom: new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() }; prsOld = false; await saveSettings(); render(); return toast('Results start from today · ⌘Z to undo'); }
+    case 'prs-unfresh': { undoTx = null; undoLabel = 'start fresh'; const st = { ...S.settings }; delete st.ppResFrom; S.settings = st; prsOld = false; await saveSettings(); render(); return toast('Older results are back · ⌘Z to undo'); }
+  }
+}
 function h7ppRefresh(){ const l = $('#h7pplist'), top = l?.scrollTop || 0; renderPapers('list'); const l2 = $('#h7pplist'); if (l2) l2.scrollTop = top; }
 let ppOpen = new Set(ls.get('md-pp-open', [])), ppBy = ls.get('md-pp-by', 'school');
 function h7ppGroup(name, k, xs, q, row){
@@ -12500,7 +12750,7 @@ function h7ppGroup(name, k, xs, q, row){
     const cur = xs.filter(i => !i.old), old = xs.filter(i => i.old), id = 'hsc|old', open = ppOpen.has(id), ys = old.map(i => i.year);
     return `<div class="h7ppg">${head}${cur.map(i => row(i)).join('')}<div class="h7ppfo ${open ? 'open' : ''}"><button class="h7ppfh" data-act="pp-grp" data-v="${id}" aria-expanded="${open}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Older syllabus</b><small>${old.length} papers, ${Math.min(...ys)}–${Math.max(...ys)}</small></button>${open ? `<div class="h7ppfi">${old.map(i => row(i, 'year')).join('')}</div>` : ''}</div></div>`;
   }
-  if (q || ppBy === 'none' || k === 'carry' || k === 'hsc' || xs.length <= 8){
+  if (q || ppBy === 'none' || k === 'carry' || k === 'hsc' || k.startsWith('my-') || xs.length <= 8){
     const cap = ppMore.has(k) || q ? xs.length : 60;
     return `<div class="h7ppg">${head}${xs.slice(0, cap).map(i => row(i)).join('')}${xs.length > cap ? `<button class="link h7ppmore" data-act="pp-more" data-v="${k}">Show all ${xs.length}</button>` : ''}</div>`;
   }
@@ -13341,7 +13591,7 @@ function hrsPlanner(d){
   return `<div class="hplanner" role="img" aria-label="When you studied on ${hrsDate(d.key, { weekday: 'long', day: 'numeric', month: 'long' })}"><div class="hpcol">${rows.slice(0, 12).join('')}</div><div class="hpcol">${rows.slice(12).join('')}</div></div>`;
 }
 function hrsSwitch(){
-  return `<div class="hrsswitch" role="tablist" aria-label="Progress"><button role="tab" data-act="hrs-cards" aria-selected="${view.name === 'stats'}">Cards</button><button role="tab" data-act="hrs-open" aria-selected="${view.name === 'hours'}">Study time</button><button role="tab" data-act="tsk-open" aria-selected="${view.name === 'tasks'}">Tasks</button></div>`;
+  return `<div class="hrsswitch" role="tablist" aria-label="Progress"><button role="tab" data-act="hrs-cards" aria-selected="${view.name === 'stats'}">Cards</button><button role="tab" data-act="hrs-open" aria-selected="${view.name === 'hours'}">Study time</button><button role="tab" data-act="tsk-open" aria-selected="${view.name === 'tasks'}">Tasks</button><button role="tab" data-act="prs-open" aria-selected="${view.name === 'ppres'}">Papers</button></div>`;
 }
 function renderHours(){
   const today = fDay();
@@ -14075,13 +14325,14 @@ setInterval(() => { if (document.hidden || !grOn()) return; if (gr.loaded && Dat
 
 /* ---------- Papers: "Sit it timed" starts the full-screen Exam timer with this paper's reading and writing time ---------- */
 function ppSitTimes(c){
+  const own = ls.get('md-pp-sit', {})[c]; if (own) return { read: own.read, work: own.work };
   const name = PP_COURSE[c]?.name || '', pre = EX_PRESETS.find(([n]) => n === name) || EX_PRESETS.find(([n]) => name && (n.startsWith(name) || name.startsWith(n)));
   return pre ? { read: pre[1], work: pre[2] } : { read: 5, work: 180 };
 }
 const ppDur = m => m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ' ' + (m % 60) + ' min' : ''}` : `${m} min`;
 function ppSitHtml(it){
   const t = ppSitTimes(it.c), end = Date.now() + (t.read + t.work) * 60e3;
-  return `<section class="ppsit" aria-label="Sit it timed"><div class="ppsit1"><div><h2>Sit it timed</h2><p>${t.read} min reading, ${ppDur(t.work)} writing. Pens down at ${exClock(end)} if you start now.</p></div><button class="btn" data-act="sit-paper" data-k="${esc(it.key)}">Start reading time</button></div>
+  return `<section class="ppsit" aria-label="Sit it timed" data-c="${esc(it.c)}" title="Right-click to change the times"><div class="ppsit1"><div><h2>Sit it timed</h2><p>${t.read} min reading, ${ppDur(t.work)} writing. Pens down at ${exClock(end)} if you start now.</p></div><button class="btn" data-act="sit-paper" data-k="${esc(it.key)}">Start reading time</button></div>
     <label class="ppsitl"><input type="checkbox" id="ppsitlock" ${exSet.lock ? 'checked' : ''}> Lock Recall until the time is up</label></section>`;
 }
 function ppSit(k){
@@ -14093,7 +14344,7 @@ function ppSit(k){
 
 /* ---------- ⌘K: go anywhere or do anything ---------- */
 let ck = null;
-const CK_PAGES = [['Today', 'decks'], ['Plan', 'todo'], ['Cards', 'browse'], ['Papers', 'papers'], ['Mistakes', 'mistakes'], ['Progress', 'stats'], ['Study time', 'hours'], ['Tasks done', 'tasks'], ['Group study', 'group'], ['Exam timer', 'exam'], ['Settings', 'themes']];
+const CK_PAGES = [['Today', 'decks'], ['Plan', 'todo'], ['Cards', 'browse'], ['Papers', 'papers'], ['Mistakes', 'mistakes'], ['Progress', 'stats'], ['Study time', 'hours'], ['Tasks done', 'tasks'], ['Paper results', 'ppres'], ['Group study', 'group'], ['Exam timer', 'exam'], ['Settings', 'themes']];
 function ckActions(){
   const s = curSubj(), fs = focus.state, mac = /Mac|iP/.test(navigator.platform) ? '⌘' : 'Ctrl ';
   return [
@@ -14153,6 +14404,41 @@ document.addEventListener('keydown', e => {
 document.addEventListener('input', e => { if (e.target.id === 'ckq' && ck){ ck.i = 0; ckDraw(); } });
 document.addEventListener('click', e => { const t = e.target.closest?.('[data-ck]'); if (!t || !ck) return; e.preventDefault(); e.stopPropagation(); if (t.dataset.ck === 'close') return ckClose(); ckRun(+t.dataset.ck); }, true);
 document.addEventListener('mousemove', e => { const t = e.target.closest?.('.ckr'); if (!t || !ck) return; const i = +t.dataset.ck; if (i !== ck.i){ ck.i = i; document.querySelectorAll('.ckr').forEach(x => x.setAttribute('aria-selected', String(+x.dataset.ck === i))); } });
+
+/* ---------- Papers: more than one box per question (20 Nov 2026) ----------
+   "Add a box" adds another box to the picked question (the rest of it on the next page, or a second part), "Redraw" replaces its
+   boxes with just the part you want (and drops the question's stem). Each box becomes one picture on the card. Boxes you draw on an
+   auto-found question are kept in p.mseg[key]; on a question you boxed yourself, in p.man. Solutions can take extra boxes too. */
+const ppSegClean = g => ({ p: g.p, x0: g.x0, x1: g.x1, y0: g.y0, y1: g.y1 });
+function ppmSetSegs(p, it, segs){
+  segs = segs.map(ppSegClean); it.segs = segs.map(g => ({ ...g, hand: true })); it.stem = null;
+  if (it.man) p.man = (p.man || []).map(b => b.key === it.key ? { ...b, segs } : b); else p.mseg = { ...(p.mseg || {}), [it.key]: segs };
+  (ppm.reboxed ||= new Set()).add(it.key);
+}
+function ppmBoxRow(it){
+  const n = it.segs?.length || 0, pages = [...new Set((it.segs || []).map(g => ppmPageName(g.p)))], d = ppm.draw;
+  const where = n ? `${n > 1 ? n + ' boxes' : 'Boxed'} on page${pages.length > 1 ? 's ' + pages.join(', ') : ' ' + pages[0]}` : 'No box yet';
+  return `<div class="ppboxrow"><span>${where}</span>${d === 'a' || d === 'r' ? `<button class="btn sm" data-act="pp-draw" data-v="${d}">Done</button>` : `<button class="link sm" data-act="pp-draw" data-v="a" title="Box another part of this question, e.g. where it carries on to the next page">Add a box</button><button class="link sm" data-act="pp-draw" data-v="r" title="Box just the part you want instead">Redraw</button>`}</div>
+    ${d === 'a' || d === 'r' ? `<p class="hint ppboxhint">${d === 'r' ? 'Drag round just the part you want. You can add more boxes after.' : 'Drag round the next part. Scroll to another page if it carries on. Each box is a picture on the card.'}</p>` : ''}`;
+}
+/* the Sit it timed box: right-click (or press and hold) to change the times for that course */
+function ppSitDialog(c){
+  const t = ppSitTimes(c), name = PP_COURSE[c]?.name || 'this course';
+  openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="ppsh" style="max-width:420px"><header><h2 id="ppsh">Timed conditions</h2></header>
+    <div class="body"><p class="hint" style="margin:0 0 4px">For ${esc(name)} papers.</p>
+      <div class="mklrow2" style="grid-template-columns:1fr 1fr"><div class="field"><label for="ppsr">Reading time, minutes</label><input class="in" id="ppsr" type="number" inputmode="numeric" min="0" max="30" value="${t.read}"></div>
+      <div class="field"><label for="ppsw">Writing time, minutes</label><input class="in" id="ppsw" type="number" inputmode="numeric" min="5" max="360" value="${t.work}"></div></div>
+      <label class="check" style="margin-top:4px"><input type="checkbox" id="ppsl" ${exSet.lock ? 'checked' : ''}> Lock Recall until the time is up</label></div>
+    <footer>${ls.get('md-pp-sit', {})[c] ? `<button class="link" data-act="pp-sit-reset" data-c="${esc(c)}">Use the HSC times</button>` : ''}<span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="pp-sit-save" data-c="${esc(c)}">Save</button></footer></div>`, () => $('#ppsw')?.focus());
+}
+function ppSitSave(c, reset){
+  const all = { ...ls.get('md-pp-sit', {}) };
+  if (reset) delete all[c];
+  else { const r = Math.max(0, Math.min(30, Math.round(+$('#ppsr').value || 0))), w = Math.max(5, Math.min(360, Math.round(+$('#ppsw').value || 0))); all[c] = { read: r, work: w }; exSet = { ...exSet, lock: !!$('#ppsl')?.checked }; ls.set('md-exam-set', exSet); }
+  ls.set(LS_PPSIT, all); closeDialog(); render(); toast(reset ? 'Back to the HSC times' : 'Saved the times for these papers');
+}
+const LS_PPSIT = 'md-pp-sit';
+document.addEventListener('contextmenu', e => { const b = e.target.closest?.('.ppsit'); if (!b) return; e.preventDefault(); e.stopPropagation(); ppSitDialog(b.dataset.c); }, true);
 
 initStore().finally(() => { lhMigrate(); designMigrate(); h7Migrate(); if (S.ready) settingsRepair(); cloudBoot(); });
 render();
