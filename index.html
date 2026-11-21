@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261120234914";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261121182349";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -8808,7 +8808,13 @@ function todoTidy(l){
   while (out.at(-1)?.k === 'gap') out.pop();
   return out;
 }
-const todoTasks = l => l.filter(x => !x.k);
+const todoTasks = l => l.filter(x => !x.k && !x.done);
+/* what the list shows: open tasks plus the ones ticked off today, each left where it was so you can see the day's work.
+   Anything finished before today goes down to Finished. (21 Nov 2026) */
+function todoListShow(subj, tab = todoTab){
+  const f = todoEff(subj), t0 = today0(), l = todoAll().filter(x => (!x.done || (!x.k && x.done >= t0)) && todoIn(x, tab) && (x.k || todoMatch(x, f))).sort((a, b) => todoOrd(a) - todoOrd(b));
+  return f ? todoTidy(l) : l;
+}
 function todoDoneList(subj, tab = todoTab){
   const f = todoEff(subj); return todoAll().filter(x => x.done && todoIn(x, tab) && todoMatch(x, f)).sort((a, b) => a.done - b.done);
 }
@@ -8840,13 +8846,13 @@ function todoRow(x, i){
 }
 let todoRowSubj = null;
 /* finished tasks sit under their own heading; it's always there when something's ticked off and can't be moved or renamed */
-const todoDoneHead = n => `<div class="tdr tdh tdon tddh" role="heading" aria-level="3"><span class="tdselb ghost" aria-hidden="true"></span><span class="tdfold" aria-hidden="true"></span><span class="tdt">Finished</span><span class="tdhn">${n}</span></div>`;
+const todoDoneHead = n => `<div class="tdr tdh tdon tddh" role="heading" aria-level="3"><span class="tdselb ghost" aria-hidden="true"></span><span class="tdfold" aria-hidden="true"></span><span class="tdt">Finished before today</span><span class="tdhn">${n}</span></div>`;
 /* what shows: tasks under a folded heading stay hidden until you open it again */
 function todoShown(open){
   let h = null; const out = [];
   for (const x of open){
     if (x.k === 'h'){ h = x; h._m = 0; h._n = 0; out.push(x); continue; }
-    if (h && !x.k){ h._m += x.m || 0; h._n++; }
+    if (h && !x.k && !x.done){ h._m += x.m || 0; h._n++; }
     if (h?.c) continue;
     out.push(x);
   }
@@ -8856,12 +8862,12 @@ function todoSection(subj, page){
   todoSpawn(); calRoll(); todoRowSubj = subj || null; if (!todoKeys().includes(todoTab)) todoTab = 'today';
   const f = todoEff(subj), addTo = f || subj, anName = todoFName(addTo);
   const nr = todoRules().filter(r => todoMatch(r, f)).length;
-  const open = todoList(subj), done = todoDoneList(subj), today = done.length, nTask = todoTasks(open).length, shown = todoShown(open);
-  const nOf = k => todoTasks(todoList(subj, k)).length, w = todoWip(), nd = todoDoing(), over = w && nd > w, mins = todoMins(open), minsDone = todoMins(done);
+  const open = todoList(subj), doneAll = todoDoneList(subj), t0 = today0(), done = doneAll.filter(x => x.done < t0), today = doneAll.length - done.length, nTask = todoTasks(open).length, shown = todoShown(todoListShow(subj));
+  const nOf = k => todoTasks(todoList(subj, k)).length, w = todoWip(), nd = todoDoing(), over = w && nd > w, mins = todoMins(open), minsDone = todoMins(doneAll.filter(x => x.done >= t0));
   const tm = mins ? ` · <span class="tdtot" title="Time estimated for the tasks left${minsDone ? ', ' + fmtMin(minsDone) + ' done' : ''}">${fmtMin(mins)}</span>` : '';
   const cap = todoTab === 'doing'
-    ? `${w ? `${nd} of ${w} at once` : `${nd} in progress`}${f && nd !== nTask ? ` · ${nTask} in ${esc(todoFName(f))}` : ''}${tm}${today ? ` · ${today} done` : ''} · <button class="tdrepl" data-act="todo-wip">${w ? 'Change limit' : 'Set a limit'}</button>${over ? `<span class="tdover">Over your limit</span>` : ''}`
-    : `${nTask ? `${nTask} left` : today ? 'All done' : todoTab === 'today' ? 'Nothing for today yet' : todoTab === 'hw' ? 'No homework to hand in' : todoTab === 'later' ? 'Nothing waiting' : todoTab === 'all' ? 'Nothing to revise yet' : 'Nothing here'}${tm}${today ? ` · ${today} done` : ''}${nr ? ` · <button class="tdrepl" data-act="todo-reps">${nr} repeating</button>` : ''}`;
+    ? `${w ? `${nd} of ${w} at once` : `${nd} in progress`}${f && nd !== nTask ? ` · ${nTask} in ${esc(todoFName(f))}` : ''}${tm}${today ? ` · ${today} done today` : ''} · <button class="tdrepl" data-act="todo-wip">${w ? 'Change limit' : 'Set a limit'}</button>${over ? `<span class="tdover">Over your limit</span>` : ''}`
+    : `${nTask ? `${nTask} left` : today ? 'All done for today' : todoTab === 'today' ? 'Nothing for today yet' : todoTab === 'hw' ? 'No homework to hand in' : todoTab === 'later' ? 'Nothing waiting' : todoTab === 'all' ? 'Nothing to revise yet' : 'Nothing here'}${tm}${today && nTask ? ` · ${today} done today` : ''}${nr ? ` · <button class="tdrepl" data-act="todo-reps">${nr} repeating</button>` : ''}`;
   const subs = kids(null), fl = f ? esc(todoFName(f)) : 'All subjects';
   const act = todoNewKind || todoNewMin || todoRepDays.size || todoRepOpen;
   /* selection: only rows you can see stay selected */
@@ -8876,10 +8882,10 @@ function todoSection(subj, page){
         if (todoTabRen === k) return `<input class="tdtabin" data-ren="${k}" maxlength="40" value="${esc(l)}" aria-label="Rename list" size="${Math.max(6, l.length + 1)}">`;
         return `<button type="button" role="tab" data-act="todo-tab" data-v="${k}" aria-selected="${todoTab === k}" class="${k === 'doing' && over ? 'over' : ''}" data-own="1" aria-haspopup="true" title="${todoTab === k ? (own ? 'Rename or delete this list' : 'Rename this list') : esc(l)}">${esc(l)}${n ? `<b>${n}</b>` : ''}</button>`; }).join('')}${todoTabNew ? `<input class="tdtabin" data-new="1" maxlength="40" placeholder="List name" aria-label="New list name" size="12">` : `<button type="button" class="tdtabadd" data-act="todo-tabnew" title="New list, like Assignments" aria-label="New list">${'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>'}</button>`}</div>
       ${nSel ? `<div class="tdselbar" role="toolbar" aria-label="Selected tasks"><b>${nSel} selected</b><button type="button" data-act="todo-bmove" aria-haspopup="true">Move to…</button><button type="button" data-act="todo-bsubj" aria-haspopup="true">Subject…</button><button type="button" data-act="todo-btick">Tick off</button><button type="button" class="danger" data-act="todo-bdel">Delete</button><span class="grow"></span><span class="tdselhint">Drag any of them to move them all</span><button type="button" data-act="todo-selclear" aria-label="Clear the selection">${I.x}</button></div>` : ''}
-      ${shown.length + today ? `<div class="tdl">${shown.map(todoRow).join('')}${today ? todoDoneHead(today) + done.map((x, i) => todoRow(x, shown.length + 1 + i)).join('') : ''}</div>` : ''}
+      ${shown.length + done.length ? `<div class="tdl">${shown.map(todoRow).join('')}${done.length ? todoDoneHead(done.length) + done.map((x, i) => todoRow(x, shown.length + 1 + i)).join('') : ''}</div>` : ''}
       <label class="tdadd ${act ? 'act' : ''}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="tdoin" autocomplete="off" maxlength="200" class="${todoNewKind === 'h' ? 'hmode' : ''}" placeholder="${todoNewKind === 'h' ? 'New heading, like At school' : todoRepDays.size ? `Every ${repWords([...todoRepDays])}…` : todoTab === 'doing' ? 'Something you’re working on now' : todoTab === 'hw' ? 'New homework' : 'New task'}${anName && todoNewKind !== 'h' && todoTab !== 'doing' ? ' in ' + esc(anName) : ''}" aria-label="${todoNewKind === 'h' ? 'New heading' : 'New task'}"><span class="tdaddx">${todoNewKind === 'h' ? '' : `<button type="button" class="tdtimebtn ${todoNewMin ? 'on' : ''}" data-act="todo-time" data-id="__new" aria-haspopup="true" title="How long it will take">${CLOCK_IC}<span>${todoNewMin ? fmtMin(todoNewMin) : 'Time'}</span></button><button type="button" class="tdrepbtn ${todoRepDays.size ? 'on' : ''}" data-act="todo-repopen" aria-expanded="${todoRepOpen}" title="Repeat on certain days">${REP_IC}<span>${todoRepDays.size ? esc(repShort([...todoRepDays])) : 'Repeat'}</span></button>`}<button type="button" class="tdrepbtn tdkbtn ${todoNewKind === 'h' ? 'on' : ''}" data-act="todo-hmode" aria-pressed="${todoNewKind === 'h'}" title="${todoNewKind === 'h' ? 'Back to adding tasks' : 'Add a heading, like At school'}">${TD_H_IC}<span>Heading</span></button><button type="button" class="tdrepbtn tdkbtn" data-act="todo-gap" title="Add a blank space to separate things">${TD_GAP_IC}<span>Space</span></button></span></label>
       ${todoRepOpen && todoNewKind !== 'h' ? `<div class="tdrepdays" role="group" aria-label="Repeat on"><span>Every</span>${REP_DAYS.map(([d, l]) => `<button type="button" data-act="todo-repday" data-d="${d}" aria-pressed="${todoRepDays.has(d)}" title="${REP_NAMES[d]}">${l}</button>`).join('')}<span class="grow"></span><span class="tdrephint">${todoRepDays.size ? 'It shows up in Today on those days' : 'Pick the days it should show up'}</span></div>` : ''}
-      ${today ? `<button class="tdclear" data-act="todo-clear">Clear ${today} done</button>` : ''}
+      ${doneAll.length ? `<button class="tdclear" data-act="todo-clear" title="${today && done.length ? 'Removes today’s ticked tasks too' : ''}">Clear ${doneAll.length} done</button>` : ''}
     </div>
   </section>`;
 }
@@ -13652,6 +13658,8 @@ function tskPlanLine(){
   const by = tskByDay(), t = fDay(), mon = tskWeekOf(t), d = (by[t] || []).length, w = [...Array(7)].map((_, i) => (by[keyAdd(mon, i)] || []).length).reduce((a, b) => a + b, 0);
   return w ? `<button class="link tskline" data-act="tsk-open">${d} done today · ${w} this week</button>` : '';
 }
+/* ticking a task re-draws only the list, so keep the "done today" line and the sidebar count in step with it */
+{ const tr = todoRefresh; todoRefresh = function(...a){ const r = tr.apply(this, a); try { const old = $('#root .tskline'), x = tskPlanLine(); if (old){ if (x) old.outerHTML = x; else old.remove(); } else if (x) $('#root .h7pdate')?.insertAdjacentHTML('afterend', x); h7NavCounts(); } catch {} return r; }; }
 { const rt = renderTodo; renderTodo = function(...a){ const r = rt.apply(this, a); try { const h = $('#root .h7pdate'); if (h && !$('#root .tskline')){ const x = tskPlanLine(); if (x) h.insertAdjacentHTML('afterend', x); } } catch {} return r; }; }
 
 /* ---------- Mistakes (20 Nov 2026): write down mistakes per subject, link repeats into habits, and keep a "next time I will…" rule
