@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261122222610 min-shell:1.27.0 -->
+<!-- recall-build:20261122234239 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -4180,6 +4180,12 @@ body.desktop:not(.sidebar-hidden) .fpill{display:none}
 .mklbar{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-top:18px}
 .mklbar .stabs.h7tabs{flex:1 1 auto;border-bottom:0;min-width:0;overflow-x:auto;scrollbar-width:none}
 .mklper{margin-bottom:8px}
+.prslh{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;margin:0 0 12px}
+.prs .hrsgrid .prslh h2{margin:0}
+.prssort{gap:2px}
+.prssort button{height:26px;padding:0 10px;font-size:12px}
+@media (pointer:coarse){ .prssort button{height:36px} }
+.h7ppdate{margin-left:8px;font-size:12px}
 .mklsubed{margin-bottom:14px;font-size:13px;white-space:nowrap}
 .mklsubs{display:flex;flex-direction:column;gap:8px;margin:8px 0 0}
 .mklsg{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
@@ -10928,7 +10934,7 @@ function ppMenu(key, at){
     ${where ? b('pp-m-web', `Open on ${where}`) : ''}
     ${cards.length ? b('pp-m-review', `Review its mistakes (${cards.length})`) + b('pp-m-browse', 'Browse its mistakes') : ''}<hr>
     ${todo ? b('pp-m-todogo', `On your to-do list (${esc(todoTabName(todoL(todo)))})`) : b('pp-m-todo', 'Add to to-do list…')}
-    ${done ? b('pp-m-undone', 'Mark as not done') : b('pp-m-done', 'Mark as done')}
+    ${done ? b('pp-m-undone', 'Mark as not done') + `<button data-act="prs-date" data-id="${esc(p.id)}">Change the date…</button>` : b('pp-m-done', 'Mark as done')}
     ${b('pp-m-score', p?.score || done ? 'Change the score…' : 'Enter a score…')}<hr>
     ${p ? b('pp-m-addsol', p.solSep ? 'Replace the solutions PDF…' : 'Add a solutions PDF…') : ''}${p?.solSep ? b('pp-m-delsol', 'Delete the solutions PDF…') : ''}
     ${p?.name ? b('pp-m-save', 'Save the PDF…') : ''}
@@ -12411,7 +12417,7 @@ function ppPreview(it){
         <div class="h7go"><button class="btn primary" data-act="pp-open" data-k="${k}">${go1}</button>${cards.length ? `<button class="btn" data-act="pp-m-review" data-k="${k}">Review the ${h7Plural(cards.length, 'mistake')}</button>` : ''}</div>
         <div class="h7ppl">${todo ? `<button class="link" data-act="pp-m-todogo" data-k="${k}">On your to-do list</button>` : `<button class="link" data-act="pp-m-todo" data-k="${k}">Add to my to-do</button>`}${where ? `<button class="link" data-act="pp-m-web" data-k="${k}">Open on ${where}</button>` : ''}<button class="link" data-act="pp-h7menu" data-k="${k}">More</button></div>
         ${ppSitHtml(it)}
-        <dl class="h7ppdl"><dt>Solutions</dt><dd>${it.sol ? 'Included' : 'Paper only'}</dd><dt>From</dt><dd>${it.src === 'nesa' ? 'NESA, with marking guidelines' : it.src === 'thsc' ? 'THSC Online' : 'You uploaded it'}</dd>${p?.done ? `<dt>Finished</dt><dd>${esc(dayWordShort(p.done))}</dd>` : ''}</dl>
+        <dl class="h7ppdl"><dt>Solutions</dt><dd>${it.sol ? 'Included' : 'Paper only'}</dd><dt>From</dt><dd>${it.src === 'nesa' ? 'NESA, with marking guidelines' : it.src === 'thsc' ? 'THSC Online' : 'You uploaded it'}</dd>${p?.done ? `<dt>Finished</dt><dd>${esc(dayWordShort(p.done))} <button class="link h7ppdate" data-act="prs-date" data-id="${esc(p.id)}">Change</button></dd>` : ''}</dl>
       </div>
     </div>
   </div>`;
@@ -12641,8 +12647,17 @@ function ppMineRow(i, sc, mk, wide){
    Comes from S.settings.papers (st 'done', done = when). Range and subject are kept on this device (md-ppres); "Start fresh"
    (S.settings.ppResFrom, synced) hides everything finished before a date without touching the papers or marks, and a
    paper can be left out on its own (p.resOff). */
-let prs = { s: '', c: '', range: 'all', from: '', to: '', ...ls.get('md-ppres', {}) }, prsOld = false, prsOff = false;
-const prsSave = () => { const { s, c, range, from, to } = prs; ls.set('md-ppres', { s, c, range, from, to }); };
+let prs = { s: '', c: '', range: 'all', from: '', to: '', sort: 'new', ...ls.get('md-ppres', {}) }, prsOld = false, prsOff = false;
+const prsSave = () => { const { s, c, range, from, to, sort } = prs; ls.set('md-ppres', { s, c, range, from, to, sort }); };
+/* Every paper: newest, oldest, best or worst first (22 Nov 2026). Papers with no mark go last when sorting by mark */
+const PRS_SORTS = [['new', 'Newest'], ['old', 'Oldest'], ['best', 'Best'], ['worst', 'Worst']];
+function prsSort(xs){
+  const s = PRS_SORTS.some(([k]) => k === prs.sort) ? prs.sort : 'new', ys = xs.slice();
+  if (s === 'old') return ys.sort((a, b) => a.t - b.t);
+  if (s === 'new') return ys.sort((a, b) => b.t - a.t);
+  const sg = s === 'best' ? -1 : 1;
+  return ys.sort((a, b) => (a.pct === null) - (b.pct === null) || (a.pct === null ? 0 : sg * (a.pct - b.pct)) || b.t - a.t);
+}
 const PRS_COL = ['#58b4c2', '#e2a552', '#a291f2', '#e47d90', '#7fc483', '#6aa2ec', '#d6be55', '#c88ad6', '#9aa7b8'];
 const prsDay = t => { const d = new Date(t); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const prsMs = k => { const [y, m, d] = String(k).split('-').map(Number); return y ? new Date(y, m - 1, d).getTime() : 0; };
@@ -12702,12 +12717,12 @@ function renderPPRes(){
   const by = (key, name) => { const m = new Map(); pts.forEach(x => { const kk = key(x); if (!m.has(kk)) m.set(kk, []); m.get(kk).push(x); }); return [...m.entries()].map(([kk, ys]) => ({ kk, name: name(kk), n: ys.length, av: prsAvg(ys), best: Math.max(...ys.map(y => y.pct)) })).sort((a, b) => b.n - a.n); };
   const courseRows = by(x => x.p.c, c => PP_COURSE[c].name), secRows = by(x => x.p.sec === 'hsc' ? 'hsc' : x.p.sec === 'trial' ? 'trial' : 'task', k2 => ({ hsc: 'HSC papers', trial: 'Trial papers', task: 'School assessments' })[k2]);
   const table = rows => `<ul class="prsby">${rows.map(r => `<li><span class="hnm">${esc(r.name)}</span><span class="prsn">${h7Plural(r.n, 'paper')}</span><span class="prsbar"><i style="width:${r.av.toFixed(1)}%"></i></span><b>${prsPct(r.av)}</b></li>`).join('')}</ul>`;
-  const rows = shown.slice().reverse().map(x => { const c = x.p.c; return `<li class="${x.p.resOff ? 'off' : ''}"><button class="prsrow" data-act="prs-go" data-id="${esc(x.p.id)}"><span class="hdot" style="background:${cols[c]}"></span><span class="htm">${esc(ppWhen(x.t))}</span><span class="hnm"><b>${esc(prsName(x.p))}</b><small>${esc(PP_COURSE[c].short)} · ${esc(ppSecName(x.p.sec, true))}</small></span><span class="prsmk">${x.of ? `${x.got} / ${x.of}` : 'no mark'}</span><b class="prspc">${x.pct === null ? '' : Math.round(x.pct) + '%'}</b></button><button class="hx" data-act="prs-menu" data-id="${esc(x.p.id)}" aria-label="More for ${esc(prsName(x.p))}" title="Change the date or mark, or leave it out"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.2" fill="currentColor"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><circle cx="12.5" cy="8" r="1.2" fill="currentColor"/></svg></button></li>`; }).join('');
+  const rows = prsSort(shown).map(x => { const c = x.p.c; return `<li class="${x.p.resOff ? 'off' : ''}"><button class="prsrow" data-act="prs-go" data-id="${esc(x.p.id)}"><span class="hdot" style="background:${cols[c]}"></span><span class="htm">${esc(ppWhen(x.t))}</span><span class="hnm"><b>${esc(prsName(x.p))}</b><small>${esc(PP_COURSE[c].short)} · ${esc(ppSecName(x.p.sec, true))}</small></span><span class="prsmk">${x.of ? `${x.got} / ${x.of}` : 'no mark'}</span><b class="prspc">${x.pct === null ? '' : Math.round(x.pct) + '%'}</b></button><button class="hx" data-act="prs-menu" data-id="${esc(x.p.id)}" aria-label="More for ${esc(prsName(x.p))}" title="Change the date or mark, or leave it out"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.2" fill="currentColor"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><circle cx="12.5" cy="8" r="1.2" fill="currentColor"/></svg></button></li>`; }).join('');
   const body = !allDone.length ? `<div class="prsempty"><h2>No papers done yet</h2><p>When you finish marking a paper in Past papers, the day you finished it and your mark show up here, so you can see how you’re going over time.</p><button class="btn primary" data-nav="papers">Open Past papers</button></div>`
     : `<div class="hrstop"><div class="hrsbig"><b>${av === null ? '–' : Math.round(av)}<small>%</small></b>${trend || `<span class="hdelta">${pts.length ? `average over ${h7Plural(pts.length, 'paper')}` : 'no marks in this range'}</span>`}</div>
       <dl class="hrsfacts"><div><dt>Papers done</dt><dd>${shown.length}</dd></div><div><dt>Best</dt><dd>${best ? `${prsPct(best.pct)}, ${esc(prsName(best.p))}` : '–'}</dd></div><div><dt>Latest</dt><dd>${last ? `${prsPct(last.pct)}, ${esc(ppWhen(last.t))}` : '–'}</dd></div></dl></div>
       <section class="prschartw"><h2>Your marks</h2><div id="prschart" class="prschart"></div>${order.filter(c => pts.some(x => x.p.c === c)).length > 1 ? `<div class="prsleg">${order.filter(c => pts.some(x => x.p.c === c)).map(c => `<span><i style="background:${cols[c]}"></i>${esc(PP_COURSE[c].name)}</span>`).join('')}</div>` : ''}</section>
-      <div class="hrsgrid"><section><h2>Every paper</h2>${rows ? `<ul class="prsl">${rows}</ul>` : `<p class="hrsnone">No papers finished in this range.</p>`}
+      <div class="hrsgrid"><section><div class="prslh"><h2>Every paper</h2>${shown.length > 1 ? `<div class="seg prssort" role="group" aria-label="Sort papers">${PRS_SORTS.map(([k, l]) => `<button type="button" data-act="prs-sort" data-v="${k}" aria-pressed="${(prs.sort || 'new') === k}">${l}</button>`).join('')}</div>` : ''}</div>${rows ? `<ul class="prsl">${rows}</ul>` : `<p class="hrsnone">No papers finished in this range.</p>`}
         ${off.length ? `<button class="link" data-act="prs-showoff">${prsOff ? 'Hide the ones left out' : `${h7Plural(off.length, 'paper')} left out. Show ${off.length === 1 ? 'it' : 'them'}`}</button>` : ''}</section>
       <section>${courseRows.length > 1 ? `<h2>By course</h2>${table(courseRows)}` : ''}${secRows.length ? `<h2 ${courseRows.length > 1 ? 'class="hrsh2b"' : ''}>By kind of paper</h2>${table(secRows)}` : ''}</section></div>`;
   $('#root').innerHTML = `<div class="hrs prs">${hrsSwitch()}
@@ -12743,6 +12758,7 @@ async function prsAction(act, a, e){
     case 'prs-subj': prs.s = v; prs.c = ''; prsSave(); return renderPPRes();
     case 'prs-course': prs.c = v; prsSave(); return renderPPRes();
     case 'prs-range': prs.range = v; prsSave(); return renderPPRes();
+    case 'prs-sort': { prs.sort = v; prsSave(); const y = window.scrollY, sc = $('#root')?.closest('.scroll, main') || null, st = sc?.scrollTop; renderPPRes(); if (sc && st != null) sc.scrollTop = st; else window.scrollTo(0, y); return; }
     case 'prs-go': study = null; return go('ppmark', id);
     case 'prs-showoff': prsOff = !prsOff; return renderPPRes();
     case 'prs-old': prsOld = !prsOld; return renderPPRes();
