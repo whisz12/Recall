@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261121182349";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261122222610";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -4115,6 +4115,18 @@ body.desktop:not(.sidebar-hidden) .fpill{display:none}
 .mklbar{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-top:18px}
 .mklbar .stabs.h7tabs{flex:1 1 auto;border-bottom:0;min-width:0;overflow-x:auto;scrollbar-width:none}
 .mklper{margin-bottom:8px}
+.mklsubed{margin-bottom:14px;font-size:13px;white-space:nowrap}
+.mklsubs{display:flex;flex-direction:column;gap:8px;margin:8px 0 0}
+.mklsg{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.mklsrow{padding:0 14px;min-height:40px;cursor:pointer;color:var(--fg)}
+.mklsrow+.mklsrow{border-top:1px solid var(--border)}
+.mklsrow.sub{padding-left:38px}
+.mklsrow:hover{background:var(--hover)}
+.mklsrow .dot{width:7px;height:7px;border-radius:50%;flex:0 0 7px}
+.mklsrow.sub .dot{opacity:.55}
+.mklsn{flex:1 1 auto;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mklsc{font-size:12px;color:var(--fg-3);font-variant-numeric:tabular-nums}
+@media (pointer:coarse){ .mklsrow{min-height:44px} }
 .mklcols{display:flex;flex-wrap:wrap;gap:32px 40px;align-items:flex-start;margin-top:24px}
 .mklmain{flex:999 1 520px;min-width:0}
 .mklside{flex:1 1 300px;min-width:0}
@@ -13676,8 +13688,11 @@ const mhabAll = () => S.settings.mhab || [];
 const mhab = id => mhabAll().find(h => h.id === id);
 function mklSet(patch, label){ undoTx = null; undoLabel = label || 'mistake'; S.settings = { ...S.settings, ...patch }; saveSettings(); }
 function mlogPut(sid, list, label, extra = {}){ mklSet({ mlog: { ...mlogAll(), [sid]: list }, ...extra }, label); }
-const mklSubjects = () => kids(null);
-const mklSubjOk = id => id === 'all' || !!S.nodes[id];
+/* which decks count as subjects here: your own pick (S.settings.mklSubs, any deck, e.g. Extension 2 inside Maths), else every top-level deck */
+function mklSubjects(){ const pick = (S.settings.mklSubs || []).map(id => S.nodes[id]).filter(Boolean); return pick.length ? pick : kids(null); }
+/* the subject a deck belongs to here: the deepest of its decks that is one of your subjects */
+function mklSubjFor(id){ if (!id || !S.nodes[id]) return null; const ids = new Set(mklSubjects().map(s => s.id)), ps = pathOf(id); for (let i = ps.length - 1; i >= 0; i--) if (ids.has(ps[i].id)) return ps[i].id; return null; }
+const mklSubjOk = id => id === 'all' || mklSubjects().some(s => s.id === id);
 function mklEntries(sid = mkl.subj, since = 0){
   const out = [];
   for (const s of mklSubjects()) if (sid === 'all' || s.id === sid) for (const x of mlogOf(s.id)) if (x.at >= since) out.push({ ...x, s: s.id });
@@ -13709,7 +13724,7 @@ function mklFinding(list){
 }
 /* the exams coming up, from the countdown, the calendar and any deck with an exam date */
 function mklExams(){
-  const out = [], seen = new Set(), add = (name, date, s) => { if (!date) return; const ts = new Date(date + 'T09:00').getTime(); if (ts < Date.now() - DAY / 2) return; const k = name + date; if (seen.has(k)) return; seen.add(k); out.push({ name, date, ts, s: s && S.nodes[s] ? pathOf(s)[0]?.id : null }); };
+  const out = [], seen = new Set(), add = (name, date, s) => { if (!date) return; const ts = new Date(date + 'T09:00').getTime(); if (ts < Date.now() - DAY / 2) return; const k = name + date; if (seen.has(k)) return; seen.add(k); out.push({ name, date, ts, s: s && S.nodes[s] ? mklSubjFor(s) : null }); };
   try { const cd = cdGet(); (cd?.exams || []).forEach(x => add(x.name || (x.subj && nodeOf(x.subj)?.name) || cd.name || 'Exam', x.date, x.subj)); } catch {}
   try { upcomingExams().forEach(e => add(e.name, e.node ? e.node.exam.date : e.gen.date, e.node?.id || e.gen?.subj)); } catch {}
   return out.sort((a, b) => a.ts - b.ts);
@@ -13718,7 +13733,8 @@ const mklDays = ts => Math.max(0, Math.round((new Date(ts).setHours(0, 0, 0, 0) 
 /* rules for a subject (or every subject), most costly first; fixed habits are left out */
 function mklRules(sid){
   const st = mklStats(mklEntries('all'));
-  return mhabAll().filter(h => !h.fx && (!sid || sid === 'all' || h.s === sid) && S.nodes[h.s])
+  const mine = new Set(mklSubjects().map(s => s.id));
+  return mhabAll().filter(h => !h.fx && (!sid || sid === 'all' || h.s === sid) && S.nodes[h.s] && mine.has(h.s))
     .map(h => ({ ...h, ...(st[h.id] || { k: 0, m: 0, papers: new Set(), last: 0 }) })).sort(mklByCost);
 }
 const mklDate = t => { const d = new Date(t); return d.toLocaleDateString(undefined, d.getFullYear() === new Date().getFullYear() ? { day: 'numeric', month: 'short' } : { day: 'numeric', month: 'short', year: 'numeric' }); };
@@ -13754,6 +13770,7 @@ function renderMistakes(){
   $('#root').innerHTML = `<div class="mkl">
     ${finding ? `<p class="mklfind">${finding}</p>` : ''}
     <div class="mklbar"><div class="stabs h7tabs" role="tablist" aria-label="Subjects">${tabs}<span class="stabind" id="stabind" aria-hidden="true"></span></div>
+      <button type="button" class="link mklsubed" data-act="mkl-subs">Edit subjects</button>
       <div class="seg mklper" role="group" aria-label="Period">${MKL_PERIODS.map(([k, l]) => `<button type="button" aria-pressed="${mkl.per === k}" data-act="mkl-per" data-v="${k}">${l}</button>`).join('')}</div></div>
     <div class="mklcols">
       <section class="mklmain" aria-label="Mistakes">
@@ -13785,13 +13802,13 @@ function mklSuggest(sid, text, cur){
 function mklDialog(o = {}){
   // o: { id, s, t, w, m, pp, c, h }
   const ex = o.id ? mklEntries('all').find(x => x.id === o.id) : null, subs = mklSubjects();
-  const sid = ex?.s || o.s || (mkl.subj !== 'all' ? mkl.subj : null) || curSubj()?.id || subs[0]?.id;
+  const okS = id => id && subs.some(s => s.id === id), sid = [ex?.s, o.s, mkl.subj !== 'all' ? mkl.subj : null, mklSubjFor(curSubj()?.id)].find(okS) || ex?.s || subs[0]?.id;
   mkd = { id: ex?.id || null, s: sid, h: ex?.h ?? o.h ?? null, newH: false, pp: ex?.pp || o.pp || null, c: ex?.c || o.c || null, at: ex?.at || Date.now() };
   const t = ex?.t ?? o.t ?? '', w = ex?.w ?? o.w ?? '', m = ex?.m ?? o.m ?? '';
   openDialog(`<div class="dialog mkldlg" role="dialog" aria-modal="true" aria-labelledby="mklh" style="max-width:600px"><header><h2 id="mklh">${ex ? 'Mistake' : 'Log a mistake'}</h2></header>
     <div class="body">
       <div class="field"><label for="mkdt">What happened</label><textarea class="in" id="mkdt" rows="2" placeholder="e.g. Solved z² = −4 as z = 2i and forgot −2i">${esc(t)}</textarea></div>
-      <div class="field"><label for="mkds">Subject</label><select class="in" id="mkds">${subs.map(s => `<option value="${s.id}" ${s.id === sid ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></div>
+      <div class="field"><label for="mkds">Subject</label><select class="in" id="mkds">${(ex && !subs.some(s => s.id === ex.s) && S.nodes[ex.s] ? [S.nodes[ex.s], ...subs] : subs).map(s => `<option value="${s.id}" ${s.id === sid ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></div>
       <div class="field"><span class="lbl">Same as a mistake you’ve made before?</span><div class="mklchips" id="mkdh"></div><input class="in" id="mkdhn" maxlength="60" placeholder="Name the habit, e.g. Dropped the ±" hidden></div>
       <div class="mklrow2"><div class="field"><label for="mkdw">Where</label><input class="in" id="mkdw" maxlength="80" value="${esc(w)}" placeholder="e.g. 2023 Ext 2 trial, Q12(a)"></div>
         <div class="field mklmf"><label for="mkdm">Marks lost</label><input class="in" id="mkdm" type="number" inputmode="numeric" min="0" max="40" value="${esc(String(m))}" placeholder="–"></div></div>
@@ -13836,6 +13853,35 @@ function mklQuick(){
   mlogPut(mkl.subj, [{ id: uid('m'), t, at: Date.now() }, ...mlogOf(mkl.subj)], 'log mistake');
   renderMistakes(); $('#mklnew')?.focus();
 }
+/* ---------- Edit subjects (22 Nov 2026): pick which decks are subjects here, e.g. Extension 2 inside Maths.
+   Saved in S.settings.mklSubs (syncs). Unticking a subject hides its mistakes, it never deletes them. */
+function mklSubsDialog(){
+  const on = new Set(mklSubjects().map(s => s.id)), cnt = id => mlogOf(id).length;
+  const row = (n, sub) => `<label class="check mklsrow${sub ? ' sub' : ''}"><input type="checkbox" data-sid="${n.id}" ${on.has(n.id) ? 'checked' : ''}><span class="dot" style="background:${scol(n.id)}" aria-hidden="true"></span><span class="mklsn">${esc(n.name)}</span>${cnt(n.id) ? `<span class="mklsc">${h7Plural(cnt(n.id), 'mistake')}</span>` : ''}</label>`;
+  const tops = kids(null);
+  openDialog(`<div class="dialog mkldlg" role="dialog" aria-modal="true" aria-labelledby="mksh" style="max-width:520px"><header><h2 id="mksh">Subjects in Mistakes</h2></header>
+    <div class="body"><p class="hint" style="margin:0 0 4px">Tick the decks you want as subjects here. A deck inside another one, like Extension 2 inside Maths, can be its own subject.</p>
+      ${tops.length ? `<div class="mklsubs">${tops.map(t => `<div class="mklsg">${row(t)}${kids(t.id).map(k => row(k, true)).join('')}</div>`).join('')}</div>` : ''}
+      <p class="hint" id="mksnote" style="margin:4px 0 0"></p></div>
+    <footer><button class="link" data-act="new-deck">New subject</button><button class="link" data-act="mkl-subs-reset">Reset</button><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="mkl-subs-save">Save</button></footer></div>`, () => mklSubsNote());
+}
+function mklSubsNote(){
+  const el = $('#mksnote'); if (!el) return;
+  const off = [...document.querySelectorAll('.mklsubs input[data-sid]')].filter(x => !x.checked && mlogOf(x.dataset.sid).length);
+  const none = !document.querySelector('.mklsubs input[data-sid]:checked');
+  el.textContent = none ? 'Tick at least one.' : off.length ? `Mistakes already logged under ${off.map(x => S.nodes[x.dataset.sid]?.name).join(', ')} are kept, and show again if you tick it.` : '';
+}
+function mklSubsSave(){
+  const ids = [...document.querySelectorAll('.mklsubs input[data-sid]:checked')].map(x => x.dataset.sid);
+  if (!ids.length) return mklSubsNote();
+  const def = kids(null).map(n => n.id), same = ids.length === def.length && ids.every((x, i) => x === def[i]);
+  if (stable(ids) !== stable(mklSubjects().map(s => s.id)) || (same && S.settings.mklSubs)){
+    const s = { ...S.settings }; if (same) delete s.mklSubs; else s.mklSubs = ids;
+    undoTx = null; undoLabel = 'edit subjects'; S.settings = s; saveSettings();
+  }
+  closeDialog(); if (!mklSubjOk(mkl.subj)){ mkl.subj = 'all'; ls.set('md-mkl-subj', 'all'); } if (view.name === 'mistakes') renderMistakes(); toast('Subjects saved');
+}
+document.addEventListener('change', e => { if (e.target.closest?.('.mklsubs')) mklSubsNote(); });
 /* ---------- habits and rules ---------- */
 function mklHabitsDialog(sid){
   const subs = mklSubjects(), st = mklStats(mklEntries('all')), hs = mhabAll().filter(h => S.nodes[h.s] && (!sid || sid === 'all' || h.s === sid));
@@ -13897,6 +13943,9 @@ function mklAction(act, a){
     case 'mkl-hdel': { if (a.dataset.confirm !== '1'){ a.dataset.confirm = '1'; a.textContent = 'Delete it?'; return; } return mklHabitDelete(a.dataset.id); }
     case 'mkl-print': return mklPrint(a.dataset.v, a.dataset.x);
     case 'mkl-export': return mklExport();
+    case 'mkl-subs': return mklSubsDialog();
+    case 'mkl-subs-save': return mklSubsSave();
+    case 'mkl-subs-reset': { document.querySelectorAll('.mklsubs input[data-sid]').forEach(x => { x.checked = !S.nodes[x.dataset.sid]?.parentId; }); mklSubsNote(); return; }
     case 'mkl-from-card': return mklFromCard();
     case 'mkl-pp': return mklFromPaper(a.dataset.v);
     case 'mkl-find': { const x = mklEntries('all').find(y => y.id === a.dataset.id); if (!x) return; mkl.subj = x.s; ls.set('md-mkl-subj', x.s); go('mistakes'); return mklDialog({ id: x.id }); }
@@ -13920,13 +13969,14 @@ document.addEventListener('change', e => {
 /* from Study: the card you're on, as a mistake (M, or the link under the rating buttons) */
 function mklFromCard(){
   const c = study?.cur && S.cards[study.cur]; if (!c) return;
-  const sid = pathOf(c.nodeId)[0]?.id, t = plainMd(c.mistake || '').trim() || (c.label ? `Got ${c.label} wrong` : '');
+  const sid = mklSubjFor(c.nodeId), t = plainMd(c.mistake || '').trim() || (c.label ? `Got ${c.label} wrong` : '');
   mklDialog({ s: sid, t, w: [c.label, pathOf(c.nodeId).slice(1).map(n => n.name).join(' › ')].filter(Boolean).join(' · ').slice(0, 80), c: c.id });
 }
 /* from marking a paper: one tap on one of your habits logs this question */
 function mklPaperSubj(p){
-  const d = ppmDeck(); if (d && S.nodes[d]) return pathOf(d)[0]?.id;
-  const key = PP_COURSE[p.c]?.s || ''; return mklSubjects().find(s => s.name.toLowerCase().startsWith(key.slice(0, 4)))?.id || null;
+  const d = ppmDeck(); if (d && S.nodes[d] && mklSubjFor(d)) return mklSubjFor(d);
+  const pc = PP_COURSE[p.c] || {}, key = pc.s || '', subs = mklSubjects(), nm = [pc.name, pc.short].filter(Boolean).map(syKey);
+  return subs.find(s => nm.includes(syKey(s.name)))?.id || subs.find(s => s.name.toLowerCase().startsWith(key.slice(0, 4)))?.id || null;
 }
 function mklPPChips(p, it, got, of){
   try {
@@ -13959,8 +14009,8 @@ function mklTodayCard(subjId){
 { const rd = renderDecks; renderDecks = function(...a){ const r = rd.apply(this, a); try { const hero = $('#root .h7hero'), s = curSubj(); if (hero && s && !$('#root .mkltoday')){ const x = mklTodayCard(s.id); if (x) hero.insertAdjacentHTML('afterend', x); } } catch {} return r; }; }
 /* Exam timer: your rules before you start */
 function mklGuessSubj(name){
-  const n = String(name || '').toLowerCase(), subs = mklSubjects();
-  return subs.find(s => n.includes(s.name.toLowerCase()))?.id || (/(ext|adv|math|standard|4u|3u|2u)/.test(n) ? subs.find(s => /math/i.test(s.name))?.id : null) || null;
+  const n = String(name || '').toLowerCase(), subs = mklSubjects(), lv = /ext(ension)?\s*2|4u/.test(n) ? /extension 2|ext 2/i : /ext(ension)?\s*1|3u/.test(n) ? /extension 1|ext 1/i : /adv|2u/.test(n) ? /advanced/i : null;
+  return [...subs].sort((a, b) => b.name.length - a.name.length).find(s => n.includes(s.name.toLowerCase()))?.id || (lv && subs.find(s => lv.test(s.name))?.id) || (/(ext|adv|math|standard|4u|3u|2u)/.test(n) ? subs.find(s => /math/i.test(s.name))?.id : null) || null;
 }
 { const re = renderExam; renderExam = function(...a){ const r = re.apply(this, a); try { if (!exOn() && !$('#root .mklexr')){ const sid = mklGuessSubj(exSet?.name), rules = mklRules(sid || 'all').slice(0, 3), sub = $('#root .h7exsub');
   if (rules.length && sub) sub.insertAdjacentHTML('afterend', `<section class="mklexr"><h2>Before you start${sid ? ' · ' + esc(nodeOf(sid)?.name || '') : ''}</h2><ol>${rules.map((x, i) => `<li><span>${i + 1}</span>${esc(x.r || x.n)}</li>`).join('')}</ol></section>`); } } catch {} return r; }; }
