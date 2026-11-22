@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261122234239 min-shell:1.27.0 -->
+<!-- recall-build:20261123003907 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -3885,7 +3885,7 @@ html.examon,html.examon body{overflow:hidden !important;overscroll-behavior:none
 .grrbar i{display:block;height:100%;background:var(--accent);transition:width 1s linear}
 .grin{margin:0;color:var(--fg-2);display:flex;gap:14px;align-items:center}
 .grppl ul{list-style:none;margin:0;padding:0}
-.grppl li{display:grid;grid-template-columns:10px minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.grppl li{display:grid;grid-template-columns:10px minmax(0,1fr) auto auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
 .grppl li:last-child{border-bottom:0}
 .grppl li div{display:flex;flex-direction:column;min-width:0}
 .grppl li div b{font-weight:500}
@@ -4180,6 +4180,19 @@ body.desktop:not(.sidebar-hidden) .fpill{display:none}
 .mklbar{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-top:18px}
 .mklbar .stabs.h7tabs{flex:1 1 auto;border-bottom:0;min-width:0;overflow-x:auto;scrollbar-width:none}
 .mklper{margin-bottom:8px}
+.grnudge{min-width:64px}
+.nudge{position:fixed;top:calc(16px + var(--sat,0px));left:50%;transform:translateX(-50%);z-index:80;display:flex;align-items:center;gap:16px;width:max-content;max-width:calc(100% - 24px);box-sizing:border-box;padding:12px 12px 12px 16px;background:var(--surface-2);border:1px solid var(--border-2);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.35);animation:nudgein 260ms cubic-bezier(.2,.7,.2,1) both}
+.nudget{display:flex;flex-direction:column;min-width:0}
+.nudget b{font-size:14px;font-weight:600;color:var(--fg)}
+.nudget span{font-size:12px;color:var(--fg-3)}
+.nudgeb{display:flex;align-items:center;gap:6px;flex:none}
+.nudgex{display:grid;place-items:center;width:26px;height:26px;border:0;border-radius:6px;background:none;color:var(--fg-3);cursor:pointer}
+.nudgex:hover{background:var(--hover);color:var(--fg)}
+.nudgex svg{width:12px;height:12px}
+@keyframes nudgein{0%{opacity:0;transform:translate(-50%,-8px)}55%{opacity:1;transform:translate(calc(-50% - 4px),0)}75%{transform:translate(calc(-50% + 3px),0)}100%{transform:translate(-50%,0)}}
+@media (prefers-reduced-motion:reduce){ .nudge{animation:none} }
+@media (max-width:560px){ .nudge{flex-wrap:wrap;width:calc(100% - 24px)} .nudgeb{width:100%} .nudgeb .btn{flex:1} }
+@media (pointer:coarse){ .nudge .btn.sm{height:36px} .nudgex{width:36px;height:36px} }
 .prslh{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;margin:0 0 12px}
 .prs .hrsgrid .prslh h2{margin:0}
 .prssort{gap:2px}
@@ -13391,7 +13404,7 @@ function renderGroup(){
         <section class="grppl">
           <h2>${studying.length ? `${studying.length} of ${ids.length} studying now` : `${ids.length} ${ids.length === 1 ? 'person' : 'people'}`}</h2>
           <ul>${ids.slice().sort((a, b) => (grStatusLine(b).cls === 'on') - (grStatusLine(a).cls === 'on') || (gr.names[a] || '').localeCompare(gr.names[b] || '')).map(id => { const l = grStatusLine(id), live = id === grUid() ? fSecs() : grLive(gr.status[id]);
-            return `<li class="${l.cls}"><span class="gdot"></span><div><b>${esc(gr.names[id] || 'Someone')}${id === grUid() ? ' <small>you</small>' : ''}${id === g.owner ? ' <small>owner</small>' : ''}</b><span>${l.t}</span></div><b class="gtime" ${l.cls === 'on' && id !== grUid() ? `data-gtick="${id}"` : id === grUid() && focus.state === 'studying' ? 'data-ftick' : ''}>${fClock(live)}</b></li>`; }).join('')}</ul>
+            return `<li class="${l.cls}"><span class="gdot"></span><div><b>${esc(gr.names[id] || 'Someone')}${id === grUid() ? ' <small>you</small>' : ''}${id === g.owner ? ' <small>owner</small>' : ''}</b><span>${l.t}</span></div><b class="gtime" ${l.cls === 'on' && id !== grUid() ? `data-gtick="${id}"` : id === grUid() && focus.state === 'studying' ? 'data-ftick' : ''}>${fClock(live)}</b>${id === grUid() ? '<span></span>' : `<button class="btn sm grnudge" data-act="gr-nudge" data-id="${esc(id)}" title="Send ${esc(gr.names[id] || 'them')} a nudge to study">Nudge</button>`}</li>`; }).join('')}</ul>
         </section>
       </div>
       <aside class="grside">
@@ -13479,6 +13492,7 @@ async function grAction(act, a){
     case 'gr-reload': gr.loaded = false; gr.err = ''; return renderGroup();
     case 'gr-tab': gr.cur = id; ls.set('md-gr-cur', id); return renderGroup();
     case 'gr-rank': gr.rank = a.dataset.v; return renderGroup();
+    case 'gr-nudge': return ndSend(id || a.dataset.id);
     case 'gr-go': { const s = $('#grsubj'); return fStart(s ? s.value : focus.subj, focus.state === 'paused' ? focus.room : null).then(renderGroup); }
     case 'gr-resume': closeDialog(); return fStart(focus.subj, focus.room);
     case 'gr-pause': fPause('you'); return renderGroup();
@@ -14331,6 +14345,64 @@ setInterval(() => {
 }, 15000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden){ fsConnect(); fsSend('hello'); if (!fsChan) return; setTimeout(() => { if (grOn()) fsAdopt(); }, 600); } });
 setTimeout(fsConnect, 1500); setInterval(fsConnect, 3000);
+
+/* ---------- Nudges (23 Nov 2026): tap Nudge next to someone in your group and a little card pops up in their Recall.
+   Sent live over Supabase Realtime (no table): every signed-in device listens on "nudge-<user id>" and shows it is there
+   (presence), so the sender knows straight away whether it reached them. Only nudges from people in one of your groups show.
+   A nudge only reaches Recall while it's open (on a Mac the app is usually running; on iPad/phone it has to be open). */
+let ndChan = null, ndUid = null;
+const ndSent = {}, ndGot = {};
+function ndConnect(){
+  const uid = grOn() ? grUid() : null;
+  if (uid === ndUid && ndChan) return;
+  if (ndChan){ try { cloud.sb.removeChannel(ndChan); } catch {} ndChan = null; }
+  ndUid = uid; if (!uid || !cloud.sb) return;
+  ndChan = cloud.sb.channel('nudge-' + uid, { config: { broadcast: { self: false }, presence: { key: FDEV } } })
+    .on('broadcast', { event: 'nudge' }, m => ndRecv(m.payload || {}))
+    .subscribe(st => { if (st === 'SUBSCRIBED') try { ndChan.track({ u: uid, at: Date.now() }); } catch {} });
+}
+const ndShare = id => gr.members.some(m => m.user_id === id && gr.members.some(n => n.group_id === m.group_id && n.user_id === grUid()));
+async function ndSend(to){
+  if (!grOn() || !to || to === grUid()) return;
+  const name = gr.names[to] || 'They';
+  if (Date.now() - (ndSent[to] || 0) < 60e3) return toast(`You just nudged ${name}. Give them a minute.`);
+  const g = gr.groups.find(x => x.id === gr.cur && grPeople(x.id).includes(to)) || gr.groups.find(x => grPeople(x.id).includes(to));
+  const btn = document.querySelector(`[data-act="gr-nudge"][data-id="${CSS.escape(to)}"]`); if (btn){ btn.disabled = true; btn.textContent = 'Sending…'; }
+  const ch = cloud.sb.channel('nudge-' + to, { config: { broadcast: { self: false, ack: true }, presence: { key: 's-' + FDEV } } });
+  const done = (msg, ok) => { try { cloud.sb.removeChannel(ch); } catch {} if (ok) ndSent[to] = Date.now(); if (btn){ btn.disabled = false; btn.textContent = ok ? 'Nudged' : 'Nudge'; if (ok) setTimeout(() => { if (btn.isConnected) btn.textContent = 'Nudge'; }, 4000); } toast(msg, 3000); };
+  let fin = false; const to1 = setTimeout(() => { if (!fin){ fin = true; done('Couldn’t reach the sync service. Check your internet and try again.', false); } }, 8000);
+  ch.subscribe(async st => {
+    if (st !== 'SUBSCRIBED' || fin) return;
+    await new Promise(r => setTimeout(r, 900));   // give their presence a moment to arrive
+    if (fin) return;
+    const there = Object.values(ch.presenceState() || {}).flat().some(p => p.u === to);
+    if (!there){ fin = true; clearTimeout(to1); return done(`${name} doesn’t have Recall open right now, so the nudge won’t reach them.`, false); }
+    try { await ch.send({ type: 'broadcast', event: 'nudge', payload: { from: grUid(), g: g?.id || null, at: Date.now() } }); fin = true; clearTimeout(to1); done(`Nudged ${name}`, true); }
+    catch { fin = true; clearTimeout(to1); done('That nudge didn’t send. Try again.', false); }
+  });
+}
+async function ndRecv(p){
+  const from = p.from; if (!from || from === grUid()) return;
+  if (!gr.loaded || !ndShare(from)) await grLoad(true).catch(() => {});
+  if (!ndShare(from)) return;
+  if (Date.now() - (ndGot[from] || 0) < 20e3) return; ndGot[from] = Date.now();
+  const name = gr.names[from] || 'Someone', g = gr.groups.find(x => x.id === p.g), studying = focus.state === 'studying';
+  const sub = `${g ? esc(g.name) + ' · ' : ''}${studying ? 'they can see you’re on it' : 'time to study'}`;
+  $('#nudge')?.remove();
+  document.body.insertAdjacentHTML('beforeend', `<div class="nudge" id="nudge" role="alert"><div class="nudget"><b>${esc(name)} nudged you</b><span>${sub}</span></div>
+    <div class="nudgeb">${studying ? '' : '<button class="btn sm primary" data-act="nudge-go">Start studying</button>'}<button class="btn sm" data-act="gr-nudge" data-id="${esc(from)}">Nudge back</button><button class="nudgex" data-act="nudge-x" aria-label="Dismiss"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></div></div>`);
+  const el = $('#nudge'); clearTimeout(ndRecv.t); ndRecv.t = setTimeout(() => el?.remove(), 15000);
+  if (document.hidden || !document.hasFocus()){
+    if (window.Notification && Notification.permission === 'granted'){ try { const n = new Notification(`${name} nudged you`, { body: g ? `${g.name} · time to study` : 'Time to study', tag: 'nudge-' + from }); n.onclick = () => { try { window.focus(); } catch {} n.close(); }; } catch {} }
+  }
+}
+{ const c0 = fsConnect; fsConnect = function(...a){ const r = c0.apply(this, a); try { ndConnect(); } catch {} return r; }; }
+document.addEventListener('click', e => {
+  const a = e.target.closest?.('[data-act="nudge-go"], [data-act="nudge-x"]'); if (!a) return;
+  e.preventDefault(); e.stopPropagation(); $('#nudge')?.remove();
+  if (a.dataset.act === 'nudge-go'){ study = null; go('group'); if (focus.state !== 'studying') fStart(focus.subj, null).then(() => { if (view.name === 'group') renderGroup(); }); }
+}, true);
+setTimeout(() => { try { ndConnect(); } catch {} }, 2500);
 
 /* ---------- Sidebar, 20 Nov 2026: six places (Today, Plan, Cards, Papers, Mistakes, Progress) and subjects. Group and the study timer
    live in one bar at the bottom ("group bar"); the Exam timer starts from a paper ("Sit it timed") or from ⌘K; Settings and sync
