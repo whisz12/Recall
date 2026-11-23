@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261123003907 min-shell:1.27.0 -->
+<!-- recall-build:20261124004214 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -4298,6 +4298,40 @@ body.desktop:not(.sidebar-hidden) .fpill{display:none}
 /* phone: the top bar starts at the very top and pads itself below the status bar band, so nothing on the page slides under it */
 body:not(.desktop) header.toolbar{top:0;padding-top:var(--sat)}
 
+
+/* back-from-tab callout (option A, 23 Nov 2026) */
+#fback{position:fixed;z-index:61;box-sizing:border-box;font:400 13px var(--ui);color:var(--fg);animation:fbin .2s cubic-bezier(.2,.7,.2,1)}
+#fback.out{opacity:0;transform:translateY(4px);transition:opacity .15s ease-out,transform .15s ease-out}
+@keyframes fbin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes fbdrain{from{width:100%}to{width:0}}
+.fbbox{position:relative;overflow:hidden;box-sizing:border-box;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--surface-2);border:1px solid var(--border-2);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.fbhd{display:flex;align-items:center;gap:8px}
+.fbhd b{flex:1;font-weight:500}
+.fbdot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:0 0 7px}
+.fbdot.off{background:var(--fg-3)}
+.fbx{width:22px;height:22px;display:grid;place-items:center;border:0;border-radius:6px;background:none;color:var(--fg-3);cursor:pointer;padding:0}
+.fbx:hover{background:var(--hover);color:var(--fg)}
+.fbx svg{width:12px;height:12px}
+#fback p{margin:0;font-size:12px;line-height:1.45;color:var(--fg-2)}
+#fback .fbgo{width:100%;justify-content:center}
+.fbdrain{position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--fg-3);opacity:.7;animation:fbdrain var(--fbt,8s) linear forwards}
+#fback.hold .fbdrain{animation-play-state:paused}
+.fbtip{position:absolute;bottom:-5px;left:22px;width:10px;height:10px;background:var(--surface-2);border-right:1px solid var(--border-2);border-bottom:1px solid var(--border-2);transform:rotate(45deg)}
+#fback.notip .fbtip{display:none}
+@media (pointer:coarse){#fback .fbgo{min-height:44px}#fback kbd{display:none}.fbx{width:36px;height:36px}}
+@media (prefers-reduced-motion:reduce){#fback,#fback.out{animation:none;transition:none}.fbdrain{display:none}}
+/* set rating without practising: row in the card menu and the multi-select panel */
+.menu .mrates{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;padding:0 0 2px}
+.menu .mrates button{text-align:center;padding:7px 4px;font-weight:500}
+.mrates .r1{color:color-mix(in srgb, var(--again) 75%, var(--fg))}
+.mrates .r2{color:color-mix(in srgb, var(--hard) 75%, var(--fg))}
+.mrates .r3{color:color-mix(in srgb, var(--good) 75%, var(--fg))}
+.mrates .r4{color:color-mix(in srgb, var(--easy) 75%, var(--fg))}
+.bmrate{display:flex;flex-direction:column;align-items:center;gap:8px;margin:4px 0 8px}
+.bmrate>span{font-size:12px;color:var(--fg-3)}
+.bmrate .mrates{display:flex;gap:6px}
+.bmrate .mrates button{height:30px;padding:0 12px;border:1px solid var(--border-2);border-radius:6px;background:var(--surface-2);font:500 13px var(--ui);cursor:pointer}
+.bmrate .mrates button:hover{background:var(--hover)}
 </style>
 
 <header class="toolbar"><button class="sidetoggle" data-act="toggle-sidebar" aria-label="Hide sidebar" title="Hide sidebar (⌘S)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="3.5" width="15" height="13" rx="3"/><path d="M7.5 3.5v13"/></svg></button><div class="tin">
@@ -4858,7 +4892,7 @@ function navBack(){
   if (view.name === 'overview'){ const n = nodeOf(view.node); return n?.parentId && nodeOf(n.parentId) ? go('overview', n.parentId) : go('decks'); }
 }
 function histGo(dir){
-  if (view.name === 'study' && dir < 0){ const n = study?.node; study = null; return n ? go('overview', n) : go('decks'); }
+  if (view.name === 'study' && dir < 0) return studyLeave();
   const from = dir < 0 ? navH.back : navH.fwd, to = dir < 0 ? navH.fwd : navH.back;
   let v = from.pop(); while (v && v.node && !nodeOf(v.node)) v = from.pop();
   if (!v) return;
@@ -5118,10 +5152,17 @@ function buildQueue(){
 }
 function startStudy(node, practise=false, only=null, list=null, ex=null, keep=null, tag=null){
   if (node) noteRecent(node);
-  study = { node, practise: practise || !!only || !!list, only, ex: ex && ex.size ? ex : null, keep: keep || null, tag: tag || null, queue:[], cur:null, shown:false, done:0, hist:[] }; pad.full = false;
+  /* started from Cards (Browse): leaving study goes back there, same filter and scroll, not to the subject page */
+  const fromBr = view.name === 'browse' ? { st: $('#brrows')?.scrollTop || 0 } : view.name === 'study' ? study?.from || null : null;
+  study = { node, practise: practise || !!only || !!list, only, ex: ex && ex.size ? ex : null, keep: keep || null, tag: tag || null, queue:[], cur:null, shown:false, done:0, hist:[], from: fromBr }; pad.full = false;
   study.queue = list ? (shuffleOn ? shuffled(list) : [...list]) : only ? [only] : buildQueue();
   nextCard(); view = { name:'study', node }; closeMenu(); render(); window.scrollTo(0,0);
   if (isPhone() && !ls.get('md-taphint', 0)){ ls.set('md-taphint', 1); setTimeout(() => toast('Tap the card to show the answer, tap again for Good', 3600), 400); }
+}
+function studyLeave(){
+  const n = study?.node, fr = study?.from; study = null;
+  if (fr){ go('browse'); const r = $('#brrows'); if (r) r.scrollTop = fr.st; return; }
+  return n ? go('overview', n) : go('decks');
 }
 /* phone: tap the card to show the answer, tap again to rate it Good and go on (double-tap a picture to zoom) */
 const isPhone = () => !document.body.classList.contains('desktop') && matchMedia('(max-width: 700px) and (pointer: coarse)').matches;
@@ -5219,7 +5260,7 @@ function renderStudy(){
     $('#answerbar')?.remove(); $('#lhmap')?.remove();
     root.innerHTML = `<div class="narrow done fadein"><h1>${study.done ? 'Done for now' : 'Nothing to study here right now'}</h1>
       <p>${study.done ? `You reviewed ${study.done} card${study.done===1?'':'s'}.` : 'Use Practise all to go through every card here.'}</p>
-      <div class="ovactions" style="margin-top:8px">${study.hist?.length ? `<button class="btn" data-act="back-card" title="Shortcut: Z or Backspace">${I.undo}Previous card</button>` : ''}<button class="btn" data-act="${study.node ? 'open' : 'nav-decks'}" data-id="${study.node||''}">Back to deck</button>${!study.only && cardsIn(study.node).length ? `<button class="btn" data-act="practise" data-id="${study.node||''}">Practise all ${cardsIn(study.node).length}</button>` : ''}</div></div>`;
+      <div class="ovactions" style="margin-top:8px">${study.hist?.length ? `<button class="btn" data-act="back-card" title="Shortcut: Z or Backspace">${I.undo}Previous card</button>` : ''}<button class="btn" data-act="${study.from ? 'study-exit' : study.node ? 'open' : 'nav-decks'}" data-id="${study.node||''}">${study.from ? 'Back to cards' : 'Back to deck'}</button>${!study.only && cardsIn(study.node).length ? `<button class="btn" data-act="practise" data-id="${study.node||''}">Practise all ${cardsIn(study.node).length}</button>` : ''}</div></div>`;
     renderAppbar(); return;
   }
   const ps = pathOf(c.nodeId);
@@ -6554,6 +6595,7 @@ function brMultiPanel(){
   return `<div class="bmpanel"><div class="bmstack" aria-hidden="true">${shown.map((id, i) => { const c = S.cards[id], im = qImgsOf(c)[0]; return `<span class="bmcard" style="--k:${i};--n:${shown.length}">${im ? `<img src="${esc(imgSrc(im))}" alt="">` : `<span>${esc((plainMd(c.qText) || c.label || 'Card').slice(0, 80))}</span>`}</span>`; }).join('')}</div>
     <h2>${n} card${n === 1 ? '' : 's'} selected</h2><p>⌘-click to add or remove one, Shift-click to select a run, ⌘A for all, Delete to delete.</p>
     <div class="bmacts"><button class="btn" data-act="bm-practise" ${n ? '' : 'disabled'}>Practise ${n}</button><button class="btn" data-act="bm-link" ${n ? '' : 'disabled'}>Add to a deck…</button><button class="btn" data-act="bm-move" ${n ? '' : 'disabled'}>Move to…</button><button class="btn danger" data-act="bm-delete" ${n ? '' : 'disabled'}>Delete ${n}</button></div>
+    ${n ? `<div class="bmrate"><span>Set rating without practising</span>${rateRowHtml('bm-rate')}</div>` : ''}
     <button class="link sm" data-act="bm-done">Clear the selection</button></div>`;
 }
 function brMultiDraw(){
@@ -10100,7 +10142,9 @@ document.addEventListener('click', async e => {
     case 'cm-move': return cardMoveDialog(id);
     case 'cm-also': return cardAlsoDialog(id);
     case 'cm-unlink': { const c = S.cards[id], here = brRef(); if (!c || !here) return; const [b, k] = here.split('::'), set = subtree(b); const also = (c.also || []).filter(r => !refIn(r, set, k)); const nc = { ...c }; if (also.length) nc.also = also; else delete nc.also; await put('cards', nc); closeMenu(); render(); return toast('Removed from this deck · ⌘Z to undo'); }
-    case 'cm-reset': { const c = S.cards[id]; if (!c) return; await put('cards', { ...c, srs: freshSrs() }); closeMenu(); render(); return toast('Progress reset · ⌘Z to undo'); }
+    case 'cm-reset': { const ids = cmTargets(id).filter(x => S.cards[x]); if (!ids.length) return; undoTx = null; undoLabel = 'reset progress'; for (const x of ids) await put('cards', { ...S.cards[x], srs: freshSrs() }); closeMenu(); render(); return toast(`${ids.length > 1 ? ids.length + ' cards reset' : 'Progress reset'} · ⌘Z to undo`); }
+    case 'cm-rate': return cardsSetRating(cmTargets(id), +a.dataset.r);
+    case 'bm-rate': return cardsSetRating([...brMulti], +a.dataset.r);
     case 'cm-delete': return confirmCardDelete(id);
     case 'study-skip': return studySkip();
     case 'study-flag': return studyFlag();
@@ -10188,7 +10232,7 @@ document.addEventListener('click', async e => {
       const was = shuffleOn; shuffleOn = true; try { startStudy(id, !due0); } finally { shuffleOn = was; }
       if (study) study.shuf = true; return; }
     case 'back-card': return goBack();
-    case 'study-exit': { if (study?.tag && document.querySelector('[data-act="pp-back"]')) return document.querySelector('[data-act="pp-back"]').click(); const n = study?.node; study = null; return n ? go('overview', n) : go('decks'); }
+    case 'study-exit': { if (study?.tag && document.querySelector('[data-act="pp-back"]')) return document.querySelector('[data-act="pp-back"]').click(); return studyLeave(); }
     case 'shuffle-toggle': undoRecordUi(); shuffleOn = !shuffleOn; ls.set('md-shuffle', shuffleOn); render(); return toast(shuffleOn ? 'Shuffle on: cards come in a random order' : 'Shuffle off: cards come in order');
     case 'reshuffle': { if (!study) return; study.queue = shuffled(study.queue); renderStudy(); typeset($('#root')); return toast('Shuffled the ' + study.queue.length + ' cards left'); }
     case 'practise': return id ? startStudy(id, true) : studyAllDialog('practise');
@@ -10228,14 +10272,28 @@ document.addEventListener('paste', e => {
   if (!dialogOpen() && S.ready && view.name === 'ppmark' && ppm?.R){ e.preventDefault(); return ppmAddSolPics(files); }
   if (!dialogOpen() && S.ready && view.name !== 'study'){ e.preventDefault(); editor(null, view.node || brRef(), files[0]); }
 });
+/* right-click on a card that's part of a multi-selection acts on the whole selection */
+const cmTargets = id => view.name === 'browse' && brMulti.has(id) && brMulti.size > 1 ? [...brMulti].filter(x => S.cards[x]) : [id];
+const rateRowHtml = (act, id) => `<div class="mrates" role="group" aria-label="Set rating">${[1, 2, 3, 4].map(r => `<button class="r${r}" data-act="${act}" data-r="${r}" data-id="${id || ''}">${RATES[r][0]}</button>`).join('')}</div>`;
+/* set the rating by hand: schedules the card as if you'd rated it now, but it isn't a review (no Progress count, no history entry) */
+async function cardsSetRating(ids, r){
+  ids = ids.filter(x => S.cards[x]); if (!ids.length || !RATES[r]) return;
+  closeMenu(); undoTx = null; undoLabel = ids.length > 1 ? 'set ratings' : 'set rating';
+  let due = 0;
+  for (const x of ids){ const c = S.cards[x], srs = capForExam(c, schedule(c.srs, r)); due = srs.due; await put('cards', { ...c, srs }); }
+  render();
+  toast(ids.length > 1 ? `${ids.length} cards set to ${RATES[r][0]}` : `Set to ${RATES[r][0]} · back in ${fmtIvl(due - Date.now() + 5e3)}`, 2600);
+}
 function cardMenu(id, at){
   closeMenu(); const c = S.cards[id]; if (!c) return;
   const here = view.name === 'browse' ? brRef() : null, linked = linkedHere(c, here);
+  const many = cmTargets(id).length;
   const m = document.createElement('div'); m.id = 'menu'; m.className = 'menu'; m.setAttribute('role', 'menu');
   m.innerHTML = `<button data-act="edit" data-id="${id}">Edit card</button><button data-act="cm-practise" data-id="${id}">Practise this card</button><hr>
+    <div class="mlabel">${many > 1 ? `Set rating for ${many} cards` : 'Set rating'}</div>${rateRowHtml('cm-rate', id)}<hr>
     <button data-act="cm-move" data-id="${id}">Move to…</button><button data-act="cm-also" data-id="${id}">Show in decks…</button>
     ${linked ? `<button data-act="cm-unlink" data-id="${id}">Remove from ${esc(nodeOf(here)?.name || 'this deck')}</button>` : ''}
-    <button data-act="cm-reset" data-id="${id}">Reset progress</button><hr><button class="danger" data-act="cm-delete" data-id="${id}">Delete card…</button>`;
+    <button data-act="cm-reset" data-id="${id}">${many > 1 ? `Reset progress of ${many} cards` : 'Reset progress'}</button><hr><button class="danger" data-act="cm-delete" data-id="${id}">Delete card…</button>`;
   document.body.appendChild(m);
   const w = m.offsetWidth, h = m.offsetHeight;
   m.style.left = Math.max(8, Math.min(innerWidth - w - 8, at.x)) + 'px'; m.style.top = Math.max(8, Math.min(innerHeight - h - 8, at.y)) + 'px';
@@ -10303,7 +10361,7 @@ document.addEventListener('keydown', e => {
   if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !e.shiftKey && (e.altKey !== (e.metaKey || e.ctrlKey)) && !e.defaultPrevented && !dialogOpen() && !isTyping(document.activeElement) && !$('#menu') && !$('.lightbox') && view.name !== 'study' && view.name !== 'ppmark'){
     e.preventDefault(); return e.key === 'ArrowLeft' ? navBack() : histGo(1);
   }
-  if (e.key === 'Escape'){ const lb = $('.lightbox'); if (lb){ gallery = null; return lb.remove(); } if ($('#menu')) return closeMenu(); if (dialogOpen()) return closeDialog(); if ($('#padwrap.full')) return padAction('full'); if (view.name === 'study'){ const n = study?.node; study = null; return n ? go('overview', n) : go('decks'); } if (view.name === 'ppmark' && ppm){ if (ppFull) return ppFullSet(false, true); if (ppm.draw){ ppm.draw = null; return ppmSide(); } if (!isTyping(document.activeElement) && !$('.pickpop') && !$('#tpop')) return go('papers'); } if (!e.defaultPrevented && !isTyping(document.activeElement) && !$('.pickpop') && navCanBack()){ e.preventDefault(); return navBack(); } return; }
+  if (e.key === 'Escape'){ const lb = $('.lightbox'); if (lb){ gallery = null; return lb.remove(); } if ($('#menu')) return closeMenu(); if (dialogOpen()) return closeDialog(); if ($('#padwrap.full')) return padAction('full'); if (view.name === 'study') return studyLeave(); if (view.name === 'ppmark' && ppm){ if (ppFull) return ppFullSet(false, true); if (ppm.draw){ ppm.draw = null; return ppmSide(); } if (!isTyping(document.activeElement) && !$('.pickpop') && !$('#tpop')) return go('papers'); } if (!e.defaultPrevented && !isTyping(document.activeElement) && !$('.pickpop') && navCanBack()){ e.preventDefault(); return navBack(); } return; }
   if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 's' && document.body.classList.contains('desktop')){ e.preventDefault(); return toggleSidebar(); }
   if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && (e.key.toLowerCase() === 'k' || (e.key.toLowerCase() === 'f' && view.name !== 'browse')) && $('#sidesq') && view.name !== 'study' && !dialogOpen()){ e.preventDefault(); if (!document.body.classList.contains('desktop') && getComputedStyle($('.sidesearch')).display === 'none') return; const q = $('#sidesq'); q.focus(); q.select(); return; }
   if (ed && (e.metaKey || e.ctrlKey) && e.key === 'Enter'){ e.preventDefault(); return saveCard(); }
@@ -13091,20 +13149,20 @@ function fBank(t = Date.now()){
   try { fLogAdd(focus.since, t, k); } catch {}
   focus.since = t;
 }
-async function fStart(subj, room = null){
+async function fStart(subj, room = null, quiet = false){
   try { fAskNotify(); } catch {}
   fRoll();
   if (focus.state === 'studying'){ fBank(); }
   await grMergeDay();
   focus = { ...focus, state: 'studying', subj: subj ?? focus.subj ?? '', since: Date.now(), by: '', leftAt: 0, room, ack: true, asleep: 0 }; fSave();
   fPaint(); grPushStatus(); grPushDay();
-  if (!room) grNotify('start', { subject: focus.subj });
+  if (!room && !quiet) grNotify('start', { subject: focus.subj });
 }
 function fPause(by = 'you', t = Date.now()){
   if (focus.state !== 'studying') return;
   fBank(t); focus = { ...focus, state: 'paused', by, leftAt: by === 'left' ? t : 0, ack: by !== 'left' }; fSave();
   fPaint(); grPushStatus(); grPushDay();
-  if (by === 'left') try { fLeftNote(); } catch {}
+  if (by === 'left'){ $('#fback')?.remove(); try { fLeftNote(); } catch {} }
 }
 function fStop(){
   if (focus.state === 'studying') fBank();
@@ -13204,14 +13262,55 @@ if (window.desktop){
   addEventListener('blur', () => { if (focus.state !== 'studying') return; const at = Date.now(); clearTimeout(fBlurT); fBlurT = setTimeout(() => { if (!document.hasFocus()) fPause('left', at); }, 10000); });
   addEventListener('focus', () => { clearTimeout(fBlurT); fBack(); });
 }
+/* back in Recall after leaving mid-session (23 Nov 2026): no dialog. The timer carries straight on (the time away isn't counted)
+   and a small callout above the sidebar timer offers "Pause for now" for 8 seconds. Away an hour or more, or into a new
+   study day, it stays paused and the callout offers "Carry on" instead. */
 function fBack(){
-  if (focus.state !== 'paused' || focus.by !== 'left' || focus.ack || dialogOpen()) return;
-  const away = Date.now() - focus.leftAt;
+  if (focus.state !== 'paused' || focus.by !== 'left' || focus.ack) return;
+  const away = Date.now() - focus.leftAt, long = away >= F_SLEEP_ASK || fDay(focus.leftAt) !== fDay();
   focus.ack = true; fSave();
-  openDialog(`<div class="dialog grback" role="dialog" aria-modal="true" aria-labelledby="grbh" style="max-width:400px"><header><h2 id="grbh">Your timer paused</h2></header>
-    <div class="body"><p>You left Recall ${away < 90e3 ? 'for a moment' : `for ${fShort(away / 1000)}`}, so the clock stopped at <b>${fClock(fSecs())}</b>.${gr.groups.length ? ' Your group can see you stepped away.' : ''}</p></div>
-    <footer><button class="btn" data-act="gr-stop">Stop for now</button><span class="grow"></span><button class="btn primary" data-act="gr-resume">Carry on</button></footer></div>`, d => d.querySelector('.primary')?.focus());
+  if (!long) fStart(focus.subj, focus.room, true).then(() => { if (view.name === 'group') renderGroup(); });
+  fBackShow(away, long);
 }
+const fAway = ms => ms < 60e3 ? `${Math.max(1, Math.round(ms / 1000))}s` : ms < 3600e3 ? `${Math.floor(ms / 60e3)}m${Math.floor(ms % 60e3 / 1000) ? ` ${Math.floor(ms % 60e3 / 1000)}s` : ''}` : fShort(ms / 1000);
+function fBackShow(away, long){
+  $('#fback')?.remove(); clearTimeout(fBackShow.t);
+  const el = document.createElement('div'); el.id = 'fback'; el.setAttribute('role', 'status'); el.style.setProperty('--fbt', (long ? 15 : 8) + 's');
+  const x = `<button class="fbx" type="button" data-act="fb-x" aria-label="Dismiss"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>`;
+  el.innerHTML = `<div class="fbbox">${long
+    ? `<div class="fbhd"><span class="fbdot off"></span><b>Timer paused</b>${x}</div><p>You were away for ${fAway(away)}, so it stayed at ${fClock(fSecs())}.</p><button class="btn fbgo" type="button" data-act="fb-resume">Carry on <kbd>T</kbd></button>`
+    : `<div class="fbhd"><span class="fbdot"></span><b>Timer resumed</b>${x}</div><p>You were away for ${fAway(away)}. That time wasn’t counted.</p><button class="btn fbgo" type="button" data-act="fb-pause">Pause for now <kbd>T</kbd></button>`
+  }<i class="fbdrain" aria-hidden="true"></i></div><span class="fbtip" aria-hidden="true"></span>`;
+  document.body.appendChild(el); fBackPlace();
+  const arm = ms => { clearTimeout(fBackShow.t); fBackShow.t = setTimeout(fBackHide, ms); };
+  arm(long ? 15e3 : 8e3);
+  el.addEventListener('pointerenter', () => { clearTimeout(fBackShow.t); el.classList.add('hold'); });
+  el.addEventListener('pointerleave', () => { el.classList.remove('hold'); arm(3e3); });
+}
+function fBackPlace(){
+  const el = $('#fback'); if (!el) return;
+  /* above the sidebar timer, or above the floating clock when the sidebar is hidden or on a phone */
+  const seen = x => { if (!x) return null; const r = x.getBoundingClientRect(); return r.width > 0 && r.right > 8 && r.left < innerWidth - 8 && r.bottom > 0 && r.top < innerHeight ? r : null; };
+  const gb = $('#gbar'), fp = $('#fpill'), rg = seen(gb), r = rg || seen(fp);
+  if (!r){ el.classList.add('notip'); el.style.left = '16px'; el.style.bottom = '16px'; el.style.width = Math.min(260, innerWidth - 32) + 'px'; return; }
+  const w = rg ? Math.max(200, r.width) : Math.min(260, innerWidth - 16);
+  const left = Math.max(8, Math.min(innerWidth - w - 8, rg ? r.left : r.left + r.width / 2 - w / 2)), aim = rg ? r.left + 22 : r.left + r.width / 2;
+  el.classList.remove('notip');
+  el.style.width = w + 'px'; el.style.left = left + 'px'; el.style.bottom = Math.max(8, innerHeight - r.top + 10) + 'px';
+  el.querySelector('.fbtip').style.left = Math.max(14, Math.min(w - 24, aim - left - 5)) + 'px';
+}
+function fBackHide(){ const el = $('#fback'); if (!el) return; clearTimeout(fBackShow.t); el.id = ''; el.classList.add('out'); setTimeout(() => el.remove(), 160); }
+addEventListener('resize', () => { if ($('#fback')) fBackPlace(); });
+document.addEventListener('click', e => {
+  const b = e.target.closest?.('#fback [data-act]'); if (!b) return;
+  e.preventDefault(); e.stopPropagation(); const k = b.dataset.act; fBackHide();
+  if (k === 'fb-pause'){ fPause('you'); if (view.name === 'group') renderGroup(); toast(`Timer paused at ${fClock(fSecs())} · T or the timer to carry on`, 2200); }
+  else if (k === 'fb-resume') fStart(focus.subj, focus.room, true).then(() => { if (view.name === 'group') renderGroup(); });
+}, true);
+document.addEventListener('keydown', e => {
+  if (!$('#fback') || e.metaKey || e.ctrlKey || e.altKey || isTyping(e.target) || (e.key !== 't' && e.key !== 'T')) return;
+  e.preventDefault(); e.stopPropagation(); $('#fback .fbgo')?.click();
+}, true);
 /* the little running clock: in the sidebar on Mac/iPad, above the tab bar on phones */
 function fPaint(){
   let el = $('#fpill');
