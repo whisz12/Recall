@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261125005956 min-shell:1.27.0 -->
+<!-- recall-build:20261125011620 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -4608,6 +4608,20 @@ html.lh .mbtabs button{height:28px;padding:0 10px;border:0;border-radius:5px;fon
 .mbnote .mbtags{justify-content:flex-start;margin-top:auto}
 .mbempty{margin:0;font-size:13px;color:var(--fg-3)}
 @media (max-width:700px){ .mbrow{grid-template-columns:minmax(0,1fr);gap:4px} .mbtags{justify-content:flex-start} .mbhead .btn{width:100%;height:44px} html.lh .mbtabs button{height:34px;font-size:13px} .mbtabs{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))} }
+
+/* ===== Phone chrome (25 Nov 2026): no top bar or countdown strip on phones; the group timer docks beside the Practise button ===== */
+@media (max-width:700px){
+  html:root body:not(.desktop) .toolbar{position:static;height:var(--sat);min-height:0;padding:0;border:0;background:none}
+  html:root body:not(.desktop) .toolbar .tin{padding:0;display:block}
+  html:root body:not(.desktop) .toolbar .brand,html:root body:not(.desktop) .toolbar #cloudpill,html:root body:not(.desktop) #cdmob{display:none}
+  html:root body:not(.desktop):has(.mmpbar) .fpill{left:16px;transform:none;bottom:calc(67px + env(safe-area-inset-bottom,0px));height:44px;width:108px;box-sizing:border-box;justify-content:center;padding:0 10px;border-radius:8px;box-shadow:none}
+  html:root body:not(.desktop):has(.mmpbar) .fpill span:last-child{display:none}
+  html:root body:not(.desktop):has(.fpill):has(.mmpbar) .mmpbar{padding-left:132px}
+  html:root body:not(.desktop).mmrun .fpill{display:none}
+  .setsync{display:flex;margin:2px 0 14px} .setsync .cloudpill span{display:inline} .setsync .cloudpill{padding:6px 12px 6px 10px}
+}
+/* the page-enter animation leaves a transform on #root's children, which would trap the fixed Practise bar inside the page */
+#root.pagein > .mmp{animation:none}
 
 /* ===================== Rubric guide (Memorise › Rubric guide) ===================== */
 .mgw{display:grid;grid-template-columns:240px minmax(0,1fr);gap:0;align-items:start}
@@ -16633,6 +16647,8 @@ function mmRenderHook(){
   if (view.name !== 'memo' && mm.run?.stop && !mm.run.done) try { mm.run.stop(); } catch {}
   document.body.classList.toggle('mmrun', view.name === 'memo' && !!mm.run && !mm.run.done);
   if (view.name !== 'memo') $('#mmfmt')?.remove();
+  /* phones have no top bar any more, so sync lives at the top of Settings */
+  setTimeout(() => { try { const h = view.name === 'themes' && !document.body.classList.contains('desktop') && matchMedia('(max-width: 700px)').matches && $('.h7set > h1'); if (h && !$('.h7set .setsync')) h.insertAdjacentHTML('afterend', `<div class="setsync">${cloudPill().replace('id="cloudpill"', '')}</div>`); } catch {} }, 0);
 }
 function mmAppbar(){
   const r = mm.run;
