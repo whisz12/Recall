@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261125000335 min-shell:1.27.0 -->
+<!-- recall-build:20261125005956 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -4560,6 +4560,54 @@ body.mmrun .page{padding-bottom:0}
 .mmchips.many .mmhint{white-space:nowrap}
 .mmtabs button{white-space:nowrap}
 @media (max-width:1250px){ #appbar[data-v="memo"] .abmeta{display:none} }
+/* 25 Nov: sections, hidden project list, banks */
+.mmtxs{display:flex;flex-direction:column;gap:10px;min-width:0}
+.mmsecedit{font-size:12px;margin-left:auto}
+.mmnavh .mmnavx{width:24px;height:24px;min-width:24px;padding:0;margin-left:6px}
+.mmnavh .mmnavx svg,.mmnavshow svg{width:14px;height:14px}
+.mmnavh{gap:4px}
+.mmnavh>span{flex:1}
+.mmw.navh{grid-template-columns:minmax(0,1fr) 290px}
+.mmw.navh .mmnav{display:none}
+.mmnavshow{margin-right:2px}
+.mmsecl{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:10px;max-height:56vh;overflow-y:auto}
+.mmsecr{display:grid;grid-template-columns:190px minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px 10px;border-top:1px solid var(--border)}
+.mmsecr:first-child{border-top:0}
+.mmsecr select{height:30px;padding:0 8px}
+.mmsect{font:400 13px/1.45 var(--serif);color:var(--fg-2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.mmsecw{font-size:12px;color:var(--fg-3)}
+@media (max-width:700px){ .mmsecr{grid-template-columns:minmax(0,1fr) auto} .mmsecr select{grid-column:1 / -1;height:40px} }
+.mrtyping{border-bottom-color:var(--fg-3)}
+.mmp .mmtabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.mbw{max-width:880px;display:flex;flex-direction:column;gap:14px}
+html.lh body.desktop .page.v-memo .mbw{margin:0 auto;padding:28px 0 40px}
+.mbhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mbtabs{display:inline-flex;gap:2px;padding:2px;border-radius:7px;background:var(--surface-2);flex-wrap:nowrap}
+html.lh .mbtabs button{height:28px;padding:0 10px;border:0;border-radius:5px;font:500 12px var(--ui);white-space:nowrap}
+.mbtabs .num{color:inherit;opacity:.65;margin-left:2px}
+.mbsearch{flex:1;min-width:180px;display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;border-radius:8px;background:var(--surface);border:1px solid var(--border-2);color:var(--fg-3)}
+.mbsearch:focus-within{border-color:var(--focus, var(--accent))}
+.mbsearch svg{width:14px;height:14px;flex:none}
+.mbsearch input{flex:1;min-width:0;border:0;background:transparent;color:var(--fg);font:400 13px var(--ui);outline:none}
+.mbforms{gap:6px}
+.mblist{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.mbrow{display:grid;grid-template-columns:minmax(120px,220px) minmax(0,1fr) auto;gap:16px;align-items:baseline;padding:12px 16px;border:0;border-top:1px solid var(--border);background:none;color:var(--fg);text-align:left;cursor:pointer;font:400 14px var(--ui)}
+.mbrow:first-child{border-top:0}
+.mbrow:hover{background:var(--hover)}
+.mbword{font:500 16px var(--serif);color:var(--fg);display:flex;flex-direction:column;gap:2px}
+.mbword small{font:400 12px var(--ui);color:var(--fg-3)}
+.mbm{display:flex;flex-direction:column;gap:4px;color:var(--fg-2);line-height:1.5}
+.mbm i{font:italic 400 14px/1.5 var(--serif);color:var(--fg-3)}
+.mbtags{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.mbtags span{font-size:11px;padding:1px 6px;border-radius:4px;border:1px solid var(--border-2);color:var(--fg-3)}
+.mbnotes{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.mbnote{display:flex;flex-direction:column;gap:6px;padding:14px 16px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--fg);text-align:left;cursor:pointer;min-height:96px}
+.mbnote:hover{background:var(--hover)}
+.mbnote b{font-weight:600;font-size:14px}
+.mbnote span{font-size:13px;line-height:1.5;color:var(--fg-2);white-space:pre-wrap;overflow:hidden;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical}
+.mbnote .mbtags{justify-content:flex-start;margin-top:auto}
+.mbempty{margin:0;font-size:13px;color:var(--fg-3)}
+@media (max-width:700px){ .mbrow{grid-template-columns:minmax(0,1fr);gap:4px} .mbtags{justify-content:flex-start} .mbhead .btn{width:100%;height:44px} html.lh .mbtabs button{height:34px;font-size:13px} .mbtabs{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))} }
 
 /* ===================== Rubric guide (Memorise › Rubric guide) ===================== */
 .mgw{display:grid;grid-template-columns:240px minmax(0,1fr);gap:0;align-items:start}
@@ -5269,11 +5317,13 @@ let navSkip = false;
 const NAV_STAY = new Set(['decks', 'add', 'edit', 'setup']);
 function navCanBack(){ if (NAV_STAY.has(view.name) || (view.name === 'exam' && typeof exOn === 'function' && exOn())) return false; return navH.back.length > 0 || view.name === 'overview' || view.name === 'study'; }
 function navBack(){
+  if (view.name === 'memo' && typeof mmBack === 'function' && mmBack()) return;
   if (!navCanBack()) return;
   if (view.name === 'study' || navH.back.some(v => !v.node || nodeOf(v.node))) return histGo(-1);
   if (view.name === 'overview'){ const n = nodeOf(view.node); return n?.parentId && nodeOf(n.parentId) ? go('overview', n.parentId) : go('decks'); }
 }
 function histGo(dir){
+  if (dir < 0 && view.name === 'memo' && typeof mmBack === 'function' && mmBack()) return;
   if (view.name === 'study' && dir < 0) return studyLeave();
   const from = dir < 0 ? navH.back : navH.fwd, to = dir < 0 ? navH.fwd : navH.back;
   let v = from.pop(); while (v && v.node && !nodeOf(v.node)) v = from.pop();
@@ -5293,7 +5343,7 @@ const IC = {
 };
 function renderAppbar(){
   const el = $('#appbar'); if (!el) return;
-  const nb = $('#navcl'); if (nb){ const b = nb.querySelector('[data-act="hist-back"]'), f = nb.querySelector('[data-act="hist-fwd"]'); if (b) b.disabled = !(navH.back.length || view.name === 'study' || view.name === 'overview'); if (f) f.disabled = !navH.fwd.length; }
+  const nb = $('#navcl'); if (nb){ const b = nb.querySelector('[data-act="hist-back"]'), f = nb.querySelector('[data-act="hist-fwd"]'); if (b) b.disabled = !(navH.back.length || (view.name === 'memo' && mmCanBack()) || view.name === 'study' || view.name === 'overview'); if (f) f.disabled = !navH.fwd.length; }
   if (!document.body.classList.contains('desktop')) return cdMobile();
   if (!$('#abt')){ el.innerHTML = '<div class="abt" id="abt"></div><div class="abmid" id="abmid"></div><div class="abr" id="abr"></div><span class="abprog" id="abprog" hidden></span><span class="abline" aria-hidden="true"></span>'; const ss = $('.sidesearch'), sr = $('#sidesres'); if (ss) $('#abmid').append(ss); if (sr) $('#abmid').append(sr); const q = $('#sidesq'); if (q) q.placeholder = 'Search cards, decks, mistakes'; }
   if (!S.ready){ $('#abt').innerHTML = ''; $('#abr').innerHTML = ''; return; }
@@ -10353,7 +10403,7 @@ document.addEventListener('click', async e => {
   switch (act){
     case 'toggle-sidebar': undoRecordUi(); return toggleSidebar();
     case 'side-subj': { if (view.name === 'decks'){ const on = $('.stab[aria-selected="true"]'); if (on?.dataset.id === id) return; tabFrom = on ? { x: on.offsetLeft, w: on.offsetWidth } : null; ls.set('md-subj', id); deckSwap = true; return subjSwapDraw(); } ls.set('md-subj', id); study = null; return go('decks'); }
-    case 'hist-back': return navH.back.length || view.name === 'study' ? histGo(-1) : view.name === 'overview' ? navBack() : undefined;
+    case 'hist-back': if (view.name === 'memo' && mmBack()) return; return navH.back.length || view.name === 'study' ? histGo(-1) : view.name === 'overview' ? navBack() : undefined;
     case 'px-view': if (!pdfx) return; pdfx.view = a.dataset.v === 'pages' ? 'pages' : 'cards'; return pxDraw();
     case 'px-drawk': if (!pdfx) return; pdfx.drawSol = a.dataset.v === 's' && pdfx.sel != null; return pxDraw();
     case 'px-show': { if (!pdfx) return; pdfx.view = 'pages'; pdfx.sel = +a.dataset.i; pxDraw(); return document.querySelector(`.pxbox[data-i="${a.dataset.i}"]`)?.scrollIntoView({ block: 'center' }); }
@@ -15598,7 +15648,7 @@ const MM_IC = {
 };
 const mmIcon = (k, s = 18) => `<svg width="${s}" height="${s}" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${MM_IC[k] || ''}</svg>`;
 const mmMode = k => MM_MODES.find(m => m.k === k) || MM_MODES[3];
-const mm = { pid: ls.get('mm-pid', null), sel: new Set(), range: null, mode: ls.get('mm-mode', 'first'), diff: ls.get('mm-diff', 1), tab: ls.get('mm-tab', 'projects'), g: ls.get('mm-g', 'common'), screen: 'list', sheet: false, run: null, tool: 'h', selW: null, wasPhone: null };
+const mm = { bank: ls.get('mm-bank', 'v'), bq: '', bf: 'all', navh: ls.get('mm-navh', false), hist: [], pid: ls.get('mm-pid', null), sel: new Set(), range: null, mode: ls.get('mm-mode', 'first'), diff: ls.get('mm-diff', 1), tab: ls.get('mm-tab', 'projects'), g: ls.get('mm-g', 'common'), screen: 'list', sheet: false, run: null, tool: 'h', selW: null, wasPhone: null };
 const mmPhone = () => innerWidth <= 700 && !document.body.classList.contains('desktop');
 
 /* ---------- projects ---------- */
@@ -15621,7 +15671,8 @@ const mmParseCache = new Map();
 function mmParse(text){
   text = String(text || '');
   if (mmParseCache.has(text)) return mmParseCache.get(text);
-  const paras = text.replace(/\r/g, '').split(/\n+/).map(s => s.trim()).filter(Boolean);
+  const lines = text.replace(/\r/g, '').split('\n'), paras = [], gaps = []; let blank = false;
+  for (const l of lines){ const t = l.trim(); if (!t){ blank = true; continue; } paras.push(t); gaps.push(blank); blank = false; }
   const W = [], P = []; let s = 0;
   paras.forEach((pt, pi) => {
     const toks = pt.split(/\s+/).filter(Boolean), a = W.length;
@@ -15631,18 +15682,43 @@ function mmParse(text){
       const bare = t.replace(/["“”‘’()[\]]/g, '');
       if ((/[.!?…]["”’')\]]*$/.test(t) && !MM_ABBR.test(bare)) || k === toks.length - 1) s++;
     });
-    P.push({ a, b: W.length - 1 });
+    P.push({ a, b: W.length - 1, gap: gaps[pi] });
   });
   const out = { W, P, nS: s };
   if (mmParseCache.size > 12) mmParseCache.delete(mmParseCache.keys().next().value);
   mmParseCache.set(text, out); return out;
 }
 const mmParsed = p => mmParse(p?.text);
-function mmLabels(p){
-  const n = mmParsed(p).P.length;
-  if (p.kind === 'text' || n < 3) return Array.from({ length: n }, (_, i) => n === 1 ? 'Text' : '¶' + (i + 1));
-  return Array.from({ length: n }, (_, i) => i === 0 ? 'Intro' : i === n - 1 ? 'Conclusion' : 'Body ' + i);
+/* Sections: each line of text is a paragraph; a section is one or more paragraphs with a role (intro, body, conclusion, other).
+   Roles are yours if you set them (Edit sections, p.roles), otherwise guessed: a line that doesn't finish its sentence, or starts
+   in lower case, carries on the paragraph above; only a last section that opens like a conclusion is called one. */
+const MM_ROLES = [['intro', 'Introduction'], ['body', 'Body paragraph'], ['concl', 'Conclusion'], ['other', 'Other'], ['join', 'Part of the one above']];
+const MM_CONCL = /^\W*(ultimately|in conclusion|to conclude|in summary|in sum|overall|thus|therefore|hence|in essence|in all|consequently|as such|it is clear|clearly|evidently|in the end|finally, (it|the|this|these))\b/i;
+function mmAutoRoles(p){
+  const { W, P } = mmParsed(p), text = i => W.slice(P[i].a, P[i].b + 1).map(w => w.t).join(' ');
+  if (p.kind === 'text') return P.map(() => 'other');
+  /* if blank lines separate some paragraphs, a single line break is just a wrapped line inside one */
+  const blanks = P.some((pp, i) => i && pp.gap), single = P.some((pp, i) => i && !pp.gap);
+  const join = P.map((pp, i) => { if (!i) return false; if (blanks && single) return !pp.gap; const prev = W[P[i - 1].b].t, first = W[pp.a].t; return !/[.!?…:]["”’')\]]*$/.test(prev) || /^[a-z,;)]/.test(first); });
+  const starts = P.map((_, i) => i).filter(i => !join[i]), roles = P.map(() => 'join');
+  /* the last section is a conclusion only if it opens like one, or is clearly shorter than the body paragraphs before it */
+  const secWords = starts.map((i, k) => (k + 1 < starts.length ? P[starts[k + 1] - 1].b : P.at(-1).b) - P[i].a + 1);
+  const mid = secWords.slice(1, -1).sort((x, y) => x - y), median = mid.length ? mid[Math.floor(mid.length / 2)] : 0;
+  const lastI = starts.at(-1), firstSent = text(lastI).split(/(?<=[.!?])\s/)[0] || '';
+  const concl = starts.length >= 3 && (MM_CONCL.test(text(lastI)) || /\b(ultimately|in conclusion|therefore|thus|overall|in essence)\b/i.test(firstSent) || (median && secWords.at(-1) < median * .7));
+  starts.forEach((i, k) => { roles[i] = starts.length < 3 ? 'other' : k === 0 ? 'intro' : k === starts.length - 1 && concl ? 'concl' : 'body'; });
+  return roles;
 }
+function mmRoles(p){ const n = mmParsed(p).P.length; const r = Array.isArray(p.roles) && p.roles.length === n ? [...p.roles] : mmAutoRoles(p); if (r[0] === 'join') r[0] = 'other'; return r; }
+function mmSections(p){
+  const roles = mmRoles(p), out = []; let nb = 0, no = 0;
+  roles.forEach((r, i) => { if (r === 'join' && out.length){ out.at(-1).ps.push(i); return; } out.push({ role: r, ps: [i] }); });
+  const others = out.filter(x => x.role === 'other').length;
+  out.forEach(x => { x.label = x.role === 'intro' ? 'Intro' : x.role === 'concl' ? 'Conclusion' : x.role === 'body' ? 'Body ' + (++nb) : others === 1 && out.length === 1 ? 'Text' : (p.kind === 'text' ? '¶' : 'Part ') + (++no); });
+  return out;
+}
+const mmLabels = p => mmSections(p).map(x => x.label);
+function mmSecOf(p){ const m = []; mmSections(p).forEach((x, si) => x.ps.forEach(i => m[i] = si)); return m; }
 /* spelling slips within one letter are forgiven for words over four letters */
 function mmLev1(a, b){ if (Math.abs(a.length - b.length) > 1) return false; let i = 0, j = 0, d = 0; while (i < a.length && j < b.length){ if (a[i] === b[j]){ i++; j++; continue; } if (++d > 1) return false; if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; } } return d + (a.length - i) + (b.length - j) <= 1; }
 const mmSame = (typed, core) => { const a = mmNorm(typed); return a === core || (core.length > 4 && mmLev1(a, core)); };
@@ -15684,7 +15760,7 @@ function mmFormat(k, c){
     for (let i = r.a; i <= r.b; i++) M[k][i] = all ? null : c;   // the same colour again takes it off
   }
   mmPut({ ...p, marks: mmMarksFrom(M) }, 'formatting');
-  mm.selW = null; getSelection()?.removeAllRanges(); $('#mmfmt')?.remove(); render();
+  mm.selW = null; getSelection()?.removeAllRanges(); $('#mmfmt')?.remove(); renderMemo();
 }
 
 /* ---------- stats, schedule, level ---------- */
@@ -15729,34 +15805,42 @@ function mmBlocked(k){
 function mmSelIdx(p){
   const { W, P } = mmParsed(p);
   if (mm.range){ const a = Math.max(0, mm.range.a), b = Math.min(W.length - 1, mm.range.b); return a <= b ? Array.from({ length: b - a + 1 }, (_, i) => a + i) : []; }
-  const ps = mm.sel.size ? [...mm.sel].filter(i => i < P.length).sort((a, b) => a - b) : P.map((_, i) => i);
+  const SC = mmSections(p), ps = mm.sel.size ? [...mm.sel].filter(i => i < SC.length).sort((a, b) => a - b).flatMap(i => SC[i].ps) : P.map((_, i) => i);
   return ps.flatMap(i => Array.from({ length: P[i].b - P[i].a + 1 }, (_, k) => P[i].a + k));
 }
 function mmSelLabel(p){
   const L = mmLabels(p);
   if (mm.range) return 'Your selection';
   if (!mm.sel.size) return L.length === 1 ? L[0] : 'Whole text';
-  const ps = [...mm.sel].filter(i => i < L.length).sort((a, b) => a - b);
+  const ps = [...mm.sel].filter(i => i < L.length).sort((a, b) => a - b); if (!ps.length) return 'Whole text';
   return ps.length > 3 ? `${ps.length} sections` : ps.map(i => L[i]).join(', ');
 }
 function mmSelAcc(p){
   const st = mmStats(p);
   if (mm.range) return null;
   if (!mm.sel.size) return st.acc10;
-  const v = [...mm.sel].map(i => st.acc[i]).filter(x => x != null); return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null;
+  const SC = mmSections(p); let sw = 0, sa = 0; [...mm.sel].forEach(i => (SC[i]?.ps || []).forEach(j => { if (st.acc[j] != null){ sw += st.words[j]; sa += st.acc[j] * st.words[j]; } })); return sw ? Math.round(sa / sw) : null;
 }
 
 /* ===================== home ===================== */
 function renderMemo(){
+  const key = [mm.tab, mm.pid, mm.screen, !!mm.run, mm.run?.done, mm.g, mm.bank].join('|'), keep = mm.lastKey === key ? { m: $('.mmmain')?.scrollTop, n: $('.mmnav')?.scrollTop, pn: $('.mmpanel')?.scrollTop, y: scrollY } : null;
+  mm.lastKey = key;
+  mmRender0();
+  if (keep){ const set = (sel, v) => { const el = $(sel); if (el && v != null) el.scrollTop = v; }; set('.mmmain', keep.m); set('.mmnav', keep.n); set('.mmpanel', keep.pn); if (Math.abs(scrollY - keep.y) > 1) window.scrollTo(0, keep.y); }
+  mmBackBtn();
+}
+function mmRender0(){
   const root = $('#root'), phone = mmPhone(); mm.wasPhone = phone; mm.wk = mmWidthKey();
   document.body.classList.toggle('mmrun', !!mm.run && !mm.run.done);
   root.classList.toggle('mmfull', !mm.run && mm.tab !== 'guide' && !phone && document.body.classList.contains('desktop') && mmAll().length > 0);
   if (mm.run) return mmRenderRun(root);
   if (mm.tab === 'guide') return mmRenderGuide(root, phone);
+  if (mm.tab === 'banks') return mmRenderBanks(root, phone);
   const ps = mmAll(), p = mmCur();
   if (!ps.length) return mmRenderEmpty(root, phone);
   if (phone) return mm.screen === 'project' && p ? mmRenderPhoneProject(root, p) : mmRenderPhoneList(root, ps);
-  root.innerHTML = `${document.body.classList.contains('desktop') ? '' : mmTopbar()}<div class="mmw">
+  root.innerHTML = `${document.body.classList.contains('desktop') ? '' : mmTopbar()}<div class="mmw${mm.navh ? ' navh' : ''}">
     <nav class="mmnav" aria-label="Projects">${mmNavHtml(ps, p)}</nav>
     <div class="mmmain">${mmProjectHead(p)}${mmChips(p)}<div class="mmtext" id="mmtext">${mmReaderHtml(p)}</div></div>
     <aside class="mmpanel" aria-label="Practise">${mmPanelHtml(p)}</aside></div>`;
@@ -15764,37 +15848,42 @@ function renderMemo(){
 function mmTopbar(){
   return `<div class="mmtop"><h1>Memorise</h1><span class="grow"></span>${mmTabs()}<button class="btn" data-act="mm-new">New project</button></div>`;
 }
-const mmTabs = () => `<div class="seg mmtabs" role="group" aria-label="Memorise"><button aria-pressed="${mm.tab !== 'guide'}" data-act="mm-tab" data-v="projects">Projects</button><button aria-pressed="${mm.tab === 'guide'}" data-act="mm-tab" data-v="guide">Rubric guide</button></div>`;
+const mmTabs = () => `<div class="seg mmtabs" role="group" aria-label="Memorise">${[['projects', 'Projects'], ['banks', 'Banks'], ['guide', 'Rubric guide']].map(([k, n]) => `<button aria-pressed="${(mm.tab || 'projects') === k}" data-act="mm-tab" data-v="${k}">${n}</button>`).join('')}</div>`;
 function mmSubCol(p){ return p.sid && S.nodes[p.sid] ? scol(p.sid) : 'var(--fg-3)'; }
 function mmSubName(p){ return (p.sid && S.nodes[p.sid]?.name) || p.sub || ''; }
 function mmNavHtml(ps, p){
   const due = mmDueAll();
-  return `<div class="mmnavh"><span>Projects</span>${due ? `<button class="link mmduebtn" data-act="mm-due">${due} due today</button>` : ''}</div>`
+  return `<div class="mmnavh"><span>Projects</span>${due ? `<button class="link mmduebtn" data-act="mm-due">${due} due</button>` : ''}<button class="abi mmnavx" data-act="mm-navtog" aria-label="Hide the projects list" title="Hide the projects list"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`
     + ps.map(x => { const st = mmStats(x), d = mmDue(x).length; return `<button class="mmproj" data-act="mm-pick" data-id="${esc(x.id)}" aria-current="${x.id === p?.id}"><span class="nm">${esc(x.t || 'Untitled')}</span><span class="mt"><i style="background:${mmSubCol(x)}"></i>${esc(mmSubName(x) || (x.kind === 'text' ? 'Text' : 'Essay'))}<span class="grow"></span>${d ? `<b>${d} due</b>` : ''}<span class="num">${st.memo}%</span></span></button>`; }).join('');
 }
 function mmProjectHead(p){
-  const st = mmStats(p), wc = st.tot, sub = mmSubName(p), narrow = !document.body.classList.contains('desktop') || innerWidth < 1100;
+  const st = mmStats(p), wc = st.tot, sub = mmSubName(p), narrow = !document.body.classList.contains('desktop') || innerWidth < 1100 || mm.navh;
   return `<div class="mmhead"><div class="mmht">
       <span class="mmmeta">${esc([sub, p.kind === 'text' ? 'Text' : 'Essay', wc.toLocaleString() + ' words'].filter(Boolean).join(' · '))}</span>
-      <div class="mmtitle"><h1>${esc(p.t || 'Untitled')}</h1>${narrow && mmAll().length > 1 ? `<button class="btn sm" data-act="mm-switch" aria-haspopup="true">Switch</button>` : ''}<button class="abi mmmore" data-act="mm-pmenu" data-id="${esc(p.id)}" aria-label="Project options" title="Edit, rename or delete">${'<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.2" fill="currentColor"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><circle cx="12.5" cy="8" r="1.2" fill="currentColor"/></svg>'}</button></div></div>
+      <div class="mmtitle">${mm.navh && !(innerWidth < 1100) && document.body.classList.contains('desktop') ? `<button class="abi mmnavshow" data-act="mm-navtog" aria-label="Show the projects list" title="Show the projects list"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6 3v10" stroke="currentColor" stroke-width="1.4"/></svg></button>` : ''}<h1>${esc(p.t || 'Untitled')}</h1>${narrow && mmAll().length > 1 ? `<button class="btn sm" data-act="mm-switch" aria-haspopup="true">Switch</button>` : ''}${narrow ? `<button class="btn sm" data-act="mm-new">New</button>` : ''}<button class="abi mmmore" data-act="mm-pmenu" data-id="${esc(p.id)}" aria-label="Project options" title="Edit, rename or delete">${'<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.2" fill="currentColor"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><circle cx="12.5" cy="8" r="1.2" fill="currentColor"/></svg>'}</button></div></div>
     <div class="mmkpis"><div><b>${st.memo}%</b><span>memorised</span></div><div><b>${st.acc10 == null ? '–' : st.acc10 + '%'}</b><span>accuracy, last 10</span></div><div><b>Lv ${mmLevel(p.pts)}</b><span>${(p.pts || 0).toLocaleString()} points</span></div></div></div>`;
 }
 function mmChips(p){
-  const L = mmLabels(p), due = new Set(mmDue(p)), all = !mm.sel.size && !mm.range;
-  if (L.length < 2 && !mm.range) return '';
+  const SC = mmSections(p), L = SC.map(x => x.label), dueP = new Set(mmDue(p)), due = new Set(SC.map((x, i) => x.ps.some(j => dueP.has(j)) ? i : -1)), all = !mm.sel.size && !mm.range;
+  if (L.length < 2 && !mm.range) return `<div class="mmchips"><button class="link mmsecedit" data-act="mm-secs" data-id="${esc(p.id)}">Split into sections</button></div>`;
   return `<div class="mmchips${L.length > 9 ? ' many' : ''}" role="group" aria-label="Choose the text to practise"><button class="mmchip" data-act="mm-sec" data-v="all" aria-pressed="${all}">${L.length === 1 ? L[0] : 'Whole text'}</button>`
     + (L.length > 1 ? L.map((l, i) => `<button class="mmchip" data-act="mm-sec" data-v="${i}" aria-pressed="${!mm.range && mm.sel.has(i)}">${esc(l)}${due.has(i) ? '<i class="mmdue" title="Due"></i>' : ''}</button>`).join('') : '')
-    + (mm.range ? `<span class="mmchip mmrange" aria-pressed="true">Selection · ${mm.range.b - mm.range.a + 1} words<button data-act="mm-unrange" aria-label="Clear the selection">×</button></span>` : `<span class="mmhint">${mmPhone() ? 'or select text to practise just that' : 'or drag over the text to practise just that'}</span>`) + '</div>';
+    + (mm.range ? `<span class="mmchip mmrange" aria-pressed="true">Selection · ${mm.range.b - mm.range.a + 1} words<button data-act="mm-unrange" aria-label="Clear the selection">×</button></span>` : `<span class="mmhint">${mmPhone() ? 'or select text to practise just that' : 'or drag over the text to practise just that'}</span>`) + (p.kind !== 'text' || L.length > 1 ? `<button class="link mmsecedit" data-act="mm-secs" data-id="${esc(p.id)}">Edit sections</button>` : '') + '</div>';
 }
 function mmReaderHtml(p){
-  const { W, P } = mmParsed(p), M = mmMarkMaps(p, W.length), L = mmLabels(p), st = mmStats(p), due = new Set(mmDue(p));
+  const { W, P } = mmParsed(p), M = mmMarkMaps(p, W.length), SC = mmSections(p), st = mmStats(p), due = new Set(mmDue(p));
   const inSel = i => mm.range ? false : mm.sel.has(i);
-  return P.map((pp, pi) => {
+  return SC.map((sc, si) => {
+    const words = sc.ps.map(pi => mmParaHtml(W, P[pi], M)).map(h => `<p class="mmtx">${h}</p>`).join('');
+    let sw = 0, sa = 0, any = false; sc.ps.forEach(j => { if (st.acc[j] != null){ any = true; sw += st.words[j]; sa += st.acc[j] * st.words[j]; } });
+    const wc = sc.ps.reduce((n, j) => n + st.words[j], 0), acc = any ? Math.round(sa / sw) : null;
+    return `<section class="mmpara" data-s="${si}" aria-current="${inSel(si)}"><div class="mmgut">${SC.length > 1 || sc.role !== 'other' ? `<b>${esc(sc.label)}</b>` : ''}<span>${acc == null ? 'New' : acc + '%'} · ${wc}w</span>${sc.ps.some(j => due.has(j)) ? '<span class="mmduet">Due</span>' : ''}</div><div class="mmtxs">${words}</div></section>`;
+  }).join('');
+}
+function mmParaHtml(W, pp, M){
     let words = '';
     for (let i = pp.a; i <= pp.b; i++){ const s = mmWStyle(M, i), g = i < pp.b ? mmGapStyle(M, i) : '', inR = mm.range && i >= mm.range.a && i <= mm.range.b; words += `<span class="mw${inR ? ' mwsel' : ''}" data-w="${i}"${s ? ` style="${s}"` : ''}>${esc(W[i].t)}</span>` + (i < pp.b ? (g ? `<span class="mwg" style="${g}"> </span>` : ' ') : ''); }
-    const acc = st.acc[pi];
-    return `<section class="mmpara" data-p="${pi}" aria-current="${inSel(pi)}"><div class="mmgut">${L.length > 1 ? `<b>${esc(L[pi])}</b>` : ''}<span>${acc == null ? 'New' : acc + '%'} · ${st.words[pi]}w</span>${due.has(pi) ? '<span class="mmduet">Due</span>' : ''}</div><p class="mmtx">${words}</p></section>`;
-  }).join('');
+    return words;
 }
 function mmPanelHtml(p, sheet){
   const idx = mmSelIdx(p), a = mmSelAcc(p), last = p.ms || {}, cur = mmMode(mm.mode), blocked = mmBlocked(cur.k);
@@ -15841,7 +15930,7 @@ function mmFmtBar(){
   const rect = getSelection().getRangeAt(0).getBoundingClientRect();
   const sw = MM_COLS.map(([n, c]) => `<button class="mmsw" data-act="mm-fmt" data-c="${c}" aria-label="${n}" title="${n}" style="--c:${c}"></button>`).join('');
   const el = document.createElement('div'); el.id = 'mmfmt'; el.setAttribute('role', 'toolbar'); el.setAttribute('aria-label', 'Format the selection');
-  el.innerHTML = `<div class="seg mmtool">${[['h', 'Highlight'], ['b', 'Bold'], ['u', 'Underline']].map(([k, n]) => `<button data-act="mm-tool" data-v="${k}" aria-pressed="${mm.tool === k}">${n}</button>`).join('')}</div>${sw}<label class="mmsw mmcustom" title="Any colour" aria-label="Any colour">+<input type="color" id="mmcol" value="#d99a2b"></label><button class="mmfx" data-act="mm-fmt" data-c="clear">Clear</button><span class="mmsep"></span><button class="mmfx mmprac" data-act="mm-prac">Practise this</button>`;
+  el.innerHTML = `<div class="seg mmtool">${[['h', 'Highlight'], ['b', 'Bold'], ['u', 'Underline']].map(([k, n]) => `<button data-act="mm-tool" data-v="${k}" aria-pressed="${mm.tool === k}">${n}</button>`).join('')}</div>${sw}<label class="mmsw mmcustom" title="Any colour" aria-label="Any colour">+<input type="color" id="mmcol" value="#d99a2b"></label><button class="mmfx" data-act="mm-fmt" data-c="clear">Clear</button><span class="mmsep"></span><button class="mmfx" data-act="mm-vocab">Add to vocab</button><button class="mmfx mmprac" data-act="mm-prac">Practise this</button>`;
   document.body.appendChild(el);
   const w = el.offsetWidth, x = Math.max(8, Math.min(innerWidth - w - 8, rect.left + rect.width / 2 - w / 2)), above = rect.top - el.offsetHeight - 10;
   const touch = matchMedia('(pointer: coarse)').matches;   // on touch screens the system's own copy menu sits above the selection
@@ -15855,6 +15944,22 @@ document.addEventListener('selectionchange', () => {
 document.addEventListener('pointerdown', e => { if (e.target.closest?.('#mmfmt')){ mmBarT = Date.now(); if (!e.target.closest('input, label')) e.preventDefault(); } }, true);
 document.addEventListener('scroll', () => { if (!matchMedia('(pointer: coarse)').matches) $('#mmfmt')?.remove(); }, true);
 document.addEventListener('change', e => { if (e.target.id === 'mmcol' && mm.selW) mmFormat(mm.tool, e.target.value); });
+
+/* ---------- edit sections ---------- */
+function mmSecDialog(id){
+  const p = mmGet(id); if (!p) return; const { W, P } = mmParsed(p), roles = mmRoles(p);
+  const opt = (r, i) => MM_ROLES.filter(([k]) => i || k !== 'join').map(([k, n]) => `<option value="${k}" ${k === r ? 'selected' : ''}>${n}</option>`).join('');
+  openDialog(`<div class="dialog mmsecdlg" role="dialog" aria-modal="true" aria-labelledby="mmsh" style="max-width:720px"><header><h2 id="mmsh">Sections</h2></header>
+    <div class="body"><p class="muted">Say what each block of text is. “Part of the one above” joins a line onto the paragraph before it, for essays pasted with line breaks inside paragraphs.</p>
+    <div class="mmsecl">${P.map((pp, i) => { const t = W.slice(pp.a, pp.b + 1).map(w => w.t).join(' '); return `<div class="mmsecr"><select class="in" data-i="${i}" aria-label="What this block is">${opt(roles[i], i)}</select><span class="mmsect">${esc(t.length > 140 ? t.slice(0, 139) + '…' : t)}</span><span class="mmsecw num">${pp.b - pp.a + 1}w</span></div>`; }).join('')}</div></div>
+    <footer><button class="btn" data-act="mm-secauto" data-id="${esc(p.id)}">Guess again</button><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="mm-secsave" data-id="${esc(p.id)}">Save</button></footer></div>`);
+}
+function mmSecSave(id, auto){
+  const p = mmGet(id); if (!p) return;
+  const roles = auto ? null : [...document.querySelectorAll('.mmsecl select')].map(s => s.value);
+  const np = { ...p }; if (roles) np.roles = roles; else delete np.roles;
+  mmPut(np, 'sections'); mm.sel.clear(); closeDialog(); toast(auto ? 'Sections guessed again · ⌘Z to undo' : 'Sections saved · ⌘Z to undo');
+}
 
 /* ---------- new / edit project ---------- */
 function mmDialog(id){
@@ -15898,7 +16003,7 @@ async function mmSaveDialog(id){
   let p;
   if (old){
     const same = old.text === text, pm = same ? null : mmParaMap(old.text, text);
-    p = { ...old, t, sid, sub, kind, text, marks: same ? old.marks : mmMapMarks(old.text, text, old.marks), secs: same ? old.secs : mmRemap(old.secs, pm), hist: same ? old.hist : (old.hist || []).map(h => h.pa ? { ...h, pa: mmRemap(h.pa, pm) } : h), upd: Date.now() };
+    p = { ...old, t, sid, sub, kind, text, marks: same ? old.marks : mmMapMarks(old.text, text, old.marks), secs: same ? old.secs : mmRemap(old.secs, pm), roles: same || !Array.isArray(old.roles) ? old.roles : (() => { const n = mmParse(text).P.length, r = new Array(n).fill(null); pm.forEach((j, i) => { r[j] = old.roles[i]; }); return r.map((x, i) => x || (i ? 'body' : 'intro')); })(), hist: same ? old.hist : (old.hist || []).map(h => h.pa ? { ...h, pa: mmRemap(h.pa, pm) } : h), upd: Date.now() };
   } else p = { id: uid('mm'), t, sid, sub, kind, text, marks: [], secs: {}, hist: [], ms: {}, pts: 0, at: Date.now(), used: Date.now() };
   mmPut(p, old ? 'edit project' : 'new project'); mmPick(p.id); mm.tab = 'projects'; ls.set('mm-tab', 'projects');
   closeDialog(); toast(old ? 'Saved' : 'Project created');
@@ -15925,6 +16030,7 @@ function mmStart(){
   r.rnd = mmRand(r.seed); r.sc = words.map((w, k) => mmScore(w) ? k : -1).filter(k => k >= 0);
   MM_RUN[r.mode === 'type' && r.diff === 0 ? 'first' : r.mode].init(r);
   mm.sheet = false; $('#mmfmt')?.remove(); getSelection()?.removeAllRanges();
+  try { if (gr.groups.length && focus.state !== 'studying' && ls.get('md-focus-auto', true)) fStart(mmSubName(p) || focus.subj || ''); } catch {}
   render(); window.scrollTo(0, 0); mmFocus();
 }
 const mmEng = r => MM_RUN[r.mode === 'type' && r.diff === 0 ? 'first' : r.mode];
@@ -16162,19 +16268,22 @@ const MM_RUN = {
   },
   /* ---- Type it (Medium, Hard): type every word ---- */
   type: {
-    init(r){ r.typed = ''; r.n = 0; },
+    init(r){ r.typed = ''; r.n = 0; r.partial = ''; },
     calc(r){
       const toks = r.typed.split(/\s+/).filter(Boolean), done = /\s$/.test(r.typed) ? toks.length : Math.max(0, toks.length - 1);
       r.n = Math.min(done, r.sc.length); r.res = r.res.map(() => null);
       for (let j = 0; j < r.n; j++) r.res[r.sc[j]] = mmSame(toks[j], r.words[r.sc[j]].core) ? 1 : 0;
-      r.typedTok = toks;
+      r.typedTok = toks; r.partial = /\s$/.test(r.typed) || !toks.length || r.n >= r.sc.length ? '' : toks[toks.length - 1];
     },
     body(r){
       const curK = r.sc[r.n] ?? r.words.length;
       return mmRunText(r, (w, k) => {
         if (!mmScore(w)) return k < curK ? { t: w.t } : null;
         if (k < curK) return r.res[k] === 0 ? { c: 'mrx', h: esc(w.t) } : { fmt: true };
-        if (k === curK) return { c: 'mrnext', t: r.diff === 1 ? mmFirstOf(w) : '', h: r.diff === 1 ? null : '<i class="mrcaret"></i>' };
+        if (k === curK){
+          if (r.partial){ const ok = w.core.startsWith(mmNorm(r.partial)) || mmSame(r.partial, w.core); return { c: 'mrnext mrtyping' + (ok ? '' : ' mrbad'), t: r.partial }; }
+          return { c: 'mrnext', t: r.diff === 1 ? mmFirstOf(w) : '', h: r.diff === 1 ? null : '<i class="mrcaret"></i>' };
+        }
         return r.diff === 1 ? { c: 'mrfl', h: mmHintH(w) } : null;
       });
     },
@@ -16275,25 +16384,84 @@ function mmPaint(foot){
   const hd = $('.mmrtop'); if (hd){ const acc = mmAccNow(r), [a, c, unit] = mmEng(r).prog(r); const ae = $('#mmracc'); if (ae && r.mode !== 'listen') ae.textContent = acc == null ? 'Accuracy –' : `Accuracy ${acc}%`; const pe = $('#mmrprog'); if (pe) pe.textContent = `${a} of ${c} ${unit}`; }
   const bar = $('#mmrbar'); if (bar) bar.style.width = mmBarPct(r) + '%';
   if (hadFocus === 'mmin' || foot || r.mode === 'blanks') mmFocus();
+  mmBackBtn();
   const cur = b.querySelector('.mrnext, .mrcur, .mrinl'); if (cur && !mmInView(cur)) cur.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 }
 function mmInView(el){ const r = el.getBoundingClientRect(), f = $('#mmfoot')?.getBoundingClientRect(); return r.top >= 60 && r.bottom <= (f ? f.top : innerHeight) - 8; }
 function mmFocus(){ const el = $('#mmin') || $('#mmta'); if (el && document.activeElement !== el){ el.focus({ preventScroll: true }); if (el.id === 'mmta') el.setSelectionRange(el.value.length, el.value.length); } }
 function mmShake(){ const el = $('#mmbody .mrnext') || $('#mmin'); if (!el) return; el.classList.remove('mmshk'); void el.offsetWidth; el.classList.add('mmshk'); }
 function mmRenderResult(root, r){
-  const m = mmMode(r.mode), p = mmGet(r.pid), L = p ? mmLabels(p) : [], mins = Math.floor(r.ms / 60000), secs = Math.round(r.ms / 1000) % 60;
+  const m = mmMode(r.mode), p = mmGet(r.pid), mins = Math.floor(r.ms / 60000), secs = Math.round(r.ms / 1000) % 60;
   const missed = []; let nMiss = 0; r.words.forEach((w, k) => { if (r.res[k] !== 0) return; nMiss++; if (missed.length < 30) missed.push(w.t.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}'’]+$/gu, '')); });
   const nextDiff = r.diff < 2 ? { m: r.mode, d: r.diff + 1 } : (() => { const order = ['reveal', 'slider', 'first', 'blanks', 'reorder', 'target', 'choice', 'type', 'speak']; let i = order.indexOf(r.mode) + 1; while (i < order.length && mmBlocked(order[i])) i++; return i < order.length ? { m: order[i], d: 1 } : null; })();
-  const paRows = Object.entries(r.paAcc || {}); const sched = Object.entries(r.sched || {});
+  const SC = p ? mmSections(p) : [], secOf = p ? mmSecOf(p) : [], bySec = new Map();
+  r.words.forEach((w, k) => { if (r.res[k] == null) return; const si = secOf[w.p] ?? -1; const o = bySec.get(si) || [0, 0]; o[0] += r.res[k]; o[1]++; bySec.set(si, o); });
+  const secRows = [...bySec.entries()].sort((a, b) => a[0] - b[0]).map(([si, [x, n]]) => [SC[si]?.label || '', Math.round(x / n * 100)]);
+  const sched = Object.entries(r.sched || {}), schedSecs = [...new Set(sched.map(([i]) => secOf[+i]))];
   const good = r.acc == null || r.acc >= 90;
   root.innerHTML = `<div class="mmres">
     <div class="mmresh">${r.acc == null ? `<b class="num">Done</b><span>Listened to ${r.words.length.toLocaleString()} words</span>` : `<b class="num">${r.acc}%</b><span>accuracy</span>`}</div>
     <p class="mmresm">${esc(m.n)} · ${MM_DIFF[r.diff]} · ${esc(r.label)} · ${r.words.length.toLocaleString()} words · ${mins}:${String(secs).padStart(2, '0')}</p>
-    ${paRows.length > 1 ? `<div class="mmresp">${paRows.map(([i, a]) => `<div><span>${esc(L[+i] || '¶' + (+i + 1))}</span><div class="mmbar"><i style="width:${a}%"></i></div><b class="num">${a}%</b></div>`).join('')}</div>` : ''}
+    ${secRows.length > 1 ? `<div class="mmresp">${secRows.map(([l, a]) => `<div><span>${esc(l)}</span><div class="mmbar"><i style="width:${a}%"></i></div><b class="num">${a}%</b></div>`).join('')}</div>` : ''}
     ${missed.length ? `<div class="mmmiss"><span class="mmgl">${r.mode === 'target' ? 'Swaps you missed or wrong taps' : 'Words you missed'}</span><div>${missed.map(t => `<span>${esc(t)}</span>`).join('')}${nMiss > missed.length ? `<em>and ${nMiss - missed.length} more</em>` : ''}</div></div>` : ''}
-    <p class="mmresn">+${r.gain} points${r.lv1 > r.lv0 ? ` · Level ${r.lv1}` : ''}${sched.length ? ` · ${sched.length === 1 ? esc(L[+sched[0][0]] || '') : 'These paragraphs'} come${sched.length === 1 ? 's' : ''} back ${mmWhen(Math.min(...sched.map(x => x[1])))}` : ''}</p>
+    <p class="mmresn">+${r.gain} points${r.lv1 > r.lv0 ? ` · Level ${r.lv1}` : ''}${sched.length ? ` · ${schedSecs.length === 1 ? esc(SC[schedSecs[0]]?.label || 'This section') : 'These sections'} come${schedSecs.length === 1 ? 's' : ''} back ${mmWhen(Math.min(...sched.map(x => x[1])))}` : ''}</p>
     <div class="mmresb"><button class="btn" data-act="mm-home">Back to ${esc(p?.t || 'project')}</button><button class="btn ${good && nextDiff ? '' : 'primary'}" data-act="mm-again">Try again</button>${nextDiff ? `<button class="btn ${good ? 'primary' : ''}" data-act="mm-next" data-m="${nextDiff.m}" data-d="${nextDiff.d}">${nextDiff.m === r.mode ? 'Harder: ' + MM_DIFF[nextDiff.d] : 'Next: ' + esc(mmMode(nextDiff.m).n)}</button>` : ''}</div></div>`;
 }
+
+/* ===================== banks: vocabulary, techniques, notes ===================== */
+/* each entry is its own settings key (mmb_<id>) so entries added on two devices both survive a sync */
+const MB_KINDS = { v: ['Vocabulary', 'word', 'Add word'], t: ['Techniques', 'technique', 'Add technique'], n: ['Notes', 'note', 'Add note'] };
+const MB_FORMS = ['Any form', 'Poetry', 'Prose fiction', 'Drama', 'Film', 'Nonfiction', 'Speech', 'Visual', 'Creative writing'];
+const mbAll = k => Object.keys(S.settings || {}).filter(x => x.startsWith('mmb_') && S.settings[x]?.id && (!k || S.settings[x].k === k)).map(x => S.settings[x]).sort((a, b) => (b.upd || b.at || 0) - (a.upd || a.at || 0));
+function mbPut(it, label){ undoTx = null; undoLabel = label; S.settings = { ...S.settings, ['mmb_' + it.id]: it }; saveSettings(); }
+function mbDel(id){ undoTx = null; undoLabel = 'delete entry'; const s = { ...S.settings }; delete s['mmb_' + id]; S.settings = s; saveSettings(); }
+const mbText = it => [it.w, it.m, it.e, it.n, it.f, it.d, it.x, it.h, it.b, it.g].filter(Boolean).join(' ').toLowerCase();
+function mbListHtml(){
+  const q = mm.bq.trim().toLowerCase(), words = q.split(/\s+/).filter(Boolean);
+  let items = mbAll(mm.bank).filter(it => words.every(w => mbText(it).includes(w)));
+  if (mm.bank === 't' && mm.bf !== 'all') items = items.filter(it => (it.f || 'Any form') === mm.bf);
+  if (mm.bank === 'v') items.sort((a, b) => (a.w || '').localeCompare(b.w || '', undefined, { sensitivity: 'base' }));
+  const tags = it => it.g ? `<span class="mbtags">${String(it.g).split(/[,;]/).map(t => t.trim()).filter(Boolean).map(t => `<span>${esc(t)}</span>`).join('')}</span>` : '';
+  if (!items.length) return `<p class="mbempty">${q || mm.bf !== 'all' ? 'Nothing matches.' : mm.bank === 'v' ? 'No words yet. Add one, or select a word in one of your projects and press Add to vocab.' : mm.bank === 't' ? 'No techniques yet. Add the ones you use, with the form they suit and an example.' : 'No notes yet.'}</p>`;
+  if (mm.bank === 'n') return `<div class="mbnotes">${items.map(it => `<button class="mbnote" data-act="mb-edit" data-id="${esc(it.id)}"><b>${esc(it.h || 'Untitled')}</b><span>${esc((it.b || '').slice(0, 400))}</span>${tags(it)}</button>`).join('')}</div>`;
+  return `<div class="mblist">${items.map(it => mm.bank === 'v'
+    ? `<button class="mbrow" data-act="mb-edit" data-id="${esc(it.id)}"><span class="mbword">${esc(it.w || '')}</span><span class="mbm">${esc(it.m || '')}${it.e ? `<i>${esc(it.e)}</i>` : ''}</span>${tags(it)}</button>`
+    : `<button class="mbrow" data-act="mb-edit" data-id="${esc(it.id)}"><span class="mbword">${esc(it.n || '')}<small>${esc(it.f || 'Any form')}</small></span><span class="mbm">${esc(it.d || '')}${it.x ? `<i>${esc(it.x)}</i>` : ''}</span>${tags(it)}</button>`).join('')}</div>`;
+}
+function mmRenderBanks(root, phone){
+  const n = k => mbAll(k).length, K = MB_KINDS[mm.bank] || MB_KINDS.v;
+  const forms = mm.bank === 't' ? `<div class="mmchips mbforms">${['all', ...MB_FORMS].map(f => `<button class="mmchip" data-act="mb-form" data-v="${esc(f)}" aria-pressed="${mm.bf === f}">${f === 'all' ? 'All' : esc(f)}</button>`).join('')}</div>` : '';
+  root.innerHTML = `${document.body.classList.contains('desktop') ? '' : `<div class="mmp mmpg"><div class="mmtop"><h1>Memorise</h1><span class="grow"></span>${phone ? '' : mmTabs()}</div>${phone ? mmTabs() : ''}</div>`}<div class="mbw">
+    <div class="mbhead"><div class="seg mbtabs" role="group" aria-label="Bank">${Object.entries(MB_KINDS).map(([k, [nm]]) => `<button data-act="mm-bank-tab" data-v="${k}" aria-pressed="${mm.bank === k}">${nm} <span class="num">${n(k)}</span></button>`).join('')}</div>
+      <label class="mbsearch"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input id="mbq" type="search" placeholder="Search ${esc(K[0].toLowerCase())}" value="${esc(mm.bq)}" autocomplete="off" aria-label="Search"></label>
+      <button class="btn primary" data-act="mb-new">${K[2]}</button></div>
+    ${forms}<div id="mblist">${mbListHtml()}</div></div>`;
+}
+function mbDialog(kind, id, pre){
+  const it = id ? S.settings['mmb_' + id] : { k: kind, ...(pre || {}) }; if (!it) return; const k = it.k;
+  const f = (lab, idn, val, ph, area) => `<div class="field"><label for="${idn}">${lab}</label>${area ? `<textarea class="in" id="${idn}" rows="${area}" placeholder="${esc(ph)}">${esc(val || '')}</textarea>` : `<input class="in" id="${idn}" value="${esc(val || '')}" placeholder="${esc(ph)}" maxlength="200">`}</div>`;
+  const body = k === 'v' ? f('Word or phrase', 'mbw', it.w, 'e.g. ephemeral') + f('Meaning', 'mbm', it.m, 'What it means, in your words', 2) + f('Example', 'mbe', it.e, 'A sentence you could use it in', 2) + f('Tags', 'mbg', it.g, 'e.g. Mod A, verbs for analysis')
+    : k === 't' ? f('Technique', 'mbn', it.n, 'e.g. enjambment') + `<div class="field"><label for="mbf">Form</label><select class="in" id="mbf">${MB_FORMS.map(x => `<option ${x === (it.f || 'Any form') ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></div>` + f('What it does', 'mbd', it.d, 'The effect it creates, and how to write about it', 3) + f('Example', 'mbx', it.x, 'A quote from your text, with the effect', 2) + f('Tags', 'mbg', it.g, 'e.g. Mod B, imagery')
+    : f('Title', 'mbh', it.h, 'e.g. Thesis ideas for Mod B') + f('Note', 'mbb', it.b, 'Anything worth keeping', 10) + f('Tags', 'mbg', it.g, 'optional');
+  openDialog(`<div class="dialog mbdlg" role="dialog" aria-modal="true" aria-labelledby="mbdh" style="max-width:560px"><header><h2 id="mbdh">${id ? 'Edit ' : 'New '}${MB_KINDS[k][1]}</h2></header><div class="body">${body}</div>
+    <footer>${id ? `<button class="btn danger" data-act="mb-del" data-id="${esc(id)}">Delete</button>` : ''}<span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="mb-save" data-k="${k}" data-id="${esc(id || '')}">Save</button></footer></div>`, d => d.querySelector('input, textarea')?.focus());
+}
+function mbSave(k, id){
+  const v = sel => ($(sel)?.value || '').trim(), old = id ? S.settings['mmb_' + id] : null;
+  const it = { ...(old || {}), id: id || uid('mb'), k, at: old?.at || Date.now(), upd: Date.now(), g: v('#mbg') };
+  if (k === 'v'){ it.w = v('#mbw'); it.m = v('#mbm'); it.e = v('#mbe'); if (!it.w) return $('#mbw').focus(); }
+  if (k === 't'){ it.n = v('#mbn'); it.f = v('#mbf'); it.d = v('#mbd'); it.x = v('#mbx'); if (!it.n) return $('#mbn').focus(); }
+  if (k === 'n'){ it.h = v('#mbh'); it.b = v('#mbb'); if (!it.h && !it.b) return $('#mbh').focus(); }
+  mbPut(it, old ? 'edit ' + MB_KINDS[k][1] : 'add ' + MB_KINDS[k][1]); closeDialog(); toast(old ? 'Saved' : 'Added to ' + MB_KINDS[k][0].toLowerCase());
+}
+function mbFromSelection(){
+  const p = mmCur(), r = mm.selW; if (!p || !r) return;
+  const { W } = mmParsed(p), w = W.slice(r.a, r.b + 1).map(x => x.t).join(' ').replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}'’]+$/gu, '');
+  const s0 = W[r.a].s, sent = W.filter(x => x.s === s0).map(x => x.t).join(' ');
+  getSelection()?.removeAllRanges(); $('#mmfmt')?.remove(); mm.selW = null;
+  mbDialog('v', null, { w, e: sent, g: mmSubName(p) || '' });
+}
+document.addEventListener('input', e => { if (e.target.id === 'mbq'){ mm.bq = e.target.value; const l = $('#mblist'); if (l) l.innerHTML = mbListHtml(); } });
 
 /* ===================== rubric guide ===================== */
 function mmRenderGuide(root, phone){
@@ -16303,26 +16471,63 @@ function mmRenderGuide(root, phone){
   root.innerHTML = `${document.body.classList.contains('desktop') ? '' : `<div class="mmp mmpg"><div class="mmtop"><h1>Memorise</h1><span class="grow"></span>${phone ? '' : mmTabs()}</div>${phone ? mmTabs() : ''}</div>`}<div class="mgw">${nav}<div class="mgd" id="mgd">${MG.html(mm.g)}<p class="g-src mgcred">Rubric guide compiled by Tim Lin from North Sydney Boys resources, used with permission.</p></div></div>`;
 }
 
+/* ===================== back and undo ===================== */
+const MM_NOSNAP = new Set(['words', 'M', 'rnd', 'stop', 'sc', 'units', 'unitOf', 'order', 'blanks', 'isB', 'bank', 'ch', 'pool', 'swap', 'sents', 'rec', 't0', 'seed', 'label', 'pid', 'mode', 'diff', 'max', 'hint', 'undo', 'done', 'ms']);
+function mmSnapR(r){ const o = {}; for (const [k, v] of Object.entries(r)) if (!MM_NOSNAP.has(k) && typeof v !== 'function') o[k] = structuredClone(v); return o; }
+const mmSigR = o => JSON.stringify(o, (k, v) => v instanceof Set ? [...v] : v instanceof Map ? [...v.entries()] : v);
+/* run something that may change the session; if it did, remember how it was so ⌘Z / Backspace / Back can undo it */
+function mmStep(r, fn){
+  if (r.mode === 'listen' || r.mode === 'type') return fn();
+  const before = mmSnapR(r), sig = mmSigR(before), out = fn();
+  if (mm.run === r && !r.done && mmSigR(mmSnapR(r)) !== sig){ (r.undo = r.undo || []).push(before); if (r.undo.length > 300) r.undo.shift(); mmBackBtn(); }
+  return out;
+}
+function mmUndoStep(){
+  const r = mm.run; if (!r || r.done || !r.undo?.length) return false;
+  Object.assign(r, r.undo.pop()); if (r.mode === 'speak'){ r.prev = ''; r.live = ''; }
+  mmPaint(true); toast('Stepped back', 1200); return true;
+}
+/* Memorise pages: what you had open before (project, section picked, guide page…) */
+function mmSnapNav(){ return { tab: mm.tab, pid: mm.pid, g: mm.g, bank: mm.bank, screen: mm.screen, sheet: mm.sheet, sel: [...mm.sel], range: mm.range ? { ...mm.range } : null, mode: mm.mode, diff: mm.diff }; }
+function mmNav(){ const s = mmSnapNav(), last = mm.hist.at(-1); if (!last || JSON.stringify(last) !== JSON.stringify(s)){ mm.hist.push(s); if (mm.hist.length > 80) mm.hist.shift(); } }
+function mmCanBack(){ return view.name === 'memo' && (!!mm.run || mm.hist.length > 0); }
+function mmBack(){
+  if (view.name !== 'memo') return false;
+  const r = mm.run;
+  if (r && !r.done){ if (mmUndoStep()) return true; mmExit(); return true; }
+  if (r?.done){ mm.run = null; document.body.classList.remove('mmrun'); render(); return true; }
+  const s = mm.hist.pop(); if (!s) return false;
+  Object.assign(mm, { tab: s.tab, pid: s.pid, g: s.g, bank: s.bank, screen: s.screen, sheet: s.sheet, sel: new Set(s.sel), range: s.range, mode: s.mode, diff: s.diff });
+  ls.set('mm-tab', mm.tab); render(); return true;
+}
+function mmBackBtn(){ const b = $('#navcl [data-act="hist-back"]'); if (b && view.name === 'memo') b.disabled = !(mmCanBack() || navH.back.length); }
+
 /* ===================== events ===================== */
 document.addEventListener('click', async e => {
   const a = e.target.closest?.('[data-act]'); if (!a) return; const act = a.dataset.act;
-  if (!/^(mm|mg)-/.test(act)) return;
+  if (!/^(mm|mg|mb)-/.test(act)) return;
   if (a.getAttribute('aria-disabled') === 'true' && act === 'mm-mode') return toast(a.title || 'Not available here', 4000);
   const r = mm.run;
   if (r && !r.done && view.name === 'memo'){
     if (act === 'mm-exit') return mmExit();
-    const eng = mmEng(r); if (eng.act){ e.preventDefault(); return eng.act(r, act, a); }
+    const eng = mmEng(r); if (eng.act){ e.preventDefault(); return mmStep(r, () => eng.act(r, act, a)); }
     return;
   }
+  if (['mm-tab', 'mm-pick', 'mm-open', 'mm-plist', 'mm-sec', 'mm-unrange', 'mm-prac', 'mm-sheet', 'mm-due', 'mm-mode', 'mm-diff', 'mg-sec', 'mm-bank-tab'].includes(act) && view.name === 'memo') mmNav();
   switch (act){
     case 'mm-tab': mm.tab = a.dataset.v; ls.set('mm-tab', mm.tab); if (view.name !== 'memo') return go('memo'); render(); window.scrollTo(0, 0); return;
-    case 'mm-new': return mmDialog(null);
+    case 'mm-new': closeMenu(); return mmDialog(null);
     case 'mm-pick': mmPick(a.dataset.id); return render();
     case 'mm-plist': mm.screen = 'list'; mm.sheet = false; return render();
-    case 'mm-switch': { const rc = a.getBoundingClientRect(); return menuAt(mmAll().map(x => `<button data-act="mm-pick" data-id="${esc(x.id)}">${esc(x.t || 'Untitled')}</button>`).join(''), { x: rc.left, y: rc.bottom + 4 }); }
-    case 'mm-pmenu': { const rc = a.getBoundingClientRect(); return menuAt(`<button data-act="mm-edit" data-id="${esc(a.dataset.id)}">Edit text and details</button><button data-act="mm-clearfmt" data-id="${esc(a.dataset.id)}">Remove all formatting</button><button data-act="mm-resetp" data-id="${esc(a.dataset.id)}">Reset progress</button><hr><button class="danger" data-act="mm-delask" data-id="${esc(a.dataset.id)}">Delete project…</button>`, { x: Math.min(rc.left, innerWidth - 230), y: rc.bottom + 4 }); }
+    case 'mm-switch': { const rc = a.getBoundingClientRect(); return menuAt(mmAll().map(x => `<button data-act="mm-open" data-id="${esc(x.id)}">${esc(x.t || 'Untitled')}</button>`).join(''), { x: rc.left, y: rc.bottom + 4 }); }
+    case 'mm-pmenu': { const rc = a.getBoundingClientRect(); return menuAt(mmMenuHtml(a.dataset.id, false), { x: Math.min(rc.left, innerWidth - 230), y: rc.bottom + 4 }); }
+    case 'mm-open': closeMenu(); mmNav(); mmPick(a.dataset.id); return render();
+    case 'mm-secs': closeMenu(); return mmSecDialog(a.dataset.id);
+    case 'mm-secsave': return mmSecSave(a.dataset.id, false);
+    case 'mm-secauto': return mmSecSave(a.dataset.id, true);
+    case 'mm-navtog': mm.navh = !mm.navh; ls.set('mm-navh', mm.navh); return render();
     case 'mm-edit': closeMenu(); return mmDialog(a.dataset.id);
-    case 'mm-clearfmt': { closeMenu(); const p = mmGet(a.dataset.id); if (p){ mmPut({ ...p, marks: [] }, 'remove formatting'); render(); toast('Formatting removed · ⌘Z to undo'); } return; }
+    case 'mm-clearfmt': { closeMenu(); const p = mmGet(a.dataset.id); if (p){ mmPut({ ...p, marks: [] }, 'remove formatting'); renderMemo(); toast('Formatting removed · ⌘Z to undo'); } return; }
     case 'mm-resetp': { closeMenu(); const p = mmGet(a.dataset.id); if (p){ mmPut({ ...p, secs: {}, hist: [], ms: {}, pts: 0 }, 'reset progress'); render(); toast('Progress reset · ⌘Z to undo'); } return; }
     case 'mm-delask': { closeMenu(); const p = mmGet(a.dataset.id); if (!p) return;
       return openDialog(`<div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="mmdelh" style="max-width:420px"><header><h2 id="mmdelh">Delete “${esc(p.t)}”?</h2></header><div class="body"><p class="muted">The text, its formatting and its practice history go. ⌘Z brings it back.</p></div><footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn danger" data-act="mm-del" data-id="${esc(p.id)}">Delete</button></footer></div>`); }
@@ -16332,7 +16537,7 @@ document.addEventListener('click', async e => {
     case 'mm-file': return $('#mmdf')?.click();
     case 'mm-sec': {
       const v = a.dataset.v; mm.range = null;
-      if (v === 'all') mm.sel.clear(); else { const i = +v; mm.sel.has(i) ? mm.sel.delete(i) : mm.sel.add(i); if (mm.sel.size === mmParsed(mmCur()).P.length) mm.sel.clear(); }
+      if (v === 'all') mm.sel.clear(); else { const i = +v; mm.sel.has(i) ? mm.sel.delete(i) : mm.sel.add(i); if (mm.sel.size === mmSections(mmCur()).length) mm.sel.clear(); }
       return render();
     }
     case 'mm-unrange': mm.range = null; return render();
@@ -16343,7 +16548,7 @@ document.addEventListener('click', async e => {
     case 'mm-sheetx': mm.sheet = false; return render();
     case 'mm-due': {
       const ps = mmAll().map(p => ({ p, d: mmDue(p) })).filter(x => x.d.length).sort((x, y) => y.d.length - x.d.length); if (!ps.length) return toast('Nothing due');
-      mmPick(ps[0].p.id); mm.sel = new Set(ps[0].d); mm.range = null; if (ps[0].p.last){ mm.mode = ps[0].p.last.m; mm.diff = ps[0].p.last.d; } mm.tab = 'projects'; if (mmPhone()) mm.sheet = true; if (view.name !== 'memo') return go('memo'); return render();
+      mmPick(ps[0].p.id); { const so = mmSecOf(ps[0].p); mm.sel = new Set(ps[0].d.map(i => so[i])); } mm.range = null; if (ps[0].p.last){ mm.mode = ps[0].p.last.m; mm.diff = ps[0].p.last.d; } mm.tab = 'projects'; if (mmPhone()) mm.sheet = true; if (view.name !== 'memo') return go('memo'); return render();
     }
     case 'mm-tool': mm.tool = a.dataset.v; a.parentElement.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === a))); return;
     case 'mm-fmt': return mmFormat(a.dataset.c === 'clear' ? 'clear' : mm.tool, a.dataset.c);
@@ -16351,18 +16556,38 @@ document.addEventListener('click', async e => {
     case 'mm-home': mm.run = null; document.body.classList.remove('mmrun'); return render();
     case 'mm-again': { const o = mm.run; if (!o) return; mm.mode = o.mode; mm.diff = o.diff; mm.run = null; return mmRestart(o); }
     case 'mm-next': { const o = mm.run; if (!o) return; mm.mode = a.dataset.m; mm.diff = +a.dataset.d; ls.set('mm-mode', mm.mode); ls.set('mm-diff', mm.diff); mm.run = null; return mmRestart(o); }
+    case 'mm-bank-tab': mm.bank = a.dataset.v; mm.bf = 'all'; ls.set('mm-bank', mm.bank); return render();
+    case 'mb-form': mm.bf = a.dataset.v; return render();
+    case 'mb-new': return mbDialog(mm.bank, null);
+    case 'mb-edit': return mbDialog(null, a.dataset.id);
+    case 'mb-save': return mbSave(a.dataset.k, a.dataset.id || null);
+    case 'mb-del': mbDel(a.dataset.id); closeDialog(); return toast('Deleted · ⌘Z to undo');
+    case 'mm-vocab': return mbFromSelection();
     case 'mg-sec': mm.g = a.dataset.v; ls.set('mm-g', mm.g); render(); window.scrollTo(0, 0); $('#mgd')?.scrollTo?.(0, 0); return;
     case 'mg-toc': { const t = document.getElementById(a.dataset.id); t?.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
     case 'mg-mem': e.preventDefault(); e.stopPropagation(); return mmFromExemplar(a.dataset.i);
   }
 });
+function mmMenuHtml(id, open){
+  const i = esc(id);
+  return `${open ? `<button data-act="mm-open" data-id="${i}">Open</button>` : ''}<button data-act="mm-edit" data-id="${i}">Edit text and details…</button><button data-act="mm-secs" data-id="${i}">Edit sections…</button><button data-act="mm-clearfmt" data-id="${i}">Remove all formatting</button><button data-act="mm-resetp" data-id="${i}">Reset progress</button><hr><button class="danger" data-act="mm-delask" data-id="${i}">Delete project…</button>`;
+}
+/* right-click a project for its options; right-click the empty part of the list for a new one */
+document.addEventListener('contextmenu', e => {
+  if (view.name !== 'memo' || mm.run) return;
+  const row = e.target.closest?.('.mmproj, .mmprow'), list = e.target.closest?.('.mmnav, .mmplist');
+  if (!row && !list) return;
+  e.preventDefault(); e.stopPropagation();
+  const html = row ? mmMenuHtml(row.dataset.id, true) : `<button data-act="mm-new">New project…</button>`;
+  menuAt(html, { x: Math.min(e.clientX, innerWidth - 230), y: Math.min(e.clientY, innerHeight - (row ? 230 : 50)) });
+}, true);
 /* "Try again" keeps exactly the same words, even if the selection on the home page has changed since */
 function mmRestart(o){
   const p = mmGet(o.pid); if (!p) return render();
   const save = { sel: new Set(mm.sel), range: mm.range, pid: mm.pid }; mm.pid = o.pid;
   mm.range = { a: o.words[0].i, b: o.words.at(-1).i }; mm.sel.clear();
   const contiguous = o.words.every((w, k) => !k || w.i === o.words[k - 1].i + 1);
-  if (!contiguous){ mm.range = null; mm.sel = new Set(o.words.map(w => w.p)); }
+  if (!contiguous){ mm.range = null; const so = mmSecOf(p); mm.sel = new Set(o.words.map(w => so[w.p])); }
   mmStart(); if (mm.run) mm.run.label = o.label;
   if (save.pid === o.pid){ mm.sel = save.sel; mm.range = save.range; } else { mm.sel = new Set(); mm.range = null; } render();
 }
@@ -16379,10 +16604,15 @@ document.addEventListener('change', e => {
   if (e.target.id !== 'mmdf') return; const f = e.target.files?.[0]; if (!f) return;
   const rd = new FileReader(); rd.onload = () => { const x = $('#mmdx'); if (x){ x.value = String(rd.result || '').replace(/\r/g, ''); if (!$('#mmdt').value.trim()) $('#mmdt').value = f.name.replace(/\.[^.]+$/, ''); } }; rd.readAsText(f);
 });
-document.addEventListener('input', e => { const r = mm.run; if (!r || r.done || view.name !== 'memo') return; const eng = mmEng(r); if (eng.input) eng.input(r, e.target); });
+document.addEventListener('input', e => { const r = mm.run; if (!r || r.done || view.name !== 'memo') return; const eng = mmEng(r); if (eng.input) mmStep(r, () => eng.input(r, e.target)); });
 document.addEventListener('keydown', e => {
   if (view.name !== 'memo' || dialogOpen()) return;
-  const r = mm.run;
+  const r = mm.run, ae = document.activeElement, fieldEmpty = !isTyping(ae) || ((ae.id === 'mmin') && !ae.value);
+  if (r && !r.done && (e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && ae?.id !== 'mmta'){ e.preventDefault(); e.stopImmediatePropagation(); if (!mmUndoStep()) toast('Nothing to step back to', 1400); return; }
+  if (e.key === 'Backspace' && !e.metaKey && !e.ctrlKey && !e.altKey && fieldEmpty && !$('#menu')){
+    if (r && !r.done){ e.preventDefault(); e.stopImmediatePropagation(); if (!mmUndoStep()) toast('Nothing to step back to', 1400); return; }
+    if (!isTyping(ae) && mmBack()){ e.preventDefault(); e.stopImmediatePropagation(); return; }
+  }
   if (!r){ if (e.key === 'Escape' && $('#mmfmt')){ e.preventDefault(); e.stopImmediatePropagation(); $('#mmfmt').remove(); getSelection()?.removeAllRanges(); } if (e.key === 'Escape' && mm.sheet){ e.preventDefault(); e.stopImmediatePropagation(); mm.sheet = false; render(); } return; }
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if (r.done){
@@ -16392,7 +16622,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape'){ e.preventDefault(); e.stopImmediatePropagation(); return mmExit(); }
   const typingIn = isTyping(document.activeElement) && !['mmin', 'mmta', 'mmsl'].includes(document.activeElement.id);
   if (typingIn) return;
-  if (mmEng(r).key(r, e)){ e.preventDefault(); e.stopImmediatePropagation(); return; }
+  if (mmStep(r, () => mmEng(r).key(r, e))){ e.preventDefault(); e.stopImmediatePropagation(); return; }
   if (!isTyping(document.activeElement) && e.key.length === 1){ e.stopImmediatePropagation(); }   // keep app shortcuts (D, B, T…) from leaving mid-session
 }, true);
 const mmWidthKey = () => mmPhone() ? 'p' : innerWidth < 1100 ? 'n' : 'w';
@@ -16409,7 +16639,7 @@ function mmAppbar(){
   if (r && !r.done){ const p = mmGet(r.pid); return { title: `<b>${esc(mmMode(r.mode).n)}</b><span class="abmeta">${MM_DIFF[r.diff]} · ${esc(p?.t || '')} › ${esc(r.label)}</span>`, act: `<button class="btn" data-act="mm-exit">Stop<kbd>Esc</kbd></button>` }; }
   if (r?.done) return { title: `<b>Memorise</b><span class="abmeta">Results</span>`, act: '' };
   const due = mmDueAll();
-  return { title: `<b>Memorise</b>${due && mm.tab !== 'guide' ? `<span class="abmeta">${due} ${due === 1 ? 'paragraph' : 'paragraphs'} due</span>` : ''}`, act: mmTabs() + (mm.tab !== 'guide' ? `<button class="btn" data-act="mm-new">New project</button>` : '') };
+  return { title: `<b>Memorise</b>${due && mm.tab === 'projects' ? `<span class="abmeta">${due} ${due === 1 ? 'paragraph' : 'paragraphs'} due</span>` : ''}`, act: mmTabs() + (mm.tab === 'projects' || !mm.tab ? `<button class="btn" data-act="mm-new">New project</button>` : '') };
 }
 
 initStore().finally(() => { lhMigrate(); designMigrate(); h7Migrate(); if (S.ready) settingsRepair(); cloudBoot(); });
