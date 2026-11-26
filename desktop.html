@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- recall-build:20261125011620 min-shell:1.27.0 -->
+<!-- recall-build:20261126160734 min-shell:1.27.0 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -4774,6 +4774,13 @@ html.lh .mbtabs button{height:28px;padding:0 10px;border:0;border-radius:5px;fon
 .mgd .mgpage i{font-size:7px;color:#555;font-style:normal}
 .mgcred{margin-top:-8px}
 @media (max-width:700px){ .mgd .g-bar{grid-template-columns:80px minmax(0,1fr) 84px} .mgd .g-booklet{grid-template-columns:1fr} .mgd .mgpage{width:140px} .mgd .g-fmt div{border-left:0;border-top:1px solid var(--border)} .mgd .g-fmt div:first-child{border-top:0} }
+
+/* 26 Nov 2026: Windows caption buttons (min/max/close, 138 x 36 overlay) never cover page actions */
+html.win body.desktop .appbar,html.win.lh body.desktop .appbar{padding-right:152px !important}
+html.win body.desktop .builder > .bhead{padding-right:152px !important}
+/* group: owner's member menu */
+.grppl li .grmact{display:flex;gap:4px;align-items:center}
+.grppl li .grmem{min-width:30px;padding:0 6px;font-size:16px;line-height:1}
 </style>
 
 <header class="toolbar"><button class="sidetoggle" data-act="toggle-sidebar" aria-label="Hide sidebar" title="Hide sidebar (⌘S)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="3.5" width="15" height="13" rx="3"/><path d="M7.5 3.5v13"/></svg></button><div class="tin">
@@ -13818,7 +13825,7 @@ async function grLoad(force = false){
       if (gs.error) throw gs.error;
       gr.me = me.data?.name || null; gr.groups = gs.data || [];
       const gids = gr.groups.map(g => g.id);
-      const ms = gids.length ? (await sb.from('group_members').select('group_id,user_id,joined_at').in('group_id', gids)).data || [] : [];
+      const ms = gids.length ? (await sb.from('group_members').select('*').in('group_id', gids)).data || [] : [];
       gr.members = ms;
       const ids = [...new Set([uid, ...ms.map(m => m.user_id)])], since = fDay(Date.now() - 7 * DAY);
       const [pr, st, dy, rm] = await Promise.all([
@@ -13827,7 +13834,7 @@ async function grLoad(force = false){
         sb.from('study_days').select('user_id,day,secs').in('user_id', ids).gte('day', since),
         gids.length ? sb.from('group_rooms').select('*').in('group_id', gids).is('ended_at', null).gte('starts_at', new Date(Date.now() - 6 * HOUR).toISOString()) : { data: [] }
       ]);
-      gr.names = Object.fromEntries((pr.data || []).map(p => [p.user_id, p.name]));
+      gr.pnames = Object.fromEntries((pr.data || []).map(p => [p.user_id, p.name])); grApplyNicks();
       const old = gr.status; gr.status = Object.fromEntries((st.data || []).map(s => [s.user_id, s]));
       if (gr.loaded) for (const s of Object.values(gr.status)) grSawStatus(s, old[s.user_id]);
       gr.days = dy.data || []; gr.rooms = (rm.data || []).filter(r => grRoomLeft(r) > -10 * 60e3);
@@ -13950,7 +13957,7 @@ function renderGroup(){
         <section class="grppl">
           <h2>${studying.length ? `${studying.length} of ${ids.length} studying now` : `${ids.length} ${ids.length === 1 ? 'person' : 'people'}`}</h2>
           <ul>${ids.slice().sort((a, b) => (grStatusLine(b).cls === 'on') - (grStatusLine(a).cls === 'on') || (gr.names[a] || '').localeCompare(gr.names[b] || '')).map(id => { const l = grStatusLine(id), live = id === grUid() ? fSecs() : grLive(gr.status[id]);
-            return `<li class="${l.cls}"><span class="gdot"></span><div><b>${esc(gr.names[id] || 'Someone')}${id === grUid() ? ' <small>you</small>' : ''}${id === g.owner ? ' <small>owner</small>' : ''}</b><span>${l.t}</span></div><b class="gtime" ${l.cls === 'on' && id !== grUid() ? `data-gtick="${id}"` : id === grUid() && focus.state === 'studying' ? 'data-ftick' : ''}>${fClock(live)}</b>${id === grUid() ? '<span></span>' : `<button class="btn sm grnudge" data-act="gr-nudge" data-id="${esc(id)}" title="Send ${esc(gr.names[id] || 'them')} a nudge to study">Nudge</button>`}</li>`; }).join('')}</ul>
+            return `<li class="${l.cls}"><span class="gdot"></span><div><b>${esc(gr.names[id] || 'Someone')}${id === grUid() ? ' <small>you</small>' : ''}${id === g.owner ? ' <small>owner</small>' : ''}</b><span>${l.t}</span></div><b class="gtime" ${l.cls === 'on' && id !== grUid() ? `data-gtick="${id}"` : id === grUid() && focus.state === 'studying' ? 'data-ftick' : ''}>${fClock(live)}</b>${id === grUid() ? '<span></span>' : `<span class="grmact"><button class="btn sm grnudge" data-act="gr-nudge" data-id="${esc(id)}" title="Send ${esc(gr.names[id] || 'them')} a nudge to study">Nudge</button>${g.owner === grUid() ? `<button class="btn sm icon grmem" data-act="gr-mem" data-id="${esc(id)}" title="Rename or remove ${esc(gr.names[id] || 'them')}" aria-label="Options for ${esc(gr.names[id] || 'this person')}" aria-haspopup="menu">⋯</button>` : ''}</span>`}</li>`; }).join('')}</ul>
         </section>
       </div>
       <aside class="grside">
@@ -16044,7 +16051,7 @@ function mmStart(){
   r.rnd = mmRand(r.seed); r.sc = words.map((w, k) => mmScore(w) ? k : -1).filter(k => k >= 0);
   MM_RUN[r.mode === 'type' && r.diff === 0 ? 'first' : r.mode].init(r);
   mm.sheet = false; $('#mmfmt')?.remove(); getSelection()?.removeAllRanges();
-  try { if (gr.groups.length && focus.state !== 'studying' && ls.get('md-focus-auto', true)) fStart(mmSubName(p) || focus.subj || ''); } catch {}
+  try { fAutoOn(mmSubName(p)); } catch {}
   render(); window.scrollTo(0, 0); mmFocus();
 }
 const mmEng = r => MM_RUN[r.mode === 'type' && r.diff === 0 ? 'first' : r.mode];
@@ -16658,6 +16665,63 @@ function mmAppbar(){
   return { title: `<b>Memorise</b>${due && mm.tab === 'projects' ? `<span class="abmeta">${due} ${due === 1 ? 'paragraph' : 'paragraphs'} due</span>` : ''}`, act: mmTabs() + (mm.tab === 'projects' || !mm.tab ? `<button class="btn" data-act="mm-new">New project</button>` : '') };
 }
 
+
+/* ---------- 26 Nov 2026 ----------
+   Group owners can rename people in their group (a name just for that group, `group_members.nick`, set through the
+   `set_member_nick` RPC) and remove them. Everyone sees the group's names; only the owner gets the ⋯ menu.
+   The Exam timer, a paper's timer and Memorise practice now start the study timer (when "start the timer when I study" is on),
+   in a group or not, so the time shows in Study time. A timer started by an exam pauses when the exam ends. */
+function grApplyNicks(){
+  gr.names = { ...(gr.pnames || {}) };
+  for (const m of gr.members || []) if (m.group_id === gr.cur && m.nick) gr.names[m.user_id] = m.nick;
+}
+{ const rg = renderGroup; renderGroup = function(...a){ try { grApplyNicks(); } catch {} return rg.apply(this, a); }; }
+{ const ga = grAction; grAction = async function(act, a, e){
+  const id = a?.dataset?.id, g = gr.groups.find(x => x.id === gr.cur), mine = g && g.owner === grUid();
+  const busy = async f => { if (a) a.disabled = true; try { await f(); } catch (err){ toast(String(err?.message || err).replace(/^.*?:\s*(?=[A-Z])/, ''), 4500); } if (a) a.disabled = false; };
+  if (act === 'gr-mem'){
+    if (!mine) return; const r = a.getBoundingClientRect();
+    return menuAt(`<button data-act="gr-nick" data-id="${esc(id)}">Rename…</button><button class="danger" data-act="gr-kick" data-id="${esc(id)}">Remove from group…</button>`, { x: r.right - 180, y: r.bottom + 4 });
+  }
+  if (act === 'gr-nick'){
+    closeMenu?.(); if (!mine) return; gr.nickFor = id;
+    return grAskDialog(`Rename ${esc(gr.names[id] || 'them')}`, `Name shown in ${esc(g.name)}. Leave it empty to use their own name.`, (gr.members.find(m => m.group_id === g.id && m.user_id === id) || {}).nick || '', 'gr-nick-go');
+  }
+  if (act === 'gr-nick-go') return busy(async () => {
+    if (!mine) return; const v = $('#graskin').value.trim().slice(0, 40);
+    await grCall('set_member_nick', { p_group: g.id, p_user: gr.nickFor, p_nick: v || null }).catch(err => { throw new Error(/set_member_nick|function|schema cache/i.test(err.message) ? 'Renaming needs the group update in Supabase first (see group-nick.sql).' : err.message); });
+    closeDialog(); await grLoad(true); renderGroup();
+  });
+  if (act === 'gr-kick'){
+    closeMenu?.(); if (!mine) return; const who = esc(gr.names[id] || 'this person');
+    return openDialog(`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="grkh" style="max-width:400px"><header><h2 id="grkh">Remove ${who}?</h2></header><div class="body"><p>${who} leaves ${esc(g.name)} and stops seeing who’s studying in it. They could still join again if they have the code ${esc(g.code)}.</p></div>
+      <footer><span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn danger" data-act="gr-kick-go" data-id="${esc(id)}">Remove</button></footer></div>`);
+  }
+  if (act === 'gr-kick-go') return busy(async () => {
+    if (!mine || id === grUid()) return;
+    const { error } = await cloud.sb.from('group_members').delete().eq('group_id', g.id).eq('user_id', id); if (error) throw error;
+    closeDialog(); toast('Removed from the group', 2200); await grLoad(true); renderGroup();
+  });
+  return ga.call(this, act, a, e);
+}; }
+/* study time from exam timers and Memorise */
+function fSubjFor(t){ t = String(t || '').toLowerCase(); let s = []; try { s = grSubjects(); } catch {} return s.find(n => { const k = n.toLowerCase().trim().slice(0, 4); return k.length >= 3 && t.includes(k); }) || ''; }
+function fAutoOn(subj){
+  if (focus.state === 'studying' || !ls.get('md-focus-auto', true)) return false;
+  fStart(subj || focus.subj || '', null, !(gr.groups || []).length); return true;
+}
+{ const o = exStart; exStart = async function(...a){ const r = await o.apply(this, a); try { if (exS && fAutoOn(fSubjFor(exS.name))){ exS.fauto = 1; exSaveRun(); } } catch {} return r; }; }
+{ const o = exFinish; exFinish = function(early){ const was = !!(exS && !exS.end && exS.fauto); const r = o.call(this, early); try { if (was && focus.state === 'studying') fPause('you'); } catch {} return r; }; }
+{ const o = ppTmAct; ppTmAct = function(act, a){
+  const p = ppmP(), before = p ? ppTmOf(p.id) : null, r = o.call(this, act, a);
+  try {
+    if (!p) return r; const t = ppTmOf(p.id), subj = fSubjFor(PP_COURSE[p.c]?.name || '');
+    if (act === 'pp-tm-start' && t){ if (fAutoOn(subj)){ t.fauto = 1; ppTmPut(p.id, t); } }
+    else if (act === 'pp-tm-pause' && t){ if (t.pa){ if (t.fauto && focus.state === 'studying') fPause('you'); } else if (fAutoOn(subj)){ t.fauto = 1; ppTmPut(p.id, t); } }
+    else if ((act === 'pp-tm-stop' || act === 'pp-tm-reset') && before?.fauto && focus.state === 'studying') fPause('you');
+  } catch {}
+  return r;
+}; }
 initStore().finally(() => { lhMigrate(); designMigrate(); h7Migrate(); if (S.ready) settingsRepair(); cloudBoot(); });
 render();
 </script>
