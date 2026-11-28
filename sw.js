@@ -1,7 +1,7 @@
-// Recall offline cache (20261126160734): the app loads even without internet; cards sync when you're back online
-const C = 'recall-20261126160734', SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js', 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js'];
+// Recall offline cache (20261128215503): the app loads even without internet; cards sync when you're back online
+const C = 'recall-20261128215503', SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js', 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js'];
 self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(C).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => {}))))); });
-self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C && !k.endsWith('-img')).map(k => caches.delete(k)))).then(() => self.clients.claim())));
+self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C && !k.endsWith('-img') && k !== 'transformers-cache').map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {
   const u = new URL(e.request.url); if (e.request.method !== 'GET') return;
   const same = u.origin === location.origin, cdn = /cdn\.jsdelivr\.net|fonts\.(googleapis|gstatic)\.com/.test(u.host);
@@ -11,6 +11,7 @@ self.addEventListener('fetch', e => {
     return e.respondWith(caches.open('recall-img').then(c => c.match(key).then(hit => hit || fetch(e.request).then(r => { if (r.ok) c.put(key, r.clone()); return r; }))));
   }
   if (!same && !cdn) return;
+  if (u.pathname.includes('/@huggingface/')) return;   // speech recognition runtime: large, left to the browser's own cache
   if (same && /\/(version\.json|desktop\.html)$/.test(u.pathname)) return;   // update checks always go to GitHub
   if (e.request.mode === 'navigate' && !/\/(index\.html)?$/.test(u.pathname)) return;   // other pages (like download.html) never replace the cached app
   if (e.request.mode === 'navigate') return e.respondWith(fetch(e.request).then(r => { const cp = r.clone(); caches.open(C).then(c => c.put('index.html', cp)); return r; }).catch(() => caches.match('index.html')));

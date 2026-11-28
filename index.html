@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261126160734";
+<script>window.RECALL_HOSTED = true; window.RECALL_BUILD = "20261128215503";
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 if (innerWidth >= 900) document.documentElement.classList.add('desktop', 'hosted');
 // home-screen app on iPad/iPhone: iOS blurs a band under the status bar, so the top bars start below it
@@ -15737,10 +15737,96 @@ const mmSR = () => window.SpeechRecognition || window.webkitSpeechRecognition ||
 function mmBlocked(k){
   if (k === 'listen' && !('speechSynthesis' in window)) return 'Reading aloud isn’t available on this device.';
   if (k === 'speak'){
-    if (window.desktop) return 'Speaking isn’t available in the Mac and Windows apps yet. It works in Safari and Chrome.';
-    if (!mmSR()) return 'This browser can’t recognise speech. Safari and Chrome can.';
+    if (window.desktop && !window.desktop.askMic) return 'Speak needs the newest Recall app. Download it from the download page, then open Memorise again.';
+    if (!mmSR() && !(navigator.mediaDevices?.getUserMedia && window.WebAssembly)) return 'This browser can’t use the microphone.';
   }
   return '';
+}
+
+/* ---------- on-device speech recognition (Whisper), for the Mac/Windows app and browsers without their own ----------
+   The model (about 40 MB) and the runtime (about 20 MB) download once, then stay cached. Runs in a worker when it can. */
+const MMW = { lib: 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/transformers.min.js', model: 'Xenova/whisper-tiny.en', w: null, ready: false, loading: null, prog: {}, cbs: new Map(), id: 0 };
+const MMW_WORKER = `let pipe = null;
+async function load(m, post){
+  const lib = await import(m.lib); lib.env.allowLocalModels = false;
+  pipe = await lib.pipeline('automatic-speech-recognition', m.model, { dtype: 'q8', device: 'wasm',
+    progress_callback: p => { if (p.status === 'progress' && p.total) post({ t: 'prog', file: p.file, loaded: p.loaded, total: p.total }); } });
+}
+async function handle(m, post){
+  try {
+    if (m.t === 'load'){ await load(m, post); post({ t: 'ready' }); }
+    else if (m.t === 'run'){ const o = await pipe(m.audio, { chunk_length_s: 30 }); post({ t: 'text', id: m.id, text: (o && o.text) || '' }); }
+  } catch (e) { post({ t: 'err', id: m.id, msg: String((e && e.message) || e) }); }
+}
+if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) self.onmessage = e => handle(e.data, d => self.postMessage(d));
+else window.__mmwHandle = handle;`;
+function mmwOnMsg(d){
+  if (d.t === 'prog'){ MMW.prog[d.file] = [d.loaded, d.total]; const v = Object.values(MMW.prog), a = v.reduce((s, x) => s + x[0], 0), b = v.reduce((s, x) => s + x[1], 0); MMW.onprog?.(b ? Math.min(99, Math.round(a / b * 100)) : 0); return; }
+  if (d.t === 'ready'){ MMW.ready = true; MMW.res?.(); return; }
+  if (d.t === 'err' && d.id == null){ MMW.rej?.(new Error(d.msg)); return; }
+  const cb = MMW.cbs.get(d.id); if (!cb) return; MMW.cbs.delete(d.id); d.t === 'err' ? cb.rej(new Error(d.msg)) : cb.res(d.text);
+}
+function mmwLoad(onprog){
+  MMW.onprog = onprog; if (MMW.ready) return Promise.resolve(); if (MMW.loading) return MMW.loading;
+  MMW.loading = new Promise((res, rej) => {
+    MMW.res = res; MMW.rej = rej; const msg = { t: 'load', lib: MMW.lib, model: MMW.model };
+    try {
+      const url = URL.createObjectURL(new Blob([MMW_WORKER], { type: 'text/javascript' }));
+      const w = new Worker(url);   /* a classic worker: module workers can't start from the Mac app's file:// page */ MMW.w = { post: (d, tr) => w.postMessage(d, tr || []) };
+      w.onmessage = e => mmwOnMsg(e.data); w.onerror = e => { e.preventDefault?.(); if (!MMW.ready) mmwMain(msg).catch(rej); };
+      w.postMessage(msg);
+    } catch { mmwMain(msg).catch(rej); }
+  }).catch(e => { MMW.loading = null; throw e; });
+  return MMW.loading;
+}
+/* no module workers (older Safari): run it on the page instead */
+async function mmwMain(msg){
+  if (!window.__mmwHandle){ const s = document.createElement('script'); s.textContent = MMW_WORKER; document.head.appendChild(s); }
+  MMW.w = { post: d => window.__mmwHandle(d, mmwOnMsg) }; MMW.w.post(msg);
+}
+function mmwRun(audio){ const id = ++MMW.id; return new Promise((res, rej) => { MMW.cbs.set(id, { res, rej }); MMW.w.post({ t: 'run', id, audio }, [audio.buffer]); }); }
+const mmwClean = t => t.replace(/\[[^\]]*\]|\([^)]*\)|\*[^*]*\*/g, ' ').replace(/\s+/g, ' ').trim();
+/* A recogniser shaped like the browser's: start, stop (finish what was heard), abort. cb: prog(%), ready(), result(fin, live), end(fin), error(msg) */
+function mmwRec(cb){
+  const SR16 = 16000; let mic = null, ac = null, src = null, node = null, chunks = [], len = 0, rms = [], quiet = 0, busy = false, tick = null, fin = '', dead = false, pos = 0;
+  const take = () => { const a = new Float32Array(len); let o = 0; for (const c of chunks){ a.set(c, o); o += c.length; } return a; };
+  const push = (data, sr) => {
+    const ratio = sr / SR16, n = Math.floor((data.length - pos) / ratio); if (n <= 0){ pos -= data.length; return; }
+    const out = new Float32Array(n); let e = 0; for (let i = 0; i < n; i++){ const x = pos + i * ratio, j = Math.floor(x), f = x - j; out[i] = (data[j] || 0) * (1 - f) + (data[j + 1] ?? data[j] ?? 0) * f; e += out[i] * out[i]; }
+    pos = pos + n * ratio - data.length; chunks.push(out); len += n; const v = Math.sqrt(e / n); rms.push(v); quiet = v < .012 ? quiet + n : 0;
+  };
+  const step = async final => {
+    if (busy || dead) return; const loud = rms.some(v => v > .02);
+    if (!len) return;
+    if (!loud && !final){ if (len > SR16 * 4){ chunks = []; len = 0; rms = []; } return; }
+    const commit = final || len > SR16 * 12 || (quiet > SR16 * .7 && len > SR16 * 1.5); if (!commit && len < SR16 * .8) return;
+    busy = true; const n = len, audio = take();
+    let text = ''; try { text = loud ? mmwClean(await mmwRun(audio)) : ''; } catch (e) { busy = false; if (!dead){ dead = true; stopMic(); cb.error('Speech recognition stopped (' + e.message + ').'); } return; }
+    busy = false; if (dead && !final) return;
+    if (commit){ let used = 0; while (chunks.length && used + chunks[0].length <= n){ used += chunks[0].length; chunks.shift(); rms.shift(); } len -= used; if (text) fin += text + ' '; cb.result(fin, ''); }
+    else cb.result(fin, text);
+  };
+  const stopMic = () => { clearInterval(tick); try { node?.disconnect(); src?.disconnect(); } catch {} mic?.getTracks().forEach(t => t.stop()); try { ac?.close(); } catch {} mic = ac = node = src = null; };
+  return {
+    async start(){
+      try {
+        if (!MMW.ready){ cb.prog(0); await mmwLoad(cb.prog); if (dead) return; cb.ready(); }
+        if (window.desktop?.askMic && !(await window.desktop.askMic())) throw Object.assign(new Error('mic'), { name: 'NotAllowedError' });
+        mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 } });
+        if (dead){ stopMic(); return; }
+        ac = new (window.AudioContext || window.webkitAudioContext)(); try { await ac.resume(); } catch {}
+        src = ac.createMediaStreamSource(mic); node = ac.createScriptProcessor(4096, 1, 1);
+        const sr = ac.sampleRate; node.onaudioprocess = e => { if (mic) push(e.inputBuffer.getChannelData(0), sr); };
+        src.connect(node); node.connect(ac.destination); tick = setInterval(() => step(false), 900); cb.listening?.();
+      } catch (e) {
+        stopMic(); if (dead) return; dead = true;
+        cb.error(e.name === 'NotAllowedError' || e.name === 'SecurityError' ? (window.desktop ? 'Recall isn’t allowed to use the microphone. Turn it on in System Settings › Privacy & Security › Microphone, then try again.' : 'Recall isn’t allowed to use the microphone. Allow it in your browser or device settings, then try again.')
+          : e.name === 'NotFoundError' ? 'No microphone was found.' : /fetch|network|load/i.test(e.message) ? 'Couldn’t download speech recognition. Check your internet connection and try again (it’s only needed the first time).' : 'Couldn’t start listening (' + e.message + ').');
+      }
+    },
+    async stop(){ if (dead) return; clearInterval(tick); const wait = () => busy ? new Promise(r => setTimeout(() => r(wait()), 80)) : null; await wait(); stopMic(); await step(true); dead = true; cb.end(fin); },
+    abort(){ dead = true; stopMic(); }
+  };
 }
 
 /* ---------- what to practise ---------- */
@@ -16052,28 +16138,53 @@ const MM_RUN = {
     key(r, e){ if (e.key === 'Enter'){ this.done(r); return true; } if (e.key === 'ArrowRight' || e.key === 'ArrowLeft'){ r.v = Math.max(0, Math.min(r.max, r.v + (e.key === 'ArrowRight' ? 5 : -5))); const s = $('#mmsl'); if (s) s.value = r.v; $('#mmslv') && ($('#mmslv').textContent = r.v + '%'); mmPaint(); return true; } return false; },
     prog(r){ const H = this.hidden(r); return [r.peek.size, H.size, 'peeked']; }
   },
-  /* ---- Listen: the device reads it, sentence by sentence ---- */
+  /* ---- Listen: the device reads it, sentence by sentence ----
+     Chromium (the Mac/Windows app, Chrome) drops a speak() made right after cancel(), can garbage-collect an utterance before it
+     ends, and can be left paused; Safari only speaks after a tap. So: keep the utterance, wait a moment after cancelling, resume,
+     unlock on the first tap, and retry once if nothing starts. */
   listen: {
     init(r){
       r.sents = []; r.words.forEach((w, k) => { const last = r.sents.at(-1); if (last && last.s === w.s && last.p === w.p) last.ks.push(k); else r.sents.push({ s: w.s, p: w.p, ks: [k] }); });
-      r.si = 0; r.wk = -1; r.playing = false; r.ended = false; r.gen = 0;
-      r.stop = () => { r.gen++; r.playing = false; try { speechSynthesis.cancel(); } catch {} };
+      r.si = 0; r.wk = -1; r.playing = false; r.ended = false; r.gen = 0; r.err = ''; r.cut = 0;
+      r.stop = () => { r.gen++; r.playing = false; clearTimeout(r.wd); this.hush(r); };
+      try { speechSynthesis.getVoices(); speechSynthesis.addEventListener?.('voiceschanged', () => {}); } catch {}
     },
-    voice(){ const vs = speechSynthesis.getVoices(); return vs.find(v => /en[-_]AU/i.test(v.lang)) || vs.find(v => /en[-_]GB/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null; },
+    hush(r){ try { if (speechSynthesis.speaking || speechSynthesis.pending){ speechSynthesis.cancel(); r.cut = Date.now(); } } catch {} },
+    voice(){
+      const vs = speechSynthesis.getVoices(), loc = vs.filter(v => v.localService !== false), pick = l => l.find(v => /en[-_]AU/i.test(v.lang)) || l.find(v => /en[-_]GB/i.test(v.lang)) || l.find(v => /^en/i.test(v.lang));
+      return pick(loc) || pick(vs) || null;
+    },
+    unlock(){ if (mm.ttsOk) return; mm.ttsOk = true; try { const z = new SpeechSynthesisUtterance(' '); z.volume = 0; speechSynthesis.speak(z); } catch {} },
     speak(r){
+      clearTimeout(r.wd);
       if (r.si >= r.sents.length){ r.playing = false; r.ended = true; r.wk = -1; return mmPaint(true); }
       const gen = ++r.gen, s = r.sents[r.si], text = s.ks.map(k => r.words[k].t).join(' '), offs = []; let o = 0; s.ks.forEach(k => { offs.push(o); o += r.words[k].t.length + 1; });
-      const u = new SpeechSynthesisUtterance(text); u.rate = r.diff === 0 ? .8 : 1; const v = this.voice(); if (v){ u.voice = v; u.lang = v.lang; } else u.lang = 'en-AU';
-      u.onboundary = e => { if (gen !== r.gen || (e.name && e.name !== 'word')) return; let j = 0; while (j + 1 < offs.length && offs[j + 1] <= e.charIndex) j++; r.wk = s.ks[j]; mmPaint(); };
-      u.onend = () => { if (gen !== r.gen || !r.playing || mm.run !== r) return; r.si++; r.wk = -1; this.speak(r); };
-      u.onerror = e => { if (gen !== r.gen || e.error === 'interrupted' || e.error === 'canceled') return; r.playing = false; toast('Couldn’t read that aloud on this device'); mmPaint(true); };
-      speechSynthesis.speak(u); mmPaint();
+      const u = r.utt = new SpeechSynthesisUtterance(text); u.rate = r.diff === 0 ? .8 : 1; const v = this.voice(); if (v){ u.voice = v; u.lang = v.lang; } else u.lang = 'en-AU';
+      let started = false;
+      u.onstart = () => { started = true; r.tries = 0; clearTimeout(r.wd); };
+      u.onboundary = e => { if (gen !== r.gen || (e.name && e.name !== 'word')) return; started = true; let j = 0; while (j + 1 < offs.length && offs[j + 1] <= e.charIndex) j++; r.wk = s.ks[j]; mmPaint(); };
+      u.onend = () => { if (gen !== r.gen || !r.playing || mm.run !== r) return; clearTimeout(r.wd); r.si++; r.wk = -1; this.speak(r); };
+      u.onerror = e => { if (gen !== r.gen || e.error === 'interrupted' || e.error === 'canceled') return; clearTimeout(r.wd); if ((r.tries = (r.tries || 0) + 1) < 2) return this.speak(r); r.playing = false; r.err = 'Couldn’t read that aloud on this device (' + (e.error || 'error') + ').'; mmPaint(true); };
+      const go = () => {
+        if (gen !== r.gen || !r.playing) return;
+        try { speechSynthesis.resume(); } catch {}
+        try { speechSynthesis.speak(u); } catch { r.playing = false; r.err = 'Couldn’t read that aloud on this device.'; return mmPaint(true); }
+        /* nothing started after 3 s: Chromium sometimes swallows it. Cancel and try once more, then say so */
+        r.wd = setTimeout(() => {
+          if (gen !== r.gen || !r.playing || started) return;
+          if ((r.tries = (r.tries || 0) + 1) < 2){ this.hush(r); return this.speak(r); }
+          r.playing = false; this.hush(r); r.err = window.desktop ? 'Your Mac didn’t start reading. Check the volume, and that a voice is installed in System Settings › Accessibility › Spoken Content.' : 'This device didn’t start reading. Check the volume and that the ring/silent switch is off.'; mmPaint(true);
+        }, 3000);
+      };
+      const wait = 120 - (Date.now() - r.cut);
+      if (wait > 0) setTimeout(go, wait); else go();
+      mmPaint();
     },
     body(r){ const cs = r.playing ? r.sents[r.si] : null, inS = new Set(cs?.ks || []); return mmRunText(r, (w, k) => r.diff === 2 && !r.ended ? (k === r.wk ? { c: 'mrcur' } : mmHidden(w)) : { c: k === r.wk ? 'mrcur' : inS.has(k) ? 'mrsent' : '', fmt: true }); },
-    foot(r){ return `<button class="btn" data-act="mm-l-restart">From the start</button><button class="btn ${r.ended ? '' : 'primary'}" data-act="mm-l-play">${r.playing ? 'Pause' : r.si ? 'Carry on' : 'Play'}<kbd>Space</kbd></button>${r.ended ? '<button class="btn primary" data-act="mm-done">Done<kbd>↵</kbd></button>' : ''}`; },
+    foot(r){ return (r.err ? `<span class="mmfhint mmerr">${esc(r.err)}</span>` : '') + `<button class="btn" data-act="mm-l-restart">From the start</button><button class="btn ${r.ended ? '' : 'primary'}" data-act="mm-l-play">${r.playing ? 'Pause' : r.si ? 'Carry on' : 'Play'}<kbd>Space</kbd></button>${r.ended ? '<button class="btn primary" data-act="mm-done">Done<kbd>↵</kbd></button>' : ''}`; },
     act(r, a){
-      if (a === 'mm-l-play'){ if (r.playing){ r.gen++; r.playing = false; speechSynthesis.cancel(); return mmPaint(true); } r.gen++; speechSynthesis.cancel(); r.playing = true; r.ended = false; if (r.si >= r.sents.length) r.si = 0; this.speak(r); return mmPaint(true); }
-      if (a === 'mm-l-restart'){ r.gen++; speechSynthesis.cancel(); r.si = 0; r.wk = -1; r.playing = true; r.ended = false; this.speak(r); return mmPaint(true); }
+      if (a === 'mm-l-play'){ this.unlock(); if (r.playing){ r.gen++; r.playing = false; clearTimeout(r.wd); this.hush(r); return mmPaint(true); } r.gen++; this.hush(r); r.playing = true; r.ended = false; r.err = ''; r.tries = 0; if (r.si >= r.sents.length) r.si = 0; this.speak(r); return mmPaint(true); }
+      if (a === 'mm-l-restart'){ this.unlock(); r.gen++; this.hush(r); r.si = 0; r.wk = -1; r.playing = true; r.ended = false; r.err = ''; r.tries = 0; this.speak(r); return mmPaint(true); }
       if (a === 'mm-done') return mmFinish();
     },
     key(r, e){ if (e.key === ' '){ this.act(r, 'mm-l-play'); return true; } if (e.key === 'Enter' && r.ended){ mmFinish(); return true; } return false; },
@@ -16258,9 +16369,11 @@ const MM_RUN = {
     key(r, e){ const n = +e.key; if (n >= 1 && n <= r.n){ this.pick(r, n - 1); return true; } if ((e.key === 's' || e.key === 'S') && r.diff < 2){ this.act(r, 'mm-c-skip'); return true; } return false; },
     prog(r){ return [r.sc.filter(k => k < r.pos).length, r.sc.length, 'words']; }
   },
-  /* ---- Speak: say it, it follows along ---- */
+  /* ---- Speak: say it, it follows along ----
+     Uses the browser's own recognition where it works (Safari, Chrome). The Mac/Windows app, Firefox, and an iPad Home Screen app
+     that refuses it use on-device Whisper (mmwRec) instead. */
   speak: {
-    init(r){ r.fin = ''; r.live = ''; r.prev = ''; r.on = false; r.err = ''; r.stuck = new Set(); r.pos = 0; r.stop = () => { r.on = false; try { r.rec?.abort(); } catch {} }; },
+    init(r){ r.fin = ''; r.live = ''; r.prev = ''; r.on = false; r.err = ''; r.stuck = new Set(); r.pos = 0; r.wprog = null; r.stop = () => { r.on = false; try { r.rec?.abort(); } catch {} }; },
     align(r){
       const said = (r.prev + ' ' + r.live).split(/\s+/).map(mmNorm).filter(Boolean); let pos = 0; const res = r.res.map(() => null);
       const skipStuck = () => { while (pos < r.sc.length && r.stuck.has(r.sc[pos])){ res[r.sc[pos]] = 0; pos++; } };
@@ -16270,14 +16383,35 @@ const MM_RUN = {
       }
       skipStuck(); r.res = res; r.pos = pos;
     },
-    listen(r){
-      const SR = mmSR(); if (!SR) return; const rec = r.rec = new SR(); rec.lang = 'en-AU'; rec.continuous = true; rec.interimResults = true;
-      let fin = '';
-      rec.onresult = e => { fin = ''; let live = ''; for (let i = 0; i < e.results.length; i++){ const t = e.results[i][0].transcript; if (e.results[i].isFinal) fin += t + ' '; else live += t + ' '; } r.live = fin + live; this.align(r); r.heard = live || fin.split(' ').slice(-8).join(' '); if (r.pos >= r.sc.length) return mmFinish(); mmPaint(); };
-      rec.onerror = e => { if (e.error === 'no-speech' || e.error === 'aborted') return; r.on = false; r.err = e.error === 'not-allowed' || e.error === 'service-not-allowed' ? 'Recall isn’t allowed to use the microphone or speech recognition here. Allow it in Settings, or open Recall in Safari instead of from the Home Screen.' : e.error === 'network' ? 'Speech recognition needs an internet connection here.' : 'Speech recognition stopped (' + e.error + ').'; mmPaint(true); };
-      rec.onend = () => { r.prev += ' ' + fin; r.live = ''; fin = ''; if (r.on && mm.run === r && !r.done) try { rec.start(); } catch { r.on = false; mmPaint(true); } };
+    heard(r, fin, live){ if (mm.run !== r || r.done) return; r.live = fin + ' ' + live; this.align(r); r.heard = live || fin.trim().split(' ').slice(-8).join(' '); if (r.pos >= r.sc.length) return mmFinish(); mmPaint(); },
+    native(){ return !!mmSR() && !window.desktop && !mm.useW; },
+    listen(r){ return this.native() ? this.listenSR(r) : this.listenW(r); },
+    listenSR(r){
+      const SR = mmSR(); const rec = r.rec = new SR(); rec.lang = 'en-AU'; rec.continuous = true; rec.interimResults = true;
+      let fin = '', got = false;
+      rec.onresult = e => { got = true; fin = ''; let live = ''; for (let i = 0; i < e.results.length; i++){ const t = e.results[i][0].transcript; if (e.results[i].isFinal) fin += t + ' '; else live += t + ' '; } this.heard(r, fin, live); };
+      rec.onerror = e => {
+        if (e.error === 'no-speech' || e.error === 'aborted') return;
+        /* the browser's recogniser isn't usable here (offline, Home Screen app, blocked service): switch to the on-device one */
+        if (!got && (e.error === 'network' || e.error === 'service-not-allowed' || e.error === 'language-not-supported') && navigator.mediaDevices?.getUserMedia){ mm.useW = true; r.on = false; try { rec.abort(); } catch {} r.rec = null; return this.listenW(r); }
+        r.on = false; r.err = e.error === 'not-allowed' || e.error === 'service-not-allowed' ? 'Recall isn’t allowed to use the microphone or speech recognition here. Allow it in Settings, then try again.' : e.error === 'network' ? 'Speech recognition needs an internet connection here.' : 'Speech recognition stopped (' + e.error + ').'; mmPaint(true);
+      };
+      rec.onend = () => { if (r.rec !== rec) return; r.prev += ' ' + fin; r.live = ''; fin = ''; if (r.on && mm.run === r && !r.done) try { rec.start(); } catch { r.on = false; mmPaint(true); } };
       try { rec.start(); r.on = true; r.err = ''; } catch (e) { r.on = false; r.err = 'Couldn’t start listening.'; }
       mmPaint(true);
+    },
+    listenW(r){
+      r.on = true; r.err = ''; r.wready = MMW.ready;
+      let last = 0;
+      const rec = r.rec = mmwRec({
+        prog: p => { if (r.rec !== rec) return; r.wprog = p; if (Date.now() - last > 250){ last = Date.now(); mmPaint(true); } },
+        ready: () => { if (r.rec !== rec) return; r.wprog = null; mmPaint(true); },
+        listening: () => { if (r.rec !== rec) return; r.wready = true; mmPaint(true); },
+        result: (fin, live) => { if (r.rec === rec) this.heard(r, fin, live); },
+        end: fin => { if (r.rec !== rec) return; r.prev += ' ' + fin; r.live = ''; r.rec = null; this.align(r); mmPaint(true); },
+        error: msg => { if (r.rec !== rec) return; r.on = false; r.wprog = null; r.err = msg; r.rec = null; mmPaint(true); }
+      });
+      rec.start(); mmPaint(true);
     },
     body(r){
       const curK = r.sc[r.pos] ?? r.words.length;
@@ -16289,7 +16423,14 @@ const MM_RUN = {
         return r.diff < 2 ? (hint ? { c: 'mrfl', h: mmHintH(w) } : { c: 'mrfl mrh', t: w.t }) : null;
       }) + (r.heard ? `<p class="mmheard">“${esc(r.heard.trim())}”</p>` : '');
     },
-    foot(r){ return (r.err ? `<span class="mmfhint mmerr">${esc(r.err)}</span>` : '') + `<button class="btn ${r.on ? '' : 'primary'}" data-act="mm-s-mic">${r.on ? 'Pause' : r.prev || r.live ? 'Keep going' : 'Start speaking'}</button><button class="btn" data-act="mm-s-stuck">I’m stuck</button><button class="btn" data-act="mm-done">Finish</button>`; },
+    hint(r){
+      if (r.err) return `<span class="mmfhint mmerr">${esc(r.err)}</span>`;
+      if (r.on && r.wprog != null) return `<span class="mmfhint">Getting speech recognition ready${r.wprog ? ` · <span class="num">${r.wprog}%</span>` : '…'} (first time only)</span>`;
+      if (r.on && !this.native() && !r.wready) return `<span class="mmfhint">Starting the microphone…</span>`;
+      if (r.on && !this.native()) return `<span class="mmfhint">Listening. Words appear a second or two after you say them.</span>`;
+      return '';
+    },
+    foot(r){ return this.hint(r) + `<button class="btn ${r.on ? '' : 'primary'}" data-act="mm-s-mic">${r.on ? 'Pause' : r.prev.trim() || r.live.trim() ? 'Keep going' : 'Start speaking'}</button><button class="btn" data-act="mm-s-stuck">I’m stuck</button><button class="btn" data-act="mm-done">Finish</button>`; },
     act(r, a){
       if (a === 'mm-s-mic'){ if (r.on){ r.on = false; try { r.rec?.stop(); } catch {} return mmPaint(true); } return this.listen(r); }
       if (a === 'mm-s-stuck'){ if (r.pos < r.sc.length){ r.stuck.add(r.sc[r.pos]); this.align(r); if (r.pos >= r.sc.length) return mmFinish(); } return mmPaint(); }
